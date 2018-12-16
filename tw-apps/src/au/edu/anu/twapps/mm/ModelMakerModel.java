@@ -30,10 +30,12 @@
 package au.edu.anu.twapps.mm;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import au.edu.anu.twapps.dialogs.Dialogs;
 import au.edu.anu.twcore.project.Project;
-
+import fr.cnrs.iees.graph.generic.Graph;
 
 /**
  * Author Ian Davies
@@ -41,8 +43,27 @@ import au.edu.anu.twcore.project.Project;
  * Date 10 Dec. 2018
  */
 public class ModelMakerModel {
-	//List<ModelListener> listeners = new ArrayList<>;
+	private List<ModelListener> listeners;
+	private Graph currentGraph;
+	private Graph layoutGraph;
+
 	public ModelMakerModel() {
+		listeners = new ArrayList<>();
+	}
+
+	public void newProject() {
+		if (!canClose())
+			return;
+		String name = Dialogs.getText("New project", "", "New project name:", "my Project");
+		if (name == null)
+			return;
+		if (Project.isOpen()) {
+			onProjectClosing();
+			Project.close();
+		}
+		name = Project.create(name);
+		currentGraph = Project.newConfiguration();
+		//layoutGraph =  
 
 	}
 
@@ -89,19 +110,9 @@ public class ModelMakerModel {
 
 	}
 
-	public void newProject() {
-		if (!canClose())
-			return;
-		String name = Dialogs.getText("New project","","New project name:","my Project");
-
-		if (name==null)
-			return;
-		if (Project.isOpen()) {
-			//we need modelListeners
-			//onProjectClosing();
-			Project.close();
-		}
-		name = Project.create(name);		
+	private void onProjectClosing() {
+		for (ModelListener l : listeners)
+			l.onProjectClosing();
 	}
 
 	public void save() {

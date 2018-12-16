@@ -27,12 +27,8 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
   **************************************************************************/
 
-package au.edu.anu.twapps.graphviz;
+package au.edu.anu.twapps.mm;
 
-import fr.cnrs.iees.graph.generic.Graph;
-
-public interface GVisable{
-	
-	public Graph newLayoutGraph();
-
+public interface ModelListener {
+	public void onProjectClosing();
 }
