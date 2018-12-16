@@ -32,7 +32,7 @@ package au.edu.anu.twapps.mm;
 import java.io.File;
 
 import au.edu.anu.twapps.dialogs.Dialogs;
-import au.edu.anu.twapps.project.Project;
+import au.edu.anu.twcore.project.Project;
 
 
 /**

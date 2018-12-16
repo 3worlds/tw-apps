@@ -29,7 +29,7 @@
 
 package au.edu.anu.twapps.mm;
 
-import au.edu.anu.twapps.project.Project;
+import au.edu.anu.twcore.project.Project;
 import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
