@@ -31,8 +31,18 @@ package au.edu.anu.twapps.graphviz;
 
 import fr.cnrs.iees.graph.generic.Graph;
 
-public interface GVisable{
+/**
+ * Author Ian Davies
+ *
+ * Date Dec 17, 2018
+ */
+public interface GraphVisualisable{
 	
-	public Graph newLayoutGraph();
+
+	public Graph initialiseLayOut(Graph layoutGraph);
+
+	public void createVisualElements(Graph layoutGraph);
+
+	public void linkGraphs(Graph currentGraph, Graph layoutGraph);
 
 }

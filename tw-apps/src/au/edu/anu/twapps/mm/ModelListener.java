@@ -29,6 +29,14 @@
 
 package au.edu.anu.twapps.mm;
 
+import fr.cnrs.iees.graph.generic.Graph;
+
 public interface ModelListener {
 	public void onProjectClosing();
+
+	public void onProjectOpened(Graph layoutGraph, boolean valid);
+
+	public void onEndDrawing();
+
+	public void onStartDrawing();
 }

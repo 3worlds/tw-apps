@@ -29,16 +29,31 @@
 
 package au.edu.anu.twapps.graphviz;
 
+import fr.cnrs.iees.graph.generic.Graph;
+
 /**
  * Author Ian Davies
  *
  * Date 13 Dec. 2018
  */
 public class GraphVisualisation {
-	private static GVisable impl;
+	private static GraphVisualisable impl;
 
-	public void initialise(GVisable impl) {
+	public static void initialise(GraphVisualisable impl) {
 		GraphVisualisation.impl = impl;
+	}
+
+	public static Graph initialiseLayout(Graph layoutGraph) {
+		return GraphVisualisation.impl.initialiseLayOut(layoutGraph);
+	}
+
+	public static void createVisualElements(Graph layoutGraph) {
+		GraphVisualisation.impl.createVisualElements(layoutGraph);	
+	}
+
+	public static void linkGraphs(Graph currentGraph, Graph layoutGraph) {
+		GraphVisualisation.impl.linkGraphs(currentGraph, layoutGraph);
+		
 	}
 
 }

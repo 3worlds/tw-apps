@@ -34,6 +34,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import au.edu.anu.twapps.dialogs.Dialogs;
+import au.edu.anu.twapps.graphviz.GraphVisualisation;
+import au.edu.anu.twcore.errorMessaging.archetype.ArchComplianceManager;
+import au.edu.anu.twcore.errorMessaging.codeGenerator.CodeComplianceManager;
+import au.edu.anu.twcore.errorMessaging.deploy.DeployComplianceManager;
 import au.edu.anu.twcore.project.Project;
 import fr.cnrs.iees.graph.generic.Graph;
 
@@ -63,12 +67,37 @@ public class ModelMakerModel {
 		}
 		name = Project.create(name);
 		currentGraph = Project.newConfiguration();
-		//layoutGraph =  
-
+		layoutGraph = GraphVisualisation.initialiseLayout(Project.newLayout());
+		onProjectOpened();
+		save();
+	}
+	public void openProject(File file) {
+		if (!canClose())
+			return;
+		// wait cursor
+		if (Project.isOpen())
+			onProjectClosing();
+		Project.open(file);
+		currentGraph = Project.loadConfiguration();
+		layoutGraph = Project.loadLayout();
+		GraphVisualisation.linkGraphs(currentGraph,layoutGraph);
+        onProjectOpened();
+        // restore cursor
 	}
 
-	public void checkGraph() {
+	public void importProject() {
 		// TODO Auto-generated method stub
+
+	}
+	private void clearMessages() {
+		ArchComplianceManager.clear();
+		CodeComplianceManager.clear();
+		DeployComplianceManager.clear();
+	}
+	public boolean checkGraph() {
+		clearMessages();
+		// run the checker
+		return true; // TODO Auto-generated method stub
 
 	}
 
@@ -86,10 +115,6 @@ public class ModelMakerModel {
 		}
 	}
 
-	public void openProject(File file) {
-		// TODO Auto-generated method stub
-
-	}
 
 	public void onPaneMouseClicked(double x, double y, double width, double height) {
 		// TODO Auto-generated method stub
@@ -114,6 +139,20 @@ public class ModelMakerModel {
 		for (ModelListener l : listeners)
 			l.onProjectClosing();
 	}
+	private void onProjectOpened() {
+		boolean ok = checkGraph();
+		for (ModelListener l : listeners) {
+			// ok,
+			l.onProjectOpened(layoutGraph,ok);
+			l.onStartDrawing();
+		}
+			
+		GraphVisualisation.createVisualElements(layoutGraph);
+	
+		for(ModelListener l: listeners) {
+			l.onEndDrawing();
+		}	
+	}
 
 	public void save() {
 		// TODO Auto-generated method stub
@@ -125,9 +164,9 @@ public class ModelMakerModel {
 
 	}
 
-	public void importProject() {
-		// TODO Auto-generated method stub
 
+	public void addListener(ModelListener listener) {
+		listeners.add(listener);
 	}
 
 }
