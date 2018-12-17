@@ -107,7 +107,10 @@ public class VersionManager {
 	 * 
 	 */
 	private static String[][] DEPS = { 
-		//{"commons-io", "commons-io", "1.+"},
+			{"org.apache.commons", "commons-text", "1.+"},
+			{"fr.ens.biologie", "generics", "+"},
+			{"au.edu.anu.rscs.aot", "omugi", "0.0.3+"},
+			{"fr.cnrs.iees.tw-core", "tw-core", "+"}
 	};
 	// ============================================================================================
 	
