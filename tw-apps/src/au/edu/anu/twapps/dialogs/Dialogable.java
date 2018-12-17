@@ -49,4 +49,6 @@ public interface Dialogable {
 
 	public String getText(String title, String header, String content, String prompt);
 
+	public File getExternalProjectFile();
+
 }

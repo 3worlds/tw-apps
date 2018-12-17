@@ -83,4 +83,9 @@ public class GraphState {
 
 	}
 
+	public static void isChanged(boolean b) {
+		hasChanged = b;
+		setTitle();		
+	}
+
 }

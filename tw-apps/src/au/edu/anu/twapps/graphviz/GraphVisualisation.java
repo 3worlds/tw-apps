@@ -43,15 +43,15 @@ public class GraphVisualisation {
 		GraphVisualisation.impl = impl;
 	}
 
-	public static Graph initialiseLayout(Graph layoutGraph) {
+	public static Graph<?, ?> initialiseLayout(Graph<?, ?> layoutGraph) {
 		return GraphVisualisation.impl.initialiseLayOut(layoutGraph);
 	}
 
-	public static void createVisualElements(Graph layoutGraph) {
+	public static void createVisualElements(Graph<?, ?> layoutGraph) {
 		GraphVisualisation.impl.createVisualElements(layoutGraph);	
 	}
 
-	public static void linkGraphs(Graph currentGraph, Graph layoutGraph) {
+	public static void linkGraphs(Graph<?, ?> currentGraph, Graph<?, ?> layoutGraph) {
 		GraphVisualisation.impl.linkGraphs(currentGraph, layoutGraph);
 		
 	}

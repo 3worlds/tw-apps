@@ -59,4 +59,8 @@ public class Dialogs {
 	public static String getText(String title, String header, String content, String prompt) {
 		return impl.getText(title, header, content, prompt);
 	}
+
+	public static File getExternalProjectFile() {
+		return impl.getExternalProjectFile();
+	}
 }

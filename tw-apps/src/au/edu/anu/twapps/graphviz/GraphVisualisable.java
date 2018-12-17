@@ -39,10 +39,10 @@ import fr.cnrs.iees.graph.generic.Graph;
 public interface GraphVisualisable{
 	
 
-	public Graph initialiseLayOut(Graph layoutGraph);
+	public Graph<?, ?> initialiseLayOut(Graph<?, ?> layoutGraph);
 
-	public void createVisualElements(Graph layoutGraph);
+	public void createVisualElements(Graph<?, ?> layoutGraph);
 
-	public void linkGraphs(Graph currentGraph, Graph layoutGraph);
+	public void linkGraphs(Graph<?, ?> currentGraph, Graph<?, ?> layoutGraph);
 
 }

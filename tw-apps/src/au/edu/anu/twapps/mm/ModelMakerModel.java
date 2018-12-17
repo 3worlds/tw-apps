@@ -30,9 +30,6 @@
 package au.edu.anu.twapps.mm;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 import au.edu.anu.twapps.dialogs.Dialogs;
 import au.edu.anu.twapps.graphviz.GraphVisualisation;
 import au.edu.anu.twcore.errorMessaging.archetype.ArchComplianceManager;
@@ -47,12 +44,14 @@ import fr.cnrs.iees.graph.generic.Graph;
  * Date 10 Dec. 2018
  */
 public class ModelMakerModel {
-	private List<ModelListener> listeners;
-	private Graph currentGraph;
-	private Graph layoutGraph;
+	// not really a listener but rather an
+	// Inteface to controller
+	private Graph<?, ?> currentGraph;
+	private Graph<?, ?> layoutGraph;
+	private ModelController mctrl;
 
-	public ModelMakerModel() {
-		listeners = new ArrayList<>();
+	public ModelMakerModel(ModelController mctrl) {
+		this.mctrl = mctrl;
 	}
 
 	public void newProject() {
@@ -71,7 +70,9 @@ public class ModelMakerModel {
 		onProjectOpened();
 		save();
 	}
+
 	public void openProject(File file) {
+		// TODO Auto-generated method stub
 		if (!canClose())
 			return;
 		// wait cursor
@@ -80,20 +81,56 @@ public class ModelMakerModel {
 		Project.open(file);
 		currentGraph = Project.loadConfiguration();
 		layoutGraph = Project.loadLayout();
-		GraphVisualisation.linkGraphs(currentGraph,layoutGraph);
-        onProjectOpened();
-        // restore cursor
+		GraphVisualisation.linkGraphs(currentGraph, layoutGraph);
+		onProjectOpened();
+		// restore cursor
 	}
 
 	public void importProject() {
 		// TODO Auto-generated method stub
-
+		File file = Dialogs.getExternalProjectFile();
+		if (file == null)
+			return;
+//		importGraph.resolveReferences();
+//		Utilities.enforceNameProperty(importGraph);
+//		AotNode importRoot = Utilities.get3worldsroot(importGraph);
+//		String tmpName = null;
+//		if (importRoot != null)
+//			tmpName = importRoot.getName();
+//		if (tmpName == null) {
+//			Dialogs.errorAlert("Import project", "Unable to import project.",
+//					"The file " + file.getName() + " has no root labelled " + N_GRAPHROOT.toString());
+//			return;
+//		}
+//		final String name = NameUtils.validJavaName(NameUtils.wordUpperCaseName(tmpName));
+//		if (!canClose("closing"))
+//			return;
+//		StatusText.message("Importing " + file.getName());
+//		Cursor oldCursor = controller.setCursor(Cursor.WAIT);
+//		Runnable task = () -> {
+//			if (Project.isOpen())
+//				onProjectClosing();
+//			Project.create(name);
+//			currentGraph = importGraph;
+//			AotNode root = Utilities.get3worldsroot(currentGraph);
+//			root.setName(name);
+//			layoutGraph = Utilities.createLayoutGraph(currentGraph);
+//			onProjectOpened();
+//			Utilities.save(currentGraph, layoutGraph);
+//			log.debug("Project importted: " + Project.getCurrentProjectTitle());
+//			StatusText.clear();
+//			controller.setCursor(oldCursor);
+//		};
+//		ExecutorService executor = Executors.newSingleThreadExecutor();
+//		executor.execute(task);
 	}
+
 	private void clearMessages() {
 		ArchComplianceManager.clear();
 		CodeComplianceManager.clear();
 		DeployComplianceManager.clear();
 	}
+
 	public boolean checkGraph() {
 		clearMessages();
 		// run the checker
@@ -115,7 +152,6 @@ public class ModelMakerModel {
 		}
 	}
 
-
 	public void onPaneMouseClicked(double x, double y, double width, double height) {
 		// TODO Auto-generated method stub
 
@@ -136,37 +172,28 @@ public class ModelMakerModel {
 	}
 
 	private void onProjectClosing() {
-		for (ModelListener l : listeners)
-			l.onProjectClosing();
+		mctrl.onProjectClosing();
+		Project.close();
 	}
+
 	private void onProjectOpened() {
 		boolean ok = checkGraph();
-		for (ModelListener l : listeners) {
-			// ok,
-			l.onProjectOpened(layoutGraph,ok);
-			l.onStartDrawing();
-		}
-			
+		mctrl.onProjectOpened(layoutGraph, ok);
+		mctrl.onStartDrawing();
+
 		GraphVisualisation.createVisualElements(layoutGraph);
-	
-		for(ModelListener l: listeners) {
-			l.onEndDrawing();
-		}	
+
+		mctrl.onEndDrawing();
+
 	}
 
 	public void save() {
-		// TODO Auto-generated method stub
-
+		GraphState.isChanged(false);
 	}
 
 	public void saveAs() {
 		// TODO Auto-generated method stub
 
-	}
-
-
-	public void addListener(ModelListener listener) {
-		listeners.add(listener);
 	}
 
 }
