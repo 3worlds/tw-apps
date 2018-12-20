@@ -29,7 +29,7 @@
 
 package au.edu.anu.twapps.graphviz;
 
-import fr.cnrs.iees.graph.generic.Graph;
+import fr.cnrs.iees.graph.Graph;
 
 /**
  * Author Ian Davies

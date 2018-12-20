@@ -36,7 +36,7 @@ import au.edu.anu.twcore.errorMessaging.archetype.ArchComplianceManager;
 import au.edu.anu.twcore.errorMessaging.codeGenerator.CodeComplianceManager;
 import au.edu.anu.twcore.errorMessaging.deploy.DeployComplianceManager;
 import au.edu.anu.twcore.project.Project;
-import fr.cnrs.iees.graph.generic.Graph;
+import fr.cnrs.iees.graph.Graph;
 
 /**
  * Author Ian Davies
