@@ -152,8 +152,25 @@ public class ModelMakerModel {
 		}
 	}
 
+//	private boolean placing = false;
 	public void onPaneMouseClicked(double x, double y, double width, double height) {
-		// TODO Auto-generated method stub
+
+		// TODO this does not belong here as runlater is a javafx method.
+		// This means a lot of code in modelMakerModel must be factored elsewhere.
+//		if (placing) {
+//			Platform.runLater(() -> {
+//				AotNode n = popupEditor.locate(event, pane.getWidth(), pane.getHeight());
+//				VisualNode.insertCircle(n, controller.childLinksProperty(), controller.xLinksProperty(), pane, this);
+//				// add parent edge. There must be one in this circumstance
+//				AotEdge inEdge = (AotEdge) get(n.getEdges(Direction.IN), selectOne(hasTheLabel(Trees.CHILD_LABEL)));
+//				VisualNode.createChildLine(inEdge, controller.childLinksProperty(), pane);
+//				popupEditor = null;
+//				placing = false;
+//				pane.setCursor(Cursor.DEFAULT);
+//				reBuildAllElementsPropertySheet();
+//				checkGraph();
+//			});
+//		}
 
 	}
 
@@ -179,12 +196,10 @@ public class ModelMakerModel {
 	private void onProjectOpened() {
 		boolean ok = checkGraph();
 		mctrl.onProjectOpened(layoutGraph, ok);
+
 		mctrl.onStartDrawing();
-
 		GraphVisualisation.createVisualElements(layoutGraph);
-
 		mctrl.onEndDrawing();
-
 	}
 
 	public void save() {
