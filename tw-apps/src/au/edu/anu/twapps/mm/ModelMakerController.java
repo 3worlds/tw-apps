@@ -36,7 +36,7 @@ import fr.cnrs.iees.graph.Graph;
  *
  * Date 17 Dec. 2018
  */
-public interface ModelController {
+public interface ModelMakerController {
 	public void onProjectClosing();
 
 	public void onProjectOpened(Graph<?, ?> layoutGraph, boolean valid);
@@ -44,4 +44,8 @@ public interface ModelController {
 	public void onEndDrawing();
 
 	public void onStartDrawing();
+
+	public void onStartWaiting();
+
+	public void onEndWaiting();
 }

@@ -48,9 +48,9 @@ public class ModelMakerModel {
 	// Inteface to controller
 	private Graph<?, ?> currentGraph;
 	private Graph<?, ?> layoutGraph;
-	private ModelController mctrl;
+	private ModelMakerController mctrl;
 
-	public ModelMakerModel(ModelController mctrl) {
+	public ModelMakerModel(ModelMakerController mctrl) {
 		this.mctrl = mctrl;
 	}
 
@@ -75,7 +75,7 @@ public class ModelMakerModel {
 		// TODO Auto-generated method stub
 		if (!canClose())
 			return;
-		// wait cursor
+		mctrl.onStartWaiting();
 		if (Project.isOpen())
 			onProjectClosing();
 		Project.open(file);
@@ -83,7 +83,7 @@ public class ModelMakerModel {
 		layoutGraph = Project.loadLayout();
 		GraphVisualisation.linkGraphs(currentGraph, layoutGraph);
 		onProjectOpened();
-		// restore cursor
+		mctrl.onEndWaiting();
 	}
 
 	public void importProject() {
