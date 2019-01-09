@@ -107,11 +107,14 @@ public class VersionManager {
 	 * 
 	 */
 	private static String[][] DEPS = { 
-			{"org.apache.commons", "commons-text", "1.+"},
 			{"fr.ens.biologie", "generics", "+"},
 			{"au.edu.anu.rscs.aot", "omugi", "+"},
-			{"fr.cnrs.iees.tw-core", "tw-core", "+"}
-	};
+			{"fr.cnrs.iees.tw-core", "tw-core", "+"},
+			{"au.edu.anu.rscs.aot", "aot", "+"},
+
+			{"org.apache.commons", "commons-text", "1.+"},
+	}
+;
 	// ============================================================================================
 	
 	// This shouldnt be changed ===================================================================
