@@ -30,15 +30,15 @@
 package au.edu.anu.twapps.mm;
 
 import java.io.File;
+
+import au.edu.anu.rscs.aot.graph.AotGraph;
 import au.edu.anu.twapps.dialogs.Dialogs;
 import au.edu.anu.twapps.graphviz.GraphVisualisation;
 import au.edu.anu.twcore.errorMessaging.archetype.ArchComplianceManager;
 import au.edu.anu.twcore.errorMessaging.codeGenerator.CodeComplianceManager;
 import au.edu.anu.twcore.errorMessaging.deploy.DeployComplianceManager;
 import au.edu.anu.twcore.project.Project;
-import fr.cnrs.iees.graph.Edge;
-import fr.cnrs.iees.graph.Graph;
-import fr.cnrs.iees.graph.Node;
+import fr.cnrs.iees.io.FileImporter;
 
 /**
  * Author Ian Davies
@@ -48,8 +48,8 @@ import fr.cnrs.iees.graph.Node;
 public class ModelMakerModel {
 	// not really a listener but rather an
 	// Inteface to controller
-	private Graph<?, ?> currentGraph;
-	private Graph<?, ?> layoutGraph;
+	private AotGraph currentGraph;
+	private AotGraph layoutGraph;
 	private ModelMakerController mctrl;
 
 	public ModelMakerModel(ModelMakerController mctrl) {
@@ -67,8 +67,8 @@ public class ModelMakerModel {
 			Project.close();
 		}
 		name = Project.create(name);
-		currentGraph = Project.newConfiguration();
-		layoutGraph = GraphVisualisation.initialiseLayout(Project.newLayout());
+		currentGraph = (AotGraph) Project.newConfiguration();
+		layoutGraph = (AotGraph) GraphVisualisation.initialiseLayout(Project.newLayout());
 		onProjectOpened();
 		save();
 	}
@@ -81,8 +81,8 @@ public class ModelMakerModel {
 		if (Project.isOpen())
 			onProjectClosing();
 		Project.open(file);
-		currentGraph = Project.loadConfiguration();
-		layoutGraph = Project.loadLayout();
+		currentGraph = (AotGraph) FileImporter.loadGraphFromFile(Project.makeConfigurationFile());
+		layoutGraph = (AotGraph) FileImporter.loadGraphFromFile(Project.makeLayoutFile());
 		GraphVisualisation.linkGraphs(currentGraph, layoutGraph);
 		onProjectOpened();
 		mctrl.onEndWaiting();
