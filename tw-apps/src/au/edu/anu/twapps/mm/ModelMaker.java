@@ -45,18 +45,99 @@ import fr.cnrs.iees.io.FileImporter;
  *
  * Date 10 Dec. 2018
  */
-public class ModelMakerModel {
+public class ModelMaker implements Modelable {
 	// not really a listener but rather an
 	// Inteface to controller
 	private AotGraph currentGraph;
 	private AotGraph layoutGraph;
-	private ModelMakerController mctrl;
+	private Controllable controller;
+	private boolean graphValid;
 
-	public ModelMakerModel(ModelMakerController mctrl) {
-		this.mctrl = mctrl;
+	public ModelMaker(Controllable controller) {
+		this.controller = controller;
+		graphValid = false;
 	}
 
-	public void newProject() {
+
+
+
+	private void onProjectClosing() {
+		controller.onProjectClosing(layoutGraph);
+		Project.close();
+	}
+
+	private void onProjectOpened() {
+		graphValid = validateGraph();
+		controller.onProjectOpened(layoutGraph, graphValid);
+	}
+
+	@Override
+	public boolean validateGraph() {
+		// run the checker
+		return true; // TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void doDisconnectJavaProject() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void doSetJavaProject() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void doMenuExit() {
+		// TODO Auto-generated method stub
+
+	}
+
+//	@Override
+//	public void onMouseClicked(double x, double y, double w, double h) {
+
+		// TODO this does not belong here as runlater is a javafx method.
+		// This means a lot of code in modelMakerModel must be factored elsewhere.
+//		if (placing) {
+//			Platform.runLater(() -> {
+//				AotNode n = popupEditor.locate(event, pane.getWidth(), pane.getHeight());
+//				VisualNode.insertCircle(n, controller.childLinksProperty(), controller.xLinksProperty(), pane, this);
+//				// add parent edge. There must be one in this circumstance
+//				AotEdge inEdge = (AotEdge) get(n.getEdges(Direction.IN), selectOne(hasTheLabel(Trees.CHILD_LABEL)));
+//				VisualNode.createChildLine(inEdge, controller.childLinksProperty(), pane);
+//				popupEditor = null;
+//				placing = false;
+//				pane.setCursor(Cursor.DEFAULT);
+//				reBuildAllElementsPropertySheet();
+//				checkGraph();
+//			});
+//		}
+
+//	}
+
+//	@Override
+//	public void onMouseMoved(double x, double y, double w, double h) {
+//		// TODO Auto-generated method stub
+//
+//	}
+
+	@Override
+	public void doLayout() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void doDeploy() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void doNewProject() {
 		if (!canClose())
 			return;
 		String name = Dialogs.getText("New project", "", "New project name:", "my Project");
@@ -70,14 +151,15 @@ public class ModelMakerModel {
 		currentGraph = (AotGraph) Project.newConfiguration();
 		layoutGraph = (AotGraph) GraphVisualisation.initialiseLayout(Project.newLayout());
 		onProjectOpened();
-		save();
+		doSave();
 	}
 
-	public void openProject(File file) {
+	@Override
+	public void doOpenProject(File file) {
 		// TODO Auto-generated method stub
 		if (!canClose())
 			return;
-		mctrl.onStartWaiting();
+		controller.onStartWaiting();
 		if (Project.isOpen())
 			onProjectClosing();
 		Project.open(file);
@@ -85,10 +167,23 @@ public class ModelMakerModel {
 		layoutGraph = (AotGraph) FileImporter.loadGraphFromFile(Project.makeLayoutFile());
 		GraphVisualisation.linkGraphs(currentGraph, layoutGraph);
 		onProjectOpened();
-		mctrl.onEndWaiting();
+		controller.onEndWaiting();
 	}
 
-	public void importProject() {
+	@Override
+	public void doSave() {
+		GraphState.isChanged(false);
+
+	}
+
+	@Override
+	public void doSaveAs() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void doImport() {
 		// TODO Auto-generated method stub
 		File file = Dialogs.getExternalProjectFile();
 		if (file == null)
@@ -125,92 +220,22 @@ public class ModelMakerModel {
 //		};
 //		ExecutorService executor = Executors.newSingleThreadExecutor();
 //		executor.execute(task);
-	}
-
-	private void clearMessages() {
-		ArchComplianceManager.clear();
-		CodeComplianceManager.clear();
-		DeployComplianceManager.clear();
-	}
-
-	public boolean checkGraph() {
-		clearMessages();
-		// run the checker
-		return true; // TODO Auto-generated method stub
 
 	}
 
+	@Override
 	public boolean canClose() {
 		if (!GraphState.hasChanged())
 			return true;
 		switch (Dialogs.yesNoCancel("Project has changed", "Save changes before closing projecct?", "")) {
 		case yes:
-			save();
+			doSave();
 			return true;
 		case no:
 			return true;
 		default:
 			return false;
 		}
-	}
-
-//	private boolean placing = false;
-	public void onPaneMouseClicked(double x, double y, double width, double height) {
-
-		// TODO this does not belong here as runlater is a javafx method.
-		// This means a lot of code in modelMakerModel must be factored elsewhere.
-//		if (placing) {
-//			Platform.runLater(() -> {
-//				AotNode n = popupEditor.locate(event, pane.getWidth(), pane.getHeight());
-//				VisualNode.insertCircle(n, controller.childLinksProperty(), controller.xLinksProperty(), pane, this);
-//				// add parent edge. There must be one in this circumstance
-//				AotEdge inEdge = (AotEdge) get(n.getEdges(Direction.IN), selectOne(hasTheLabel(Trees.CHILD_LABEL)));
-//				VisualNode.createChildLine(inEdge, controller.childLinksProperty(), pane);
-//				popupEditor = null;
-//				placing = false;
-//				pane.setCursor(Cursor.DEFAULT);
-//				reBuildAllElementsPropertySheet();
-//				checkGraph();
-//			});
-//		}
-
-	}
-
-	public void onPaneMouseMoved(double x, double y, double width, double height) {
-		// TODO Auto-generated method stub
-	}
-
-	public void runLayout() {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void createSimulatorAndDeploy() {
-		// TODO Auto-generated method stub
-
-	}
-
-	private void onProjectClosing() {
-		mctrl.onProjectClosing();
-		Project.close();
-	}
-
-	private void onProjectOpened() {
-		boolean ok = checkGraph();
-		mctrl.onProjectOpened(layoutGraph, ok);
-
-		mctrl.onStartDrawing();
-		GraphVisualisation.createVisualElements(layoutGraph);
-		mctrl.onEndDrawing();
-	}
-
-	public void save() {
-		GraphState.isChanged(false);
-	}
-
-	public void saveAs() {
-		// TODO Auto-generated method stub
-
 	}
 
 }

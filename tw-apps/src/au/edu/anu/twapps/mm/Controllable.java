@@ -29,21 +29,20 @@
 
 package au.edu.anu.twapps.mm;
 
-import fr.cnrs.iees.graph.Graph;
+import au.edu.anu.rscs.aot.graph.AotGraph;
 
 /**
  * Author Ian Davies
  *
  * Date 17 Dec. 2018
  */
-public interface ModelMakerController {
-	public void onProjectClosing();
+// ModelMaker calls these Controller methods
+// ModelMaker HAS one of these
+// Controller IS one of these: Controller implements
+public interface Controllable {
+	public void onProjectClosing(AotGraph layoutGraph);
 
-	public void onProjectOpened(Graph<?, ?> layoutGraph, boolean valid);
-
-	public void onEndDrawing();
-
-	public void onStartDrawing();
+	public void onProjectOpened(AotGraph layoutGraph, boolean valid);
 
 	public void onStartWaiting();
 
