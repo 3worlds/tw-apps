@@ -27,23 +27,9 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
   **************************************************************************/
 
-package au.edu.anu.twapps.graphviz;
+package au.edu.anu.twapps.structureEditor;
 
-import fr.cnrs.iees.graph.Graph;
-
-/**
- * Author Ian Davies
- *
- * Date Dec 17, 2018
- */
-public interface GraphVisualisable{
-
-	
-
-	public Graph<?, ?> initialiseLayOut(Graph<?, ?> layoutGraph);
-
-	public void createVisualElements(Graph<?, ?> layoutGraph);
-
-	public void linkGraphs(Graph<?, ?> currentGraph, Graph<?, ?> layoutGraph);
+public interface ArchetypeConstants {
+	public static final String atName = "name";
 
 }

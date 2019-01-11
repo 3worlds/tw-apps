@@ -27,23 +27,19 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
   **************************************************************************/
 
-package au.edu.anu.twapps.graphviz;
+package au.edu.anu.twapps.structureEditor;
 
-import fr.cnrs.iees.graph.Graph;
+import au.edu.anu.rscs.aot.graph.AotNode;
 
 /**
  * Author Ian Davies
  *
- * Date Dec 17, 2018
+ * Date 11 Jan. 2019
  */
-public interface GraphVisualisable{
-
-	
-
-	public Graph<?, ?> initialiseLayOut(Graph<?, ?> layoutGraph);
-
-	public void createVisualElements(Graph<?, ?> layoutGraph);
-
-	public void linkGraphs(Graph<?, ?> currentGraph, Graph<?, ?> layoutGraph);
+public interface StructureEditable {
+	public AotNode placeNodeAt(double x, double y, double w, double h);
+	public boolean hasNewNode();
+	public Iterable<AotNode> allowedChildren(Iterable<AotNode> childSpecs); 
+	public Iterable<AotNode> allowedNeighbours(Iterable<AotNode> neighbourSpecs);
 
 }

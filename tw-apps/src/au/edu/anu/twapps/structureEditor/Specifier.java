@@ -27,23 +27,78 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
   **************************************************************************/
 
-package au.edu.anu.twapps.graphviz;
+package au.edu.anu.twapps.structureEditor;
 
-import fr.cnrs.iees.graph.Graph;
+import java.util.Map;
+
+import au.edu.anu.rscs.aot.graph.AotGraph;
+import au.edu.anu.rscs.aot.graph.AotNode;
+import au.edu.anu.rscs.aot.util.IntegerRange;
 
 /**
  * Author Ian Davies
  *
- * Date Dec 17, 2018
+ * Date 10 Jan. 2019
  */
-public interface GraphVisualisable{
 
-	
+/*
+ * These are the basic public methods required of an archetype implementation.
+ * 
+ * NOTE: There are two uses: CHECKING compliance and BUILDING a configuration
+ * file. Queries are not executed when BUILDING.
+ * 
+ * 
+ */
+// Develop in this library but move to tw-core later - saves time!!
+public interface Specifier {
 
-	public Graph<?, ?> initialiseLayOut(Graph<?, ?> layoutGraph);
+	/* True if the archetype is a valid archetype */
+	public boolean complies();
 
-	public void createVisualElements(Graph<?, ?> layoutGraph);
+	/*
+	 * runs all checks against the given node . Nodes without an spec can't be
+	 * checked. I'm avoiding this at the moment : complies(AotGraph graph)
+	 */
+	public boolean complies(AotNode node, AotNode nodeSpec);
 
-	public void linkGraphs(Graph<?, ?> currentGraph, Graph<?, ?> layoutGraph);
+	/* get specification of a given node. If null, it can't be checked. */
+	public AotNode getSpecificationOf(AotNode node);
+
+	/*
+	 * label, spec of all potential children of a parent with this label and class.
+	 */
+	public Map<String, AotNode> getPossibleChildrenOf(String parentLabel, AotNode parentSpec, String parentClass);
+
+	/*
+	 * label, spec of all potential neighbours (not children) of a node with this
+	 * label and class.
+	 */
+	public Map<String, AotNode> getPossibleNeighboursOf(String parentLabel, AotNode parentSpec, String parentClass);
+
+	/*
+	 * Items in the object table of these constraints.
+	 * 
+	 * Need to know this so we can check which option the user has selected in the
+	 * configuration being constructed.
+	 */
+	public String[] getEdgeXorPropertyOptions(AotNode nodeSpec);
+
+	public String[] getNodeXorNodeOptions(AotNode nodeSpec);
+
+	public String[] getPropertyXorPropertyOptions(AotNode nodeSpec);
+
+	/* Get the upper value of the multiplicity of this property specification */
+	//public int getUpperMultiplicity(AotNode propertySpec);
+	public IntegerRange getMultiplicity(AotNode nodeSpec,String propertyLabel);
+
+	/* True if node name must begin with upper case letter */
+	public boolean nameStartsWithUpperCase(AotNode nodeSpec);
+
+	public AotNode getPropertySpec(String label);
+
+	public String getLabel(AotNode spec);
+
+
+	// TODO more to come...
 
 }

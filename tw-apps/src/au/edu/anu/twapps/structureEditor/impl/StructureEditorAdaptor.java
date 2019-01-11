@@ -27,23 +27,63 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
   **************************************************************************/
 
-package au.edu.anu.twapps.graphviz;
+package au.edu.anu.twapps.structureEditor.impl;
 
-import fr.cnrs.iees.graph.Graph;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * Author Ian Davies
- *
- * Date Dec 17, 2018
- */
-public interface GraphVisualisable{
+import au.edu.anu.rscs.aot.graph.AotNode;
+import au.edu.anu.rscs.aot.util.IntegerRange;
+import au.edu.anu.twapps.graphviz.GraphVisualisationConstants;
+import au.edu.anu.twapps.structureEditor.ArchetypeConstants;
+import au.edu.anu.twapps.structureEditor.QueryableNode;
+import au.edu.anu.twapps.structureEditor.Specifier;
+import au.edu.anu.twapps.structureEditor.StructureEditable;
 
+public class StructureEditorAdaptor implements StructureEditable,GraphVisualisationConstants,ArchetypeConstants{
+	private Specifier archSpecs;
+	private QueryableNode qnode;
+	private AotNode newNode;
+	private AotNode nodeSpec;
+	public StructureEditorAdaptor(QueryableNode n) {
+		super();
+		this.newNode = null;
+		this.qnode = n;
+		this.nodeSpec = archSpecs.getSpecificationOf(qnode.getConfigNode());
+	}
+
+	@Override
+	public AotNode placeNodeAt(double x, double y, double w, double h) {
+		// scale into unit space
+		newNode.setProperty(gvX,x/w);
+		newNode.setProperty(gvY,y/h);
+		return newNode;
+	}
+
+	@Override
+	public boolean hasNewNode() {
+		return newNode!=null;
+	}
 	
 
-	public Graph<?, ?> initialiseLayOut(Graph<?, ?> layoutGraph);
+	@Override
+	public Iterable<AotNode> allowedChildren(Iterable<AotNode> childSpecs) {
+		List<AotNode> result = new ArrayList<AotNode>();
+		for (AotNode childSpec:childSpecs) {		
+			IntegerRange range = archSpecs.getMultiplicity(childSpec,atName);
+			String childLabel = archSpecs.getLabel(childSpec);
+			if (!qnode.inRange(range,childLabel))
+				result.add(childSpec);			
+		}
+		return result;
+	}
 
-	public void createVisualElements(Graph<?, ?> layoutGraph);
+	@Override
+	public Iterable<AotNode> allowedNeighbours(Iterable<AotNode> neighbourSpecs) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-	public void linkGraphs(Graph<?, ?> currentGraph, Graph<?, ?> layoutGraph);
+
 
 }
