@@ -31,59 +31,75 @@ package au.edu.anu.twapps.structureEditor.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import au.edu.anu.rscs.aot.graph.AotNode;
 import au.edu.anu.rscs.aot.util.IntegerRange;
 import au.edu.anu.twapps.graphviz.GraphVisualisationConstants;
 import au.edu.anu.twapps.structureEditor.ArchetypeConstants;
 import au.edu.anu.twapps.structureEditor.QueryableNode;
-import au.edu.anu.twapps.structureEditor.Specifier;
+import au.edu.anu.twapps.structureEditor.Specifications;
 import au.edu.anu.twapps.structureEditor.StructureEditable;
+import javafx.util.Pair;
 
-public class StructureEditorAdaptor implements StructureEditable,GraphVisualisationConstants,ArchetypeConstants{
-	private Specifier archSpecs;
-	private QueryableNode qnode;
+public abstract class StructureEditorAdapter
+		implements StructureEditable, GraphVisualisationConstants, ArchetypeConstants {
+	protected Specifications specifications;
+	protected QueryableNode queryNode;
 	private AotNode newNode;
-	private AotNode nodeSpec;
-	public StructureEditorAdaptor(QueryableNode n) {
+	protected AotNode nodeSpec;
+
+	public StructureEditorAdapter(QueryableNode n) {
 		super();
 		this.newNode = null;
-		this.qnode = n;
-		this.nodeSpec = archSpecs.getSpecificationOf(qnode.getConfigNode());
+		this.queryNode = n;
+		this.nodeSpec = specifications.getSpecificationOf(queryNode.getConfigNode());
 	}
 
 	@Override
-	public AotNode placeNodeAt(double x, double y, double w, double h) {
-		// scale into unit space
-		newNode.setProperty(gvX,x/w);
-		newNode.setProperty(gvY,y/h);
+	public AotNode locateNodeAt(double x, double y, double w, double h) {
+		// rescale user's x,y into unit space
+		newNode.setProperty(gvX, x / w);
+		newNode.setProperty(gvY, y / h);
 		return newNode;
 	}
 
 	@Override
 	public boolean hasNewNode() {
-		return newNode!=null;
+		return newNode != null;
 	}
-	
 
 	@Override
-	public Iterable<AotNode> allowedChildren(Iterable<AotNode> childSpecs) {
+	public List<AotNode> allowedChildren(Iterable< AotNode> childSpecs) {
 		List<AotNode> result = new ArrayList<AotNode>();
-		for (AotNode childSpec:childSpecs) {		
-			IntegerRange range = archSpecs.getMultiplicity(childSpec,atName);
-			String childLabel = archSpecs.getLabel(childSpec);
-			if (!qnode.inRange(range,childLabel))
-				result.add(childSpec);			
+		for (AotNode childNodeSpec : childSpecs) {
+			IntegerRange range = specifications.getMultiplicity(childNodeSpec, atName);
+			String childLabel = specifications.getLabel(childNodeSpec);
+			if (!queryNode.inRange(range, childLabel))
+				result.add(childNodeSpec);
 		}
 		return result;
 	}
 
 	@Override
-	public Iterable<AotNode> allowedNeighbours(Iterable<AotNode> neighbourSpecs) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Pair<String, AotNode>> allowedOutEdges(Iterable<AotNode> edgeSpecs) {
+		List<Pair<String, AotNode>> result = new ArrayList<>();
+		List<String> edgePropXorOptions = specifications.getConstraintOptions(nodeSpec, atConstraintEdgePropXor);
+		List<String> nodeNodeXorOptions = specifications.getConstraintOptions(nodeSpec, atConstraintNodeNodeXor);
+
+		for (AotNode edgeSpec : edgeSpecs) {
+			String nodeLabel = specifications.getEdgeToNodeLabel(edgeSpec);
+			List<String> edgeLabelOptions = specifications.getConstraintOptions(edgeSpec, atConstraintElementLabel);
+			// we now need the node list of the graph!
+		}
+		return result;
 	}
-
-
-
+	public List<AotNode> orphanedChildren(Iterable<AotNode> childSpecs) {
+		List<AotNode> result = new ArrayList<>();
+		
+		return result;
+	}
+	protected boolean haveSpecification() {
+		return nodeSpec != null;
+	}
 }

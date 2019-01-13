@@ -27,41 +27,74 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
   **************************************************************************/
 
-package au.edu.anu.twapps.structureEditor;
+package au.edu.anu.twapps.structureEditor.impl;
 
 import java.util.List;
+import java.util.Map;
+
 import au.edu.anu.rscs.aot.graph.AotNode;
+import au.edu.anu.twapps.structureEditor.QueryableNode;
+import javafx.scene.Node;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.input.MouseEvent;
 import javafx.util.Pair;
 
 /**
  * Author Ian Davies
  *
- * Date 11 Jan. 2019
+ * Date 13 Jan. 2019
  */
-public interface StructureEditable {
-	/*
-	 * sets the location of a new node and returns its value so the calling program
-	 * can add the visualisation details
-	 */
-	public AotNode locateNodeAt(double x, double y, double w, double h);
+// TODO move to tw-uifx
+public class StructureEditorfx extends StructureEditorAdapter {
 
-	/* If true, the user is prompted to location a position for the new node */
-	public boolean hasNewNode();
+	private ContextMenu cm;
 
-	/*
-	 * Filters a list of possible children depending on current state of the
-	 * configuration
-	 */
-	public List<AotNode> allowedChildren(Iterable<AotNode> childNodeSpecs);
+	public StructureEditorfx(QueryableNode n, MouseEvent event) {
+		super(n);
+		cm = new ContextMenu();
+		buildgui();
+		cm.show((Node) event.getSource(), event.getScreenX(), event.getScreenY());
+	}
 
-	/*
-	 * Filters a list of edge labels and eligible node pairs to be connected from a
-	 * list of all possible edge specifications
-	 */
-	public List<Pair<String, AotNode>> allowedOutEdges(Iterable<AotNode> edgeSpecs);
+	@Override
+	public void buildgui() {
+		if (haveSpecification()) {
+			Iterable<AotNode> childSpecs = specifications.getPossibleChildrenOf(queryNode.getLabel(), nodeSpec,
+					queryNode.getClassValue());
+			List<AotNode> allowedChildSpecs = allowedChildren(childSpecs);
+			List<AotNode> orphanedChildren = orphanedChildren(childSpecs);
+			Iterable<AotNode> edgeSpecs = specifications.getPossibleOutEdgesOf(queryNode.getLabel(), nodeSpec,
+					queryNode.getClassValue());
+			List<Pair<String, AotNode>> allowedEdges = allowedOutEdges(edgeSpecs);
 
-	public List<AotNode> orphanedChildren(Iterable<AotNode> childSpecs);
+			if (!allowedChildSpecs.isEmpty()) {
+				// add new children options
+			}
 
-	public void buildgui();
+			if (!orphanedChildren.isEmpty()) {
+				// list new toNode edge options
+			}
+
+			if (!allowedEdges.isEmpty()) {
+				// addEdgeOptions
+			}
+
+			cm.getItems().add(new SeparatorMenuItem());
+
+			if (queryNode.getChildren().isEmpty()) {
+				// add exportTreeOptions
+			}
+			if (!allowedChildSpecs.isEmpty()) {
+				// add import tree options
+			}
+
+			if (queryNode.canDelete() || !queryNode.getChildren().isEmpty())
+				if (!(allowedChildSpecs.isEmpty() && orphanedChildren.isEmpty()))
+					cm.getItems().add(new SeparatorMenuItem());
+
+		}
+
+	}
 
 }

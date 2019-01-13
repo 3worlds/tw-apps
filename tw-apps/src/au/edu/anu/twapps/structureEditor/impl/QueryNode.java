@@ -27,78 +27,51 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
   **************************************************************************/
 
-package au.edu.anu.twapps.structureEditor;
+package au.edu.anu.twapps.structureEditor.impl;
 
-import java.util.Map;
+import java.util.List;
 
-import au.edu.anu.rscs.aot.graph.AotGraph;
 import au.edu.anu.rscs.aot.graph.AotNode;
 import au.edu.anu.rscs.aot.util.IntegerRange;
+import au.edu.anu.twapps.structureEditor.QueryableNode;
 
-/**
- * Author Ian Davies
- *
- * Date 10 Jan. 2019
- */
+public class QueryNode implements QueryableNode,Configuration{
+private AotNode visualNode;
+	public QueryNode (AotNode visualNode) {
+		this.visualNode=visualNode;
+	}
+	@Override
+	public List<AotNode> getChildren() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-/*
- * These are the basic public methods required of an archetype implementation.
- * 
- * NOTE: There are two uses: CHECKING compliance and BUILDING a configuration
- * file. Queries are not executed when BUILDING.
- * 
- * 
- */
-// Develop in this library but move to tw-core later - saves time!!
-public interface Specifier {
+	@Override
+	public String getClassValue() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-	/* True if the archetype is a valid archetype */
-	public boolean complies();
+	@Override
+	public AotNode getConfigNode() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-	/*
-	 * runs all checks against the given node . Nodes without an spec can't be
-	 * checked. I'm avoiding this at the moment : complies(AotGraph graph)
-	 */
-	public boolean complies(AotNode node, AotNode nodeSpec);
+	@Override
+	public boolean canDelete() {
+		return getLabel().equals(N_ROOT);
+	}
 
-	/* get specification of a given node. If null, it can't be checked. */
-	public AotNode getSpecificationOf(AotNode node);
+	@Override
+	public boolean inRange(IntegerRange range, String childLabel) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
-	/*
-	 * label, spec of all potential children of a parent with this label and class.
-	 */
-	public Map<String, AotNode> getPossibleChildrenOf(String parentLabel, AotNode parentSpec, String parentClass);
-
-	/*
-	 * label, spec of all potential neighbours (not children) of a node with this
-	 * label and class.
-	 */
-	public Map<String, AotNode> getPossibleNeighboursOf(String parentLabel, AotNode parentSpec, String parentClass);
-
-	/*
-	 * Items in the object table of these constraints.
-	 * 
-	 * Need to know this so we can check which option the user has selected in the
-	 * configuration being constructed.
-	 */
-	public String[] getEdgeXorPropertyOptions(AotNode nodeSpec);
-
-	public String[] getNodeXorNodeOptions(AotNode nodeSpec);
-
-	public String[] getPropertyXorPropertyOptions(AotNode nodeSpec);
-
-	/* Get the upper value of the multiplicity of this property specification */
-	//public int getUpperMultiplicity(AotNode propertySpec);
-	public IntegerRange getMultiplicity(AotNode nodeSpec,String propertyLabel);
-
-	/* True if node name must begin with upper case letter */
-	public boolean nameStartsWithUpperCase(AotNode nodeSpec);
-
-	public AotNode getPropertySpec(String label);
-
-	public String getLabel(AotNode spec);
-
-
-	// TODO more to come...
+	@Override
+	public String getLabel() {
+		return visualNode.getLabel();
+	}
 
 }
