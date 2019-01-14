@@ -60,33 +60,39 @@ public interface Specifications {
 	 * runs all checks against the given node . Nodes without an spec can't be
 	 * checked. I'm avoiding complies(AotGraph graph) at the moment
 	 */
-	public boolean complies(AotNode node, AotNode nodeSpec);
-
-	/* get specification of a given node. If null, it can't be checked. */
-	public AotNode getSpecificationOf(AotNode node);
+	public boolean complies(AotNode node, AotNode root);
 
 	/*
-	 * label, spec of all potential children of a parent with this label and class.
+	 * get specification of a given node from the configuration graph. If null, it
+	 * can't be checked.
 	 */
-	public Iterable<AotNode> getPossibleChildrenOf(String parentLabel, AotNode parentSpec, String parentClass);
+	public AotNode getSpecificationOf(AotNode configurationNode);
+
+	/*
+	 * Specifications of all potential children of a parent with this label and
+	 * class.
+	 */
+	public Iterable<AotNode> getChildSpecificationsOf(String parentLabel, AotNode parentSpec, String parentClass);
 
 	/* edge specification nodes of a node with this label and class */
-	public Iterable<AotNode> getPossibleOutEdgesOf(String parentLabel, AotNode parentSpec, String parentClass);
+	public Iterable<AotNode> getEdgeSpecificationsOf(String parentLabel, AotNode parentSpec, String parentClass);
+
+	/* property specs of the given node spec (root) */
+	public Iterable<AotNode> getPropertySpecifications(AotNode root);
 
 	/* Get multiplicity of a property specification */
-	public IntegerRange getMultiplicity(AotNode nodeSpec, String key);
-	
-	public IntegerRange getMultiplicityPropertyValue(AotNode spec);
-	
+	public IntegerRange getMultiplicity(AotNode root, String key);
+
+	public IntegerRange getMultiplicity(AotNode spec);
 
 	/* True if node name must begin with upper case letter */
-	public boolean nameStartsWithUpperCase(AotNode nodeSpec);
+	public boolean nameStartsWithUpperCase(AotNode root);
 
 	/* returns just the label for nodes of this specification */
-	public String getLabel(AotNode spec);
+	public String getLabel(AotNode root);
 
 	/* Items in the object table of these constraints. Preserve the order */
-	public List<String> getConstraintOptions(AotNode nodeSpec, String constraintClass);
+	public List<String> getConstraintOptions(AotNode root, String constraintClass);
 
 	public String getEdgeToNodeLabel(AotNode edgeSpec);
 

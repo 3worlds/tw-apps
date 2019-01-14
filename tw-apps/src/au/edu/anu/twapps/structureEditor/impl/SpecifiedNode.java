@@ -29,17 +29,21 @@
 
 package au.edu.anu.twapps.structureEditor.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import au.edu.anu.rscs.aot.graph.AotNode;
 import au.edu.anu.rscs.aot.util.IntegerRange;
-import au.edu.anu.twapps.structureEditor.QueryableNode;
+import au.edu.anu.twapps.structureEditor.SpecifiableNode;
+import fr.cnrs.iees.twcore.constants.Configuration;
 
-public class QueryNode implements QueryableNode,Configuration{
-private AotNode visualNode;
-	public QueryNode (AotNode visualNode) {
-		this.visualNode=visualNode;
+public class SpecifiedNode implements SpecifiableNode, Configuration {
+	private AotNode visualNode;
+
+	public SpecifiedNode(AotNode visualNode) {
+		this.visualNode = visualNode;
 	}
+
 	@Override
 	public List<AotNode> getChildren() {
 		// TODO Auto-generated method stub
@@ -73,5 +77,14 @@ private AotNode visualNode;
 	public String getLabel() {
 		return visualNode.getLabel();
 	}
+
+	@Override
+	public List<AotNode> graphRoots() {
+		List<AotNode> result = new ArrayList<>();
+		for (AotNode root : visualNode.treeNodeFactory().roots())
+			result.add(root);
+		return result;
+	}
+
 
 }

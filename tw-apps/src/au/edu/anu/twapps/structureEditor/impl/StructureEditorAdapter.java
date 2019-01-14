@@ -37,7 +37,7 @@ import au.edu.anu.rscs.aot.graph.AotNode;
 import au.edu.anu.rscs.aot.util.IntegerRange;
 import au.edu.anu.twapps.graphviz.GraphVisualisationConstants;
 import au.edu.anu.twapps.structureEditor.ArchetypeConstants;
-import au.edu.anu.twapps.structureEditor.QueryableNode;
+import au.edu.anu.twapps.structureEditor.SpecifiableNode;
 import au.edu.anu.twapps.structureEditor.Specifications;
 import au.edu.anu.twapps.structureEditor.StructureEditable;
 import javafx.util.Pair;
@@ -45,44 +45,44 @@ import javafx.util.Pair;
 public abstract class StructureEditorAdapter
 		implements StructureEditable, GraphVisualisationConstants, ArchetypeConstants {
 	protected Specifications specifications;
-	protected QueryableNode queryNode;
-	private AotNode newNode;
+	protected SpecifiableNode targetNode;
+	private AotNode newChild;
 	protected AotNode nodeSpec;
 
-	public StructureEditorAdapter(QueryableNode n) {
+	public StructureEditorAdapter(SpecifiableNode targetNode) {
 		super();
-		this.newNode = null;
-		this.queryNode = n;
-		this.nodeSpec = specifications.getSpecificationOf(queryNode.getConfigNode());
+		this.newChild = null;
+		this.targetNode = targetNode;
+		this.nodeSpec = specifications.getSpecificationOf(targetNode.getConfigNode());
 	}
 
 	@Override
-	public AotNode locateNodeAt(double x, double y, double w, double h) {
+	public AotNode SetNodeLocation(double x, double y, double w, double h) {
 		// rescale user's x,y into unit space
-		newNode.setProperty(gvX, x / w);
-		newNode.setProperty(gvY, y / h);
-		return newNode;
+		newChild.setProperty(gvX, x / w);
+		newChild.setProperty(gvY, y / h);
+		return newChild;
 	}
 
 	@Override
-	public boolean hasNewNode() {
-		return newNode != null;
+	public boolean hasNewChild() {
+		return newChild != null;
 	}
 
 	@Override
-	public List<AotNode> allowedChildren(Iterable< AotNode> childSpecs) {
+	public List<AotNode> newChildList(Iterable< AotNode> childSpecs) {
 		List<AotNode> result = new ArrayList<AotNode>();
 		for (AotNode childNodeSpec : childSpecs) {
 			IntegerRange range = specifications.getMultiplicity(childNodeSpec, atName);
 			String childLabel = specifications.getLabel(childNodeSpec);
-			if (!queryNode.inRange(range, childLabel))
+			if (!targetNode.inRange(range, childLabel))
 				result.add(childNodeSpec);
 		}
 		return result;
 	}
 
 	@Override
-	public List<Pair<String, AotNode>> allowedOutEdges(Iterable<AotNode> edgeSpecs) {
+	public List<Pair<String, AotNode>> newEdgeList(Iterable<AotNode> edgeSpecs) {
 		List<Pair<String, AotNode>> result = new ArrayList<>();
 		List<String> edgePropXorOptions = specifications.getConstraintOptions(nodeSpec, atConstraintEdgePropXor);
 		List<String> nodeNodeXorOptions = specifications.getConstraintOptions(nodeSpec, atConstraintNodeNodeXor);
@@ -94,7 +94,7 @@ public abstract class StructureEditorAdapter
 		}
 		return result;
 	}
-	public List<AotNode> orphanedChildren(Iterable<AotNode> childSpecs) {
+	public List<AotNode> orphanedChildList(Iterable<AotNode> childSpecs) {
 		List<AotNode> result = new ArrayList<>();
 		
 		return result;

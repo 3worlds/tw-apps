@@ -36,8 +36,8 @@ import au.edu.anu.rscs.aot.util.IntegerRange;
 
 // just experimenting with what services mm requires of an aotnode.
 
-// impl will have a VisualNode which hosts the ghosted configuration node
-public interface QueryableNode {
+// impl will have a VisualNode which hosts the configuration node
+public interface SpecifiableNode {
 	public List<AotNode> getChildren();
 
 	/* return the class value or null from the hosted config node */
@@ -56,5 +56,8 @@ public interface QueryableNode {
 
 	public String getLabel();
 
+	public List<AotNode> graphRoots();
+	
+	//public void addProperty(String key, Object defaultValue);
 
 }

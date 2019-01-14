@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 import au.edu.anu.rscs.aot.graph.AotNode;
-import au.edu.anu.twapps.structureEditor.QueryableNode;
+import au.edu.anu.twapps.structureEditor.SpecifiableNode;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.SeparatorMenuItem;
@@ -50,7 +50,7 @@ public class StructureEditorfx extends StructureEditorAdapter {
 
 	private ContextMenu cm;
 
-	public StructureEditorfx(QueryableNode n, MouseEvent event) {
+	public StructureEditorfx(SpecifiableNode n, MouseEvent event) {
 		super(n);
 		cm = new ContextMenu();
 		buildgui();
@@ -60,13 +60,13 @@ public class StructureEditorfx extends StructureEditorAdapter {
 	@Override
 	public void buildgui() {
 		if (haveSpecification()) {
-			Iterable<AotNode> childSpecs = specifications.getPossibleChildrenOf(queryNode.getLabel(), nodeSpec,
-					queryNode.getClassValue());
-			List<AotNode> allowedChildSpecs = allowedChildren(childSpecs);
-			List<AotNode> orphanedChildren = orphanedChildren(childSpecs);
-			Iterable<AotNode> edgeSpecs = specifications.getPossibleOutEdgesOf(queryNode.getLabel(), nodeSpec,
-					queryNode.getClassValue());
-			List<Pair<String, AotNode>> allowedEdges = allowedOutEdges(edgeSpecs);
+			Iterable<AotNode> childSpecs = specifications.getChildSpecificationsOf(targetNode.getLabel(), nodeSpec,
+					targetNode.getClassValue());
+			List<AotNode> allowedChildSpecs = newChildList(childSpecs);
+			List<AotNode> orphanedChildren = orphanedChildList(childSpecs);
+			Iterable<AotNode> edgeSpecs = specifications.getEdgeSpecificationsOf(targetNode.getLabel(), nodeSpec,
+					targetNode.getClassValue());
+			List<Pair<String, AotNode>> allowedEdges = newEdgeList(edgeSpecs);
 
 			if (!allowedChildSpecs.isEmpty()) {
 				// add new children options
@@ -82,14 +82,14 @@ public class StructureEditorfx extends StructureEditorAdapter {
 
 			cm.getItems().add(new SeparatorMenuItem());
 
-			if (queryNode.getChildren().isEmpty()) {
+			if (targetNode.getChildren().isEmpty()) {
 				// add exportTreeOptions
 			}
 			if (!allowedChildSpecs.isEmpty()) {
 				// add import tree options
 			}
 
-			if (queryNode.canDelete() || !queryNode.getChildren().isEmpty())
+			if (targetNode.canDelete() || !targetNode.getChildren().isEmpty())
 				if (!(allowedChildSpecs.isEmpty() && orphanedChildren.isEmpty()))
 					cm.getItems().add(new SeparatorMenuItem());
 

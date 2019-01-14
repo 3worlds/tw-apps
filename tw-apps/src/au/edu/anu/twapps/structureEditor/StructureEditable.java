@@ -43,24 +43,24 @@ public interface StructureEditable {
 	 * sets the location of a new node and returns its value so the calling program
 	 * can add the visualisation details
 	 */
-	public AotNode locateNodeAt(double x, double y, double w, double h);
+	public AotNode SetNodeLocation(double x, double y, double w, double h);
 
 	/* If true, the user is prompted to location a position for the new node */
-	public boolean hasNewNode();
+	public boolean hasNewChild();
 
 	/*
 	 * Filters a list of possible children depending on current state of the
 	 * configuration
 	 */
-	public List<AotNode> allowedChildren(Iterable<AotNode> childNodeSpecs);
+	public List<AotNode> newChildList(Iterable<AotNode> childNodeSpecs);
 
 	/*
 	 * Filters a list of edge labels and eligible node pairs to be connected from a
 	 * list of all possible edge specifications
 	 */
-	public List<Pair<String, AotNode>> allowedOutEdges(Iterable<AotNode> edgeSpecs);
+	public List<Pair<String, AotNode>> newEdgeList(Iterable<AotNode> edgeSpecs);
 
-	public List<AotNode> orphanedChildren(Iterable<AotNode> childSpecs);
+	public List<AotNode> orphanedChildList(Iterable<AotNode> childSpecs);
 
 	public void buildgui();
 
