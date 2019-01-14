@@ -27,78 +27,74 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
   **************************************************************************/
 
-package au.edu.anu.twapps.structureEditor;
+package au.edu.anu.twapps.structureEditor.impl;
 
+import java.util.List;
 import java.util.Map;
 
-import au.edu.anu.rscs.aot.graph.AotGraph;
 import au.edu.anu.rscs.aot.graph.AotNode;
-import au.edu.anu.rscs.aot.util.IntegerRange;
+import au.edu.anu.twapps.structureEditor.SpecifiableNode;
+import javafx.scene.Node;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.input.MouseEvent;
+import javafx.util.Pair;
 
 /**
  * Author Ian Davies
  *
- * Date 10 Jan. 2019
+ * Date 13 Jan. 2019
  */
+// TODO move to tw-uifx
+public class StructureEditorfx extends StructureEditorAdapter {
 
-/*
- * These are the basic public methods required of an archetype implementation.
- * 
- * NOTE: There are two uses: CHECKING compliance and BUILDING a configuration
- * file. Queries are not executed when BUILDING.
- * 
- * 
- */
-// Develop in this library but move to tw-core later - saves time!!
-public interface Specifier {
+	private ContextMenu cm;
 
-	/* True if the archetype is a valid archetype */
-	public boolean complies();
+	public StructureEditorfx(SpecifiableNode n, MouseEvent event) {
+		super(n);
+		cm = new ContextMenu();
+		buildgui();
+		cm.show((Node) event.getSource(), event.getScreenX(), event.getScreenY());
+	}
 
-	/*
-	 * runs all checks against the given node . Nodes without an spec can't be
-	 * checked. I'm avoiding this at the moment : complies(AotGraph graph)
-	 */
-	public boolean complies(AotNode node, AotNode nodeSpec);
+	@Override
+	public void buildgui() {
+		if (haveSpecification()) {
+			Iterable<AotNode> childSpecs = specifications.getChildSpecificationsOf(targetNode.getLabel(), nodeSpec,
+					targetNode.getClassValue());
+			List<AotNode> allowedChildSpecs = newChildList(childSpecs);
+			List<AotNode> orphanedChildren = orphanedChildList(childSpecs);
+			Iterable<AotNode> edgeSpecs = specifications.getEdgeSpecificationsOf(targetNode.getLabel(), nodeSpec,
+					targetNode.getClassValue());
+			List<Pair<String, AotNode>> allowedEdges = newEdgeList(edgeSpecs);
 
-	/* get specification of a given node. If null, it can't be checked. */
-	public AotNode getSpecificationOf(AotNode node);
+			if (!allowedChildSpecs.isEmpty()) {
+				// add new children options
+			}
 
-	/*
-	 * label, spec of all potential children of a parent with this label and class.
-	 */
-	public Map<String, AotNode> getPossibleChildrenOf(String parentLabel, AotNode parentSpec, String parentClass);
+			if (!orphanedChildren.isEmpty()) {
+				// list new toNode edge options
+			}
 
-	/*
-	 * label, spec of all potential neighbours (not children) of a node with this
-	 * label and class.
-	 */
-	public Map<String, AotNode> getPossibleNeighboursOf(String parentLabel, AotNode parentSpec, String parentClass);
+			if (!allowedEdges.isEmpty()) {
+				// addEdgeOptions
+			}
 
-	/*
-	 * Items in the object table of these constraints.
-	 * 
-	 * Need to know this so we can check which option the user has selected in the
-	 * configuration being constructed.
-	 */
-	public String[] getEdgeXorPropertyOptions(AotNode nodeSpec);
+			cm.getItems().add(new SeparatorMenuItem());
 
-	public String[] getNodeXorNodeOptions(AotNode nodeSpec);
+			if (targetNode.getChildren().isEmpty()) {
+				// add exportTreeOptions
+			}
+			if (!allowedChildSpecs.isEmpty()) {
+				// add import tree options
+			}
 
-	public String[] getPropertyXorPropertyOptions(AotNode nodeSpec);
+			if (targetNode.canDelete() || !targetNode.getChildren().isEmpty())
+				if (!(allowedChildSpecs.isEmpty() && orphanedChildren.isEmpty()))
+					cm.getItems().add(new SeparatorMenuItem());
 
-	/* Get the upper value of the multiplicity of this property specification */
-	//public int getUpperMultiplicity(AotNode propertySpec);
-	public IntegerRange getMultiplicity(AotNode nodeSpec,String propertyLabel);
+		}
 
-	/* True if node name must begin with upper case letter */
-	public boolean nameStartsWithUpperCase(AotNode nodeSpec);
-
-	public AotNode getPropertySpec(String label);
-
-	public String getLabel(AotNode spec);
-
-
-	// TODO more to come...
+	}
 
 }

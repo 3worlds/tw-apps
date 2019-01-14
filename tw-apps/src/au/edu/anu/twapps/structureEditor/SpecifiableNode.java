@@ -29,19 +29,35 @@
 
 package au.edu.anu.twapps.structureEditor;
 
+import java.util.List;
+
 import au.edu.anu.rscs.aot.graph.AotNode;
 import au.edu.anu.rscs.aot.util.IntegerRange;
 
 // just experimenting with what services mm requires of an aotnode.
 
-// impl will have an AotNode with visualisation properties
-public interface QueryableNode {
+// impl will have a VisualNode which hosts the configuration node
+public interface SpecifiableNode {
+	public List<AotNode> getChildren();
+
+	/* return the class value or null from the hosted config node */
 	public String getClassValue();
+
 	/* get the configuration node under-pinning this */
 	public AotNode getConfigNode();
+
+	/*
+	 * normally true unless this is the configuration root (3Worlds:<projectName>)
+	 */
 	public boolean canDelete();
+
+	/* true if the number of nodes of this label is within the specified range */
 	public boolean inRange(IntegerRange range, String childLabel);
+
+	public String getLabel();
+
+	public List<AotNode> graphRoots();
 	
-	
+	//public void addProperty(String key, Object defaultValue);
 
 }

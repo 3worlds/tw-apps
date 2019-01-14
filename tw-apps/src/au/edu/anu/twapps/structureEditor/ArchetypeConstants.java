@@ -31,5 +31,10 @@ package au.edu.anu.twapps.structureEditor;
 
 public interface ArchetypeConstants {
 	public static final String atName = "name";
+	public final static String atConstraintEdgePropXor = "fr.ens.biologie.threeWorlds.ui.configuration.archetype3w.EdgeXorPropertyQuery";
+	public final static String atConstraintNodeNodeXor = "fr.ens.biologie.threeWorlds.ui.configuration.archetype3w.NodeXorQuery";
+	public final static String atConstraintEdgeAtLeastOneOfEach = "fr.ens.biologie.threeWorlds.ui.configuration.archetype3w.EdgeAtLeastOneOfEachQuery";
+	public final static String atConstraintElementLabel = "au.edu.anu.rscs.aot.queries.graph.element.ElementLabel";
+
 
 }

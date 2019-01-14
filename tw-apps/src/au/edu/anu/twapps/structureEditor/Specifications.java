@@ -30,38 +30,72 @@
 package au.edu.anu.twapps.structureEditor;
 
 import java.util.List;
+import java.util.Map;
+
+import au.edu.anu.rscs.aot.graph.AotGraph;
 import au.edu.anu.rscs.aot.graph.AotNode;
-import javafx.util.Pair;
+import au.edu.anu.rscs.aot.util.IntegerRange;
 
 /**
  * Author Ian Davies
  *
- * Date 11 Jan. 2019
+ * Date 10 Jan. 2019
  */
-public interface StructureEditable {
+
+/*
+ * These are the basic public methods required of an archetype implementation.
+ * 
+ * NOTE: There are two uses: CHECKING compliance and BUILDING a configuration
+ * file. Queries are not executed when BUILDING.
+ * 
+ * 
+ */
+// Develop in this library but move to tw-core later - saves time!!
+public interface Specifications {
+
+	/* True if the archetype is a valid archetype */
+	public boolean complies();
+
 	/*
-	 * sets the location of a new node and returns its value so the calling program
-	 * can add the visualisation details
+	 * runs all checks against the given node . Nodes without an spec can't be
+	 * checked. I'm avoiding complies(AotGraph graph) at the moment
 	 */
-	public AotNode SetNodeLocation(double x, double y, double w, double h);
-
-	/* If true, the user is prompted to location a position for the new node */
-	public boolean hasNewChild();
+	public boolean complies(AotNode node, AotNode root);
 
 	/*
-	 * Filters a list of possible children depending on current state of the
-	 * configuration
+	 * get specification of a given node from the configuration graph. If null, it
+	 * can't be checked.
 	 */
-	public List<AotNode> newChildList(Iterable<AotNode> childNodeSpecs);
+	public AotNode getSpecificationOf(AotNode configurationNode);
 
 	/*
-	 * Filters a list of edge labels and eligible node pairs to be connected from a
-	 * list of all possible edge specifications
+	 * Specifications of all potential children of a parent with this label and
+	 * class.
 	 */
-	public List<Pair<String, AotNode>> newEdgeList(Iterable<AotNode> edgeSpecs);
+	public Iterable<AotNode> getChildSpecificationsOf(String parentLabel, AotNode parentSpec, String parentClass);
 
-	public List<AotNode> orphanedChildList(Iterable<AotNode> childSpecs);
+	/* edge specification nodes of a node with this label and class */
+	public Iterable<AotNode> getEdgeSpecificationsOf(String parentLabel, AotNode parentSpec, String parentClass);
 
-	public void buildgui();
+	/* property specs of the given node spec (root) */
+	public Iterable<AotNode> getPropertySpecifications(AotNode root);
+
+	/* Get multiplicity of a property specification */
+	public IntegerRange getMultiplicity(AotNode root, String key);
+
+	public IntegerRange getMultiplicity(AotNode spec);
+
+	/* True if node name must begin with upper case letter */
+	public boolean nameStartsWithUpperCase(AotNode root);
+
+	/* returns just the label for nodes of this specification */
+	public String getLabel(AotNode root);
+
+	/* Items in the object table of these constraints. Preserve the order */
+	public List<String> getConstraintOptions(AotNode root, String constraintClass);
+
+	public String getEdgeToNodeLabel(AotNode edgeSpec);
+
+	// TODO more to come...
 
 }
