@@ -67,7 +67,6 @@ public class ModelMaker implements Modelable {
 	}
 
 	private void onProjectOpened() {
-		graphValid = validateGraph();
 		controller.onProjectOpened(layoutGraph, graphValid);
 	}
 
