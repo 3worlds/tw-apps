@@ -42,11 +42,11 @@ import au.edu.anu.twapps.structureEditor.Specifications;
 import au.edu.anu.twapps.structureEditor.StructureEditable;
 import javafx.util.Pair;
 
-public abstract class StructureEditorAdapter
+public  abstract class StructureEditorAdapter
 		implements StructureEditable, GraphVisualisationConstants, ArchetypeConstants {
 	protected Specifications specifications;
 	protected SpecifiableNode targetNode;
-	private AotNode newChild;
+	protected AotNode newChild;
 	protected AotNode nodeSpec;
 
 	public StructureEditorAdapter(SpecifiableNode targetNode) {
@@ -102,4 +102,8 @@ public abstract class StructureEditorAdapter
 	protected boolean haveSpecification() {
 		return nodeSpec != null;
 	}
+
+	
+
+
 }

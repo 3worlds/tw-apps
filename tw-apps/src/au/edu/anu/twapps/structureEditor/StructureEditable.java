@@ -61,6 +61,8 @@ public interface StructureEditable {
 	public List<Pair<String, AotNode>> newEdgeList(Iterable<AotNode> edgeSpecs);
 
 	public List<AotNode> orphanedChildList(Iterable<AotNode> childSpecs);
+	
+	public String promptForNewNode(String label,String promptName);
 
 	public void buildgui();
 

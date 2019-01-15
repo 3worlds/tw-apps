@@ -57,6 +57,18 @@ public interface SpecifiableNode {
 	public String getLabel();
 
 	public List<AotNode> graphRoots();
+
+	public boolean haschildren();
+
+	public boolean hasOutEdges();
+
+	public boolean isLeaf();
+
+	public boolean isCollapsed();
+
+	public String getUniqueName(String label, String def);
+
+	public AotNode newChild(AotNode specs, String label, String name);
 	
 	//public void addProperty(String key, Object defaultValue);
 

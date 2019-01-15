@@ -36,6 +36,7 @@ import au.edu.anu.rscs.aot.graph.AotNode;
 import au.edu.anu.rscs.aot.util.IntegerRange;
 import au.edu.anu.twapps.structureEditor.SpecifiableNode;
 import fr.cnrs.iees.twcore.constants.Configuration;
+import javafx.util.Pair;
 
 public class SpecifiedNode implements SpecifiableNode, Configuration {
 	private AotNode visualNode;
@@ -84,6 +85,88 @@ public class SpecifiedNode implements SpecifiableNode, Configuration {
 		for (AotNode root : visualNode.treeNodeFactory().roots())
 			result.add(root);
 		return result;
+	}
+
+	@Override
+	public boolean haschildren() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean hasOutEdges() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isLeaf() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isCollapsed() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	// This can go in omghtk in some form;
+	@Override
+	public String getUniqueName(String label, String name) {
+		AotNode n = getConfigNode();
+		Iterable<AotNode> nodes = n.graphElementFactory().findNodesByReference(label+AotNode.LABEL_NAME_SEPARATOR+name);
+		if (!nodes.iterator().hasNext())
+				return name;
+		else {
+			Pair<String,Integer> nameInstance = parseName(name);
+			int count = nameInstance.getValue()+1;
+			name = nameInstance.getKey()+count;
+			return getUniqueName(label,name);
+		}
+	}
+	private static Pair<String,Integer> parseName(String name){
+		int idx = getCountStartIndex(name);
+		// all numbers or no numbers
+		//no numbers
+		if (idx<0)
+			return new Pair<>(name,0);
+		// all numbers
+		if (idx==0)
+			return new Pair<String, Integer>(name+"_", 0);
+		// ends with some numbers
+		String key = name.substring(0, idx);
+		String sCount = name.substring(idx, name.length());
+		int count = Integer.parseInt(sCount);
+		return new Pair<>(key, count);
+	}
+	
+	private static int getCountStartIndex(String name) {
+		int result = -1;
+		for (int i = name.length() - 1; i >= 0; i--) {
+			String s = name.substring(i, i + 1);
+			try {
+				Integer x = Integer.parseInt(s);
+				result = i;
+			} catch (NumberFormatException e) {
+				return result;
+			}
+		}
+		return result;
+
+	}
+
+	@Override
+	public AotNode newChild(AotNode specs, String label, String name) {
+		AotNode configParent = getConfigNode();
+		AotNode configChild = configParent.graphElementFactory().makeTreeNode(configParent);
+		configChild.setLabel(label);
+		configChild.setName(name);
+		
+		AotNode  childVisualNode = visualNode.graphElementFactory().makeTreeNode(visualNode);
+		// TODO link the two
+		
+		return childVisualNode;
 	}
 
 
