@@ -115,7 +115,7 @@ public class SpecifiedNode implements SpecifiableNode, Configuration {
 	@Override
 	public String getUniqueName(String label, String name) {
 		AotNode n = getConfigNode();
-		Iterable<AotNode> nodes = n.graphElementFactory().findNodesByReference(label+AotNode.LABEL_NAME_SEPARATOR+name);
+		Iterable<AotNode> nodes = n.nodeFactory().findNodesByReference(label+AotNode.LABEL_NAME_SEPARATOR+name);
 		if (!nodes.iterator().hasNext())
 				return name;
 		else {
@@ -159,11 +159,11 @@ public class SpecifiedNode implements SpecifiableNode, Configuration {
 	@Override
 	public AotNode newChild(AotNode specs, String label, String name) {
 		AotNode configParent = getConfigNode();
-		AotNode configChild = configParent.graphElementFactory().makeTreeNode(configParent);
+		AotNode configChild = configParent.nodeFactory().makeTreeNode(configParent);
 		configChild.setLabel(label);
 		configChild.setName(name);
 		
-		AotNode  childVisualNode = visualNode.graphElementFactory().makeTreeNode(visualNode);
+		AotNode  childVisualNode = visualNode.nodeFactory().makeTreeNode(visualNode);
 		// TODO link the two
 		
 		return childVisualNode;
