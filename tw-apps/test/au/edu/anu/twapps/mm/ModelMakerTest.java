@@ -29,63 +29,19 @@
 
 package au.edu.anu.twapps.mm;
 
-import au.edu.anu.twcore.project.Project;
-import javafx.application.Platform;
-import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Author Ian Davies
- *
- * Date 14 Dec. 2018
- */
-public class GraphState {
-	private static boolean hasChanged = false;
-	private static StringProperty propertyTitle;
-	private static StringProperty propertyJavaPath;
+import org.junit.jupiter.api.Test;
 
-	public static boolean hasChanged() {
-		return hasChanged;
-	}
+import au.edu.anu.twapps.dialogs.Dialogs;
 
-	public static void setTitleProperty(StringProperty tp, StringProperty pp) {
-		propertyTitle = tp;
-		propertyJavaPath = pp;
-		if (propertyJavaPath != null)
-			propertyJavaPath.addListener(new ChangeListener<String>() {
+class ModelMakerTest {
 
-				@Override
-				public void changed(@SuppressWarnings("rawtypes") ObservableValue observable, String oldValue, String newValue) {
-					setTitle();
-				}
-			});
-		setTitle();
-	}
-
-	private static void setTitle() {
-		Platform.runLater(() -> {
-			String title = null;
-			if (Project.isOpen()) {
-				title = Project.getDisplayName();
-				if (hasChanged)
-					title = "*" + title;
-				if (propertyTitle != null) {
-					if (propertyJavaPath != null) {
-						if (!propertyJavaPath.get().equals("")) {
-							title = title + "<o-o-o>" + propertyJavaPath.get();
-						}
-					}
-					propertyTitle.setValue(title);
-				}
-			}
-		});
-
-	}
-
-	public static void isChanged(boolean b) {
-		hasChanged = b;
-		//setTitle();		
+	@Test
+	void test() {
+		Dialogs.initialise(new MockDialogs());
+		MockController c = new MockController();
+		c.handleNewProject();
 	}
 
 }

@@ -29,63 +29,43 @@
 
 package au.edu.anu.twapps.mm;
 
-import au.edu.anu.twcore.project.Project;
-import javafx.application.Platform;
-import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import au.edu.anu.twapps.mm.visualGraph.VisualGraph;
+import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 
-/**
- * Author Ian Davies
- *
- * Date 14 Dec. 2018
- */
-public class GraphState {
-	private static boolean hasChanged = false;
-	private static StringProperty propertyTitle;
-	private static StringProperty propertyJavaPath;
-
-	public static boolean hasChanged() {
-		return hasChanged;
+public class MockController implements Controllable{
+	private Modelable model;
+	public MockController() {
+		model = new ModelMaker(this);
 	}
 
-	public static void setTitleProperty(StringProperty tp, StringProperty pp) {
-		propertyTitle = tp;
-		propertyJavaPath = pp;
-		if (propertyJavaPath != null)
-			propertyJavaPath.addListener(new ChangeListener<String>() {
-
-				@Override
-				public void changed(@SuppressWarnings("rawtypes") ObservableValue observable, String oldValue, String newValue) {
-					setTitle();
-				}
-			});
-		setTitle();
+	@Override
+	public void onProjectClosing(VisualGraph layoutGraph) {
+		System.out.println("onProjectClosing"+layoutGraph.toString());		
 	}
 
-	private static void setTitle() {
-		Platform.runLater(() -> {
-			String title = null;
-			if (Project.isOpen()) {
-				title = Project.getDisplayName();
-				if (hasChanged)
-					title = "*" + title;
-				if (propertyTitle != null) {
-					if (propertyJavaPath != null) {
-						if (!propertyJavaPath.get().equals("")) {
-							title = title + "<o-o-o>" + propertyJavaPath.get();
-						}
-					}
-					propertyTitle.setValue(title);
-				}
-			}
-		});
-
+	@Override
+	public void onProjectOpened(VisualGraph layoutGraph) {
+		System.out.println("onProjectOpened: "+layoutGraph.size());	
+		for (VisualNode n : layoutGraph.nodes()) {
+			System.out.println(n.toString());
+			System.out.println(n.getConfigNode().toString());
+		}
 	}
 
-	public static void isChanged(boolean b) {
-		hasChanged = b;
-		//setTitle();		
+	@Override
+	public void onStartWaiting() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onEndWaiting() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	public void handleNewProject() {
+		model.doNewProject();
 	}
 
 }

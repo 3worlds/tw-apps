@@ -29,63 +29,41 @@
 
 package au.edu.anu.twapps.mm;
 
-import au.edu.anu.twcore.project.Project;
-import javafx.application.Platform;
-import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import java.io.File;
 
-/**
- * Author Ian Davies
- *
- * Date 14 Dec. 2018
- */
-public class GraphState {
-	private static boolean hasChanged = false;
-	private static StringProperty propertyTitle;
-	private static StringProperty propertyJavaPath;
+import au.edu.anu.twapps.dialogs.Dialogable;
+import au.edu.anu.twapps.dialogs.YesNoCancel;
 
-	public static boolean hasChanged() {
-		return hasChanged;
+public class MockDialogs implements Dialogable{
+
+	@Override
+	public void errorAlert(String title, String header, String content) {
+		// TODO Auto-generated method stub
+		
 	}
 
-	public static void setTitleProperty(StringProperty tp, StringProperty pp) {
-		propertyTitle = tp;
-		propertyJavaPath = pp;
-		if (propertyJavaPath != null)
-			propertyJavaPath.addListener(new ChangeListener<String>() {
-
-				@Override
-				public void changed(@SuppressWarnings("rawtypes") ObservableValue observable, String oldValue, String newValue) {
-					setTitle();
-				}
-			});
-		setTitle();
+	@Override
+	public File selectDirectory(String title, String currentPath) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
-	private static void setTitle() {
-		Platform.runLater(() -> {
-			String title = null;
-			if (Project.isOpen()) {
-				title = Project.getDisplayName();
-				if (hasChanged)
-					title = "*" + title;
-				if (propertyTitle != null) {
-					if (propertyJavaPath != null) {
-						if (!propertyJavaPath.get().equals("")) {
-							title = title + "<o-o-o>" + propertyJavaPath.get();
-						}
-					}
-					propertyTitle.setValue(title);
-				}
-			}
-		});
-
+	@Override
+	public YesNoCancel yesNoCancel(String title, String header, String content) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
-	public static void isChanged(boolean b) {
-		hasChanged = b;
-		//setTitle();		
+	@Override
+	public String getText(String title, String header, String content, String prompt) {
+		// TODO Auto-generated method stub
+		return "getText";
+	}
+
+	@Override
+	public File getExternalProjectFile() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -29,7 +29,7 @@
 
 package au.edu.anu.twapps.mm;
 
-import au.edu.anu.rscs.aot.graph.AotGraph;
+import au.edu.anu.twapps.mm.visualGraph.VisualGraph;
 
 /**
  * Author Ian Davies
@@ -40,9 +40,9 @@ import au.edu.anu.rscs.aot.graph.AotGraph;
 // ModelMaker HAS one of these
 // Controller IS one of these: Controller implements
 public interface Controllable {
-	public void onProjectClosing(AotGraph layoutGraph);
+	public void onProjectClosing(VisualGraph layoutGraph);
 
-	public void onProjectOpened(AotGraph layoutGraph, boolean valid);
+	public void onProjectOpened(VisualGraph layoutGraph);
 
 	public void onStartWaiting();
 

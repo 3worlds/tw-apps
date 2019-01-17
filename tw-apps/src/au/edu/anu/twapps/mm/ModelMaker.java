@@ -30,15 +30,17 @@
 package au.edu.anu.twapps.mm;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import au.edu.anu.rscs.aot.graph.AotGraph;
+import au.edu.anu.rscs.aot.graph.AotNode;
 import au.edu.anu.twapps.dialogs.Dialogs;
 import au.edu.anu.twapps.graphviz.GraphVisualisation;
-import au.edu.anu.twcore.errorMessaging.archetype.ArchComplianceManager;
-import au.edu.anu.twcore.errorMessaging.codeGenerator.CodeComplianceManager;
-import au.edu.anu.twcore.errorMessaging.deploy.DeployComplianceManager;
+import au.edu.anu.twapps.mm.visualGraph.VisualGraph;
+import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import au.edu.anu.twcore.project.Project;
 import fr.cnrs.iees.io.FileImporter;
+import fr.cnrs.iees.twcore.constants.Configuration;
 
 /**
  * Author Ian Davies
@@ -46,20 +48,14 @@ import fr.cnrs.iees.io.FileImporter;
  * Date 10 Dec. 2018
  */
 public class ModelMaker implements Modelable {
-	// not really a listener but rather an
-	// Inteface to controller
+	// Interface supplied to the controller
 	private AotGraph currentGraph;
-	private AotGraph layoutGraph;
+	private VisualGraph layoutGraph;
 	private Controllable controller;
-	private boolean graphValid;
 
 	public ModelMaker(Controllable controller) {
 		this.controller = controller;
-		graphValid = false;
 	}
-
-
-
 
 	private void onProjectClosing() {
 		controller.onProjectClosing(layoutGraph);
@@ -67,7 +63,7 @@ public class ModelMaker implements Modelable {
 	}
 
 	private void onProjectOpened() {
-		controller.onProjectOpened(layoutGraph, graphValid);
+		controller.onProjectOpened(layoutGraph);
 	}
 
 	@Override
@@ -95,33 +91,6 @@ public class ModelMaker implements Modelable {
 
 	}
 
-//	@Override
-//	public void onMouseClicked(double x, double y, double w, double h) {
-
-		// TODO this does not belong here as runlater is a javafx method.
-		// This means a lot of code in modelMakerModel must be factored elsewhere.
-//		if (placing) {
-//			Platform.runLater(() -> {
-//				AotNode n = popupEditor.locate(event, pane.getWidth(), pane.getHeight());
-//				VisualNode.insertCircle(n, controller.childLinksProperty(), controller.xLinksProperty(), pane, this);
-//				// add parent edge. There must be one in this circumstance
-//				AotEdge inEdge = (AotEdge) get(n.getEdges(Direction.IN), selectOne(hasTheLabel(Trees.CHILD_LABEL)));
-//				VisualNode.createChildLine(inEdge, controller.childLinksProperty(), pane);
-//				popupEditor = null;
-//				placing = false;
-//				pane.setCursor(Cursor.DEFAULT);
-//				reBuildAllElementsPropertySheet();
-//				checkGraph();
-//			});
-//		}
-
-//	}
-
-//	@Override
-//	public void onMouseMoved(double x, double y, double w, double h) {
-//		// TODO Auto-generated method stub
-//
-//	}
 
 	@Override
 	public void doLayout() {
@@ -147,10 +116,24 @@ public class ModelMaker implements Modelable {
 			Project.close();
 		}
 		name = Project.create(name);
-		currentGraph = (AotGraph) Project.newConfiguration();
-		layoutGraph = (AotGraph) GraphVisualisation.initialiseLayout(Project.newLayout());
+		currentGraph = new AotGraph(new ArrayList<AotNode>());
+		currentGraph.makeTreeNode(null, Configuration.N_ROOT, name);
+		layoutGraph = new VisualGraph(new ArrayList<VisualNode>());
+		layoutGraph.makeTreeNode(null, Configuration.N_ROOT, name);
+		
+//		layoutGraph = new VisualGraph(new ArrayList<VisualNode>());
+//		layoutGraph.makeNode(Configuration.N_ROOT,name);
+//		//layoutGraph = (VisualGraph) GraphVisualisation.initialiseLayout(Project.newLayout());
+		connectConfigToVisual();	
 		onProjectOpened();
 		doSave();
+	}
+	
+	private void connectConfigToVisual() {
+		for (VisualNode vn : layoutGraph.nodes()) {
+			AotNode n = currentGraph.findNodeByReference(vn.getLabel()+":"+vn.getName());
+			vn.setConfigNode(n);
+		}
 	}
 
 	@Override
@@ -163,14 +146,16 @@ public class ModelMaker implements Modelable {
 			onProjectClosing();
 		Project.open(file);
 		currentGraph = (AotGraph) FileImporter.loadGraphFromFile(Project.makeConfigurationFile());
-		layoutGraph = (AotGraph) FileImporter.loadGraphFromFile(Project.makeLayoutFile());
-		GraphVisualisation.linkGraphs(currentGraph, layoutGraph);
+		layoutGraph = (VisualGraph) FileImporter.loadGraphFromFile(Project.makeLayoutFile());
+		connectConfigToVisual();
+		//GraphVisualisation.linkGraphs(currentGraph, layoutGraph);
 		onProjectOpened();
 		controller.onEndWaiting();
 	}
 
 	@Override
 	public void doSave() {
+		
 		GraphState.isChanged(false);
 
 	}
