@@ -23,21 +23,15 @@ import fr.cnrs.iees.tree.TreeNode;
 import fr.cnrs.iees.tree.TreeNodeFactory;
 
 public class VisualGraph
-		implements Tree<VisualNode>, Graph<VisualNode, VisualEdge>, NodeFactory, EdgeFactory, TreeNodeFactory {
+		implements VisualKeys,Tree<VisualNode>, Graph<VisualNode, VisualEdge>, NodeFactory, EdgeFactory, TreeNodeFactory {
 	// This is a massive duplication of code simply because AotNode and Edge
 	// properties are created by their constructors
 	// Better wouild be VisualGraph implements Tree<AotNode>, Graph<AotNode,AotEdge> etc
 	private Set<VisualNode> nodes;
 	private VisualNode root;
 	private PropertyKeys nodeKeys;
-	private final static String vnx = "x";
-	private final static String vny = "y";
-	private final static String vnText = "text";
-	private final static String vnSymbol = "symbol";
 
 	private PropertyKeys edgeKeys;
-	private final static String veText = "text";
-	private final static String veSymbol = "symbol";
 
 	public VisualGraph(Iterable<VisualNode> list) {
 		super();
