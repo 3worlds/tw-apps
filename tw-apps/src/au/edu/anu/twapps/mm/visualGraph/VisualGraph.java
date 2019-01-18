@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import au.edu.anu.rscs.aot.collections.QuickListOfLists;
+import au.edu.anu.rscs.aot.graph.AotNode;
 import au.edu.anu.rscs.aot.graph.property.PropertyKeys;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
@@ -130,10 +131,24 @@ public class VisualGraph
 		return 0;
 	}
 
+	private VisualNode findRoot() {
+		Iterable<VisualNode> roots = roots();
+		int count = 0;
+		VisualNode result = null;
+		for (VisualNode n : roots) {
+			result = n;
+			count++;
+			if (count > 1)
+				return null;
+		}
+		return result;
+	}
+
 	@Override
 	public VisualNode root() {
-		// TODO Auto-generated method stub
-		return null;
+		if (root==null)
+			root = findRoot();
+		return root;
 	}
 
 	@Override

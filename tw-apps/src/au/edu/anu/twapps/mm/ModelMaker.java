@@ -40,6 +40,7 @@ import au.edu.anu.twapps.dialogs.Dialogs;
 import au.edu.anu.twapps.exceptions.TwAppsException;
 import au.edu.anu.twapps.graphviz.GraphVisualisation;
 import au.edu.anu.twapps.mm.visualGraph.VisualGraph;
+import au.edu.anu.twapps.mm.visualGraph.VisualGraphExporter;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import au.edu.anu.twcore.project.Project;
 import fr.cnrs.iees.Identifiable;
@@ -159,11 +160,8 @@ public class ModelMaker implements Modelable {
 
 	@Override
 	public void doSave() {
-		GraphExporter exporter;
-		exporter = new AotGraphExporter(Project.makeConfigurationFile());
-		exporter.exportGraph(currentGraph);
-		exporter = new AotGraphExporter(Project.makeLayoutFile());
-		exporter.exportGraph(layoutGraph);
+		new AotGraphExporter(Project.makeConfigurationFile()).exportGraph(currentGraph);
+		VisualGraphExporter.saveGraphToFile(Project.makeLayoutFile(),layoutGraph);
 		GraphState.isChanged(false);
 	}
 

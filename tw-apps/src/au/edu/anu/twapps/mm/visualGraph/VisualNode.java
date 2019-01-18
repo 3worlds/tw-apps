@@ -137,27 +137,26 @@ public class VisualNode extends SimpleNodeImpl implements TreeNode, SimpleProper
 	}
 
 	@Override
-	public void addChild(TreeNode arg0) {
-		// TODO Auto-generated method stub
+	public void addChild(TreeNode child) {
+		treenode.addChild(child);
 
 	}
 
 	@Override
 	public Iterable<TreeNode> getChildren() {
-		// TODO Auto-generated method stub
-		return null;
+		return treenode.getChildren();
 	}
 
 	@Override
 	public TreeNode getParent() {
 		// TODO Auto-generated method stub
-		return null;
+		return treenode.getParent();
 	}
 
 	@Override
 	public boolean hasChildren() {
 		// TODO Auto-generated method stub
-		return false;
+		return treenode.hasChildren();
 	}
 
 	@Override
