@@ -46,8 +46,6 @@ public interface Modelable {
 	public void doSetJavaProject();
 	public void doOpenProject(File file);
 	public void doMenuExit();
-//	public void onMouseClicked(double x, double y, double w,double h);
-//	public void onMouseMoved(double x, double y, double w, double h);
 	public void doLayout();
 	public void doDeploy();
 	public void doNewProject();

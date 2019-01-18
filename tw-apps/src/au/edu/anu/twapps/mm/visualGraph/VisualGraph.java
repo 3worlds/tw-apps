@@ -6,10 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import au.edu.anu.rscs.aot.AotException;
 import au.edu.anu.rscs.aot.collections.QuickListOfLists;
-import au.edu.anu.rscs.aot.graph.AotEdge;
-import au.edu.anu.rscs.aot.graph.AotNode;
 import au.edu.anu.rscs.aot.graph.property.PropertyKeys;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
@@ -26,13 +23,15 @@ import fr.cnrs.iees.tree.TreeNodeFactory;
 
 public class VisualGraph
 		implements Tree<VisualNode>, Graph<VisualNode, VisualEdge>, NodeFactory, EdgeFactory, TreeNodeFactory {
-
+	// This is a massive duplication of code simply because AotNode and Edge
+	// properties are created by their constructors
+	// Better wouild be VisualGraph implements Tree<AotNode>, Graph<AotNode,AotEdge> etc
 	private Set<VisualNode> nodes;
 	private VisualNode root;
 	private PropertyKeys nodeKeys;
 	private final static String vnx = "x";
 	private final static String vny = "y";
-	private final static String vnLabel = "label";
+	private final static String vnText = "text";
 	private final static String vnSymbol = "symbol";
 
 	private PropertyKeys edgeKeys;
@@ -43,7 +42,7 @@ public class VisualGraph
 		super();
 		this.nodes = new HashSet<VisualNode>();
 		this.root = null;
-		this.nodeKeys = new PropertyKeys(vnx, vny, vnLabel, vnSymbol);
+		this.nodeKeys = new PropertyKeys(vnx, vny, vnText, vnSymbol);
 		this.edgeKeys = new PropertyKeys(veText, veSymbol);
 		for (VisualNode n : list)
 			nodes.add(n);
@@ -146,7 +145,7 @@ public class VisualGraph
 	public VisualNode makeTreeNode(TreeNode parent, String label, String name, SimplePropertyList props) {
 		VisualNode node = new VisualNode(label, name, new SharedPropertyListImpl(nodeKeys), this);
 		if (!nodes.add(node)) {
-//			log.warning(()->"Duplicate Node insertion: "+node.toDetailedString());
+			// log.warning(()->"Duplicate Node insertion: "+node.toDetailedString());
 			return null;
 		} else {
 			node.setParent(parent);

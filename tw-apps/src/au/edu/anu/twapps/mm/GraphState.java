@@ -31,6 +31,9 @@ package au.edu.anu.twapps.mm;
 
 import au.edu.anu.twcore.project.Project;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -41,12 +44,13 @@ import javafx.beans.value.ObservableValue;
  * Date 14 Dec. 2018
  */
 public class GraphState {
-	private static boolean hasChanged = false;
-	private static StringProperty propertyTitle;
-	private static StringProperty propertyJavaPath;
+//	private static boolean hasChanged = false;
+	private static BooleanProperty propertyHasChanged = new SimpleBooleanProperty(false);
+	private static StringProperty propertyTitle = new SimpleStringProperty("");
+	private static StringProperty propertyJavaPath= new SimpleStringProperty("");
 
 	public static boolean hasChanged() {
-		return hasChanged;
+		return propertyHasChanged.getValue();
 	}
 
 	public static void setTitleProperty(StringProperty tp, StringProperty pp) {
@@ -56,7 +60,8 @@ public class GraphState {
 			propertyJavaPath.addListener(new ChangeListener<String>() {
 
 				@Override
-				public void changed(@SuppressWarnings("rawtypes") ObservableValue observable, String oldValue, String newValue) {
+				public void changed(@SuppressWarnings("rawtypes") ObservableValue observable, String oldValue,
+						String newValue) {
 					setTitle();
 				}
 			});
@@ -64,11 +69,11 @@ public class GraphState {
 	}
 
 	private static void setTitle() {
-		Platform.runLater(() -> {
+//		Platform.runLater(() -> {
 			String title = null;
 			if (Project.isOpen()) {
 				title = Project.getDisplayName();
-				if (hasChanged)
+				if (hasChanged())
 					title = "*" + title;
 				if (propertyTitle != null) {
 					if (propertyJavaPath != null) {
@@ -79,13 +84,15 @@ public class GraphState {
 					propertyTitle.setValue(title);
 				}
 			}
-		});
+//		});
 
 	}
 
 	public static void isChanged(boolean b) {
-		hasChanged = b;
-		//setTitle();		
+		// TODO Need a BooleanProperty with listeners but there is a circularity problem
+		// with StringProperties
+		propertyHasChanged.set(b);
+		setTitle();
 	}
 
 }

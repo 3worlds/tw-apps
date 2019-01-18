@@ -31,14 +31,19 @@ package au.edu.anu.twapps.mm;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import au.edu.anu.rscs.aot.graph.AotGraph;
 import au.edu.anu.rscs.aot.graph.AotNode;
+import au.edu.anu.rscs.aot.graph.io.AotGraphExporter;
 import au.edu.anu.twapps.dialogs.Dialogs;
+import au.edu.anu.twapps.exceptions.TwAppsException;
 import au.edu.anu.twapps.graphviz.GraphVisualisation;
 import au.edu.anu.twapps.mm.visualGraph.VisualGraph;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import au.edu.anu.twcore.project.Project;
+import fr.cnrs.iees.Identifiable;
+import fr.cnrs.iees.graph.io.GraphExporter;
 import fr.cnrs.iees.io.FileImporter;
 import fr.cnrs.iees.twcore.constants.Configuration;
 
@@ -120,10 +125,6 @@ public class ModelMaker implements Modelable {
 		currentGraph.makeTreeNode(null, Configuration.N_ROOT, name);
 		layoutGraph = new VisualGraph(new ArrayList<VisualNode>());
 		layoutGraph.makeTreeNode(null, Configuration.N_ROOT, name);
-		
-//		layoutGraph = new VisualGraph(new ArrayList<VisualNode>());
-//		layoutGraph.makeNode(Configuration.N_ROOT,name);
-//		//layoutGraph = (VisualGraph) GraphVisualisation.initialiseLayout(Project.newLayout());
 		connectConfigToVisual();	
 		onProjectOpened();
 		doSave();
@@ -131,7 +132,10 @@ public class ModelMaker implements Modelable {
 	
 	private void connectConfigToVisual() {
 		for (VisualNode vn : layoutGraph.nodes()) {
-			AotNode n = currentGraph.findNodeByReference(vn.getLabel()+":"+vn.getName());
+			String ref = vn.getLabel()+Identifiable.LABEL_NAME_SEPARATOR+vn.getName();
+			AotNode n = currentGraph.findNodeByReference(ref);
+			if (n==null)
+				throw new TwAppsException("Unable to find "+ref+ " in currentGraph");
 			vn.setConfigNode(n);
 		}
 	}
@@ -155,9 +159,12 @@ public class ModelMaker implements Modelable {
 
 	@Override
 	public void doSave() {
-		
+		GraphExporter exporter;
+		exporter = new AotGraphExporter(Project.makeConfigurationFile());
+		exporter.exportGraph(currentGraph);
+		exporter = new AotGraphExporter(Project.makeLayoutFile());
+		exporter.exportGraph(layoutGraph);
 		GraphState.isChanged(false);
-
 	}
 
 	@Override
