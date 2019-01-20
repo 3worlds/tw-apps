@@ -46,9 +46,9 @@ public class EdgeExtendableProperties extends EdgeNamedAndLabelled implements Ex
 
 	private ExtendablePropertyList properties;
 
-	protected EdgeExtendableProperties(Node start, Node end, String label, String name, ExtendablePropertyList properites,EdgeFactory factory) {
+	protected EdgeExtendableProperties(Node start, Node end, String label, String name, ExtendablePropertyList prop,EdgeFactory factory) {
 		super(start, end, label, name, factory);
-		this.properties=properties;
+		this.properties=prop;
 	}
 
 	@Override

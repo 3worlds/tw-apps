@@ -30,7 +30,6 @@
 package au.edu.anu.twapps.mm;
 
 import au.edu.anu.twcore.project.Project;
-import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;

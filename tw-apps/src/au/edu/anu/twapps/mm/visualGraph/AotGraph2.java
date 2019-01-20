@@ -32,16 +32,13 @@ package au.edu.anu.twapps.mm.visualGraph;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import au.edu.anu.rscs.aot.AotException;
 import au.edu.anu.rscs.aot.collections.QuickListOfLists;
-import au.edu.anu.rscs.aot.graph.AotNode;
 import au.edu.anu.rscs.aot.graph.ConfigurableGraph;
 import au.edu.anu.rscs.aot.graph.NodeExceptionList;
-import au.edu.anu.rscs.aot.graph.NodeInitialiser;
 import au.edu.anu.twapps.exceptions.TwAppsException;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
