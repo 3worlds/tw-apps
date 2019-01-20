@@ -29,6 +29,8 @@
 
 package au.edu.anu.twapps.mm;
 
+import java.io.File;
+
 import au.edu.anu.twapps.mm.visualGraph.VisualGraph;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 
@@ -66,6 +68,10 @@ public class MockController implements Controllable{
 	
 	public void handleNewProject() {
 		model.doNewProject();
+	}
+	
+	public void handleOpenProject(File file) {
+		model.doOpenProject(file);
 	}
 
 }
