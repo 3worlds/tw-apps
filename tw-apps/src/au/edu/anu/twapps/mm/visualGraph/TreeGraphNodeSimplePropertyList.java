@@ -34,18 +34,22 @@ import java.util.Set;
 import fr.cnrs.iees.graph.NodeFactory;
 import fr.cnrs.iees.properties.PropertyListSetters;
 import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.tree.TreeNode;
 
 public class TreeGraphNodeSimplePropertyList extends TreeGraphNode implements SimplePropertyList{
 	private SimplePropertyList properties;
 
-	protected TreeGraphNodeSimplePropertyList(String label, String name, NodeFactory factory) {
-		super(label, name, factory);
+	protected TreeGraphNodeSimplePropertyList(String label, String name, TreeNode treenode,NodeFactory factory) {
+		super(label, name, treenode,factory);
 	}
 
-	protected TreeGraphNodeSimplePropertyList(String label, String name, SimplePropertyList properties,
+	protected TreeGraphNodeSimplePropertyList(String label, String name,TreeNode treenode, SimplePropertyList properties,
 			NodeFactory factory) {
-		this(label, name, factory);
+		this(label, name, treenode,factory);
 		this.properties = properties;
+	}
+	protected SimplePropertyList getProperties() {
+		return properties;
 	}
 	@Override
 	public PropertyListSetters setProperty(String key, Object value) {

@@ -1,14 +1,42 @@
+/**************************************************************************
+ *  TW-APPS - Applications used by 3Worlds                                *
+ *                                                                        *
+ *  Copyright 2018: Jacques Gignoux & Ian D. Davies                       *
+ *       jacques.gignoux@upmc.fr                                          *
+ *       ian.davies@anu.edu.au                                            * 
+ *                                                                        *
+ *  TW-APPS contains ModelMaker and ModelRunner, programs used to         *
+ *  construct and run 3Worlds configuration graphs. All code herein is    *
+ *  independent of UI implementation.                                     *
+ *                                                                        *
+ **************************************************************************                                       
+ *  This file is part of TW-APPS (3Worlds applications).                  *
+ *                                                                        *
+ *  TW-APPS is free software: you can redistribute it and/or modify       *
+ *  it under the terms of the GNU General Public License as published by  *
+ *  the Free Software Foundation, either version 3 of the License, or     *
+ *  (at your option) any later version.                                   *
+ *                                                                        *
+ *  TW-APPS is distributed in the hope that it will be useful,            *
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *  GNU General Public License for more details.                          *                         
+ *                                                                        *
+ *  You should have received a copy of the GNU General Public License     *
+ *  along with TW-APPS.                                                   *
+ *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
+  **************************************************************************/
+
 package au.edu.anu.twapps.mm.visualGraph;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import au.edu.anu.rscs.aot.collections.QuickListOfLists;
-import au.edu.anu.rscs.aot.graph.AotNode;
 import au.edu.anu.rscs.aot.graph.property.PropertyKeys;
+import au.edu.anu.twapps.exceptions.TwAppsException;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.EdgeFactory;
@@ -21,69 +49,49 @@ import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
 import fr.cnrs.iees.tree.Tree;
 import fr.cnrs.iees.tree.TreeNode;
 import fr.cnrs.iees.tree.TreeNodeFactory;
+import fr.cnrs.iees.tree.impl.DefaultTreeFactory;
 
-public class VisualGraph
-		implements VisualKeys,Tree<VisualNode>, Graph<VisualNode, VisualEdge>, NodeFactory, EdgeFactory, TreeNodeFactory {
-	// This is a massive duplication of code simply because AotNode and Edge
-	// properties are created by their constructors
-	// Better wouild be VisualGraph implements Tree<AotNode>, Graph<AotNode,AotEdge> etc
+public class VisualGraph implements //
+		Graph<VisualNode, VisualEdge>, //
+		Tree<VisualNode>, //
+		NodeFactory, //
+		EdgeFactory, //
+		TreeNodeFactory, //
+		VisualKeys
+/*
+ * PropertyListFactory
+ */ {
 	private Set<VisualNode> nodes;
 	private VisualNode root;
 	private PropertyKeys nodeKeys;
-
 	private PropertyKeys edgeKeys;
 
-	public VisualGraph(Iterable<VisualNode> list) {
+	// Constructors
+	public VisualGraph() {
 		super();
-		this.nodes = new HashSet<VisualNode>();
-		this.root = null;
+		this.nodes = new HashSet<>();
 		this.nodeKeys = new PropertyKeys(vnx, vny, vnText, vnSymbol);
 		this.edgeKeys = new PropertyKeys(veText, veSymbol);
-		for (VisualNode n : list)
-			nodes.add(n);
-		if (list.iterator().hasNext())
-			root = list.iterator().next();
 	}
 
-	protected VisualGraph(PropertyKeys keys) {
-		this(new ArrayList<VisualNode>());
-	}
-
-	public VisualGraph(VisualNode root) {
-		this(new ArrayList<VisualNode>());
+	// ------------------- Tree<VisualNode2>
+	protected VisualGraph(VisualNode root) {
+		this();
 		this.root = root;
-		insertOnlyChildren(root, nodes);
+		insertChildren(root);
 	}
 
-	@Override
-	public Iterable<VisualNode> leaves() {
-		List<VisualNode> result = new ArrayList<>(nodes.size());
-		for (VisualNode n : nodes)
-			if (n.isLeaf())
-				result.add(n);
-		return result;
-	}
-
-	private void insertOnlyChildren(TreeNode parent, Collection<VisualNode> list) {
+	private void insertChildren(TreeNode parent) {
 		for (TreeNode child : parent.getChildren()) {
-			list.add((VisualNode) child);
-			insertOnlyChildren(child, list);
+			nodes.add((VisualNode) child);
+			insertChildren(child);
 		}
 	}
 
+	// ------------------Graph<VisualNode2, VisualEdge2>
 	@Override
-	public Iterable<VisualNode> nodes() {
-		return nodes;
-	}
-
-	@Override
-	public int size() {
-		return nodes.size();
-	}
-
-	@Override
-	public boolean contains(VisualNode n) {
-		return nodes.contains(n);
+	public boolean contains(VisualNode arg0) {
+		return nodes.contains(arg0);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -104,81 +112,94 @@ public class VisualGraph
 		return result;
 	}
 
+	// ------------------- Tree<VisualNode2>
 	@Override
-	public Iterable<VisualNode> findNodesByReference(String reference) {
-		List<VisualNode> found = new ArrayList<>(nodes.size()); // this may be a bad idea for big graphs
+	public Iterable<VisualNode> leaves() {
+		List<VisualNode> result = new ArrayList<>(nodes.size());
 		for (VisualNode n : nodes)
-			if (Tree.matchesReference(n, reference))
+			if (n.isLeaf())
+				result.add(n);
+		return result;
+	}
+
+	@Override
+	public Iterable<VisualNode> nodes() {
+		return nodes;
+	}
+
+	@Override
+	public int size() {
+		return nodes.size();
+	}
+
+	@Override
+	public Iterable<VisualNode> findNodesByReference(String arg0) {
+		List<VisualNode> found = new ArrayList<>(nodes.size());
+		for (VisualNode n : nodes)
+			if (Tree.matchesReference(n, arg0))
 				found.add(n);
 		return found;
 	}
 
 	@Override
 	public int maxDepth() {
-		// TODO Auto-generated method stub
-		return 0;
+		throw new TwAppsException("Method not implemented.");
 	}
 
 	@Override
 	public int minDepth() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	private VisualNode findRoot() {
-		Iterable<VisualNode> roots = roots();
-		int count = 0;
-		VisualNode result = null;
-		for (VisualNode n : roots) {
-			result = n;
-			count++;
-			if (count > 1)
-				return null;
-		}
-		return result;
+		throw new TwAppsException("Method not implemented.");
 	}
 
 	@Override
 	public VisualNode root() {
-		if (root==null)
+		if (root == null)
 			root = findRoot();
 		return root;
 	}
 
-	@Override
-	public Tree<VisualNode> subTree(VisualNode parent) {
-		return new VisualGraph(parent);
-	}
-
-	@Override
-	public VisualNode makeTreeNode(TreeNode parent, String label, String name, SimplePropertyList props) {
-		VisualNode node = new VisualNode(label, name, new SharedPropertyListImpl(nodeKeys), this);
-		if (!nodes.add(node)) {
-			// log.warning(()->"Duplicate Node insertion: "+node.toDetailedString());
-			return null;
-		} else {
-			node.setParent(parent);
-			if (parent != null)
-				parent.addChild(node);
-			return node;
-		}
-	}
-
-	@Override
-	public TreeNode makeTreeNode(TreeNode parent, String label, String name) {
-		return makeTreeNode(parent, label, name, null);
-	}
-
-	@Override
-	public Edge makeEdge(Node arg0, Node arg1, String arg2, String arg3, ReadOnlyPropertyList arg4) {
-		// TODO Auto-generated method stub
+	private VisualNode findRoot() {
+		List<VisualNode> roots = (List<VisualNode>) roots();
+		if (roots.size() == 1)
+			return roots.get(0);
 		return null;
 	}
 
 	@Override
-	public Node makeNode(String arg0, String arg1, ReadOnlyPropertyList arg2) {
-		// TODO Auto-generated method stub
-		return null;
+	public Tree<VisualNode> subTree(VisualNode arg0) {
+		return new VisualGraph(arg0);
 	}
 
+// -------------------------------NodeFactory
+	@Override
+	public Node makeNode(String label, String name, ReadOnlyPropertyList properties) {
+		throw new TwAppsException("Attempt to instantiate an VisualNode outside of the tree context.");
+	}
+
+	// -------------------------------EdgeFactory
+
+	/*
+	 * I hope we can handle null label and edge - nulls are defined as unique and
+	 * also setable. If not null they can't be later changed
+	 */
+	@Override
+	public Edge makeEdge(Node start, Node end, String label, String name, ReadOnlyPropertyList properties) {
+		if (properties == null)
+			properties = new SharedPropertyListImpl(edgeKeys);
+		return new VisualEdge(start, end, label, name, (SimplePropertyList) properties, this);
+	}
+
+	// ------------------------- TreeNodeFactory
+	@Override
+	public TreeNode makeTreeNode(TreeNode parent, String label, String name, SimplePropertyList properties) {
+		if (properties == null)
+			properties = new SharedPropertyListImpl(nodeKeys);
+		VisualNode node = new VisualNode(label, name, DefaultTreeFactory.makeSimpleTreeNode(null,this),properties, this);
+		if (!nodes.add(node))
+			throw new TwAppsException("Attempt to add duplicate node: " + node.toDetailedString());
+		node.setParent(parent);
+		if (parent != null)
+			parent.addChild(node);
+		return node;
+	}
 }

@@ -29,24 +29,14 @@
 
 package au.edu.anu.twapps.mm.visualGraph;
 
-import au.edu.anu.rscs.aot.graph.AotNode;
-import fr.cnrs.iees.graph.NodeFactory;
-import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.graph.EdgeFactory;
+import fr.cnrs.iees.graph.Node;
+import fr.cnrs.iees.properties.ExtendablePropertyList;
 
-public class VisualNode2 extends TreeGraphNodeSimplePropertyList{
-	
-	private AotNode configNode;
+public class AotEdge2 extends EdgeExtendableProperties{
 
-	protected VisualNode2(String label, String name, SimplePropertyList properties, NodeFactory factory) {
-		super(label, name, properties, factory);
+	protected AotEdge2(Node start, Node end, String label, String name, ExtendablePropertyList properites,
+			EdgeFactory factory) {
+		super(start, end, label, name, properites, factory);
 	}
-	
-	public void setConfigNode(AotNode configNode) {
-		this.configNode = configNode;
-	}
-
-	public AotNode getConfigNode() {
-		return configNode;
-	}
-
 }

@@ -39,21 +39,26 @@ import fr.cnrs.iees.properties.PropertyListSetters;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.ResizeablePropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.tree.TreeNode;
 import fr.ens.biologie.generic.Sealable;
 
 public class TreeGraphNodeExtendableProperties extends TreeGraphNode implements ExtendablePropertyList {
 
 	private ExtendablePropertyList properties;
 
-	protected TreeGraphNodeExtendableProperties(String label, String name, NodeFactory factory) {
-		super(label, name, factory);
+	protected TreeGraphNodeExtendableProperties(String label, String name, TreeNode treenode, NodeFactory factory) {
+		super(label, name, treenode, factory);
 
 	}
 
-	protected TreeGraphNodeExtendableProperties(String label, String name, ExtendablePropertyList properties,
-			NodeFactory factory) {
-		super(label, name, factory);
+	protected TreeGraphNodeExtendableProperties(String label, String name, TreeNode treenode,
+			ExtendablePropertyList properties, NodeFactory factory) {
+		super(label, name, treenode, factory);
 		this.properties = properties;
+	}
+
+	protected ResizeablePropertyList getProperties() {
+		return properties;
 	}
 
 	@Override

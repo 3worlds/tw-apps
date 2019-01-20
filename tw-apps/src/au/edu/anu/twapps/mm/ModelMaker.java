@@ -31,20 +31,16 @@ package au.edu.anu.twapps.mm;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Objects;
-
 import au.edu.anu.rscs.aot.graph.AotGraph;
 import au.edu.anu.rscs.aot.graph.AotNode;
 import au.edu.anu.rscs.aot.graph.io.AotGraphExporter;
 import au.edu.anu.twapps.dialogs.Dialogs;
 import au.edu.anu.twapps.exceptions.TwAppsException;
-import au.edu.anu.twapps.graphviz.GraphVisualisation;
 import au.edu.anu.twapps.mm.visualGraph.VisualGraph;
 import au.edu.anu.twapps.mm.visualGraph.VisualGraphExporter;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import au.edu.anu.twcore.project.Project;
 import fr.cnrs.iees.Identifiable;
-import fr.cnrs.iees.graph.io.GraphExporter;
 import fr.cnrs.iees.io.FileImporter;
 import fr.cnrs.iees.twcore.constants.Configuration;
 
@@ -124,7 +120,7 @@ public class ModelMaker implements Modelable {
 		name = Project.create(name);
 		currentGraph = new AotGraph(new ArrayList<AotNode>());
 		currentGraph.makeTreeNode(null, Configuration.N_ROOT, name);
-		layoutGraph = new VisualGraph(new ArrayList<VisualNode>());
+		layoutGraph = new VisualGraph();
 		layoutGraph.makeTreeNode(null, Configuration.N_ROOT, name);
 		connectConfigToVisual();	
 		onProjectOpened();

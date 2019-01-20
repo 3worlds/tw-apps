@@ -29,29 +29,32 @@
 
 package au.edu.anu.twapps.mm.visualGraph;
 
-import java.util.Objects;
-
 import au.edu.anu.twapps.exceptions.TwAppsException;
 import fr.ens.biologie.generic.Labelled;
 import fr.ens.biologie.generic.Named;
 import fr.ens.biologie.generic.NamedAndLabelled;
 
-public class LabelNameReference implements NamedAndLabelled{
+public class LabelNameReference implements NamedAndLabelled {
 
 	private String label;
 	private String name;
+
 	public LabelNameReference(String label, String name) {
-		this.label=label;
-		this.name=name;				
+		this.label = label;
+		this.name = name;
 	}
+
 	@Override
 	public String getName() {
 		return name;
 	}
-	
+
+		// We should return false if either or both is null - otherwise we are stuck
 	@Override
 	public boolean hasName(String name) {
-		return Objects.equals(this.name, name);
+		if (name == null || this.name == null)
+			return false;
+		return this.name.equals(name);
 	}
 
 	@Override
@@ -75,12 +78,15 @@ public class LabelNameReference implements NamedAndLabelled{
 
 	@Override
 	public boolean hasLabel(String label) {
-		return Objects.equals(this.label, label);
+		if (label == null || this.label == null)
+			return false;
+		return this.label.equals(label);
 	}
 
 	@Override
 	public boolean sameLabel(Labelled labelledItem) {
-		return hasLabel(labelledItem.getLabel());	}
+		return hasLabel(labelledItem.getLabel());
+	}
 
 	@Override
 	public Labelled setLabel(String label) {

@@ -29,119 +29,111 @@
 
 package au.edu.anu.twapps.mm.visualGraph;
 
+import java.util.List;
+import java.util.Set;
+
 import au.edu.anu.rscs.aot.graph.property.Property;
-import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.EdgeFactory;
-import fr.cnrs.iees.graph.Graph;
 import fr.cnrs.iees.graph.Node;
-import fr.cnrs.iees.graph.NodeFactory;
-import fr.cnrs.iees.properties.PropertyListFactory;
+import fr.cnrs.iees.properties.ExtendablePropertyList;
+import fr.cnrs.iees.properties.PropertyListSetters;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
+import fr.cnrs.iees.properties.ResizeablePropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
-import fr.cnrs.iees.tree.Tree;
+import fr.ens.biologie.generic.Sealable;
 
-public class VisualGraph2 implements Tree<VisualNode2>,Graph<VisualNode2, VisualEdge2>,NodeFactory,EdgeFactory,PropertyListFactory{
+public class EdgeExtendableProperties extends EdgeNamedAndLabelled implements ExtendablePropertyList {
 
-	@Override
-	public Iterable<VisualNode2> leaves() {
-		// TODO Auto-generated method stub
-		return null;
+	private ExtendablePropertyList properties;
+
+	protected EdgeExtendableProperties(Node start, Node end, String label, String name, ExtendablePropertyList properites,EdgeFactory factory) {
+		super(start, end, label, name, factory);
+		this.properties=properties;
 	}
 
 	@Override
-	public Iterable<VisualNode2> nodes() {
-		// TODO Auto-generated method stub
-		return null;
+	public SimplePropertyList clone() {
+		return properties.clone();
+	}
+
+	@Override
+	public PropertyListSetters setProperty(String arg0, Object arg1) {
+		return properties.setProperty(arg0, arg1);
+	}
+
+	@Override
+	public Set<String> getKeysAsSet() {
+		return properties.getKeysAsSet();
+	}
+
+	@Override
+	public Object getPropertyValue(String arg0) {
+		return properties.getPropertyValue(arg0);
+	}
+
+	@Override
+	public boolean hasProperty(String arg0) {
+		return properties.hasProperty(arg0);
 	}
 
 	@Override
 	public int size() {
-		// TODO Auto-generated method stub
-		return 0;
+		return properties.size();
 	}
 
 	@Override
-	public boolean contains(VisualNode2 arg0) {
-		// TODO Auto-generated method stub
-		return false;
+	public ResizeablePropertyList addProperties(List<String> arg0) {
+		return properties.addProperties(arg0);
 	}
 
 	@Override
-	public Iterable<VisualEdge2> edges() {
-		// TODO Auto-generated method stub
-		return null;
+	public ResizeablePropertyList addProperties(String... arg0) {
+		return properties.addProperties(arg0);
 	}
 
 	@Override
-	public Iterable<VisualNode2> roots() {
-		// TODO Auto-generated method stub
-		return null;
+	public ResizeablePropertyList addProperties(ReadOnlyPropertyList arg0) {
+		return properties.addProperties(arg0);
 	}
 
 	@Override
-	public Iterable<VisualNode2> findNodesByReference(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+	public ResizeablePropertyList addProperty(Property arg0) {
+		return properties.addProperty(arg0);
 	}
 
 	@Override
-	public int maxDepth() {
-		// TODO Auto-generated method stub
-		return 0;
+	public ResizeablePropertyList addProperty(String arg0) {
+		return properties.addProperty(arg0);
 	}
 
 	@Override
-	public int minDepth() {
-		// TODO Auto-generated method stub
-		return 0;
+	public ResizeablePropertyList addProperty(String arg0, Object arg1) {
+		return properties.addProperty(arg0, arg1);
 	}
 
 	@Override
-	public VisualNode2 root() {
-		// TODO Auto-generated method stub
-		return null;
+	public Object getPropertyValue(String arg0, Object arg1) {
+		return properties.getPropertyValue(arg0, arg1);
 	}
 
 	@Override
-	public Tree<VisualNode2> subTree(VisualNode2 arg0) {
-		// TODO Auto-generated method stub
-		return null;
+	public ResizeablePropertyList removeAllProperties() {
+		return properties.removeAllProperties();
 	}
 
 	@Override
-	public Node makeNode(String arg0, String arg1, ReadOnlyPropertyList arg2) {
-		// TODO Auto-generated method stub
-		return null;
+	public ResizeablePropertyList removeProperty(String arg0) {
+		return properties.removeProperty(arg0);
 	}
 
 	@Override
-	public Edge makeEdge(Node arg0, Node arg1, String arg2, String arg3, ReadOnlyPropertyList arg4) {
-		// TODO Auto-generated method stub
-		return null;
+	public boolean isSealed() {
+		return properties.isSealed();
 	}
 
 	@Override
-	public SimplePropertyList makePropertyList(Property... arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public SimplePropertyList makePropertyList(String... arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public ReadOnlyPropertyList makeReadOnlyPropertyList(Property... arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public ReadOnlyPropertyList makeReadOnlyPropertyList(String... arg0) {
-		// TODO Auto-generated method stub
-		return null;
+	public Sealable seal() {
+		return properties.seal();
 	}
 
 }

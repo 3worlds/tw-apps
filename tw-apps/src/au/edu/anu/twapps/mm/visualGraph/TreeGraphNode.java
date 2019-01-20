@@ -30,8 +30,6 @@
 package au.edu.anu.twapps.mm.visualGraph;
 
 import java.util.Collection;
-import java.util.Objects;
-
 import fr.cnrs.iees.graph.NodeFactory;
 import fr.cnrs.iees.graph.impl.SimpleNodeImpl;
 import fr.cnrs.iees.tree.TreeNode;
@@ -46,19 +44,26 @@ public class TreeGraphNode extends SimpleNodeImpl implements TreeNode, NamedAndL
 	private LabelNameReference ln;
 	
 	// -- SimpleNodeImpl
-	protected TreeGraphNode(String label, String name,NodeFactory factory) {
+	protected TreeGraphNode(String label, String name,TreeNode treenode,NodeFactory factory) {
 		super(factory);
 		ln = new LabelNameReference(label,name);
+		this.treenode = treenode;
 	}
 	
-
 //-------------------TreeNode
-	protected final TreeNode getTreeNode() {
-		return treenode;
+	@Override
+	public String instanceId() {
+		if (ln.getName()!=null)
+			return ln.getName();
+		else
+			return super.instanceId();
 	}
-
-	protected final void setTreeNode(TreeNode treenode) {
-		this.treenode = treenode;
+	@Override
+	public String classId() {
+		if (ln.getLabel()!=null)
+			return ln.getLabel();
+		else
+			return super.instanceId();
 	}
 
 	@Override

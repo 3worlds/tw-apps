@@ -38,26 +38,25 @@ public class MockDialogs implements Dialogable{
 
 	@Override
 	public void errorAlert(String title, String header, String content) {
-		// TODO Auto-generated method stub
-		
+		System.out.println("errorAlert "+title+" "+header+" "+content);		
 	}
 
 	@Override
 	public File selectDirectory(String title, String currentPath) {
 		// TODO Auto-generated method stub
-		return null;
+		return new File(currentPath);
 	}
 
 	@Override
 	public YesNoCancel yesNoCancel(String title, String header, String content) {
 		// TODO Auto-generated method stub
-		return null;
+		return YesNoCancel.yes;
 	}
 
 	@Override
 	public String getText(String title, String header, String content, String prompt) {
 		// TODO Auto-generated method stub
-		return "getText";
+		return "getText user string";
 	}
 
 	@Override

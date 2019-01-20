@@ -29,9 +29,6 @@
 
 package au.edu.anu.twapps.mm.visualGraph;
 
-import java.util.Objects;
-
-import au.edu.anu.twapps.exceptions.TwAppsException;
 import fr.cnrs.iees.graph.EdgeFactory;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.impl.SimpleEdgeImpl;
@@ -46,8 +43,24 @@ public class EdgeNamedAndLabelled extends SimpleEdgeImpl implements NamedAndLabe
 	// can't be renamed so must have this constructor
 	protected EdgeNamedAndLabelled(Node start, Node end, String label, String name, EdgeFactory factory) {
 		super(start, end, factory);
+		// all name and label == null is defined as unique
 		ln = new LabelNameReference(label,name);
 	}
+	@Override
+	public String instanceId() {
+		if (ln.getName()!=null)
+			return ln.getName();
+		else
+			return super.instanceId();
+	}
+	@Override
+	public String classId() {
+		if (ln.getLabel()!=null)
+			return ln.getLabel();
+		else
+			return super.instanceId();
+	}
+
 	@Override
 	public String getName() {
 		return ln.getName();
