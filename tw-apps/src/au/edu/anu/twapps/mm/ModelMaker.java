@@ -38,6 +38,7 @@ import au.edu.anu.twapps.dialogs.Dialogs;
 import au.edu.anu.twapps.exceptions.TwAppsException;
 import au.edu.anu.twapps.mm.visualGraph.VisualGraph;
 import au.edu.anu.twapps.mm.visualGraph.VisualGraphExporter;
+import au.edu.anu.twapps.mm.visualGraph.VisualKeys;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import au.edu.anu.twcore.project.Project;
 import fr.cnrs.iees.Identifiable;
@@ -93,7 +94,6 @@ public class ModelMaker implements Modelable {
 
 	}
 
-
 	@Override
 	public void doLayout() {
 		// TODO Auto-generated method stub
@@ -122,17 +122,18 @@ public class ModelMaker implements Modelable {
 		currentGraph.makeTreeNode(null, Configuration.N_ROOT, name);
 		layoutGraph = new VisualGraph();
 		layoutGraph.makeTreeNode(null, Configuration.N_ROOT, name);
-		connectConfigToVisual();	
+		layoutGraph.root().setPosition(0.1, 0.5);
+		connectConfigToVisual();
 		onProjectOpened();
 		doSave();
 	}
-	
+
+	//TODO deal with out nodes
 	private void connectConfigToVisual() {
 		for (VisualNode vn : layoutGraph.nodes()) {
-			String ref = vn.getLabel()+Identifiable.LABEL_NAME_SEPARATOR+vn.getName();
-			AotNode n = currentGraph.findNodeByReference(ref);
-			if (n==null)
-				throw new TwAppsException("Unable to find "+ref+ " in currentGraph");
+			AotNode n = currentGraph.findNodeByReference(vn.uniqueId());
+			if (n == null)
+				throw new TwAppsException("Unable to find " + vn.uniqueId() + " in currentGraph");
 			vn.setConfigNode(n);
 		}
 	}
@@ -149,7 +150,7 @@ public class ModelMaker implements Modelable {
 		currentGraph = (AotGraph) FileImporter.loadGraphFromFile(Project.makeConfigurationFile());
 		layoutGraph = (VisualGraph) FileImporter.loadGraphFromFile(Project.makeLayoutFile());
 		connectConfigToVisual();
-		//GraphVisualisation.linkGraphs(currentGraph, layoutGraph);
+		// GraphVisualisation.linkGraphs(currentGraph, layoutGraph);
 		onProjectOpened();
 		controller.onEndWaiting();
 	}
@@ -157,7 +158,7 @@ public class ModelMaker implements Modelable {
 	@Override
 	public void doSave() {
 		new AotGraphExporter(Project.makeConfigurationFile()).exportGraph(currentGraph);
-		VisualGraphExporter.saveGraphToFile(Project.makeLayoutFile(),layoutGraph);
+		VisualGraphExporter.saveGraphToFile(Project.makeLayoutFile(), layoutGraph);
 		GraphState.isChanged(false);
 	}
 

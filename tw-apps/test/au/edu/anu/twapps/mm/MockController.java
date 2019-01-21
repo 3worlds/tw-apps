@@ -45,6 +45,7 @@ public class MockController implements Controllable{
 
 	@Override
 	public void onProjectOpened(VisualGraph layoutGraph) {
+		// Here we would build the graph display and populate the property editors
 		System.out.println("onProjectOpened: "+layoutGraph.size());	
 		for (VisualNode n : layoutGraph.nodes()) {
 			System.out.println(n.toString());

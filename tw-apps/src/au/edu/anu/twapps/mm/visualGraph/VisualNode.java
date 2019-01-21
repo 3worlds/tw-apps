@@ -36,7 +36,7 @@ import fr.cnrs.iees.graph.NodeFactory;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.tree.TreeNode;
 
-public class VisualNode extends TreeGraphNodeSimplePropertyList {
+public class VisualNode extends TreeGraphNodeSimplePropertyList implements VisualKeys {
 
 	private AotNode configNode;
 
@@ -51,6 +51,27 @@ public class VisualNode extends TreeGraphNodeSimplePropertyList {
 
 	public AotNode getConfigNode() {
 		return configNode;
+	}
+
+	public void setX(double x) {
+		this.setProperty(vnx, x);
+	}
+
+	public void setY(double y) {
+		setProperty(vny, y);
+	}
+
+	public void setPosition(double x, double y) {
+		setX(x);
+		setY(y);
+	}
+
+	public void setSymbol(Object symbol) {
+		setProperty(vnSymbol, symbol);
+	}
+
+	public void setText(Object text) {
+		setProperty(vnText, text);
 	}
 
 	@Override
