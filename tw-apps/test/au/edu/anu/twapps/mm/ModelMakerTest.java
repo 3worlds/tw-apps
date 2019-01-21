@@ -29,19 +29,33 @@
 
 package au.edu.anu.twapps.mm;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.File;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import au.edu.anu.twapps.dialogs.Dialogs;
+import au.edu.anu.twcore.project.Project;
 
 class ModelMakerTest {
+	MockController c;
+
+	@BeforeEach
+	public void init() {
+		Dialogs.initialise(new MockDialogs());
+		c = new MockController();
+	}
 
 	@Test
-	void test() {
-		Dialogs.initialise(new MockDialogs());
-		MockController c = new MockController();
+	public void test() {
 		c.handleNewProject();
+		assertTrue(Project.makeConfigurationFile().exists());
+		assertTrue(Project.makeLayoutFile().exists());
+		File pf = Project.getProjectFile();
+		Project.close();
+		c.handleOpenProject(pf);
 	}
 
 }

@@ -29,8 +29,6 @@
 package au.edu.anu.twapps.mm.visualGraph;
 
 import static fr.cnrs.iees.io.parsing.impl.GraphTokens.COMMENT;
-import static fr.cnrs.iees.io.parsing.impl.GraphTokens.LABEL;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -40,9 +38,6 @@ import java.util.logging.Logger;
 import au.edu.anu.twcore.project.Project;
 import fr.cnrs.iees.graph.MinimalGraph;
 import fr.cnrs.iees.graph.io.impl.OmugiGraphExporter;
-import fr.cnrs.iees.properties.ReadOnlyPropertyList;
-import fr.cnrs.iees.properties.SimplePropertyList;
-import fr.cnrs.iees.tree.TreeNode;
 
 /**
  * An Exporter for aot graphs.
