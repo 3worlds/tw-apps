@@ -117,6 +117,7 @@ public class ModelMaker implements Modelable {
 			onProjectClosing();
 			Project.close();
 		}
+		System.out.println("CREATING GFUKING PROJECT");
 		name = Project.create(name);
 		currentGraph = new AotGraph(new ArrayList<AotNode>());
 		currentGraph.makeTreeNode(null, Configuration.N_ROOT, name);
