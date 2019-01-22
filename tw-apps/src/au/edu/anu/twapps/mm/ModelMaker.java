@@ -41,6 +41,8 @@ import au.edu.anu.twapps.mm.visualGraph.VisualGraphExporter;
 import au.edu.anu.twapps.mm.visualGraph.VisualKeys;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import au.edu.anu.twcore.project.Project;
+import au.edu.anu.twcore.specificationCheck.CheckImpl;
+import au.edu.anu.twcore.specificationCheck.Checkable;
 import fr.cnrs.iees.Identifiable;
 import fr.cnrs.iees.io.FileImporter;
 import fr.cnrs.iees.twcore.constants.Configuration;
@@ -50,7 +52,7 @@ import fr.cnrs.iees.twcore.constants.Configuration;
  *
  * Date 10 Dec. 2018
  */
-public class ModelMaker implements Modelable {
+public class ModelMaker  implements Modelable {
 	// Interface supplied to the controller
 	private AotGraph currentGraph;
 	private VisualGraph layoutGraph;
@@ -72,13 +74,13 @@ public class ModelMaker implements Modelable {
 
 	@Override
 	public boolean validateGraph() {
-		// run the checker and set the valid
-		return true; // TODO Auto-generated method stub
+		Checkable checker = new CheckImpl(currentGraph); 
+		return checker.validateGraph();
 
 	}
 
 	@Override
-	public void doDisconnectJavaProject() {
+	public void doClearJavaProject() {
 		// TODO Auto-generated method stub
 
 	}

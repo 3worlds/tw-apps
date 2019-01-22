@@ -31,6 +31,8 @@ package au.edu.anu.twapps.mm;
 
 import java.io.File;
 
+import au.edu.anu.twcore.specificationCheck.Checkable;
+
 /**
  * Author Ian Davies
  *
@@ -39,16 +41,15 @@ import java.io.File;
 //ModelMaker methods called by the Controller
 // The controller HAS one of these
 // ModelMaker IS on of these: ModelMaker implements
-public interface Modelable {
-	public boolean validateGraph();
+public interface Modelable extends Checkable{
 	public boolean canClose();
-	public void doDisconnectJavaProject();
+	public void doClearJavaProject();
 	public void doSetJavaProject();
+	public void doNewProject();
 	public void doOpenProject(File file);
 	public void doMenuExit();
 	public void doLayout();
 	public void doDeploy();
-	public void doNewProject();
 	public void doSave();
 	public void doSaveAs();
 	public void doImport();
