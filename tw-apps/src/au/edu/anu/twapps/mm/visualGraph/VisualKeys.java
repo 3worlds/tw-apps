@@ -29,13 +29,23 @@
 
 package au.edu.anu.twapps.mm.visualGraph;
 
+import au.edu.anu.rscs.aot.graph.property.PropertyKeys;
 
 public interface VisualKeys {
 	public final static String vnx = "x";
 	public final static String vny = "y";
 	public final static String vnText = "text";
 	public final static String vnSymbol = "symbol";
+	public final static String vnCategory = "category";
+	public default PropertyKeys getNodeKeys() {
+		return new PropertyKeys(vnx, vny, vnText, vnSymbol,vnCategory);
+	}
+	
 
 	public final static String veText = "text";
 	public final static String veSymbol = "symbol";
+	
+	public default PropertyKeys getEdgeKeys() {
+		return new PropertyKeys(veText,veSymbol);
+	}
 }

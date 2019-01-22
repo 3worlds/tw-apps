@@ -115,7 +115,7 @@ public class TreeGraphNode extends SimpleNodeImpl implements TreeNode, NamedAndL
 	}
 
 	@Override
-	public final TreeNodeFactory treeNodeFactory() {
+	public TreeNodeFactory treeNodeFactory() {
 		return treeNodeFactory();
 	}
 

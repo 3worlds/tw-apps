@@ -36,36 +36,28 @@ import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 
 public class MockController implements Controllable{
 	private Modelable model;
+	private VisualGraph graph;
 	public MockController() {
 		model = new ModelMaker(this);
 	}
 
 	@Override
-	public void onProjectClosing(VisualGraph layoutGraph) {
-		System.out.println("onProjectClosing"+layoutGraph.toString());		
+	public void onProjectClosing() {
+		System.out.println("onProjectClosing"+graph.toString());
+		graph=null;
 	}
 
 	@Override
-	public void onProjectOpened(VisualGraph layoutGraph) {
+	public void onProjectOpened(VisualGraph visualGraph) {
+		this.graph=visualGraph;
 		// Here we would build the graph display and populate the property editors
-		System.out.println("onProjectOpened: "+layoutGraph.size());	
-		for (VisualNode n : layoutGraph.nodes()) {
+		System.out.println("onProjectOpened: "+graph.size());	
+		for (VisualNode n : graph.nodes()) {
 			System.out.println(n.toString());
 			System.out.println(n.getConfigNode().toString());
 		}
 	}
 
-	@Override
-	public void onStartWaiting() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onEndWaiting() {
-		// TODO Auto-generated method stub
-		
-	}
 	
 	public void handleNewProject() {
 		model.doNewProject();

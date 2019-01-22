@@ -40,11 +40,8 @@ import au.edu.anu.twapps.mm.visualGraph.VisualGraph;
 // ModelMaker HAS one of these
 // Controller IS one of these: Controller implements
 public interface Controllable {
-	public void onProjectClosing(VisualGraph layoutGraph);
+	public void onProjectClosing();
 
 	public void onProjectOpened(VisualGraph layoutGraph);
 
-	public void onStartWaiting();
-
-	public void onEndWaiting();
 }

@@ -55,7 +55,8 @@ class ModelMakerTest {
 		assertTrue(Project.makeLayoutFile().exists());
 		File pf = Project.getProjectFile();
 		Project.close();
-		c.handleOpenProject(pf);
+		// awaiting AotGraphImporter
+		//c.handleOpenProject(pf);
 	}
 
 }

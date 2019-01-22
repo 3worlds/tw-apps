@@ -70,8 +70,8 @@ public class VisualGraph implements //
 	public VisualGraph() {
 		super();
 		this.nodes = new HashSet<>();
-		this.nodeKeys = new PropertyKeys(vnx, vny, vnText, vnSymbol);
-		this.edgeKeys = new PropertyKeys(veText, veSymbol);
+		this.nodeKeys = getNodeKeys();
+		this.edgeKeys = getEdgeKeys();
 	}
 
 	// ------------------- Tree<VisualNode2>
@@ -183,15 +183,21 @@ public class VisualGraph implements //
 	 * also setable. If not null they can't be later changed
 	 */
 	@Override
-	public Edge makeEdge(Node start, Node end, String label, String name, ReadOnlyPropertyList properties) {
+	public VisualEdge makeEdge(Node start, Node end, String label, String name, ReadOnlyPropertyList properties) {
 		if (properties == null)
 			properties = new SharedPropertyListImpl(edgeKeys);
 		return new VisualEdge(start, end, label, name, (SimplePropertyList) properties, this);
 	}
 
+
+	@Override
+	public VisualNode makeTreeNode(TreeNode parent) {
+		return makeTreeNode(parent,null,null,null);
+	}
+
 	// ------------------------- TreeNodeFactory
 	@Override
-	public TreeNode makeTreeNode(TreeNode parent, String label, String name, SimplePropertyList properties) {
+	public VisualNode makeTreeNode(TreeNode parent, String label, String name, SimplePropertyList properties) {
 		if (properties == null)
 			properties = new SharedPropertyListImpl(nodeKeys);
 		VisualNode node = new VisualNode(label, name, DefaultTreeFactory.makeSimpleTreeNode(null,this),properties, this);

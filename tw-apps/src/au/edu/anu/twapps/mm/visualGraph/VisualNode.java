@@ -30,11 +30,15 @@
 package au.edu.anu.twapps.mm.visualGraph;
 
 import au.edu.anu.rscs.aot.graph.AotNode;
+import au.edu.anu.twapps.exceptions.TwAppsException;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.NodeFactory;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.tree.TreeNode;
+import fr.cnrs.iees.tree.TreeNodeFactory;
+import javafx.scene.shape.Circle;
+import javafx.scene.text.Text;
 
 public class VisualNode extends TreeGraphNodeSimplePropertyList implements VisualKeys {
 
@@ -64,6 +68,14 @@ public class VisualNode extends TreeGraphNodeSimplePropertyList implements Visua
 	public void setPosition(double x, double y) {
 		setX(x);
 		setY(y);
+	}
+
+	public double getX() {
+		return (Double) getPropertyValue(vnx);
+	}
+
+	public double getY() {
+		return (Double) getPropertyValue(vny);
 	}
 
 	public void setSymbol(Object symbol) {
@@ -106,6 +118,35 @@ public class VisualNode extends TreeGraphNodeSimplePropertyList implements Visua
 		sb.append("]");
 		sb.append("]");
 		return sb.toString();
+	}
+
+	public void setSymbols(Object c, Object t) {
+		if (getPropertyValue(vnSymbol) != null) {
+			throw new TwAppsException("Attempt to overwrite node symbol " + uniqueId());
+		}
+		if (getPropertyValue(vnText) != null) {
+			throw new TwAppsException("Attempt to overwrite node text " + uniqueId());
+		}
+		setProperty(vnSymbol,c);
+		setProperty(vnText,t);
+	}
+
+	public String getCategory() {
+		String s = (String) getPropertyValue(vnCategory);
+		return s.split(LABEL_NAME_STR_SEPARATOR)[0];
+	}
+
+	public Object getSymbol() {
+		return getPropertyValue(vnSymbol);
+	}
+	
+	@Override 
+	public VisualGraph nodeFactory() {
+		return (VisualGraph) super.nodeFactory();
+	}
+	@Override
+	public VisualGraph treeNodeFactory() {
+		return (VisualGraph) super.treeNodeFactory();
 	}
 
 }

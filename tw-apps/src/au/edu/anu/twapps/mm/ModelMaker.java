@@ -55,13 +55,14 @@ public class ModelMaker implements Modelable {
 	private AotGraph currentGraph;
 	private VisualGraph layoutGraph;
 	private Controllable controller;
+	// Should we avoid using javafx.beans.property? - make ModelMaker a boolean change listener??
 
 	public ModelMaker(Controllable controller) {
 		this.controller = controller;
 	}
 
 	private void onProjectClosing() {
-		controller.onProjectClosing(layoutGraph);
+		controller.onProjectClosing();
 		Project.close();
 	}
 
@@ -71,7 +72,7 @@ public class ModelMaker implements Modelable {
 
 	@Override
 	public boolean validateGraph() {
-		// run the checker
+		// run the checker and set the valid
 		return true; // TODO Auto-generated method stub
 
 	}
@@ -117,7 +118,6 @@ public class ModelMaker implements Modelable {
 			onProjectClosing();
 			Project.close();
 		}
-		System.out.println("CREATING GFUKING PROJECT");
 		name = Project.create(name);
 		currentGraph = new AotGraph(new ArrayList<AotNode>());
 		currentGraph.makeTreeNode(null, Configuration.N_ROOT, name);
@@ -144,16 +144,13 @@ public class ModelMaker implements Modelable {
 		// TODO Auto-generated method stub
 		if (!canClose())
 			return;
-		controller.onStartWaiting();
 		if (Project.isOpen())
 			onProjectClosing();
 		Project.open(file);
 		currentGraph = (AotGraph) FileImporter.loadGraphFromFile(Project.makeConfigurationFile());
 		layoutGraph = (VisualGraph) FileImporter.loadGraphFromFile(Project.makeLayoutFile());
 		connectConfigToVisual();
-		// GraphVisualisation.linkGraphs(currentGraph, layoutGraph);
 		onProjectOpened();
-		controller.onEndWaiting();
 	}
 
 	@Override
