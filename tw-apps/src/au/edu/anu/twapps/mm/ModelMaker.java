@@ -57,6 +57,7 @@ public class ModelMaker  implements Modelable {
 	private AotGraph currentGraph;
 	private VisualGraph layoutGraph;
 	private Controllable controller;
+	private Checkable checker;
 	// Should we avoid using javafx.beans.property? - make ModelMaker a boolean change listener??
 
 	public ModelMaker(Controllable controller) {
@@ -65,18 +66,19 @@ public class ModelMaker  implements Modelable {
 
 	private void onProjectClosing() {
 		controller.onProjectClosing();
+		checker=null;
 		Project.close();
 	}
 
 	private void onProjectOpened() {
+		Checkable checker = new CheckImpl(currentGraph); 
 		controller.onProjectOpened(layoutGraph);
+		
 	}
 
 	@Override
 	public boolean validateGraph() {
-		Checkable checker = new CheckImpl(currentGraph); 
 		return checker.validateGraph();
-
 	}
 
 	@Override
