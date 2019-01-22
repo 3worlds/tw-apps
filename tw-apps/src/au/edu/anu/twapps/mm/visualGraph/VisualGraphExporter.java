@@ -37,7 +37,7 @@ import java.util.logging.Logger;
 import au.edu.anu.twcore.project.Project;
 import fr.cnrs.iees.graph.MinimalGraph;
 import fr.cnrs.iees.graph.io.impl.OmugiGraphExporter;
-import fr.cnrs.iees.io.parsing.impl.TreeGraphTokens;
+import static fr.cnrs.iees.io.parsing.impl.TreeGraphTokens.COMMENT;
 
 /**
  * An Exporter for aot graphs.
@@ -78,18 +78,18 @@ public class VisualGraphExporter extends OmugiGraphExporter {
 			try {
 				PrintWriter writer = new PrintWriter(file);
 				Date now = new Date();
-				writer.println("aot "+TreeGraphTokens.COMMENT.prefix()+" saved by "
+				writer.println("aot "+COMMENT.prefix()+" saved by "
 						+VisualGraphExporter.class.getSimpleName()
 						+" on "+now+"\n");
 				// 1. export tree
-				writer.print(TreeGraphTokens.COMMENT.prefix());
+				writer.print(COMMENT.prefix());
 				writer.print(' ');
 				writer.println("TREE");
 				if (g.root()!=null)
 					writeTree(g.root(),writer, 0);
 				// 2. export edge list
 				writer.println();
-				writer.print(TreeGraphTokens.COMMENT.prefix());
+				writer.print(COMMENT.prefix());
 				writer.print(' ');
 				writer.println("CROSS-LINKS");
 				exportEdges(g.edges(),writer);
