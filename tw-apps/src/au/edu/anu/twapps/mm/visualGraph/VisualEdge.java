@@ -30,11 +30,14 @@
 package au.edu.anu.twapps.mm.visualGraph;
 
 import au.edu.anu.rscs.aot.graph.AotEdge;
+import au.edu.anu.twapps.exceptions.TwAppsException;
 import fr.cnrs.iees.graph.EdgeFactory;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.properties.SimplePropertyList;
+import javafx.scene.shape.Line;
+import javafx.scene.text.Text;
 
-public class VisualEdge extends EdgeSimpleProperty {
+public class VisualEdge extends EdgeSimpleProperty implements VisualKeys{
 	private AotEdge configEdge;
 
 	protected VisualEdge(Node start, Node end, String label, String name, SimplePropertyList properties,
@@ -48,6 +51,25 @@ public class VisualEdge extends EdgeSimpleProperty {
 
 	public AotEdge getConfigEdge() {
 		return configEdge;
+	}
+	
+	public Object getText() {
+		return this.getPropertyValue(veText);
+	}
+	private void setSymbol(Object s) {
+		if (getPropertyValue(veSymbol) != null) 
+			throw new TwAppsException("Attempt to overwrite edge symbol " + uniqueId());
+		setProperty(veSymbol, s);
+	}
+	private void setText(Object t) {
+		if (getPropertyValue(veText) != null) 
+			throw new TwAppsException("Attempt to overwrite edge text " + uniqueId());
+		setProperty(veText, t);
+	}
+
+	public void setVisualElements(Object l, Text t) {
+		setSymbol(l);
+		setText(t);
 	}
 
 }

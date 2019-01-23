@@ -31,6 +31,7 @@ package au.edu.anu.twapps.mm.visualGraph;
 
 import au.edu.anu.rscs.aot.graph.AotNode;
 import au.edu.anu.twapps.exceptions.TwAppsException;
+import au.edu.anu.twcore.archetype.PrimaryTreeLabels;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.NodeFactory;
@@ -47,6 +48,7 @@ public class VisualNode extends TreeGraphNodeSimplePropertyList implements Visua
 	protected VisualNode(String label, String name, TreeNode treenode, SimplePropertyList properties,
 			NodeFactory factory) {
 		super(label, name, treenode, properties, factory);
+		setCollapse(false);
 	}
 
 	public void setConfigNode(AotNode configNode) {
@@ -78,12 +80,32 @@ public class VisualNode extends TreeGraphNodeSimplePropertyList implements Visua
 		return (Double) getPropertyValue(vny);
 	}
 
-	public void setSymbol(Object symbol) {
+	private void setSymbol(Object symbol) {
+		if (getPropertyValue(vnSymbol) != null)
+			throw new TwAppsException("Attempt to overwrite node symbol " + uniqueId());
 		setProperty(vnSymbol, symbol);
 	}
 
-	public void setText(Object text) {
+	private void setText(Object text) {
+		if (getPropertyValue(vnText) != null)
+			throw new TwAppsException("Attempt to overwrite node text " + uniqueId());
 		setProperty(vnText, text);
+	}
+
+	public void setCategory() {
+		if (PrimaryTreeLabels.contains(getLabel()))
+			setProperty(vnCategory, getLabel());
+		else
+			setCategory(getParent());
+	}
+
+	private void setCategory(VisualNode parent) {
+		if (parent != null) {
+			if (PrimaryTreeLabels.contains(parent.getLabel()))
+				setProperty(vnCategory, parent.getLabel());
+			else
+				setCategory(parent.getParent());
+		}
 	}
 
 	@Override
@@ -120,33 +142,63 @@ public class VisualNode extends TreeGraphNodeSimplePropertyList implements Visua
 		return sb.toString();
 	}
 
-	public void setSymbols(Object c, Object t) {
-		if (getPropertyValue(vnSymbol) != null) {
-			throw new TwAppsException("Attempt to overwrite node symbol " + uniqueId());
+	public void setVisualElements(Object c, Object t) {
+		setSymbol(c);
+		setText(t);
+	}
+
+	public void setParentLine(Object l) {
+		if (getPropertyValue(vnParentLine) != null) {
+			throw new TwAppsException("Attempt to overwrite line to parent symbol " + uniqueId());
 		}
-		if (getPropertyValue(vnText) != null) {
-			throw new TwAppsException("Attempt to overwrite node text " + uniqueId());
-		}
-		setProperty(vnSymbol,c);
-		setProperty(vnText,t);
+		setProperty(vnParentLine, l);
 	}
 
 	public String getCategory() {
-		String s = (String) getPropertyValue(vnCategory);
-		return s.split(LABEL_NAME_STR_SEPARATOR)[0];
+		return (String) getPropertyValue(vnCategory);
 	}
 
 	public Object getSymbol() {
 		return getPropertyValue(vnSymbol);
 	}
-	
-	@Override 
+
+	@Override
 	public VisualGraph nodeFactory() {
 		return (VisualGraph) super.nodeFactory();
 	}
+
 	@Override
 	public VisualGraph treeNodeFactory() {
 		return (VisualGraph) super.treeNodeFactory();
+	}
+
+	@Override
+	public VisualNode getParent() {
+		return (VisualNode) super.getParent();
+	}
+
+	public boolean isCollapsed() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public void setCollapse(boolean b) {
+		setProperty(vnCollapsed, b);
+	}
+
+	public boolean getCollapsed() {
+		return (Boolean) getPropertyValue(vnCollapsed);
+	}
+
+	public boolean isCollapsedParent() {
+		if (getCollapsed())
+			return false;
+		for (TreeNode n : getChildren()) {
+			if (((VisualNode) n).isCollapsed())
+				return true;
+		}
+		return false;
+
 	}
 
 }

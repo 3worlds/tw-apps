@@ -140,6 +140,7 @@ public class ModelMaker  implements Modelable {
 			if (n == null)
 				throw new TwAppsException("Unable to find " + vn.uniqueId() + " in currentGraph");
 			vn.setConfigNode(n);
+			vn.setCategory();
 		}
 	}
 

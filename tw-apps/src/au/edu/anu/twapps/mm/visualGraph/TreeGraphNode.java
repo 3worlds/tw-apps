@@ -77,7 +77,7 @@ public class TreeGraphNode extends SimpleNodeImpl implements TreeNode, NamedAndL
 	}
 
 	@Override
-	public final TreeNode getParent() {
+	public TreeNode getParent() {
 		return treenode.getParent();
 	}
 

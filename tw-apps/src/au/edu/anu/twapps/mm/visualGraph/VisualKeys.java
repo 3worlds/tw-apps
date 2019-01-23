@@ -37,8 +37,10 @@ public interface VisualKeys {
 	public final static String vnText = "text";
 	public final static String vnSymbol = "symbol";
 	public final static String vnCategory = "category";
+	public final static String vnParentLine = "parentLine";
+	public final static String vnCollapsed = "collapsed";
 	public default PropertyKeys getNodeKeys() {
-		return new PropertyKeys(vnx, vny, vnText, vnSymbol,vnCategory);
+		return new PropertyKeys(vnx, vny, vnText, vnSymbol,vnCategory,vnParentLine,vnCollapsed);
 	}
 	
 
