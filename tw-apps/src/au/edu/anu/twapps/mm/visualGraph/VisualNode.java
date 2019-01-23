@@ -174,7 +174,7 @@ public class VisualNode extends TreeGraphNodeSimplePropertyList implements Visua
 
 	@Override
 	public VisualNode getParent() {
-		return (VisualNode) super.getParent();
+		return  (VisualNode) super.getParent();
 	}
 
 	public boolean isCollapsed() {

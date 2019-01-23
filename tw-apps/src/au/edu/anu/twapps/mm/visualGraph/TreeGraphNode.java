@@ -39,28 +39,29 @@ import fr.ens.biologie.generic.Named;
 import fr.ens.biologie.generic.NamedAndLabelled;
 
 public class TreeGraphNode extends SimpleNodeImpl implements TreeNode, NamedAndLabelled {
-	
+
 	private TreeNode treenode;
 	private LabelNameReference ln;
-	
+
 	// -- SimpleNodeImpl
-	protected TreeGraphNode(String label, String name,TreeNode treenode,NodeFactory factory) {
+	protected TreeGraphNode(String label, String name, TreeNode treenode, NodeFactory factory) {
 		super(factory);
-		ln = new LabelNameReference(label,name);
+		ln = new LabelNameReference(label, name);
 		this.treenode = treenode;
 	}
-	
+
 //-------------------TreeNode
 	@Override
 	public String instanceId() {
-		if (ln.getName()!=null)
+		if (ln.getName() != null)
 			return ln.getName();
 		else
 			return super.instanceId();
 	}
+
 	@Override
 	public String classId() {
-		if (ln.getLabel()!=null)
+		if (ln.getLabel() != null)
 			return ln.getLabel();
 		else
 			return super.instanceId();
