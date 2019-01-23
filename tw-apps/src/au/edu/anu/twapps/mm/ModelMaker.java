@@ -227,4 +227,10 @@ public class ModelMaker  implements Modelable {
 		}
 	}
 
+	@Override
+	public boolean canEdit(String label, String key) {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
 }

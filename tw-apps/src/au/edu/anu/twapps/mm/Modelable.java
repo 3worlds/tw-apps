@@ -53,6 +53,7 @@ public interface Modelable extends Checkable{
 	public void doSave();
 	public void doSaveAs();
 	public void doImport();
+	public boolean canEdit(String label, String key);
 	
 	
 	
