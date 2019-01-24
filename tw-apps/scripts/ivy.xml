@@ -29,10 +29,10 @@
 	</publications>
 
 	<dependencies>
-		<dependency org="fr.ens.biologie" name="generics" rev="+"/>
-		<dependency org="au.edu.anu.rscs.aot" name="omugi" rev="+"/>
-		<dependency org="fr.cnrs.iees.tw-core" name="tw-core" rev="+"/>
-		<dependency org="au.edu.anu.rscs.aot" name="aot" rev="+"/>
+		<dependency org="fr.ens.biologie" name="generics" rev="0.0.2"/>
+		<dependency org="au.edu.anu.rscs.aot" name="omugi" rev="0.0.8"/>
+		<dependency org="fr.cnrs.iees.tw-core" name="tw-core" rev="0.0.5"/>
+		<dependency org="au.edu.anu.rscs.aot" name="aot" rev="0.0.6"/>
 		<dependency org="org.apache.commons" name="commons-text" rev="1.+"/>
 	</dependencies>
 
