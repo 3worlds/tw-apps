@@ -29,25 +29,25 @@
 
 package au.edu.anu.twapps.mm.visualGraph;
 
+import java.util.Set;
+
 import au.edu.anu.rscs.aot.graph.AotNode;
+import au.edu.anu.rscs.aot.graph.TreeGraphNode;
 import au.edu.anu.twapps.exceptions.TwAppsException;
 import au.edu.anu.twcore.archetype.PrimaryTreeLabels;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
-import fr.cnrs.iees.graph.NodeFactory;
+import fr.cnrs.iees.properties.PropertyListSetters;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.tree.TreeNode;
-import fr.cnrs.iees.tree.TreeNodeFactory;
-import javafx.scene.shape.Circle;
-import javafx.scene.text.Text;
 
-public class VisualNode extends TreeGraphNodeSimplePropertyList implements VisualKeys {
+public class VisualNode extends TreeGraphNode implements SimplePropertyList, VisualKeys {
 
 	private AotNode configNode;
 
-	protected VisualNode(String label, String name, TreeNode treenode, SimplePropertyList properties,
-			NodeFactory factory) {
-		super(label, name, treenode, properties, factory);
+	protected VisualNode(String label, String name, SimplePropertyList properties,
+			VisualGraph factory) {
+		super(label, name, factory,factory,properties);
 		setCollapse(false);
 	}
 
@@ -93,16 +93,16 @@ public class VisualNode extends TreeGraphNodeSimplePropertyList implements Visua
 	}
 
 	public void setCategory() {
-		if (PrimaryTreeLabels.contains(getLabel()))
-			setProperty(vnCategory, getLabel());
+		if (PrimaryTreeLabels.contains(classId()))
+			setProperty(vnCategory, classId());
 		else
 			setCategory(getParent());
 	}
 
 	private void setCategory(VisualNode parent) {
 		if (parent != null) {
-			if (PrimaryTreeLabels.contains(parent.getLabel()))
-				setProperty(vnCategory, parent.getLabel());
+			if (PrimaryTreeLabels.contains(parent.classId()))
+				setProperty(vnCategory, parent.classId());
 			else
 				setCategory(parent.getParent());
 		}
@@ -130,7 +130,7 @@ public class VisualNode extends TreeGraphNodeSimplePropertyList implements Visua
 				sb.append(" →").append(e.endNode().toUniqueString());
 		}
 		if (size() > 0)
-			sb.append(' ').append(getProperties().toString());
+			sb.append(' ').append(properties.toString());
 		sb.append(" [");
 		sb.append("Config: ");
 		if (getConfigNode() == null)
@@ -163,35 +163,21 @@ public class VisualNode extends TreeGraphNodeSimplePropertyList implements Visua
 	}
 
 	@Override
-	public VisualGraph nodeFactory() {
-		return (VisualGraph) super.nodeFactory();
-	}
-
-	@Override
-	public VisualGraph treeNodeFactory() {
-		return (VisualGraph) super.treeNodeFactory();
-	}
-
-	@Override
 	public VisualNode getParent() {
 		return  (VisualNode) super.getParent();
 	}
 
 	public boolean isCollapsed() {
-		// TODO Auto-generated method stub
-		return false;
+		return (Boolean) getPropertyValue(vnCollapsed);
 	}
 
 	public void setCollapse(boolean b) {
 		setProperty(vnCollapsed, b);
 	}
 
-	public boolean getCollapsed() {
-		return (Boolean) getPropertyValue(vnCollapsed);
-	}
 
 	public boolean isCollapsedParent() {
-		if (getCollapsed())
+		if (isCollapsed())
 			return false;
 		for (TreeNode n : getChildren()) {
 			if (((VisualNode) n).isCollapsed())
@@ -199,6 +185,36 @@ public class VisualNode extends TreeGraphNodeSimplePropertyList implements Visua
 		}
 		return false;
 
+	}
+
+	@Override
+	public PropertyListSetters setProperty(String key, Object value) {
+		return ((PropertyListSetters) properties).setProperty(key, value);
+	}
+
+	@Override
+	public Object getPropertyValue(String key) {
+		return properties.getPropertyValue(key);
+	}
+
+	@Override
+	public boolean hasProperty(String key) {
+		return properties.hasProperty(key);
+	}
+
+	@Override
+	public Set<String> getKeysAsSet() {
+		return properties.getKeysAsSet();
+	}
+
+	@Override
+	public int size() {
+		return properties.size();
+	}
+
+	@Override
+	public SimplePropertyList clone() {
+		return (SimplePropertyList) properties.clone();
 	}
 
 }

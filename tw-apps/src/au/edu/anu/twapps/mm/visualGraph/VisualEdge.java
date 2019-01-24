@@ -29,20 +29,26 @@
 
 package au.edu.anu.twapps.mm.visualGraph;
 
+import java.util.Set;
+
 import au.edu.anu.rscs.aot.graph.AotEdge;
 import au.edu.anu.twapps.exceptions.TwAppsException;
 import fr.cnrs.iees.graph.EdgeFactory;
 import fr.cnrs.iees.graph.Node;
+import fr.cnrs.iees.graph.impl.SimpleEdgeImpl;
+import fr.cnrs.iees.properties.PropertyListSetters;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 
-public class VisualEdge extends EdgeSimpleProperty implements VisualKeys{
+public class VisualEdge extends SimpleEdgeImpl implements SimplePropertyList,VisualKeys{
 	private AotEdge configEdge;
+	private SimplePropertyList properties;
 
-	protected VisualEdge(Node start, Node end, String label, String name, SimplePropertyList properties,
-			EdgeFactory factory) {
-		super(start, end, label, name, properties, factory);
+	protected VisualEdge(Node start, Node end, String label, String name, SimplePropertyList props,
+			VisualGraph factory) {
+		super(start, end, factory);
+		this.properties = props;
 	}
 
 	public void setConfigEdge(AotEdge configEdge) {
@@ -70,6 +76,36 @@ public class VisualEdge extends EdgeSimpleProperty implements VisualKeys{
 	public void setVisualElements(Object l, Text t) {
 		setSymbol(l);
 		setText(t);
+	}
+
+	@Override
+	public PropertyListSetters setProperty(String key, Object value) {
+		return ((PropertyListSetters) properties).setProperty(key, value);
+	}
+
+	@Override
+	public Object getPropertyValue(String key) {
+		return properties.getPropertyValue(key);
+	}
+
+	@Override
+	public boolean hasProperty(String key) {
+		return properties.hasProperty(key);
+	}
+
+	@Override
+	public Set<String> getKeysAsSet() {
+		return properties.getKeysAsSet();
+	}
+
+	@Override
+	public int size() {
+		return properties.size();
+	}
+
+	@Override
+	public SimplePropertyList clone() {
+		return (SimplePropertyList) properties.clone();
 	}
 
 }

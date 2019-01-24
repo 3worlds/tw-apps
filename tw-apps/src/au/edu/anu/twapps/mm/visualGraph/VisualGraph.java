@@ -34,7 +34,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import au.edu.anu.rscs.aot.AotException;
 import au.edu.anu.rscs.aot.collections.QuickListOfLists;
+import au.edu.anu.rscs.aot.graph.AotNode;
+import au.edu.anu.rscs.aot.graph.TreeGraph;
 import au.edu.anu.rscs.aot.graph.property.PropertyKeys;
 import au.edu.anu.twapps.exceptions.TwAppsException;
 import fr.cnrs.iees.graph.Direction;
@@ -50,137 +53,59 @@ import fr.cnrs.iees.tree.Tree;
 import fr.cnrs.iees.tree.TreeNode;
 import fr.cnrs.iees.tree.TreeNodeFactory;
 import fr.cnrs.iees.tree.impl.DefaultTreeFactory;
+import fr.ens.biologie.generic.Textable;
 
-public class VisualGraph implements //
-		Graph<VisualNode, VisualEdge>, //
-		Tree<VisualNode>, //
+public class VisualGraph extends TreeGraph<VisualNode, VisualEdge> implements //
 		NodeFactory, //
 		EdgeFactory, //
 		TreeNodeFactory, //
+		Textable, //
 		VisualKeys
 /*
- * PropertyListFactory
+ * PropertyListFactory - should be there
  */ {
-	private Set<VisualNode> nodes;
-	private VisualNode root;
 	private PropertyKeys nodeKeys;
 	private PropertyKeys edgeKeys;
 
 	// Constructors
 	public VisualGraph() {
 		super();
-		this.nodes = new HashSet<>();
+		/* PropertyListFactory */
 		this.nodeKeys = getNodeKeys();
 		this.edgeKeys = getEdgeKeys();
 	}
 
-	// ------------------- Tree<VisualNode2>
-	protected VisualGraph(VisualNode root) {
-		this();
-		this.root = root;
-		insertChildren(root);
+	public VisualGraph(Iterable<VisualNode> list) {
+		super(list);
 	}
 
-	private void insertChildren(TreeNode parent) {
-		for (TreeNode child : parent.getChildren()) {
-			nodes.add((VisualNode) child);
-			insertChildren(child);
-		}
+	public VisualGraph(VisualNode root) {
+		super(root);
 	}
 
-	// ------------------Graph<VisualNode2, VisualEdge2>
+	public EdgeFactory getEdgeFactory() {
+		return this;
+	}
+
+	public TreeNodeFactory getTreeFactory() {
+		return this;
+	}
+
+	// ---------------------- NODE FACTORY -------------------------
+
+	// This is disabled because any new node has to be inserted into the tree at the
+	// proper spot. We dont want free-floating nodes in an AOT graph because it's a
+	// tree.
 	@Override
-	public boolean contains(VisualNode arg0) {
-		return nodes.contains(arg0);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public Iterable<VisualEdge> edges() {
-		QuickListOfLists<VisualEdge> edges = new QuickListOfLists<>();
-		for (VisualNode n : nodes)
-			edges.addList((Iterable<VisualEdge>) n.getEdges(Direction.OUT));
-		return edges;
-	}
-
-	@Override
-	public Iterable<VisualNode> roots() {
-		List<VisualNode> result = new ArrayList<>(nodes.size());
-		for (VisualNode n : nodes)
-			if (n.getParent() == null)
-				result.add(n);
-		return result;
-	}
-
-	// ------------------- Tree<VisualNode2>
-	@Override
-	public Iterable<VisualNode> leaves() {
-		List<VisualNode> result = new ArrayList<>(nodes.size());
-		for (VisualNode n : nodes)
-			if (n.isLeaf())
-				result.add(n);
-		return result;
-	}
-
-	@Override
-	public Iterable<VisualNode> nodes() {
-		return nodes;
-	}
-
-	@Override
-	public int size() {
-		return nodes.size();
-	}
-
-	@Override
-	public Iterable<VisualNode> findNodesByReference(String arg0) {
-		List<VisualNode> found = new ArrayList<>(nodes.size());
-		for (VisualNode n : nodes)
-			if (Tree.matchesReference(n, arg0))
-				found.add(n);
-		return found;
-	}
-
-	@Override
-	public int maxDepth() {
-		throw new TwAppsException("Method not implemented.");
-	}
-
-	@Override
-	public int minDepth() {
-		throw new TwAppsException("Method not implemented.");
-	}
-
-	@Override
-	public VisualNode root() {
-		if (root == null)
-			root = findRoot();
-		return root;
-	}
-
-	private VisualNode findRoot() {
-		List<VisualNode> roots = (List<VisualNode>) roots();
-		if (roots.size() == 1)
-			return roots.get(0);
-		return null;
-	}
-
-	@Override
-	public Tree<VisualNode> subTree(VisualNode arg0) {
-		return new VisualGraph(arg0);
-	}
-
-// -------------------------------NodeFactory
-	@Override
-	public Node makeNode(String label, String name, ReadOnlyPropertyList properties) {
-		throw new TwAppsException("Attempt to instantiate an VisualNode outside of the tree context.");
+	public VisualNode makeNode(String arg0, String arg1, ReadOnlyPropertyList arg2) {
+		throw new AotException("Attempt to instantiate an VisualNode outside of the tree context.");
 	}
 
 	// -------------------------------EdgeFactory
 
 	/*
-	 * I hope we can handle null label and edge - nulls are defined as unique and
-	 * also setable. If not null they can't be later changed
+	 * Attempting to create a node or edge without labels or names should produce an
+	 * exception NOT some self-generated thing.
 	 */
 	@Override
 	public VisualEdge makeEdge(Node start, Node end, String label, String name, ReadOnlyPropertyList properties) {
@@ -189,10 +114,9 @@ public class VisualGraph implements //
 		return new VisualEdge(start, end, label, name, (SimplePropertyList) properties, this);
 	}
 
-
 	@Override
 	public VisualNode makeTreeNode(TreeNode parent) {
-		return makeTreeNode(parent,null,null,null);
+		return makeTreeNode(parent, null, null, null);
 	}
 
 	// ------------------------- TreeNodeFactory
@@ -200,7 +124,7 @@ public class VisualGraph implements //
 	public VisualNode makeTreeNode(TreeNode parent, String label, String name, SimplePropertyList properties) {
 		if (properties == null)
 			properties = new SharedPropertyListImpl(nodeKeys);
-		VisualNode node = new VisualNode(label, name, DefaultTreeFactory.makeSimpleTreeNode(null,this),properties, this);
+		VisualNode node = new VisualNode(label, name, properties, this);
 		if (!nodes.add(node))
 			throw new TwAppsException("Attempt to add duplicate node: " + node.toDetailedString());
 		node.setParent(parent);
