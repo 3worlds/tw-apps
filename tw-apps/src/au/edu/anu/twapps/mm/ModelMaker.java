@@ -31,6 +31,10 @@ package au.edu.anu.twapps.mm;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import au.edu.anu.rscs.aot.graph.AotGraph;
 import au.edu.anu.rscs.aot.graph.AotNode;
 import au.edu.anu.rscs.aot.graph.io.AotGraphExporter;
@@ -226,10 +230,14 @@ public class ModelMaker  implements Modelable {
 			return false;
 		}
 	}
-
+	private Map<String, List<String>> nonEditableMap = new HashMap<>();
 	@Override
-	public boolean canEdit(String label, String key) {
-		// TODO Auto-generated method stub
+	public boolean propertyEditable(String classId, String key) {
+		if (!nonEditableMap.containsKey(classId))
+			return true;
+		if (!nonEditableMap.get(classId).contains(key))
+			return true;
+		//TODO build this when the archetype is ready
 		return true;
 	}
 
