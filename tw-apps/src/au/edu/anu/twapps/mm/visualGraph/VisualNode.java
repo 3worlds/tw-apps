@@ -32,11 +32,11 @@ package au.edu.anu.twapps.mm.visualGraph;
 import java.util.Set;
 
 import au.edu.anu.rscs.aot.graph.AotNode;
-import au.edu.anu.rscs.aot.graph.TreeGraphNode;
 import au.edu.anu.twapps.exceptions.TwAppsException;
 import au.edu.anu.twcore.archetype.PrimaryTreeLabels;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
+import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.properties.PropertyListSetters;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.tree.TreeNode;

@@ -29,30 +29,18 @@
 
 package au.edu.anu.twapps.mm.visualGraph;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import au.edu.anu.rscs.aot.AotException;
-import au.edu.anu.rscs.aot.collections.QuickListOfLists;
-import au.edu.anu.rscs.aot.graph.AotNode;
-import au.edu.anu.rscs.aot.graph.TreeGraph;
 import au.edu.anu.rscs.aot.graph.property.PropertyKeys;
 import au.edu.anu.twapps.exceptions.TwAppsException;
-import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.EdgeFactory;
-import fr.cnrs.iees.graph.Graph;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.NodeFactory;
+import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
-import fr.cnrs.iees.tree.Tree;
 import fr.cnrs.iees.tree.TreeNode;
 import fr.cnrs.iees.tree.TreeNodeFactory;
-import fr.cnrs.iees.tree.impl.DefaultTreeFactory;
 import fr.ens.biologie.generic.Textable;
 
 public class VisualGraph extends TreeGraph<VisualNode, VisualEdge> implements //
