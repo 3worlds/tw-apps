@@ -75,7 +75,8 @@ public class VisualGraph extends TreeGraph<VisualNode, VisualEdge> implements //
 		return this;
 	}
 
-	public TreeNodeFactory getTreeFactory() {
+//	public TreeNodeFactory getTreeFactory() {
+		public VisualGraph getTreeFactory() {
 		return this;
 	}
 
