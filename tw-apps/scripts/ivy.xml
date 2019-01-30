@@ -34,6 +34,6 @@
 		<dependency org="fr.cnrs.iees.tw-core" name="tw-core" rev="+"/>
 		<dependency org="au.edu.anu.rscs.aot" name="aot" rev="+"/>
 		<dependency org="org.apache.commons" name="commons-text" rev="1.+"/>-->
-	</dependencies>
+  	</dependencies>
 
 </ivy-module>

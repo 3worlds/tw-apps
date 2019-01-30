@@ -36,16 +36,18 @@ import au.edu.anu.twapps.exceptions.TwAppsException;
 import au.edu.anu.twcore.archetype.PrimaryTreeLabels;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
+import fr.cnrs.iees.graph.Node;
+import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
+import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.PropertyListSetters;
 import fr.cnrs.iees.properties.SimplePropertyList;
-import fr.cnrs.iees.tree.TreeNode;
 
 public class VisualNode extends TreeGraphNode implements SimplePropertyList, VisualKeys {
 
 	private AotNode configNode;
 
-	protected VisualNode(String label, String name, SimplePropertyList properties,
+	protected VisualNode(Identity identity,String label, String name, SimplePropertyList properties,
 			VisualGraph factory) {
 		super(label, name, factory,factory,properties);
 		setCollapse(false);
@@ -82,27 +84,30 @@ public class VisualNode extends TreeGraphNode implements SimplePropertyList, Vis
 
 	private void setSymbol(Object symbol) {
 		if (getPropertyValue(vnSymbol) != null)
-			throw new TwAppsException("Attempt to overwrite node symbol " + uniqueId());
+			throw new TwAppsException("Attempt to overwrite node symbol " + id());
 		setProperty(vnSymbol, symbol);
 	}
 
 	private void setText(Object text) {
 		if (getPropertyValue(vnText) != null)
-			throw new TwAppsException("Attempt to overwrite node text " + uniqueId());
+			throw new TwAppsException("Attempt to overwrite node text " + id());
 		setProperty(vnText, text);
 	}
 
+	private String getLabel() {
+		return nodeFactory().nodeClassName(getClass());
+	}
 	public void setCategory() {
-		if (PrimaryTreeLabels.contains(classId()))
-			setProperty(vnCategory, classId());
+		if (PrimaryTreeLabels.contains(getLabel()))
+			setProperty(vnCategory, getLabel());
 		else
 			setCategory(getParent());
 	}
 
 	private void setCategory(VisualNode parent) {
 		if (parent != null) {
-			if (PrimaryTreeLabels.contains(parent.classId()))
-				setProperty(vnCategory, parent.classId());
+			if (PrimaryTreeLabels.contains(parent.getLabel()))
+				setProperty(vnCategory, parent.getLabel());
 			else
 				setCategory(parent.getParent());
 		}
@@ -149,7 +154,7 @@ public class VisualNode extends TreeGraphNode implements SimplePropertyList, Vis
 
 	public void setParentLine(Object l) {
 		if (getPropertyValue(vnParentLine) != null) {
-			throw new TwAppsException("Attempt to overwrite line to parent symbol " + uniqueId());
+			throw new TwAppsException("Attempt to overwrite line to parent symbol " + id());
 		}
 		setProperty(vnParentLine, l);
 	}

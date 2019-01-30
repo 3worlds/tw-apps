@@ -36,6 +36,7 @@ import au.edu.anu.twapps.exceptions.TwAppsException;
 import fr.cnrs.iees.graph.EdgeFactory;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.impl.SimpleEdgeImpl;
+import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.PropertyListSetters;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import javafx.scene.shape.Line;
@@ -45,9 +46,9 @@ public class VisualEdge extends SimpleEdgeImpl implements SimplePropertyList,Vis
 	private AotEdge configEdge;
 	private SimplePropertyList properties;
 
-	protected VisualEdge(Node start, Node end, String label, String name, SimplePropertyList props,
+	protected VisualEdge(Identity identity,Node start, Node end, String label, String name, SimplePropertyList props,
 			VisualGraph factory) {
-		super(start, end, factory);
+		super(identity,start, end, factory);
 		this.properties = props;
 	}
 
@@ -64,12 +65,12 @@ public class VisualEdge extends SimpleEdgeImpl implements SimplePropertyList,Vis
 	}
 	private void setSymbol(Object s) {
 		if (getPropertyValue(veSymbol) != null) 
-			throw new TwAppsException("Attempt to overwrite edge symbol " + uniqueId());
+			throw new TwAppsException("Attempt to overwrite edge symbol " + id());
 		setProperty(veSymbol, s);
 	}
 	private void setText(Object t) {
 		if (getPropertyValue(veText) != null) 
-			throw new TwAppsException("Attempt to overwrite edge text " + uniqueId());
+			throw new TwAppsException("Attempt to overwrite edge text " + id());
 		setProperty(veText, t);
 	}
 
