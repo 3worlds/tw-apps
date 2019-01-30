@@ -32,14 +32,18 @@ package au.edu.anu.twapps.mm.visualGraph;
 import java.util.Set;
 
 import au.edu.anu.rscs.aot.graph.AotNode;
+import au.edu.anu.rscs.aot.graph.TreeGraphNode;
 import au.edu.anu.twapps.exceptions.TwAppsException;
 import au.edu.anu.twcore.archetype.PrimaryTreeLabels;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
+<<<<<<< HEAD
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.identity.Identity;
+=======
+>>>>>>> branch 'master' of git@gitlab.anu.edu.au:ThreeWorlds/tw-apps.git
 import fr.cnrs.iees.properties.PropertyListSetters;
 import fr.cnrs.iees.properties.SimplePropertyList;
 
