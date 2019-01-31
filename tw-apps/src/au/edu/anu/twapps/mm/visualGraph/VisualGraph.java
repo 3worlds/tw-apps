@@ -32,15 +32,16 @@ package au.edu.anu.twapps.mm.visualGraph;
 import au.edu.anu.rscs.aot.AotException;
 import au.edu.anu.rscs.aot.graph.property.PropertyKeys;
 import au.edu.anu.twapps.exceptions.TwAppsException;
+import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.EdgeFactory;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.NodeFactory;
+import fr.cnrs.iees.graph.TreeNode;
+import fr.cnrs.iees.graph.TreeNodeFactory;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
-import fr.cnrs.iees.tree.TreeNode;
-import fr.cnrs.iees.tree.TreeNodeFactory;
 import fr.ens.biologie.generic.Textable;
 
 public class VisualGraph extends TreeGraph<VisualNode, VisualEdge> implements //
@@ -109,8 +110,9 @@ public class VisualGraph extends TreeGraph<VisualNode, VisualEdge> implements //
 	}
 
 	// ------------------------- TreeNodeFactory
+
 	@Override
-	public VisualNode makeTreeNode(TreeNode parent, String label, String name, SimplePropertyList properties) {
+	public TreeNode makeTreeNode(TreeNode parent, String proposedId, SimplePropertyList properties) {
 		if (properties == null)
 			properties = new SharedPropertyListImpl(nodeKeys);
 		VisualNode node = new VisualNode(label, name, properties, this);
@@ -120,5 +122,17 @@ public class VisualGraph extends TreeGraph<VisualNode, VisualEdge> implements //
 		if (parent != null)
 			parent.addChild(node);
 		return node;
+	}
+
+	@Override
+	public Edge makeEdge(Node start, Node end, String proposedId, ReadOnlyPropertyList props) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Node makeNode(String proposedId, ReadOnlyPropertyList props) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

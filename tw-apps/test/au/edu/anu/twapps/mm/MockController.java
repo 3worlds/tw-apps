@@ -67,4 +67,16 @@ public class MockController implements Controllable{
 		model.doOpenProject(file);
 	}
 
+	@Override
+	public void onNodeSelected(VisualNode n) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onNewNode(VisualNode n) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

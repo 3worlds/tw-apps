@@ -47,7 +47,6 @@ import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.specificationCheck.CheckImpl;
 import au.edu.anu.twcore.specificationCheck.Checkable;
-import fr.cnrs.iees.Identifiable;
 import fr.cnrs.iees.io.FileImporter;
 import fr.cnrs.iees.twcore.constants.Configuration;
 
@@ -59,7 +58,7 @@ import fr.cnrs.iees.twcore.constants.Configuration;
 public class ModelMaker  implements Modelable {
 	// Interface supplied to the controller
 	private AotGraph currentGraph;
-	private VisualGraph layoutGraph;
+	private VisualGraph visualGraph;
 	private Controllable controller;
 	private Checkable checker;
 	// Should we avoid using javafx.beans.property? - make ModelMaker a boolean change listener??
@@ -75,8 +74,9 @@ public class ModelMaker  implements Modelable {
 	}
 
 	private void onProjectOpened() {
+		//TODO sort this out
 		Checkable checker = new CheckImpl(currentGraph); 
-		controller.onProjectOpened(layoutGraph);
+		controller.onProjectOpened(visualGraph);
 		
 	}
 
@@ -129,9 +129,9 @@ public class ModelMaker  implements Modelable {
 		name = Project.create(name);
 		currentGraph = new AotGraph(new ArrayList<AotNode>());
 		currentGraph.makeTreeNode(null, Configuration.N_ROOT, name);
-		layoutGraph = new VisualGraph();
-		layoutGraph.makeTreeNode(null, Configuration.N_ROOT, name);
-		layoutGraph.root().setPosition(0.1, 0.5);
+		visualGraph = new VisualGraph();
+		visualGraph.makeTreeNode(null, Configuration.N_ROOT, name);
+		visualGraph.root().setPosition(0.1, 0.5);
 		connectConfigToVisual();
 		onProjectOpened();
 		doSave();
@@ -139,10 +139,10 @@ public class ModelMaker  implements Modelable {
 
 	//TODO deal with out nodes
 	private void connectConfigToVisual() {
-		for (VisualNode vn : layoutGraph.nodes()) {
-			AotNode n = currentGraph.findNodeByReference(vn.uniqueId());
+		for (VisualNode vn : visualGraph.nodes()) {
+			AotNode n = currentGraph.findNodeByReference(vn.id());
 			if (n == null)
-				throw new TwAppsException("Unable to find " + vn.uniqueId() + " in currentGraph");
+				throw new TwAppsException("Unable to find " + vn.id() + " in currentGraph");
 			vn.setConfigNode(n);
 			vn.setCategory();
 		}
@@ -157,7 +157,7 @@ public class ModelMaker  implements Modelable {
 			onProjectClosing();
 		Project.open(file);
 		currentGraph = (AotGraph) FileImporter.loadGraphFromFile(Project.makeConfigurationFile());
-		layoutGraph = (VisualGraph) FileImporter.loadGraphFromFile(Project.makeLayoutFile());
+		visualGraph = (VisualGraph) FileImporter.loadGraphFromFile(Project.makeLayoutFile());
 		connectConfigToVisual();
 		onProjectOpened();
 	}
@@ -165,7 +165,7 @@ public class ModelMaker  implements Modelable {
 	@Override
 	public void doSave() {
 		new AotGraphExporter(Project.makeConfigurationFile()).exportGraph(currentGraph);
-		VisualGraphExporter.saveGraphToFile(Project.makeLayoutFile(), layoutGraph);
+		VisualGraphExporter.saveGraphToFile(Project.makeLayoutFile(), visualGraph);
 		GraphState.isChanged(false);
 	}
 

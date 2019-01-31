@@ -30,6 +30,7 @@
 package au.edu.anu.twapps.mm;
 
 import au.edu.anu.twapps.mm.visualGraph.VisualGraph;
+import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 
 /**
  * Author Ian Davies
@@ -43,5 +44,9 @@ public interface Controllable {
 	public void onProjectClosing();
 
 	public void onProjectOpened(VisualGraph layoutGraph);
+	
+	public void onNodeSelected(VisualNode n);
+	
+	public void onNewNode(VisualNode n);
 
 }
