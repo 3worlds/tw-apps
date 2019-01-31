@@ -30,19 +30,15 @@
 package au.edu.anu.twapps.mm.visualGraph;
 
 import au.edu.anu.rscs.aot.AotException;
-import au.edu.anu.rscs.aot.graph.TreeGraph;
 import au.edu.anu.rscs.aot.graph.property.PropertyKeys;
 import au.edu.anu.twapps.exceptions.TwAppsException;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.EdgeFactory;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.NodeFactory;
-<<<<<<< HEAD
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.TreeNodeFactory;
 import fr.cnrs.iees.graph.impl.TreeGraph;
-=======
->>>>>>> branch 'master' of git@gitlab.anu.edu.au:ThreeWorlds/tw-apps.git
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
