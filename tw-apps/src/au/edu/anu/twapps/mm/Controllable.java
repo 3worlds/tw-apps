@@ -46,5 +46,7 @@ public interface Controllable {
 	public void onProjectOpened(VisualGraph layoutGraph);
 	
 	public void onNodeSelected(VisualNode n);
+	
+	public void onNewNode(VisualNode n);
 
 }
