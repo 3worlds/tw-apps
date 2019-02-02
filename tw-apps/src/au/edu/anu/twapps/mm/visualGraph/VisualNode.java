@@ -47,9 +47,9 @@ public class VisualNode extends TreeGraphNode implements SimplePropertyList, Vis
 
 	private AotNode configNode;
 
-	protected VisualNode(Identity identity,String label, String name, SimplePropertyList properties,
+	protected VisualNode(Identity id, SimplePropertyList properties,
 			VisualGraph factory) {
-		super(label, name, factory,factory,properties);
+		super(id,factory,factory,properties);
 		setCollapse(false);
 	}
 

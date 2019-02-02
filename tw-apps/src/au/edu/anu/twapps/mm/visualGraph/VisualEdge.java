@@ -46,9 +46,9 @@ public class VisualEdge extends SimpleEdgeImpl implements SimplePropertyList,Vis
 	private AotEdge configEdge;
 	private SimplePropertyList properties;
 
-	protected VisualEdge(Identity identity,Node start, Node end, String label, String name, SimplePropertyList props,
+	protected VisualEdge(Identity id,Node start, Node end, String label, String name, SimplePropertyList props,
 			VisualGraph factory) {
-		super(identity,start, end, factory);
+		super(id,start, end, factory);
 		this.properties = props;
 	}
 
