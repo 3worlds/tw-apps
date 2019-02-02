@@ -31,9 +31,7 @@ package au.edu.anu.twapps.mm.visualGraph;
 
 import java.util.Map;
 
-import au.edu.anu.rscs.aot.AotException;
 import au.edu.anu.rscs.aot.graph.AotEdge;
-import au.edu.anu.rscs.aot.graph.property.PropertyKeys;
 import au.edu.anu.twapps.exceptions.TwAppsException;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.EdgeFactory;
@@ -45,9 +43,13 @@ import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphFactory;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
-import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
 import fr.ens.biologie.generic.Textable;
 
+/**
+ * Author Ian Davies
+ *
+ * Date 2 Feb. 2019
+ */
 public class VisualGraph extends TreeGraph<VisualNode, VisualEdge> implements //
 		NodeFactory, //
 		EdgeFactory, //
@@ -105,7 +107,7 @@ public class VisualGraph extends TreeGraph<VisualNode, VisualEdge> implements //
 	// tree.
 	@Override
 	public Node makeNode() {
-		throw new AotException("Attempt to instantiate an VisualNode outside of the tree context.");
+		throw new TwAppsException("Attempt to instantiate an VisualNode outside of the tree context.");
 	}
 
 	@Override
@@ -197,10 +199,6 @@ public class VisualGraph extends TreeGraph<VisualNode, VisualEdge> implements //
 //		return new VisualEdge(start, end, label, name, (SimplePropertyList) properties, this);
 //	}
 
-//	@Override
-//	public VisualNode makeTreeNode(TreeNode parent) {
-//		return makeTreeNode(parent, null, null, null);
-//	}
 
 	// ------------------------- TreeNodeFactory
 
@@ -226,7 +224,6 @@ public class VisualGraph extends TreeGraph<VisualNode, VisualEdge> implements //
 
 	@Override
 	public TreeNode makeTreeNode(Class<? extends TreeNode> nodeClass, TreeNode parent) {
-		// TODO Auto-generated method stub
 		return (VisualNode) factory.makeTreeNode(nodeClass, parent);
 	}
 
