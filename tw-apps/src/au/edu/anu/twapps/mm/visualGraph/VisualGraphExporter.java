@@ -47,56 +47,18 @@ import static fr.cnrs.iees.io.parsing.impl.TreeGraphTokens.COMMENT;
  */
 public class VisualGraphExporter extends OmugiGraphExporter {
 
-	private Logger log = Logger.getLogger(VisualGraphExporter.class.getName());
 
 	// Constructors
 	public VisualGraphExporter(File file) {
 		super(file);
 	}
-//	@Override
-//	protected void writeTree(TreeNode node, PrintWriter w, int depth) {
-//		String indent = "";
-//		for (int i=0; i<depth; i++)
-//			indent += "\t";
-//		w.print(indent);
-//		w.print(node.classId());
-//		w.print(LABEL.suffix());
-//		w.println(node.instanceId());
-//		// node properties
-//		if (ReadOnlyPropertyList.class.isAssignableFrom(node.getClass()))
-//			writeProperties((ReadOnlyPropertyList)node,w,indent);
-//		else if (SimplePropertyList.class.isAssignableFrom(node.getClass()))
-//			writeProperties((SimplePropertyList)node,w,indent);
-//		for (TreeNode tn: node.getChildren())
-//			writeTree(tn,w,depth+1);
-//	}
+	
 	
 	@Override
 	public void exportGraph(MinimalGraph<?> graph) {
 		if (VisualGraph.class.isAssignableFrom(graph.getClass())) {
-			VisualGraph g = (VisualGraph) graph;
-			try {
-				PrintWriter writer = new PrintWriter(file);
-				Date now = new Date();
-				writer.println("aot "+COMMENT.prefix()+" saved by "
-						+VisualGraphExporter.class.getSimpleName()
-						+" on "+now+"\n");
-				// 1. export tree
-				writer.print(COMMENT.prefix());
-				writer.print(' ');
-				writer.println("TREE");
-				if (g.root()!=null)
-					writeTree(g.root(),writer, 0);
-				// 2. export edge list
-				writer.println();
-				writer.print(COMMENT.prefix());
-				writer.print(' ');
-				writer.println("CROSS-LINKS");
-				exportEdges(g.edges(),writer);
-				writer.close();
-			} catch (FileNotFoundException e) {
-				log.severe("cannot save VisualGraph to file \""+file.getPath()+"\" - file not found");
-			}
+			header = "aot";
+			exportTreeGraph((VisualGraph)graph);
 		}
 	}
 

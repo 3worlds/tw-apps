@@ -47,6 +47,7 @@ import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.specificationCheck.CheckImpl;
 import au.edu.anu.twcore.specificationCheck.Checkable;
+import fr.cnrs.iees.identity.impl.PairIdentity;
 import fr.cnrs.iees.io.FileImporter;
 import fr.cnrs.iees.twcore.constants.Configuration;
 
@@ -128,9 +129,9 @@ public class ModelMaker  implements Modelable {
 		}
 		name = Project.create(name);
 		currentGraph = new AotGraph(new ArrayList<AotNode>());
-		currentGraph.makeTreeNode(null, Configuration.N_ROOT, name);
+		currentGraph.makeTreeNode(null, Configuration.N_ROOT+PairIdentity.LABEL_NAME_STR_SEPARATOR+name);
 		visualGraph = new VisualGraph();
-		visualGraph.makeTreeNode(null, Configuration.N_ROOT, name);
+		visualGraph.makeTreeNode(null, Configuration.N_ROOT+PairIdentity.LABEL_NAME_STR_SEPARATOR+name);
 		visualGraph.root().setPosition(0.1, 0.5);
 		connectConfigToVisual();
 		onProjectOpened();

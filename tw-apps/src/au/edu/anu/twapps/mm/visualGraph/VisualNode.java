@@ -36,20 +36,19 @@ import au.edu.anu.twapps.exceptions.TwAppsException;
 import au.edu.anu.twcore.archetype.PrimaryTreeLabels;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
-import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.PropertyListSetters;
 import fr.cnrs.iees.properties.SimplePropertyList;
 
-public class VisualNode extends TreeGraphNode implements SimplePropertyList, VisualKeys {
+public class VisualNode extends TreeGraphNode //
+		implements SimplePropertyList, VisualKeys {
 
 	private AotNode configNode;
 
-	protected VisualNode(Identity id, SimplePropertyList properties,
-			VisualGraph factory) {
-		super(id,factory,factory,properties);
+	protected VisualNode(Identity id, SimplePropertyList properties, VisualGraph factory) {
+		super(id, factory, factory, properties);
 		setCollapse(false);
 	}
 
@@ -97,6 +96,7 @@ public class VisualNode extends TreeGraphNode implements SimplePropertyList, Vis
 	private String getLabel() {
 		return nodeFactory().nodeClassName(getClass());
 	}
+
 	public void setCategory() {
 		if (PrimaryTreeLabels.contains(getLabel()))
 			setProperty(vnCategory, getLabel());
@@ -169,7 +169,7 @@ public class VisualNode extends TreeGraphNode implements SimplePropertyList, Vis
 
 	@Override
 	public VisualNode getParent() {
-		return  (VisualNode) super.getParent();
+		return (VisualNode) super.getParent();
 	}
 
 	public boolean isCollapsed() {
@@ -179,7 +179,6 @@ public class VisualNode extends TreeGraphNode implements SimplePropertyList, Vis
 	public void setCollapse(boolean b) {
 		setProperty(vnCollapsed, b);
 	}
-
 
 	public boolean isCollapsedParent() {
 		if (isCollapsed())
