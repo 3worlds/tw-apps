@@ -128,7 +128,7 @@ public class ModelMaker  implements Modelable {
 			Project.close();
 		}
 		name = Project.create(name);
-		currentGraph = new AotGraph(new ArrayList<AotNode>());
+		currentGraph = new AotGraph();
 		currentGraph.makeTreeNode(null, Configuration.N_ROOT+PairIdentity.LABEL_NAME_STR_SEPARATOR+name);
 		visualGraph = new VisualGraph();
 		visualGraph.makeTreeNode(null, Configuration.N_ROOT+PairIdentity.LABEL_NAME_STR_SEPARATOR+name);
