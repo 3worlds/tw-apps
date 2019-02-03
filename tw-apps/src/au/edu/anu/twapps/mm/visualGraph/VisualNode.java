@@ -31,6 +31,8 @@ package au.edu.anu.twapps.mm.visualGraph;
 
 import java.util.Set;
 
+import au.edu.anu.rscs.aot.AotException;
+import au.edu.anu.rscs.aot.graph.AotGraph;
 import au.edu.anu.rscs.aot.graph.AotNode;
 import au.edu.anu.twapps.exceptions.TwAppsException;
 import au.edu.anu.twcore.archetype.PrimaryTreeLabels;
@@ -47,10 +49,87 @@ public class VisualNode extends TreeGraphNode //
 
 	private AotNode configNode;
 
-	protected VisualNode(Identity id, SimplePropertyList properties, VisualGraph factory) {
+	protected VisualNode(Identity id, VisualGraph factory, SimplePropertyList properties) {
 		super(id, factory, factory, properties);
+		// null properties?
 		setCollapse(false);
 	}
+	
+	@Override
+	public VisualNode getParent() {
+		return (VisualNode) super.getParent();
+	}
+
+	@Override
+	public PropertyListSetters setProperty(String key, Object value) {
+		return ((PropertyListSetters) properties).setProperty(key, value);
+	}
+
+	@Override
+	public Object getPropertyValue(String key) {
+		return properties.getPropertyValue(key);
+	}
+
+	@Override
+	public boolean hasProperty(String key) {
+		return properties.hasProperty(key);
+	}
+
+	@Override
+	public Set<String> getKeysAsSet() {
+		return properties.getKeysAsSet();
+	}
+
+	@Override
+	public int size() {
+		return properties.size();
+	}
+
+	@Override
+	public SimplePropertyList clone() {
+		// temporary - check this later
+		return (SimplePropertyList) properties.clone();
+	}
+
+	@Override
+	public VisualGraph nodeFactory() {
+		return (VisualGraph) super.nodeFactory();
+	}
+
+	@Override
+	public String toDetailedString() {
+		StringBuilder sb = new StringBuilder(toUniqueString());
+		sb.append("=[");
+		if (getParent() != null)
+			sb.append("↑").append(getParent().toUniqueString());
+		else
+			sb.append("ROOT");
+		if (hasChildren()) {
+			for (TreeNode n : getChildren()) {
+				sb.append(" ↓").append(n.toUniqueString());
+			}
+		}
+		if (getEdges(Direction.IN).iterator().hasNext()) {
+			for (Edge e : getEdges(Direction.IN))
+				sb.append(" ←").append(e.startNode().toUniqueString());
+		}
+		if (getEdges(Direction.OUT).iterator().hasNext()) {
+			for (Edge e : getEdges(Direction.OUT))
+				sb.append(" →").append(e.endNode().toUniqueString());
+		}
+		if (size() > 0)
+			sb.append(' ').append(properties.toString());
+		sb.append(" [");
+		sb.append("Config: ");
+		if (getConfigNode() == null)
+			sb.append("null");
+		else
+			sb.append(getConfigNode().toDetailedString());
+		sb.append("]");
+		sb.append("]");
+		return sb.toString();
+	}
+
 
 	public void setConfigNode(AotNode configNode) {
 		this.configNode = configNode;
@@ -113,40 +192,6 @@ public class VisualNode extends TreeGraphNode //
 		}
 	}
 
-	@Override
-	public String toDetailedString() {
-		StringBuilder sb = new StringBuilder(toUniqueString());
-		sb.append("=[");
-		if (getParent() != null)
-			sb.append("↑").append(getParent().toUniqueString());
-		else
-			sb.append("ROOT");
-		if (hasChildren()) {
-			for (TreeNode n : getChildren()) {
-				sb.append(" ↓").append(n.toUniqueString());
-			}
-		}
-		if (getEdges(Direction.IN).iterator().hasNext()) {
-			for (Edge e : getEdges(Direction.IN))
-				sb.append(" ←").append(e.startNode().toUniqueString());
-		}
-		if (getEdges(Direction.OUT).iterator().hasNext()) {
-			for (Edge e : getEdges(Direction.OUT))
-				sb.append(" →").append(e.endNode().toUniqueString());
-		}
-		if (size() > 0)
-			sb.append(' ').append(properties.toString());
-		sb.append(" [");
-		sb.append("Config: ");
-		if (getConfigNode() == null)
-			sb.append("null");
-		else
-			sb.append(getConfigNode().toDetailedString());
-		sb.append("]");
-		sb.append("]");
-		return sb.toString();
-	}
-
 	public void setVisualElements(Object c, Object t) {
 		setSymbol(c);
 		setText(t);
@@ -167,11 +212,6 @@ public class VisualNode extends TreeGraphNode //
 		return getPropertyValue(vnSymbol);
 	}
 
-	@Override
-	public VisualNode getParent() {
-		return (VisualNode) super.getParent();
-	}
-
 	public boolean isCollapsed() {
 		return (Boolean) getPropertyValue(vnCollapsed);
 	}
@@ -189,36 +229,6 @@ public class VisualNode extends TreeGraphNode //
 		}
 		return false;
 
-	}
-
-	@Override
-	public PropertyListSetters setProperty(String key, Object value) {
-		return ((PropertyListSetters) properties).setProperty(key, value);
-	}
-
-	@Override
-	public Object getPropertyValue(String key) {
-		return properties.getPropertyValue(key);
-	}
-
-	@Override
-	public boolean hasProperty(String key) {
-		return properties.hasProperty(key);
-	}
-
-	@Override
-	public Set<String> getKeysAsSet() {
-		return properties.getKeysAsSet();
-	}
-
-	@Override
-	public int size() {
-		return properties.size();
-	}
-
-	@Override
-	public SimplePropertyList clone() {
-		return (SimplePropertyList) properties.clone();
 	}
 
 }
