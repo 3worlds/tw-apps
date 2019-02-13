@@ -54,15 +54,15 @@ import fr.cnrs.iees.twcore.constants.Configuration;
  *
  * Date 10 Dec. 2018
  */
-public class ModelMaker  implements Modelable {
+public class MMModel  implements IMMModel {
 	// Interface supplied to the controller
 	private AotGraph currentGraph;
 	private VisualGraph visualGraph;
-	private Controllable controller;
+	private IMMController controller;
 	private Checkable checker;
 	// Should we avoid using javafx.beans.property? - make ModelMaker a boolean change listener??
 
-	public ModelMaker(Controllable controller) {
+	public MMModel(IMMController controller) {
 		this.controller = controller;
 	}
 

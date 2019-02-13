@@ -31,10 +31,10 @@ package au.edu.anu.twapps.mm;
 
 import java.io.File;
 
-import au.edu.anu.twapps.dialogs.Dialogable;
+import au.edu.anu.twapps.dialogs.IDialogs;
 import au.edu.anu.twapps.dialogs.YesNoCancel;
 
-public class MockDialogs implements Dialogable{
+public class MockDialogs implements IDialogs{
 
 	@Override
 	public void errorAlert(String title, String header, String content) {

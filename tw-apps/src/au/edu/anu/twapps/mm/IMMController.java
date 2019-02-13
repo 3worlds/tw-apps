@@ -29,39 +29,24 @@
 
 package au.edu.anu.twapps.mm;
 
-import java.io.File;
-
-import au.edu.anu.twcore.specificationCheck.Checkable;
+import au.edu.anu.twapps.mm.visualGraph.VisualGraph;
+import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 
 /**
  * Author Ian Davies
  *
- * Date 10 Jan. 2019
+ * Date 17 Dec. 2018
  */
-//ModelMaker methods called by the Controller
-// The controller HAS one of these
-// ModelMaker IS on of these: ModelMaker implements
-public interface Modelable extends Checkable{
-	public boolean canClose();
-	public void doClearJavaProject();
-	public void doSetJavaProject();
-	public void doNewProject();
-	public void doOpenProject(File file);
-	public void doMenuExit();
-	public void doLayout();
-	public void doDeploy();
-	public void doSave();
-	public void doSaveAs();
-	public void doImport();
-	public boolean propertyEditable(String label, String key);
+// ModelMaker calls these Controller methods
+// ModelMaker HAS one of these
+// Controller IS one of these: Controller implements
+public interface IMMController {
+	public void onProjectClosing();
+
+	public void onProjectOpened(VisualGraph layoutGraph);
 	
+	public void onNodeSelected(VisualNode n);
 	
-	
-	
-	
-	
-	
-	
-	
+	public void onNewNode(VisualNode n);
 
 }

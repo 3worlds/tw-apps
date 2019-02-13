@@ -27,28 +27,41 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
   **************************************************************************/
 
-package au.edu.anu.twapps.dialogs;
+package au.edu.anu.twapps.mm;
 
 import java.io.File;
+
+import au.edu.anu.twcore.specificationCheck.Checkable;
 
 /**
  * Author Ian Davies
  *
- * Date 11 Dec. 2018
+ * Date 10 Jan. 2019
  */
-/**
- * 
- * Interface for implementation independent dialogs
- */
-public interface Dialogable {
-	public void errorAlert(String title, String header, String content);
-
-	public File selectDirectory(String title, String currentPath);
-
-	public YesNoCancel yesNoCancel(String title, String header, String content);
-
-	public String getText(String title, String header, String content, String prompt);
-
-	public File getExternalProjectFile();
+//ModelMaker methods called by the Controller
+// The controller HAS one of these
+// ModelMaker IS on of these: ModelMaker implements
+public interface IMMModel extends Checkable{
+	public boolean canClose();
+	public void doClearJavaProject();
+	public void doSetJavaProject();
+	public void doNewProject();
+	public void doOpenProject(File file);
+	public void doMenuExit();
+	public void doLayout();
+	public void doDeploy();
+	public void doSave();
+	public void doSaveAs();
+	public void doImport();
+	public boolean propertyEditable(String label, String key);
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 }

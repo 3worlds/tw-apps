@@ -27,26 +27,28 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
   **************************************************************************/
 
-package au.edu.anu.twapps.mm;
+package au.edu.anu.twapps.dialogs;
 
-import au.edu.anu.twapps.mm.visualGraph.VisualGraph;
-import au.edu.anu.twapps.mm.visualGraph.VisualNode;
+import java.io.File;
 
 /**
  * Author Ian Davies
  *
- * Date 17 Dec. 2018
+ * Date 11 Dec. 2018
  */
-// ModelMaker calls these Controller methods
-// ModelMaker HAS one of these
-// Controller IS one of these: Controller implements
-public interface Controllable {
-	public void onProjectClosing();
+/**
+ * 
+ * Interface for implementation independent dialogs
+ */
+public interface IDialogs {
+	public void errorAlert(String title, String header, String content);
 
-	public void onProjectOpened(VisualGraph layoutGraph);
-	
-	public void onNodeSelected(VisualNode n);
-	
-	public void onNewNode(VisualNode n);
+	public File selectDirectory(String title, String currentPath);
+
+	public YesNoCancel yesNoCancel(String title, String header, String content);
+
+	public String getText(String title, String header, String content, String prompt);
+
+	public File getExternalProjectFile();
 
 }

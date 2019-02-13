@@ -38,12 +38,12 @@ import java.io.File;
 
 // static methods for dialogs
 public class Dialogs {
-	private static Dialogable impl;
+	private static IDialogs impl;
 	
 	// prevent instantiation
 	private Dialogs() {};
 
-	public static void initialise(Dialogable impl) {
+	public static void initialise(IDialogs impl) {
 		Dialogs.impl = impl;
 	}
 
