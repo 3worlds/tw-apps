@@ -46,6 +46,11 @@ public class Dialogs {
 	public static void initialise(IDialogs impl) {
 		Dialogs.impl = impl;
 	}
+	
+	public static Object getParentObject() {
+		return impl.getParentObject();
+	}
+
 
 	public static void errorAlert(String title, String header, String content) {
 		impl.errorAlert(title, header, content);

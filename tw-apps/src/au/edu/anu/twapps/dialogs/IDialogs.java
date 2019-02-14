@@ -50,5 +50,7 @@ public interface IDialogs {
 	public String getText(String title, String header, String content, String prompt);
 
 	public File getExternalProjectFile();
+	
+	public Object getParentObject() ;
 
 }
