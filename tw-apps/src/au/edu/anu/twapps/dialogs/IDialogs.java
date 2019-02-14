@@ -58,4 +58,6 @@ public interface IDialogs {
 
 	public File getOpenFile(File directory, String title, List<ExtensionFilter> extensions);
 
+	public boolean editList(String title, String header, String content, Object listView);
+
 }

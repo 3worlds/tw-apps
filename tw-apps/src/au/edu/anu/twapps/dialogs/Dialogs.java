@@ -76,6 +76,11 @@ public class Dialogs {
 	public static File getOpenFile(File directory, String title, List<ExtensionFilter> extensions) {
 		// TODO Auto-generated method stub
 		return impl.getOpenFile(directory,title,extensions);
-	};
+	}
+
+	public static boolean editList(String title, String header, String content,
+			Object listView) {
+		return impl.editList(title,header,content,listView);
+	}
 
 }
