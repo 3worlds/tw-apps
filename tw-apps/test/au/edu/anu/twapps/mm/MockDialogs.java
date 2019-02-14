@@ -65,4 +65,10 @@ public class MockDialogs implements IDialogs{
 		return null;
 	}
 
+	@Override
+	public Object getParentObject() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
