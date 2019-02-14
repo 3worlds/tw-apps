@@ -30,6 +30,9 @@
 package au.edu.anu.twapps.dialogs;
 
 import java.io.File;
+import java.util.List;
+
+import javafx.stage.FileChooser.ExtensionFilter;
 
 /**
  * Author Ian Davies
@@ -50,7 +53,9 @@ public interface IDialogs {
 	public String getText(String title, String header, String content, String prompt);
 
 	public File getExternalProjectFile();
-	
-	public Object getParentObject() ;
+
+	public boolean confirmation(String title, String header, String content);
+
+	public File getOpenFile(File directory, String title, List<ExtensionFilter> extensions);
 
 }
