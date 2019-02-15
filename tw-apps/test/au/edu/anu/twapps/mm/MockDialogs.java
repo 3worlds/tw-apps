@@ -80,4 +80,10 @@ public class MockDialogs implements IDialogs{
 		return null;
 	}
 
+	@Override
+	public boolean editList(String title, String header, String content, Object listView) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }
