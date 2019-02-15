@@ -33,13 +33,11 @@ import java.util.Set;
 
 import au.edu.anu.rscs.aot.graph.AotEdge;
 import au.edu.anu.twapps.exceptions.TwAppsException;
-import fr.cnrs.iees.graph.EdgeFactory;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.impl.SimpleEdgeImpl;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.PropertyListSetters;
 import fr.cnrs.iees.properties.SimplePropertyList;
-import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 
 public class VisualEdge extends SimpleEdgeImpl implements SimplePropertyList,VisualKeys{

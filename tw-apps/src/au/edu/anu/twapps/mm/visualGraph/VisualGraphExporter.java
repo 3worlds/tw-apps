@@ -29,15 +29,9 @@
 package au.edu.anu.twapps.mm.visualGraph;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.util.Date;
-import java.util.logging.Logger;
-
 import au.edu.anu.twcore.project.Project;
 import fr.cnrs.iees.graph.MinimalGraph;
 import fr.cnrs.iees.graph.io.impl.OmugiGraphExporter;
-import static fr.cnrs.iees.io.parsing.impl.TreeGraphTokens.COMMENT;
 
 /**
  * An Exporter for aot graphs.

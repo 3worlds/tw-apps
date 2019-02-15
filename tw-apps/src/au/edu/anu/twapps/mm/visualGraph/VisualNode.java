@@ -31,8 +31,6 @@ package au.edu.anu.twapps.mm.visualGraph;
 
 import java.util.Set;
 
-import au.edu.anu.rscs.aot.AotException;
-import au.edu.anu.rscs.aot.graph.AotGraph;
 import au.edu.anu.rscs.aot.graph.AotNode;
 import au.edu.anu.twapps.exceptions.TwAppsException;
 import au.edu.anu.twcore.archetype.PrimaryTreeLabels;
