@@ -49,7 +49,7 @@ public class VisualNode extends TreeGraphNode //
 
 	private AotNode configNode;
 
-	protected VisualNode(Identity id,TreeNodeFactory tnf,  NodeFactory nf, SimplePropertyList properties) {
+	public VisualNode(Identity id,TreeNodeFactory tnf,  NodeFactory nf, SimplePropertyList properties) {
 		super(id, tnf, nf, properties);
 		// null properties?
 		setCollapse(false);
