@@ -204,43 +204,43 @@ public class VisualGraph extends TreeGraph<VisualNode, VisualEdge> implements //
 
 	@Override
 	public VisualNode makeTreeNode(TreeNode parent, SimplePropertyList props) {
-		return (VisualNode) factory.makeTreeNode(VisualNode.class, parent, props);
+		return addNode((VisualNode) factory.makeTreeNode(VisualNode.class, parent, props));
 	}
 
 	@Override
 	public VisualNode makeTreeNode(TreeNode parent) {
-		return (VisualNode) factory.makeTreeNode(VisualNode.class, parent);
+		return addNode((VisualNode) factory.makeTreeNode(VisualNode.class, parent));
 	}
 
 	@Override
 	public VisualNode makeTreeNode(TreeNode parent, String proposedId) {
-		return (VisualNode) factory.makeTreeNode(VisualNode.class, parent, proposedId);
+		return addNode((VisualNode) factory.makeTreeNode(VisualNode.class, parent, proposedId));
 	}
 
 	@Override
 	public VisualNode makeTreeNode(TreeNode parent, String proposedId, SimplePropertyList props) {
-		return (VisualNode) factory.makeTreeNode(VisualNode.class, parent, proposedId, props);
+		return addNode((VisualNode) factory.makeTreeNode(VisualNode.class, parent, proposedId, props));
 	}
 
 	@Override
 	public TreeNode makeTreeNode(Class<? extends TreeNode> nodeClass, TreeNode parent) {
-		return (VisualNode) factory.makeTreeNode(nodeClass, parent);
+		return addNode((VisualNode) factory.makeTreeNode(nodeClass, parent));
 	}
 
 	@Override
 	public TreeNode makeTreeNode(Class<? extends TreeNode> nodeClass, TreeNode parent, SimplePropertyList props) {
-		return (VisualNode) factory.makeTreeNode(nodeClass, parent, props);
+		return addNode((VisualNode) factory.makeTreeNode(nodeClass, parent, props));
 	}
 
 	@Override
 	public TreeNode makeTreeNode(Class<? extends TreeNode> nodeClass, TreeNode parent, String proposedId) {
-		return (VisualNode) factory.makeTreeNode(nodeClass, parent, proposedId);
+		return addNode((VisualNode) factory.makeTreeNode(nodeClass, parent, proposedId));
 	}
 
 	@Override
 	public TreeNode makeTreeNode(Class<? extends TreeNode> nodeClass, TreeNode parent, String proposedId,
 			SimplePropertyList props) {
-		return (VisualNode) factory.makeTreeNode(nodeClass, parent, proposedId, props);
+		return addNode((VisualNode) factory.makeTreeNode(nodeClass, parent, proposedId, props));
 	}
 //	public TreeNode makeTreeNode(TreeNode parent, String proposedId, SimplePropertyList properties) {
 //

@@ -36,7 +36,9 @@ import au.edu.anu.twapps.exceptions.TwAppsException;
 import au.edu.anu.twcore.archetype.PrimaryTreeLabels;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
+import fr.cnrs.iees.graph.NodeFactory;
 import fr.cnrs.iees.graph.TreeNode;
+import fr.cnrs.iees.graph.TreeNodeFactory;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.PropertyListSetters;
@@ -47,8 +49,8 @@ public class VisualNode extends TreeGraphNode //
 
 	private AotNode configNode;
 
-	protected VisualNode(Identity id, VisualGraph factory, SimplePropertyList properties) {
-		super(id, factory, factory, properties);
+	protected VisualNode(Identity id,TreeNodeFactory tnf,  NodeFactory nf, SimplePropertyList properties) {
+		super(id, tnf, nf, properties);
 		// null properties?
 		setCollapse(false);
 	}
