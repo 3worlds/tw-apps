@@ -55,12 +55,7 @@ public class VisualGraph extends TreeGraph<VisualNode, VisualEdge> implements //
 		EdgeFactory, //
 		TreeNodeFactory, //
 		Textable, //
-		VisualKeys
-/*
- * PropertyListFactory - should be there
- */ {
-//	private PropertyKeys nodeKeys;
-//	private PropertyKeys edgeKeys;
+		VisualKeys {
 
 	private TreeGraphFactory factory;
 
@@ -86,8 +81,6 @@ public class VisualGraph extends TreeGraph<VisualNode, VisualEdge> implements //
 	}
 
 	private void init() {
-//		this.nodeKeys = getNodeKeys();
-//		this.edgeKeys = getEdgeKeys();
 		this.factory = new TreeGraphFactory();
 	}
 
@@ -105,6 +98,8 @@ public class VisualGraph extends TreeGraph<VisualNode, VisualEdge> implements //
 	// This is disabled because any new node has to be inserted into the tree at the
 	// proper spot. We dont want free-floating nodes in an AOT graph because it's a
 	// tree.
+	
+	// Factory hierarchy needs rewriting. Perhaps Factories2.dia Elements2.dia?
 	@Override
 	public Node makeNode() {
 		throw new TwAppsException("Attempt to instantiate an VisualNode outside of the tree context.");
@@ -147,10 +142,6 @@ public class VisualGraph extends TreeGraph<VisualNode, VisualEdge> implements //
 
 	// -------------------------------EdgeFactory
 
-	/*
-	 * Attempting to create a node or edge without labels or names should produce an
-	 * exception NOT some self-generated thing.
-	 */
 	@Override
 	public VisualEdge makeEdge(Node start, Node end) {
 		return (VisualEdge) factory.makeEdge(VisualEdge.class, start, end);
@@ -191,13 +182,6 @@ public class VisualGraph extends TreeGraph<VisualNode, VisualEdge> implements //
 			ReadOnlyPropertyList props) {
 		return (VisualEdge) factory.makeEdge(edgeClass, start, end, proposedId, props);
 	}
-
-//	@Override
-//	public VisualEdge makeEdge(Node start, Node end, String label, String name, ReadOnlyPropertyList properties) {
-//		if (properties == null)
-//			properties = new SharedPropertyListImpl(edgeKeys);
-//		return new VisualEdge(start, end, label, name, (SimplePropertyList) properties, this);
-//	}
 
 
 	// ------------------------- TreeNodeFactory
@@ -242,17 +226,5 @@ public class VisualGraph extends TreeGraph<VisualNode, VisualEdge> implements //
 			SimplePropertyList props) {
 		return addNode((VisualNode) factory.makeTreeNode(nodeClass, parent, proposedId, props));
 	}
-//	public TreeNode makeTreeNode(TreeNode parent, String proposedId, SimplePropertyList properties) {
-//
-//		if (properties == null)
-//			properties = new SharedPropertyListImpl(nodeKeys);
-//		VisualNode node = new VisualNode(label, name, properties, this);
-//		if (!nodes.add(node))
-//			throw new TwAppsException("Attempt to add duplicate node: " + node.toDetailedString());
-//		node.setParent(parent);
-//		if (parent != null)
-//			parent.addChild(node);
-//		return node;
-//	}
 
 }

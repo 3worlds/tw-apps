@@ -38,6 +38,7 @@ import fr.cnrs.iees.graph.impl.SimpleEdgeImpl;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.PropertyListSetters;
 import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
 import javafx.scene.text.Text;
 
 public class VisualEdge extends SimpleEdgeImpl implements SimplePropertyList,VisualKeys{
@@ -47,7 +48,10 @@ public class VisualEdge extends SimpleEdgeImpl implements SimplePropertyList,Vis
 	protected VisualEdge(Identity id,Node start, Node end, String label, String name, SimplePropertyList props,
 			VisualGraph factory) {
 		super(id,start, end, factory);
+		
 		this.properties = props;
+		if (properties==null)
+			properties = new SharedPropertyListImpl(getEdgeKeys());
 	}
 
 	public void setConfigEdge(AotEdge configEdge) {

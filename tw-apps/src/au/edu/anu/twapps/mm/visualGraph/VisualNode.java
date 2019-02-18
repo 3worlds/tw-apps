@@ -42,16 +42,20 @@ import fr.cnrs.iees.graph.TreeNodeFactory;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.PropertyListSetters;
+import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
 
 public class VisualNode extends TreeGraphNode //
 		implements SimplePropertyList, VisualKeys {
 
 	private AotNode configNode;
 
-	public VisualNode(Identity id,TreeNodeFactory tnf,  NodeFactory nf, SimplePropertyList properties) {
+	public VisualNode(Identity id,TreeNodeFactory tnf,  NodeFactory nf, ReadOnlyPropertyList properties) {
 		super(id, tnf, nf, properties);
-		// null properties?
+		if (properties ==null) {
+			this.properties= new SharedPropertyListImpl(getNodeKeys());
+		}		
 		setCollapse(false);
 	}
 	
@@ -91,10 +95,10 @@ public class VisualNode extends TreeGraphNode //
 		return (SimplePropertyList) properties.clone();
 	}
 
-	@Override
-	public VisualGraph nodeFactory() {
-		return (VisualGraph) super.nodeFactory();
-	}
+//	@Override
+//	public VisualGraph nodeFactory() {
+//		return (VisualGraph) super.nodeFactory();
+//	}
 
 	@Override
 	public String toDetailedString() {
