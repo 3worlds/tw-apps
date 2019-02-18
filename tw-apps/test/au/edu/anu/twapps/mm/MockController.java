@@ -34,11 +34,11 @@ import java.io.File;
 import au.edu.anu.twapps.mm.visualGraph.VisualGraph;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 
-public class MockController implements Controllable{
-	private Modelable model;
+public class MockController implements IMMController{
+	private IMMModel model;
 	private VisualGraph graph;
 	public MockController() {
-		model = new ModelMaker(this);
+		model = new MMModel(this);
 	}
 
 	@Override

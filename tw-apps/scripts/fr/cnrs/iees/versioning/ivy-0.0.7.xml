@@ -1,9 +1,5 @@
 <!--===================================================================================
-<<<<<<< HEAD
- ant and ivy scripts for project <tw-apps> version 0.0.7 (Thu Jan 31 18:21:29 AEDT 2019)
-=======
- ant and ivy scripts for project <tw-apps> version 0.0.9 (Thu Feb 14 13:27:40 AEDT 2019)
->>>>>>> branch 'master' of git@gitlab.anu.edu.au:ThreeWorlds/tw-apps.git
+ ant and ivy scripts for project <tw-apps> version 0.0.7 (Sun Feb 03 11:09:14 AEDT 2019)
  author: Jacques Gignoux <jacques.gignoux@upmc.fr>
 
  CAUTION: this file is generated - DO NOT EDIT!
@@ -16,11 +12,7 @@
 
 	<info	organisation="au.edu.anu.tw-apps"
 			module="tw-apps"
-<<<<<<< HEAD
 			revision="0.0.7"
-=======
-			revision="0.0.9"
->>>>>>> branch 'master' of git@gitlab.anu.edu.au:ThreeWorlds/tw-apps.git
 			status="integration">
 		<license name="gpl3" url="https://www.gnu.org/licenses/gpl-3.0.txt"/>
 		<description>This module contains UI-independent code for ModelMaker and ModelRunner.</description>
@@ -37,13 +29,10 @@
 	</publications>
 
 	<dependencies>
-        <!--===================================================================================
 		<dependency org="fr.ens.biologie" name="generics" rev="+"/>
 		<dependency org="au.edu.anu.rscs.aot" name="omugi" rev="+"/>
 		<dependency org="fr.cnrs.iees.tw-core" name="tw-core" rev="+"/>
 		<dependency org="au.edu.anu.rscs.aot" name="aot" rev="+"/>
-		===================================================================================-->
-		
 		<dependency org="org.apache.commons" name="commons-text" rev="1.+"/>
 	</dependencies>
 

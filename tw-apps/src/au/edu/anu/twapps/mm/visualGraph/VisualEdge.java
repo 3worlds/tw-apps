@@ -33,23 +33,25 @@ import java.util.Set;
 
 import au.edu.anu.rscs.aot.graph.AotEdge;
 import au.edu.anu.twapps.exceptions.TwAppsException;
-import fr.cnrs.iees.graph.EdgeFactory;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.impl.SimpleEdgeImpl;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.PropertyListSetters;
 import fr.cnrs.iees.properties.SimplePropertyList;
-import javafx.scene.shape.Line;
+import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
 import javafx.scene.text.Text;
 
 public class VisualEdge extends SimpleEdgeImpl implements SimplePropertyList,VisualKeys{
 	private AotEdge configEdge;
 	private SimplePropertyList properties;
 
-	protected VisualEdge(Identity identity,Node start, Node end, String label, String name, SimplePropertyList props,
+	protected VisualEdge(Identity id,Node start, Node end, String label, String name, SimplePropertyList props,
 			VisualGraph factory) {
-		super(identity,start, end, factory);
+		super(id,start, end, factory);
+		
 		this.properties = props;
+		if (properties==null)
+			properties = new SharedPropertyListImpl(getEdgeKeys());
 	}
 
 	public void setConfigEdge(AotEdge configEdge) {

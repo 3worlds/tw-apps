@@ -30,7 +30,6 @@
 package au.edu.anu.twapps.mm;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,11 +41,11 @@ import au.edu.anu.twapps.dialogs.Dialogs;
 import au.edu.anu.twapps.exceptions.TwAppsException;
 import au.edu.anu.twapps.mm.visualGraph.VisualGraph;
 import au.edu.anu.twapps.mm.visualGraph.VisualGraphExporter;
-import au.edu.anu.twapps.mm.visualGraph.VisualKeys;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.specificationCheck.CheckImpl;
 import au.edu.anu.twcore.specificationCheck.Checkable;
+import fr.cnrs.iees.identity.impl.PairIdentity;
 import fr.cnrs.iees.io.FileImporter;
 import fr.cnrs.iees.twcore.constants.Configuration;
 
@@ -55,15 +54,15 @@ import fr.cnrs.iees.twcore.constants.Configuration;
  *
  * Date 10 Dec. 2018
  */
-public class ModelMaker  implements Modelable {
+public class MMModel  implements IMMModel {
 	// Interface supplied to the controller
 	private AotGraph currentGraph;
 	private VisualGraph visualGraph;
-	private Controllable controller;
+	private IMMController controller;
 	private Checkable checker;
 	// Should we avoid using javafx.beans.property? - make ModelMaker a boolean change listener??
 
-	public ModelMaker(Controllable controller) {
+	public MMModel(IMMController controller) {
 		this.controller = controller;
 	}
 
@@ -127,10 +126,10 @@ public class ModelMaker  implements Modelable {
 			Project.close();
 		}
 		name = Project.create(name);
-		currentGraph = new AotGraph(new ArrayList<AotNode>());
-		currentGraph.makeTreeNode(null, Configuration.N_ROOT, name);
+		currentGraph = new AotGraph();
+		currentGraph.makeTreeNode(null, Configuration.N_ROOT+PairIdentity.LABEL_NAME_STR_SEPARATOR+name);
 		visualGraph = new VisualGraph();
-		visualGraph.makeTreeNode(null, Configuration.N_ROOT, name);
+		visualGraph.makeTreeNode(null, Configuration.N_ROOT+PairIdentity.LABEL_NAME_STR_SEPARATOR+name);
 		visualGraph.root().setPosition(0.1, 0.5);
 		connectConfigToVisual();
 		onProjectOpened();

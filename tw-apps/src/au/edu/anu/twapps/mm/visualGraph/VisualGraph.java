@@ -29,8 +29,9 @@
 
 package au.edu.anu.twapps.mm.visualGraph;
 
-import au.edu.anu.rscs.aot.AotException;
-import au.edu.anu.rscs.aot.graph.property.PropertyKeys;
+import java.util.Map;
+
+import au.edu.anu.rscs.aot.graph.AotEdge;
 import au.edu.anu.twapps.exceptions.TwAppsException;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.EdgeFactory;
@@ -39,37 +40,48 @@ import fr.cnrs.iees.graph.NodeFactory;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.TreeNodeFactory;
 import fr.cnrs.iees.graph.impl.TreeGraph;
+import fr.cnrs.iees.graph.impl.TreeGraphFactory;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
-import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
 import fr.ens.biologie.generic.Textable;
 
+/**
+ * Author Ian Davies
+ *
+ * Date 2 Feb. 2019
+ */
 public class VisualGraph extends TreeGraph<VisualNode, VisualEdge> implements //
 		NodeFactory, //
 		EdgeFactory, //
 		TreeNodeFactory, //
 		Textable, //
-		VisualKeys
-/*
- * PropertyListFactory - should be there
- */ {
-	private PropertyKeys nodeKeys;
-	private PropertyKeys edgeKeys;
+		VisualKeys {
+
+	private TreeGraphFactory factory;
 
 	// Constructors
 	public VisualGraph() {
 		super();
-		/* PropertyListFactory */
-		this.nodeKeys = getNodeKeys();
-		this.edgeKeys = getEdgeKeys();
+		init();
 	}
 
 	public VisualGraph(Iterable<VisualNode> list) {
 		super(list);
+		init();
 	}
 
 	public VisualGraph(VisualNode root) {
 		super(root);
+		init();
+	}
+
+	public VisualGraph(Map<String, String> labels) {
+		super();
+		init();
+	}
+
+	private void init() {
+		this.factory = new TreeGraphFactory();
 	}
 
 	public EdgeFactory getEdgeFactory() {
@@ -77,7 +89,7 @@ public class VisualGraph extends TreeGraph<VisualNode, VisualEdge> implements //
 	}
 
 //	public TreeNodeFactory getTreeFactory() {
-		public VisualGraph getTreeFactory() {
+	public VisualGraph getTreeFactory() {
 		return this;
 	}
 
@@ -86,53 +98,133 @@ public class VisualGraph extends TreeGraph<VisualNode, VisualEdge> implements //
 	// This is disabled because any new node has to be inserted into the tree at the
 	// proper spot. We dont want free-floating nodes in an AOT graph because it's a
 	// tree.
+	
+	// Factory hierarchy needs rewriting. Perhaps Factories2.dia Elements2.dia?
 	@Override
-	public VisualNode makeNode(String arg0, String arg1, ReadOnlyPropertyList arg2) {
-		throw new AotException("Attempt to instantiate an VisualNode outside of the tree context.");
-	}
-
-	// -------------------------------EdgeFactory
-
-	/*
-	 * Attempting to create a node or edge without labels or names should produce an
-	 * exception NOT some self-generated thing.
-	 */
-	@Override
-	public VisualEdge makeEdge(Node start, Node end, String label, String name, ReadOnlyPropertyList properties) {
-		if (properties == null)
-			properties = new SharedPropertyListImpl(edgeKeys);
-		return new VisualEdge(start, end, label, name, (SimplePropertyList) properties, this);
+	public Node makeNode() {
+		throw new TwAppsException("Attempt to instantiate an VisualNode outside of the tree context.");
 	}
 
 	@Override
-	public VisualNode makeTreeNode(TreeNode parent) {
-		return makeTreeNode(parent, null, null, null);
-	}
-
-	// ------------------------- TreeNodeFactory
-
-	@Override
-	public TreeNode makeTreeNode(TreeNode parent, String proposedId, SimplePropertyList properties) {
-		if (properties == null)
-			properties = new SharedPropertyListImpl(nodeKeys);
-		VisualNode node = new VisualNode(label, name, properties, this);
-		if (!nodes.add(node))
-			throw new TwAppsException("Attempt to add duplicate node: " + node.toDetailedString());
-		node.setParent(parent);
-		if (parent != null)
-			parent.addChild(node);
-		return node;
+	public Node makeNode(ReadOnlyPropertyList arg0) {
+		return makeNode();
 	}
 
 	@Override
-	public Edge makeEdge(Node start, Node end, String proposedId, ReadOnlyPropertyList props) {
-		// TODO Auto-generated method stub
-		return null;
+	public Node makeNode(String arg0) {
+		return makeNode();
+	}
+
+	@Override
+	public Node makeNode(Class<? extends Node> arg0) {
+		return makeNode();
+	}
+
+	@Override
+	public Node makeNode(Class<? extends Node> arg0, String arg1) {
+		return makeNode();
+	}
+
+	@Override
+	public Node makeNode(Class<? extends Node> arg0, ReadOnlyPropertyList arg1) {
+		return makeNode();
+	}
+
+	@Override
+	public Node makeNode(Class<? extends Node> arg0, String arg1, ReadOnlyPropertyList arg2) {
+		return makeNode();
 	}
 
 	@Override
 	public Node makeNode(String proposedId, ReadOnlyPropertyList props) {
-		// TODO Auto-generated method stub
-		return null;
+		return makeNode();
 	}
+
+	// -------------------------------EdgeFactory
+
+	@Override
+	public VisualEdge makeEdge(Node start, Node end) {
+		return (VisualEdge) factory.makeEdge(VisualEdge.class, start, end);
+	}
+
+	@Override
+	public VisualEdge makeEdge(Node start, Node end, ReadOnlyPropertyList props) {
+		return (VisualEdge) factory.makeEdge(VisualEdge.class, start, end);
+	}
+
+	@Override
+	public VisualEdge makeEdge(Node start, Node end, String proposedId, ReadOnlyPropertyList props) {
+		return (VisualEdge) factory.makeEdge(VisualEdge.class, start, end, proposedId, props);
+	}
+
+	@Override
+	public VisualEdge makeEdge(Node start, Node end, String proposedId) {
+		return (VisualEdge) factory.makeEdge(AotEdge.class, start, end, proposedId);
+	}
+
+	@Override
+	public Edge makeEdge(Class<? extends Edge> edgeClass, Node start, Node end) {
+		return (VisualEdge) factory.makeEdge(edgeClass, start, end);
+	}
+
+	@Override
+	public Edge makeEdge(Class<? extends Edge> edgeClass, Node start, Node end, String proposedId) {
+		return (VisualEdge) factory.makeEdge(edgeClass, start, end, proposedId);
+	}
+
+	@Override
+	public Edge makeEdge(Class<? extends Edge> edgeClass, Node start, Node end, ReadOnlyPropertyList props) {
+		return (VisualEdge) factory.makeEdge(edgeClass, start, end, props);
+	}
+
+	@Override
+	public Edge makeEdge(Class<? extends Edge> edgeClass, Node start, Node end, String proposedId,
+			ReadOnlyPropertyList props) {
+		return (VisualEdge) factory.makeEdge(edgeClass, start, end, proposedId, props);
+	}
+
+
+	// ------------------------- TreeNodeFactory
+
+	@Override
+	public VisualNode makeTreeNode(TreeNode parent, SimplePropertyList props) {
+		return addNode((VisualNode) factory.makeTreeNode(VisualNode.class, parent, props));
+	}
+
+	@Override
+	public VisualNode makeTreeNode(TreeNode parent) {
+		return addNode((VisualNode) factory.makeTreeNode(VisualNode.class, parent));
+	}
+
+	@Override
+	public VisualNode makeTreeNode(TreeNode parent, String proposedId) {
+		return addNode((VisualNode) factory.makeTreeNode(VisualNode.class, parent, proposedId));
+	}
+
+	@Override
+	public VisualNode makeTreeNode(TreeNode parent, String proposedId, SimplePropertyList props) {
+		return addNode((VisualNode) factory.makeTreeNode(VisualNode.class, parent, proposedId, props));
+	}
+
+	@Override
+	public TreeNode makeTreeNode(Class<? extends TreeNode> nodeClass, TreeNode parent) {
+		return addNode((VisualNode) factory.makeTreeNode(nodeClass, parent));
+	}
+
+	@Override
+	public TreeNode makeTreeNode(Class<? extends TreeNode> nodeClass, TreeNode parent, SimplePropertyList props) {
+		return addNode((VisualNode) factory.makeTreeNode(nodeClass, parent, props));
+	}
+
+	@Override
+	public TreeNode makeTreeNode(Class<? extends TreeNode> nodeClass, TreeNode parent, String proposedId) {
+		return addNode((VisualNode) factory.makeTreeNode(nodeClass, parent, proposedId));
+	}
+
+	@Override
+	public TreeNode makeTreeNode(Class<? extends TreeNode> nodeClass, TreeNode parent, String proposedId,
+			SimplePropertyList props) {
+		return addNode((VisualNode) factory.makeTreeNode(nodeClass, parent, proposedId, props));
+	}
+
 }

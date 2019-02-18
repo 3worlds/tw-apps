@@ -29,6 +29,9 @@
 package au.edu.anu.twapps.dialogs;
 
 import java.io.File;
+import java.util.List;
+
+import javafx.stage.FileChooser.ExtensionFilter;
 
 /**
  * Author Ian Davies
@@ -38,12 +41,12 @@ import java.io.File;
 
 // static methods for dialogs
 public class Dialogs {
-	private static Dialogable impl;
+	private static IDialogs impl;
 	
 	// prevent instantiation
 	private Dialogs() {};
 
-	public static void initialise(Dialogable impl) {
+	public static void initialise(IDialogs impl) {
 		Dialogs.impl = impl;
 	}
 
@@ -66,4 +69,18 @@ public class Dialogs {
 	public static File getExternalProjectFile() {
 		return impl.getExternalProjectFile();
 	}
+	public static boolean confirmation(String title, String header, String content) {
+		return impl.confirmation(title, header, content);
+	}
+
+	public static File getOpenFile(File directory, String title, List<ExtensionFilter> extensions) {
+		// TODO Auto-generated method stub
+		return impl.getOpenFile(directory,title,extensions);
+	}
+
+	public static boolean editList(String title, String header, String content,
+			Object listView) {
+		return impl.editList(title,header,content,listView);
+	}
+
 }

@@ -30,11 +30,13 @@
 package au.edu.anu.twapps.mm;
 
 import java.io.File;
+import java.util.List;
 
-import au.edu.anu.twapps.dialogs.Dialogable;
+import au.edu.anu.twapps.dialogs.IDialogs;
 import au.edu.anu.twapps.dialogs.YesNoCancel;
+import javafx.stage.FileChooser.ExtensionFilter;
 
-public class MockDialogs implements Dialogable{
+public class MockDialogs implements IDialogs{
 
 	@Override
 	public void errorAlert(String title, String header, String content) {
@@ -63,6 +65,25 @@ public class MockDialogs implements Dialogable{
 	public File getExternalProjectFile() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+
+	@Override
+	public boolean confirmation(String title, String header, String content) {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public File getOpenFile(File directory, String title, List<ExtensionFilter> extensions) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean editList(String title, String header, String content, Object listView) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }
