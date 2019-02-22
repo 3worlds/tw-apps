@@ -95,10 +95,10 @@ public class VisualNode extends TreeGraphNode //
 		return (SimplePropertyList) properties.clone();
 	}
 
-//	@Override
-//	public VisualGraph nodeFactory() {
-//		return (VisualGraph) super.nodeFactory();
-//	}
+	@Override
+	public VisualGraph nodeFactory() {
+		return (VisualGraph) super.treeNodeFactory();
+	}
 
 	@Override
 	public String toDetailedString() {
