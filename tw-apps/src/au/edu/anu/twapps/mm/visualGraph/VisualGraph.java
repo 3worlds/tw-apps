@@ -39,6 +39,7 @@ import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.NodeFactory;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.TreeNodeFactory;
+import fr.cnrs.iees.graph.impl.MutableTreeGraphImpl;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphFactory;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
@@ -50,7 +51,7 @@ import fr.ens.biologie.generic.Textable;
  *
  * Date 2 Feb. 2019
  */
-public class VisualGraph extends TreeGraph<VisualNode, VisualEdge> implements //
+public class VisualGraph<N extends VisualNode, E extends VisualEdge> extends MutableTreeGraphImpl<N, E> implements //
 		NodeFactory, //
 		EdgeFactory, //
 		TreeNodeFactory, //
@@ -65,20 +66,6 @@ public class VisualGraph extends TreeGraph<VisualNode, VisualEdge> implements //
 		init();
 	}
 
-	public VisualGraph(Iterable<VisualNode> list) {
-		super(list);
-		init();
-	}
-
-	public VisualGraph(VisualNode root) {
-		super(root);
-		init();
-	}
-
-	public VisualGraph(Map<String, String> labels) {
-		super();
-		init();
-	}
 
 	private void init() {
 		this.factory = new TreeGraphFactory();
@@ -90,7 +77,7 @@ public class VisualGraph extends TreeGraph<VisualNode, VisualEdge> implements //
 
 //	public TreeNodeFactory getTreeFactory() {
 	public VisualGraph getTreeFactory() {
-		return this;
+		return factory;
 	}
 
 	// ---------------------- NODE FACTORY -------------------------
@@ -186,45 +173,50 @@ public class VisualGraph extends TreeGraph<VisualNode, VisualEdge> implements //
 
 	// ------------------------- TreeNodeFactory
 
+	private VisualNode addANode(VisualNode node) {
+		if (!addNode((N) node))
+			throw new TwAppsException("Attempt to add duplicate node");
+		return node;	
+	}
 	@Override
 	public VisualNode makeTreeNode(TreeNode parent, SimplePropertyList props) {
-		return addNode((VisualNode) factory.makeTreeNode(VisualNode.class, parent, props));
+		return addANode((VisualNode) factory.makeTreeNode(VisualNode.class, parent, props));
 	}
 
 	@Override
 	public VisualNode makeTreeNode(TreeNode parent) {
-		return addNode((VisualNode) factory.makeTreeNode(VisualNode.class, parent));
+		return addANode((VisualNode) factory.makeTreeNode(VisualNode.class, parent));
 	}
 
 	@Override
 	public VisualNode makeTreeNode(TreeNode parent, String proposedId) {
-		return addNode((VisualNode) factory.makeTreeNode(VisualNode.class, parent, proposedId));
+		return addANode((VisualNode) factory.makeTreeNode(VisualNode.class, parent, proposedId));
 	}
 
 	@Override
 	public VisualNode makeTreeNode(TreeNode parent, String proposedId, SimplePropertyList props) {
-		return addNode((VisualNode) factory.makeTreeNode(VisualNode.class, parent, proposedId, props));
+		return addANode((VisualNode) factory.makeTreeNode(VisualNode.class, parent, proposedId, props));
 	}
 
 	@Override
 	public TreeNode makeTreeNode(Class<? extends TreeNode> nodeClass, TreeNode parent) {
-		return addNode((VisualNode) factory.makeTreeNode(nodeClass, parent));
+		return addANode((VisualNode) factory.makeTreeNode(nodeClass, parent));
 	}
 
 	@Override
 	public TreeNode makeTreeNode(Class<? extends TreeNode> nodeClass, TreeNode parent, SimplePropertyList props) {
-		return addNode((VisualNode) factory.makeTreeNode(nodeClass, parent, props));
+		return addANode((VisualNode) factory.makeTreeNode(nodeClass, parent, props));
 	}
 
 	@Override
 	public TreeNode makeTreeNode(Class<? extends TreeNode> nodeClass, TreeNode parent, String proposedId) {
-		return addNode((VisualNode) factory.makeTreeNode(nodeClass, parent, proposedId));
+		return addANode((VisualNode) factory.makeTreeNode(nodeClass, parent, proposedId));
 	}
 
 	@Override
 	public TreeNode makeTreeNode(Class<? extends TreeNode> nodeClass, TreeNode parent, String proposedId,
 			SimplePropertyList props) {
-		return addNode((VisualNode) factory.makeTreeNode(nodeClass, parent, proposedId, props));
+		return addANode((VisualNode) factory.makeTreeNode(nodeClass, parent, proposedId, props));
 	}
 
 }
