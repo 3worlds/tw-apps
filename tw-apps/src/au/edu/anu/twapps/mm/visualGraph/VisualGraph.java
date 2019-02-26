@@ -29,8 +29,6 @@
 
 package au.edu.anu.twapps.mm.visualGraph;
 
-import java.util.Map;
-
 import au.edu.anu.rscs.aot.graph.AotEdge;
 import au.edu.anu.twapps.exceptions.TwAppsException;
 import fr.cnrs.iees.graph.Edge;
@@ -40,7 +38,6 @@ import fr.cnrs.iees.graph.NodeFactory;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.TreeNodeFactory;
 import fr.cnrs.iees.graph.impl.MutableTreeGraphImpl;
-import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphFactory;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
@@ -76,7 +73,7 @@ public class VisualGraph<N extends VisualNode, E extends VisualEdge> extends Mut
 	}
 
 //	public TreeNodeFactory getTreeFactory() {
-	public VisualGraph getTreeFactory() {
+	public TreeGraphFactory getTreeFactory() {
 		return factory;
 	}
 
@@ -174,7 +171,7 @@ public class VisualGraph<N extends VisualNode, E extends VisualEdge> extends Mut
 	// ------------------------- TreeNodeFactory
 
 	private VisualNode addANode(VisualNode node) {
-		if (!addNode((N) node))
+		if (!addNode(node))
 			throw new TwAppsException("Attempt to add duplicate node");
 		return node;	
 	}

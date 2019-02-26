@@ -39,6 +39,7 @@ import au.edu.anu.rscs.aot.graph.AotNode;
 import au.edu.anu.rscs.aot.graph.io.AotGraphExporter;
 import au.edu.anu.twapps.dialogs.Dialogs;
 import au.edu.anu.twapps.exceptions.TwAppsException;
+import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualGraph;
 import au.edu.anu.twapps.mm.visualGraph.VisualGraphExporter;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
@@ -57,7 +58,7 @@ import fr.cnrs.iees.twcore.constants.Configuration;
 public class MMModel  implements IMMModel {
 	// Interface supplied to the controller
 	private AotGraph currentGraph;
-	private VisualGraph visualGraph;
+	private VisualGraph<VisualNode,VisualEdge> visualGraph;
 	private IMMController controller;
 	private Checkable checker;
 	// Should we avoid using javafx.beans.property? - make ModelMaker a boolean change listener??
@@ -128,7 +129,7 @@ public class MMModel  implements IMMModel {
 		name = Project.create(name);
 		currentGraph = new AotGraph();
 		currentGraph.makeTreeNode(null, Configuration.N_ROOT+PairIdentity.LABEL_NAME_STR_SEPARATOR+name);
-		visualGraph = new VisualGraph();
+		visualGraph = new VisualGraph<VisualNode, VisualEdge>();
 		visualGraph.makeTreeNode(null, Configuration.N_ROOT+PairIdentity.LABEL_NAME_STR_SEPARATOR+name);
 		visualGraph.root().setPosition(0.1, 0.5);
 		connectConfigToVisual();

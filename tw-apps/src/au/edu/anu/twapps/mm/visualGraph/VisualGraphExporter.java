@@ -52,11 +52,11 @@ public class VisualGraphExporter extends OmugiGraphExporter {
 	public void exportGraph(MinimalGraph<?> graph) {
 		if (VisualGraph.class.isAssignableFrom(graph.getClass())) {
 			header = "aot";
-			exportTreeGraph((VisualGraph)graph);
+			// TODO exportTreeGraph((VisualGraph)graph);
 		}
 	}
 
-	public static void saveGraphToFile(File makeLayoutFile, VisualGraph layoutGraph) {
+	public static void saveGraphToFile(File makeLayoutFile, VisualGraph<?, ?> layoutGraph) {
 		new VisualGraphExporter(Project.makeLayoutFile()).exportGraph(layoutGraph);
 	}
 

@@ -29,6 +29,7 @@
 
 package au.edu.anu.twapps.mm;
 
+import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualGraph;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 
@@ -43,7 +44,7 @@ import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 public interface IMMController {
 	public void onProjectClosing();
 
-	public void onProjectOpened(VisualGraph layoutGraph);
+	public void onProjectOpened(VisualGraph<VisualNode, VisualEdge> layoutGraph);
 	
 	public void onNodeSelected(VisualNode n);
 	
