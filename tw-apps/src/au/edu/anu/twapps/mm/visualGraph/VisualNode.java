@@ -57,6 +57,7 @@ public class VisualNode extends TreeGraphNode //
 			this.properties= new SharedPropertyListImpl(getNodeKeys());
 		}		
 		setCollapse(false);
+		setCategory();
 	}
 	
 	@Override
@@ -97,7 +98,8 @@ public class VisualNode extends TreeGraphNode //
 
 	@Override
 	public VisualGraph nodeFactory() {
-		return (VisualGraph) super.treeNodeFactory();
+//		return (VisualGraph) super.treeNodeFactory();
+		return nodeFactory();
 	}
 
 	@Override
