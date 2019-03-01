@@ -135,6 +135,7 @@ public class MMModel  implements IMMModel {
 		
 		visualGraph = new VisualGraph<VisualNode, VisualEdge>();
 		visualGraph.makeTreeNode(null, rootId);
+		
 		visualGraph.root().setPosition(0.1, 0.5);
 		connectConfigToVisual();
 		onProjectOpened();
