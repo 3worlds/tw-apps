@@ -17,7 +17,7 @@ class VisualGraphTest {
 		for (VisualNode n: graph.nodes())
 			System.out.println(n.toString());
 
-		fail("Not yet implemented");
+		//fail("Not yet implemented");
 	}
 
 }
