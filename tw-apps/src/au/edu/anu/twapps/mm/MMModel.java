@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 import au.edu.anu.rscs.aot.graph.AotGraph;
+
 import au.edu.anu.rscs.aot.graph.AotNode;
 import au.edu.anu.rscs.aot.graph.io.AotGraphExporter;
 import au.edu.anu.twapps.dialogs.Dialogs;
@@ -49,6 +50,7 @@ import au.edu.anu.twcore.specificationCheck.Checkable;
 import fr.cnrs.iees.identity.impl.PairIdentity;
 import fr.cnrs.iees.io.FileImporter;
 import fr.cnrs.iees.twcore.constants.Configuration;
+import fr.cnrs.iees.graph.impl.TreeGraphNode;
 
 /**
  * Author Ian Davies
@@ -127,10 +129,12 @@ public class MMModel  implements IMMModel {
 			Project.close();
 		}
 		name = Project.create(name);
-		currentGraph = new AotGraph();
-		currentGraph.makeTreeNode(null, Configuration.N_ROOT+PairIdentity.LABEL_NAME_STR_SEPARATOR+name);
+		String rootId = Configuration.N_ROOT+PairIdentity.LABEL_NAME_STR_SEPARATOR+name;
+		currentGraph = new AotGraph();	
+		currentGraph.makeTreeNode(null, rootId);
+		
 		visualGraph = new VisualGraph<VisualNode, VisualEdge>();
-		visualGraph.makeTreeNode(null, Configuration.N_ROOT+PairIdentity.LABEL_NAME_STR_SEPARATOR+name);
+		visualGraph.makeTreeNode(null, rootId);
 		visualGraph.root().setPosition(0.1, 0.5);
 		connectConfigToVisual();
 		onProjectOpened();
