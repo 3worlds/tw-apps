@@ -12,7 +12,7 @@ class VisualGraphTest {
 	@Test
 	void test() {
 		String rootId = Configuration.N_ROOT+PairIdentity.LABEL_NAME_STR_SEPARATOR+"Crap";
-		VisualGraph<VisualNode,VisualEdge> graph = new VisualGraph<>();
+		VisualGraph graph = new VisualGraph();
 		graph.makeTreeNode(null, rootId);
 		for (VisualNode n: graph.nodes())
 			System.out.println(n.toString());

@@ -48,7 +48,9 @@ import fr.ens.biologie.generic.Textable;
  *
  * Date 2 Feb. 2019
  */
-public class VisualGraph<N extends VisualNode, E extends VisualEdge> extends MutableTreeGraphImpl<N, E> implements //
+public class VisualGraph extends MutableTreeGraphImpl<VisualNode, VisualEdge>//
+//public class VisualGraph<N extends VisualNode, E extends VisualEdge> extends MutableTreeGraphImpl<N, E>//
+		implements//
 		NodeFactory, //
 		EdgeFactory, //
 		TreeNodeFactory, //
@@ -62,7 +64,6 @@ public class VisualGraph<N extends VisualNode, E extends VisualEdge> extends Mut
 		super();
 		init();
 	}
-
 
 	private void init() {
 		this.factory = new TreeGraphFactory();
@@ -82,7 +83,7 @@ public class VisualGraph<N extends VisualNode, E extends VisualEdge> extends Mut
 	// This is disabled because any new node has to be inserted into the tree at the
 	// proper spot. We dont want free-floating nodes in an AOT graph because it's a
 	// tree.
-	
+
 	// Factory hierarchy needs rewriting. Perhaps Factories2.dia Elements2.dia?
 	@Override
 	public Node makeNode() {
@@ -167,14 +168,14 @@ public class VisualGraph<N extends VisualNode, E extends VisualEdge> extends Mut
 		return (VisualEdge) factory.makeEdge(edgeClass, start, end, proposedId, props);
 	}
 
-
 	// ------------------------- TreeNodeFactory
 
 	private VisualNode addANode(VisualNode node) {
 		if (!addNode(node))
 			throw new TwAppsException("Attempt to add duplicate node");
-		return node;	
+		return node;
 	}
+
 	@Override
 	public VisualNode makeTreeNode(TreeNode parent, SimplePropertyList props) {
 		return addANode((VisualNode) factory.makeTreeNode(VisualNode.class, parent, props));

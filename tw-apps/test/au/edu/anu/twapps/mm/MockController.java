@@ -37,7 +37,7 @@ import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 
 public class MockController implements IMMController{
 	private IMMModel model;
-	private VisualGraph<VisualNode,VisualEdge> graph;
+	private VisualGraph graph;
 	public MockController() {
 		model = new MMModel(this);
 	}
@@ -49,7 +49,7 @@ public class MockController implements IMMController{
 	}
 
 	@Override
-	public void onProjectOpened(VisualGraph<VisualNode, VisualEdge> visualGraph) {
+	public void onProjectOpened(VisualGraph visualGraph) {
 		this.graph=visualGraph;
 		// Here we would build the graph display and populate the property editors
 		System.out.println("onProjectOpened: "+graph.size());	

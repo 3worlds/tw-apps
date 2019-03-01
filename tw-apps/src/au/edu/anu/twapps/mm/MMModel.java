@@ -60,7 +60,7 @@ import fr.cnrs.iees.graph.impl.TreeGraphNode;
 public class MMModel  implements IMMModel {
 	// Interface supplied to the controller
 	private AotGraph currentGraph;
-	private VisualGraph<VisualNode,VisualEdge> visualGraph;
+	private VisualGraph visualGraph;
 	private IMMController controller;
 	private Checkable checker;
 	// Should we avoid using javafx.beans.property? - make ModelMaker a boolean change listener??
@@ -133,7 +133,7 @@ public class MMModel  implements IMMModel {
 		currentGraph = new AotGraph();	
 		currentGraph.makeTreeNode(null, rootId);
 		
-		visualGraph = new VisualGraph<VisualNode, VisualEdge>();
+		visualGraph = new VisualGraph();
 		visualGraph.makeTreeNode(null, rootId);
 		
 		visualGraph.root().setPosition(0.1, 0.5);
