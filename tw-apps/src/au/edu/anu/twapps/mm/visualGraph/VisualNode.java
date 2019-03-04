@@ -41,6 +41,7 @@ import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.TreeNodeFactory;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.identity.Identity;
+import fr.cnrs.iees.identity.impl.PairIdentity;
 import fr.cnrs.iees.properties.PropertyListSetters;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
@@ -53,9 +54,8 @@ public class VisualNode extends TreeGraphNode //
 
 	public VisualNode(Identity id,TreeNodeFactory tnf,  NodeFactory nf, ReadOnlyPropertyList properties) {
 		super(id, tnf, nf, properties);
-		if (properties ==null) {
-			this.properties= new SharedPropertyListImpl(getNodeKeys());
-		}		
+		if (properties ==null) 
+			this.properties= new SharedPropertyListImpl(getNodeKeys());		
 		setCollapse(false);
 		setCategory();
 	}
@@ -178,8 +178,9 @@ public class VisualNode extends TreeGraphNode //
 		setProperty(vnText, text);
 	}
 
-	private String getLabel() {
-		return nodeFactory().nodeClassName(getClass());
+
+	public String getLabel() {
+		return this.id().split(PairIdentity.LABEL_NAME_STR_SEPARATOR)[0];
 	}
 
 	public void setCategory() {
