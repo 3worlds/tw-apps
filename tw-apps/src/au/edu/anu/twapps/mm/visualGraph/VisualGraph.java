@@ -29,16 +29,20 @@
 
 package au.edu.anu.twapps.mm.visualGraph;
 
+import java.util.Map;
+
 import au.edu.anu.rscs.aot.graph.AotEdge;
 import au.edu.anu.twapps.exceptions.TwAppsException;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.EdgeFactory;
 import fr.cnrs.iees.graph.Node;
-import fr.cnrs.iees.graph.NodeFactory;
 import fr.cnrs.iees.graph.TreeNode;
-import fr.cnrs.iees.graph.TreeNodeFactory;
-import fr.cnrs.iees.graph.impl.MutableTreeGraphImpl;
+import fr.cnrs.iees.graph.impl.DefaultEdgeFactory;
+import fr.cnrs.iees.graph.impl.DefaultNodeFactory;
+import fr.cnrs.iees.graph.impl.DefaultTreeNodeFactory;
+import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphFactory;
+import fr.cnrs.iees.identity.IdentityScope;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.ens.biologie.generic.Textable;
@@ -48,12 +52,11 @@ import fr.ens.biologie.generic.Textable;
  *
  * Date 2 Feb. 2019
  */
-public class VisualGraph extends MutableTreeGraphImpl<VisualNode, VisualEdge>//
-//public class VisualGraph<N extends VisualNode, E extends VisualEdge> extends MutableTreeGraphImpl<N, E>//
+public class VisualGraph extends TreeGraph<VisualNode, VisualEdge>//
 		implements//
-		NodeFactory, //
-		EdgeFactory, //
-		TreeNodeFactory, //
+		DefaultNodeFactory, //
+		DefaultEdgeFactory, //
+		DefaultTreeNodeFactory, //
 		Textable, //
 		VisualKeys {
 
@@ -65,9 +68,25 @@ public class VisualGraph extends MutableTreeGraphImpl<VisualNode, VisualEdge>//
 		init();
 	}
 
+	public VisualGraph(Iterable<VisualNode> list) {
+		super(list);
+		init();
+	}
+	
+	public VisualGraph(Map<String,String> labels) {
+		super();
+		init();
+	}
+	
+	public VisualGraph(VisualNode root) {
+		//???
+		super(root);
+		init();
+	}
 	private void init() {
 		this.factory = new TreeGraphFactory();
 	}
+	
 
 	public EdgeFactory getEdgeFactory() {
 		return this;
@@ -171,9 +190,11 @@ public class VisualGraph extends MutableTreeGraphImpl<VisualNode, VisualEdge>//
 	// ------------------------- TreeNodeFactory
 
 	private VisualNode addANode(VisualNode node) {
-		if (!addNode(node))
+		if (nodes.add(node))
+			return node;
+				
+		else
 			throw new TwAppsException("Attempt to add duplicate node");
-		return node;
 	}
 
 	@Override
@@ -215,6 +236,12 @@ public class VisualGraph extends MutableTreeGraphImpl<VisualNode, VisualEdge>//
 	public TreeNode makeTreeNode(Class<? extends TreeNode> nodeClass, TreeNode parent, String proposedId,
 			SimplePropertyList props) {
 		return addANode((VisualNode) factory.makeTreeNode(nodeClass, parent, proposedId, props));
+	}
+
+	@Override
+	public IdentityScope scope() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
