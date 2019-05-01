@@ -142,10 +142,18 @@ public class MMModel  implements IMMModel {
 		doSave();
 	}
 
+	private AotNode findMatchingId(String id) {
+		for (AotNode n:currentGraph.nodes()) {
+			if (id.equals(n.id()))
+				return n;
+		}
+		return null;
+	}
 	//TODO deal with out nodes
 	private void connectConfigToVisual() {
 		for (VisualNode vn : visualGraph.nodes()) {
-			AotNode n = currentGraph.findNodeByReference(vn.id());
+			//AotNode n = currentGraph.findNodeByReference(vn.id());
+			AotNode n = findMatchingId(vn.id());
 			if (n == null)
 				throw new TwAppsException("Unable to find " + vn.id() + " in currentGraph");
 			vn.setConfigNode(n);

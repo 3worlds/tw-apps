@@ -56,8 +56,8 @@ public class VisualGraphExporter extends OmugiGraphExporter {
 		}
 	}
 
-	public static void saveGraphToFile(File makeLayoutFile, VisualGraph layoutGraph) {
-		new VisualGraphExporter(Project.makeLayoutFile()).exportGraph(layoutGraph);
+	public static void saveGraphToFile(File file, VisualGraph layoutGraph) {
+		new VisualGraphExporter(file).exportGraph(layoutGraph);
 	}
 
 }
