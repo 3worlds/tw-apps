@@ -39,7 +39,6 @@ import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.PropertyListSetters;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
-import javafx.scene.text.Text;
 
 public class VisualEdge extends SimpleEdgeImpl implements SimplePropertyList,VisualKeys{
 	private AotEdge configEdge;
@@ -76,9 +75,9 @@ public class VisualEdge extends SimpleEdgeImpl implements SimplePropertyList,Vis
 		setProperty(veText, t);
 	}
 
-	public void setVisualElements(Object l, Text t) {
-		setSymbol(l);
-		setText(t);
+	public void setVisualElements(Object line, Object text) {
+		setSymbol(line);
+		setText(text);
 	}
 
 	@Override
