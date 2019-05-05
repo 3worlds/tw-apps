@@ -32,7 +32,7 @@ package au.edu.anu.twapps.dialogs;
 import java.io.File;
 import java.util.List;
 
-import javafx.stage.FileChooser.ExtensionFilter;
+//import javafx.stage.FileChooser.ExtensionFilter;
 
 /**
  * Author Ian Davies
@@ -57,7 +57,7 @@ public interface IDialogs {
 	public boolean confirmation(String title, String header, String content);
 
 	// ExtenstionFilter is javafx!!
-	public File getOpenFile(File directory, String title, List<ExtensionFilter> extensions);
+	public File getOpenFile(File directory, String title, Object extList);
 
 	public boolean editList(String title, String header, String content, Object listView);
 

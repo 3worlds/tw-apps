@@ -34,7 +34,6 @@ import java.util.List;
 
 import au.edu.anu.twapps.dialogs.IDialogs;
 import au.edu.anu.twapps.dialogs.YesNoCancel;
-import javafx.stage.FileChooser.ExtensionFilter;
 
 public class MockDialogs implements IDialogs{
 
@@ -75,8 +74,8 @@ public class MockDialogs implements IDialogs{
 	}
 
 	@Override
-	public File getOpenFile(File directory, String title, List<ExtensionFilter> extensions) {
-		// TODO Auto-generated method stub
+	public File getOpenFile(File directory, String title, Object extensions) {
+		// TODO List<ExtensionFilter> extensionsAuto-generated method stub
 		return null;
 	}
 

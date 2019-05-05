@@ -29,9 +29,7 @@
 package au.edu.anu.twapps.dialogs;
 
 import java.io.File;
-import java.util.List;
 
-import javafx.stage.FileChooser.ExtensionFilter;
 
 /**
  * Author Ian Davies
@@ -73,7 +71,7 @@ public class Dialogs {
 		return impl.confirmation(title, header, content);
 	}
 
-	public static File getOpenFile(File directory, String title, List<ExtensionFilter> extensions) {
+	public static File getOpenFile(File directory, String title, Object extensions) {
 		// TODO Auto-generated method stub
 		return impl.getOpenFile(directory,title,extensions);
 	}
