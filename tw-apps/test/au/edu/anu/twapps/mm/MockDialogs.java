@@ -30,8 +30,6 @@
 package au.edu.anu.twapps.mm;
 
 import java.io.File;
-import java.util.List;
-
 import au.edu.anu.twapps.dialogs.IDialogs;
 import au.edu.anu.twapps.dialogs.YesNoCancel;
 
