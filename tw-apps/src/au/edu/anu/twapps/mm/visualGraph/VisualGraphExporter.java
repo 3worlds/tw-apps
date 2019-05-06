@@ -29,7 +29,6 @@
 package au.edu.anu.twapps.mm.visualGraph;
 
 import java.io.File;
-import au.edu.anu.twcore.project.Project;
 import fr.cnrs.iees.graph.MinimalGraph;
 import fr.cnrs.iees.graph.io.impl.OmugiGraphExporter;
 

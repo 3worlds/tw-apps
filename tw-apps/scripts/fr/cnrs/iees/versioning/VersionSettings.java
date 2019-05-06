@@ -59,13 +59,6 @@ public class VersionSettings {
 			{"fr.cnrs.iees.tw-core", "tw-core", "[0.1.0,)", null},
 			{"au.edu.anu.rscs.aot", "aot", "[0.1.0,)", null},
 			{"org.apache.commons", "commons-text", "1.+", null},
-			{"org.openjfx", "javafx-fxml", "11+", "_os"},
-			{"org.openjfx", "javafx-controls", "11+", "_os"},
-			{"org.openjfx", "javafx-graphics", "11+", "_os"},
-			{"org.openjfx", "javafx-base", "11+", "_os"},
-			{"org.openjfx", "javafx-web", "11+", "_os"},
-			{"org.openjfx", "javafx-media", "11+", "_os"},
-			{"org.openjfx", "javafx-swing", "11+", "_os"},
 	};
 	
 	/** The name of the main class to put in the jar manifest, if any. This enables users to
