@@ -1,5 +1,5 @@
 <!--===================================================================================
- ant and ivy scripts for project <tw-apps> version 0.0.12 (Mon May 06 11:22:16 CEST 2019)
+ ant and ivy scripts for project <tw-apps> version 0.0.11 (Fri May 03 16:29:46 CEST 2019)
  author: Jacques Gignoux <jacques.gignoux@upmc.fr>
 
  CAUTION: this file is generated - DO NOT EDIT!
@@ -36,18 +36,13 @@
 
 	<target name="makeJar" description="pack as a jar library" depends="makeArtifactDir,resolve">
 		<jar destfile="${jarlib}/${project}.jar">
-			<fileset dir="bin"> 
-				<exclude name="**/*Version*.*"/>
-				<exclude name="**/LicenseManager.*"/>
-				<exclude name="**/current-version.txt"/>
-				<exclude name="**/*Test.class"/>
-				<exclude name="**/*.xml"/>
-				</fileset>
+			<fileset dir="bin" 
+				excludes="**/VersionManager.*,**/LicenseManager.*,**/current-version.txt,**/*.xml,**/*Test.class"/>
 			<fileset dir="src"/>
 			<manifest>
 				<attribute name="Implementation-Vendor" value="CNRS/ANU"/>
 				<attribute name="Implementation-Title" value="au.edu.anu.tw-apps"/>
-				<attribute name="Implementation-Version" value="0.0.12"/>
+				<attribute name="Implementation-Version" value="0.0.11"/>
 				<attribute name="Built-By" value="${user.name}"/>
  			</manifest>
 		</jar>
