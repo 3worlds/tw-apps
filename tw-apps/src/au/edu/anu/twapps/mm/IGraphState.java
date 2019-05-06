@@ -26,30 +26,16 @@
  *  along with TW-APPS.                                                   *
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
   **************************************************************************/
-
 package au.edu.anu.twapps.mm;
+
 
 /**
  * @author Ian Davies
  *
- *         Date May 6, 2019
+ * @date May 6, 2019
  */
-public class GraphState {
-	private static IGraphState impl;
-
-	private GraphState() {
-	};
-
-	public static void initialise(IGraphState impl) {
-		GraphState.impl = impl;
-	}
-
-	public static boolean hasChanged() {
-		return impl.hasChanged();
-	}
-
-	public static void setState(boolean state) {
-		impl.setChanged(state);
-	}
+public interface IGraphState {
+	public boolean hasChanged();
+	public void setChanged(boolean state);
 
 }
