@@ -48,7 +48,7 @@ public class GraphState {
 		return impl.hasChanged();
 	}
 
-	public static void setState(boolean state) {
+	public static void setChanged(boolean state) {
 		impl.setChanged(state);
 	}
 
