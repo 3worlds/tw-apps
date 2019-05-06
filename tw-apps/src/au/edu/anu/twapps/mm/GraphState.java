@@ -29,69 +29,27 @@
 
 package au.edu.anu.twapps.mm;
 
-import au.edu.anu.twcore.project.Project;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-
 /**
- * Author Ian Davies
+ * @author Ian Davies
  *
- * Date 14 Dec. 2018
+ *         Date May 6, 2019
  */
 public class GraphState {
-//	private static boolean hasChanged = false;
-	private static BooleanProperty propertyHasChanged = new SimpleBooleanProperty(false);
-	private static StringProperty propertyTitle = new SimpleStringProperty("");
-	private static StringProperty propertyJavaPath= new SimpleStringProperty("");
+	private static IGraphState impl;
+
+	private GraphState() {
+	};
+
+	public static void initialise(IGraphState impl) {
+		GraphState.impl = impl;
+	}
 
 	public static boolean hasChanged() {
-		return propertyHasChanged.getValue();
+		return impl.hasChanged();
 	}
 
-	public static void setTitleProperty(StringProperty tp, StringProperty pp) {
-		propertyTitle = tp;
-		propertyJavaPath = pp;
-		if (propertyJavaPath != null)
-			propertyJavaPath.addListener(new ChangeListener<String>() {
-
-				@Override
-				public void changed(@SuppressWarnings("rawtypes") ObservableValue observable, String oldValue,
-						String newValue) {
-					setTitle();
-				}
-			});
-		setTitle();
-	}
-
-	private static void setTitle() {
-//		Platform.runLater(() -> {
-			String title = null;
-			if (Project.isOpen()) {
-				title = Project.getDisplayName();
-				if (hasChanged())
-					title = "*" + title;
-				if (propertyTitle != null) {
-					if (propertyJavaPath != null) {
-						if (!propertyJavaPath.get().equals("")) {
-							title = title + "<o-o-o>" + propertyJavaPath.get();
-						}
-					}
-					propertyTitle.setValue(title);
-				}
-			}
-//		});
-
-	}
-
-	public static void isChanged(boolean b) {
-		// TODO Need a BooleanProperty with listeners but there is a circularity problem
-		// with StringProperties
-		propertyHasChanged.set(b);
-		setTitle();
+	public static void setChanged(boolean state) {
+		impl.setChanged(state);
 	}
 
 }

@@ -26,88 +26,16 @@
  *  along with TW-APPS.                                                   *
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
   **************************************************************************/
+package au.edu.anu.twapps.mm;
 
-package au.edu.anu.twapps.mm.visualGraph;
 
-import java.util.Set;
-
-import au.edu.anu.rscs.aot.graph.AotEdge;
-import au.edu.anu.twapps.exceptions.TwAppsException;
-import fr.cnrs.iees.graph.Node;
-import fr.cnrs.iees.graph.impl.SimpleEdgeImpl;
-import fr.cnrs.iees.identity.Identity;
-import fr.cnrs.iees.properties.PropertyListSetters;
-import fr.cnrs.iees.properties.SimplePropertyList;
-import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
-
-public class VisualEdge extends SimpleEdgeImpl implements SimplePropertyList,VisualKeys{
-	private AotEdge configEdge;
-	private SimplePropertyList properties;
-
-	protected VisualEdge(Identity id,Node start, Node end, String label, String name, SimplePropertyList props,
-			VisualGraph factory) {
-		super(id,start, end, factory);
-		
-		this.properties = props;
-		if (properties==null)
-			properties = new SharedPropertyListImpl(getEdgeKeys());
-	}
-
-	public void setConfigEdge(AotEdge configEdge) {
-		this.configEdge = configEdge;
-	}
-
-	public AotEdge getConfigEdge() {
-		return configEdge;
-	}
-	
-	public Object getText() {
-		return this.getPropertyValue(veText);
-	}
-	private void setSymbol(Object s) {
-		if (getPropertyValue(veSymbol) != null) 
-			throw new TwAppsException("Attempt to overwrite edge symbol " + id());
-		setProperty(veSymbol, s);
-	}
-	private void setText(Object t) {
-		if (getPropertyValue(veText) != null) 
-			throw new TwAppsException("Attempt to overwrite edge text " + id());
-		setProperty(veText, t);
-	}
-
-	public void setVisualElements(Object line, Object text) {
-		setSymbol(line);
-		setText(text);
-	}
-
-	@Override
-	public PropertyListSetters setProperty(String key, Object value) {
-		return ((PropertyListSetters) properties).setProperty(key, value);
-	}
-
-	@Override
-	public Object getPropertyValue(String key) {
-		return properties.getPropertyValue(key);
-	}
-
-	@Override
-	public boolean hasProperty(String key) {
-		return properties.hasProperty(key);
-	}
-
-	@Override
-	public Set<String> getKeysAsSet() {
-		return properties.getKeysAsSet();
-	}
-
-	@Override
-	public int size() {
-		return properties.size();
-	}
-
-	@Override
-	public SimplePropertyList clone() {
-		return (SimplePropertyList) properties.clone();
-	}
+/**
+ * @author Ian Davies
+ *
+ * @date May 6, 2019
+ */
+public interface IGraphState {
+	public boolean hasChanged();
+	public void setChanged(boolean state);
 
 }

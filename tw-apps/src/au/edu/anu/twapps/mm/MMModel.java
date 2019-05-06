@@ -177,7 +177,7 @@ public class MMModel  implements IMMModel {
 	public void doSave() {
 		new AotGraphExporter(Project.makeConfigurationFile()).exportGraph(currentGraph);
 		VisualGraphExporter.saveGraphToFile(Project.makeLayoutFile(), visualGraph);
-		GraphState.isChanged(false);
+		GraphState.setChanged(false);
 	}
 
 	@Override
