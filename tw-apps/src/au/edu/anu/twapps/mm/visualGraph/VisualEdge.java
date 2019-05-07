@@ -31,8 +31,8 @@ package au.edu.anu.twapps.mm.visualGraph;
 
 import java.util.Set;
 
-import au.edu.anu.rscs.aot.graph.AotEdge;
 import au.edu.anu.twapps.exceptions.TwAppsException;
+import fr.cnrs.iees.graph.DataEdge;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.impl.SimpleEdgeImpl;
 import fr.cnrs.iees.identity.Identity;
@@ -41,7 +41,7 @@ import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
 
 public class VisualEdge extends SimpleEdgeImpl implements SimplePropertyList,VisualKeys{
-	private AotEdge configEdge;
+	private DataEdge configEdge;
 	private SimplePropertyList properties;
 
 	protected VisualEdge(Identity id,Node start, Node end, String label, String name, SimplePropertyList props,
@@ -53,11 +53,11 @@ public class VisualEdge extends SimpleEdgeImpl implements SimplePropertyList,Vis
 			properties = new SharedPropertyListImpl(getEdgeKeys());
 	}
 
-	public void setConfigEdge(AotEdge configEdge) {
+	public void setConfigEdge(DataEdge configEdge) {
 		this.configEdge = configEdge;
 	}
 
-	public AotEdge getConfigEdge() {
+	public DataEdge getConfigEdge() {
 		return configEdge;
 	}
 	

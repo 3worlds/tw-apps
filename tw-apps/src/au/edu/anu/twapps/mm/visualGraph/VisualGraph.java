@@ -31,7 +31,7 @@ package au.edu.anu.twapps.mm.visualGraph;
 
 import java.util.Map;
 
-import au.edu.anu.rscs.aot.graph.AotEdge;
+//import au.edu.anu.rscs.aot.graph.AotEdge;
 import au.edu.anu.twapps.exceptions.TwAppsException;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.EdgeFactory;
@@ -163,7 +163,7 @@ public class VisualGraph extends TreeGraph<VisualNode, VisualEdge>//
 
 	@Override
 	public VisualEdge makeEdge(Node start, Node end, String proposedId) {
-		return (VisualEdge) factory.makeEdge(AotEdge.class, start, end, proposedId);
+		return (VisualEdge) factory.makeEdge(VisualEdge.class, start, end, proposedId);
 	}
 
 	@Override

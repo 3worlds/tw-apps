@@ -31,21 +31,27 @@ package au.edu.anu.twapps.mm;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import au.edu.anu.rscs.aot.graph.AotGraph;
-
-import au.edu.anu.rscs.aot.graph.AotNode;
-import au.edu.anu.rscs.aot.graph.io.AotGraphExporter;
 import au.edu.anu.twapps.dialogs.Dialogs;
 import au.edu.anu.twapps.exceptions.TwAppsException;
+import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualGraph;
 import au.edu.anu.twapps.mm.visualGraph.VisualGraphExporter;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.specificationCheck.CheckImpl;
 import au.edu.anu.twcore.specificationCheck.Checkable;
+import fr.cnrs.iees.graph.DataEdge;
+import fr.cnrs.iees.graph.DataNode;
+import fr.cnrs.iees.graph.Graph;
+import fr.cnrs.iees.graph.Node;
+import fr.cnrs.iees.graph.impl.MutableTreeGraphImpl;
+import fr.cnrs.iees.graph.impl.TreeGraph;
+import fr.cnrs.iees.graph.impl.TreeGraphNode;
+import fr.cnrs.iees.graph.io.impl.OmugiGraphExporter;
 import fr.cnrs.iees.identity.impl.PairIdentity;
 import fr.cnrs.iees.io.FileImporter;
 import fr.cnrs.iees.twcore.constants.Configuration;
@@ -57,7 +63,7 @@ import fr.cnrs.iees.twcore.constants.Configuration;
  */
 public class MMModel  implements IMMModel {
 	// Interface supplied to the controller
-	private AotGraph currentGraph;
+	private /*WhatTypeOfGraphAmI*/ TreeGraph currentGraph;
 	private VisualGraph visualGraph;
 	private IMMController controller;
 	private Checkable checker;
@@ -75,7 +81,8 @@ public class MMModel  implements IMMModel {
 
 	private void onProjectOpened() {
 		//TODO sort this out
-		Checkable checker = new CheckImpl(currentGraph); 
+		// update status of the opened graph?
+		//new CheckImpl(currentGraph); 
 		controller.onProjectOpened(visualGraph);
 		
 	}
@@ -128,9 +135,11 @@ public class MMModel  implements IMMModel {
 		}
 		name = Project.create(name);
 		String rootId = Configuration.N_ROOT+PairIdentity.LABEL_NAME_STR_SEPARATOR+name;
-		currentGraph = new AotGraph();	
-		currentGraph.makeTreeNode(null, rootId);
-		
+		currentGraph = new TreeGraph<TreeGraphNode,DataEdge>(/*List of classes*/); //how should be construct this graph??
+		// how do we construct nodes
+		//currentGraph.makeTreeNode(null, rootId);
+		// visualGraph can be the same when we figure all this out!?
+		//visualGraph = new TreeGraph<VisualNode,VisualEdge>();
 		visualGraph = new VisualGraph();
 		visualGraph.makeTreeNode(null, rootId);
 		
@@ -140,8 +149,8 @@ public class MMModel  implements IMMModel {
 		doSave();
 	}
 
-	private AotNode findMatchingId(String id) {
-		for (AotNode n:currentGraph.nodes()) {
+	private TreeGraphNode findMatchingId(String id) {
+		for (TreeGraphNode n: (Iterable<TreeGraphNode>) currentGraph.nodes()) {
 			if (id.equals(n.id()))
 				return n;
 		}
@@ -151,7 +160,7 @@ public class MMModel  implements IMMModel {
 	private void connectConfigToVisual() {
 		for (VisualNode vn : visualGraph.nodes()) {
 			//AotNode n = currentGraph.findNodeByReference(vn.id());
-			AotNode n = findMatchingId(vn.id());
+			TreeGraphNode n = findMatchingId(vn.id());
 			if (n == null)
 				throw new TwAppsException("Unable to find " + vn.id() + " in currentGraph");
 			vn.setConfigNode(n);
@@ -167,7 +176,7 @@ public class MMModel  implements IMMModel {
 		if (Project.isOpen())
 			onProjectClosing();
 		Project.open(file);
-		currentGraph = (AotGraph) FileImporter.loadGraphFromFile(Project.makeConfigurationFile());
+		currentGraph = (TreeGraph<TreeGraphNode,DataEdge>) FileImporter.loadGraphFromFile(Project.makeConfigurationFile());
 		visualGraph = (VisualGraph) FileImporter.loadGraphFromFile(Project.makeLayoutFile());
 		connectConfigToVisual();
 		onProjectOpened();
@@ -175,7 +184,7 @@ public class MMModel  implements IMMModel {
 
 	@Override
 	public void doSave() {
-		new AotGraphExporter(Project.makeConfigurationFile()).exportGraph(currentGraph);
+		new OmugiGraphExporter(Project.makeConfigurationFile()).exportGraph(currentGraph);
 		VisualGraphExporter.saveGraphToFile(Project.makeLayoutFile(), visualGraph);
 		GraphState.setChanged(false);
 	}

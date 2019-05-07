@@ -31,7 +31,6 @@ package au.edu.anu.twapps.mm.visualGraph;
 
 import java.util.Set;
 
-import au.edu.anu.rscs.aot.graph.AotNode;
 import au.edu.anu.twapps.exceptions.TwAppsException;
 import au.edu.anu.twcore.archetype.PrimaryTreeLabels;
 import fr.cnrs.iees.graph.Direction;
@@ -50,7 +49,7 @@ import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
 public class VisualNode extends TreeGraphNode //
 		implements SimplePropertyList, VisualKeys {
 
-	private AotNode configNode;
+	private TreeGraphNode configNode;
 
 	public VisualNode(Identity id,TreeNodeFactory tnf,  NodeFactory nf, ReadOnlyPropertyList properties) {
 		super(id, tnf, nf, properties);
@@ -137,11 +136,11 @@ public class VisualNode extends TreeGraphNode //
 	}
 
 
-	public void setConfigNode(AotNode configNode) {
+	public void setConfigNode(TreeGraphNode configNode) {
 		this.configNode = configNode;
 	}
 
-	public AotNode getConfigNode() {
+	public TreeGraphNode getConfigNode() {
 		return configNode;
 	}
 
