@@ -42,6 +42,8 @@ import au.edu.anu.twcore.project.Project;
 class ModelMakerTest {
 	MockController c;
 
+	// TODO this is not the right annotation
+	//https://junit.org/junit5/docs/current/user-guide/
 	@BeforeEach
 	public void init() {
 		Dialogs.initialise(new MockDialogs());
