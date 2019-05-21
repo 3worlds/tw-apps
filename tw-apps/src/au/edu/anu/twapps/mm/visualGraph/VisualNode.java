@@ -35,24 +35,32 @@ import au.edu.anu.twapps.exceptions.TwAppsException;
 import au.edu.anu.twcore.archetype.PrimaryTreeLabels;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
-import fr.cnrs.iees.graph.NodeFactory;
+import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.TreeNode;
-import fr.cnrs.iees.graph.TreeNodeFactory;
+import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.identity.impl.PairIdentity;
 import fr.cnrs.iees.properties.PropertyListSetters;
-import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
 
-public class VisualNode extends TreeGraphNode //
+public class VisualNode extends TreeGraphDataNode //
 		implements SimplePropertyList, VisualKeys {
 
 	private TreeGraphNode configNode;
+	private SimplePropertyList properties;
 
-	public VisualNode(Identity id,TreeNodeFactory tnf,  NodeFactory nf, ReadOnlyPropertyList properties) {
-		super(id, tnf, nf, properties);
+	public VisualNode(Identity id, SimplePropertyList properties, GraphFactory gf) {
+		super(id, properties, gf);
+		if (properties ==null) 
+			this.properties= new SharedPropertyListImpl(getNodeKeys());		
+		setCollapse(false);
+		setCategory();
+	}
+
+	public VisualNode(Identity id, GraphFactory gf) {
+		super(id, null, gf);
 		if (properties ==null) 
 			this.properties= new SharedPropertyListImpl(getNodeKeys());		
 		setCollapse(false);
@@ -114,12 +122,12 @@ public class VisualNode extends TreeGraphNode //
 				sb.append(" ↓").append(n.toUniqueString());
 			}
 		}
-		if (getEdges(Direction.IN).iterator().hasNext()) {
-			for (Edge e : getEdges(Direction.IN))
+		if (edges(Direction.IN).iterator().hasNext()) {
+			for (Edge e : edges(Direction.IN))
 				sb.append(" ←").append(e.startNode().toUniqueString());
 		}
-		if (getEdges(Direction.OUT).iterator().hasNext()) {
-			for (Edge e : getEdges(Direction.OUT))
+		if (edges(Direction.OUT).iterator().hasNext()) {
+			for (Edge e : edges(Direction.OUT))
 				sb.append(" →").append(e.endNode().toUniqueString());
 		}
 		if (size() > 0)

@@ -29,22 +29,16 @@
 
 package au.edu.anu.twapps.mm.visualGraph;
 
-import java.util.Map;
-
-//import au.edu.anu.rscs.aot.graph.AotEdge;
-import au.edu.anu.twapps.exceptions.TwAppsException;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.EdgeFactory;
 import fr.cnrs.iees.graph.Node;
+import fr.cnrs.iees.graph.NodeFactory;
+import fr.cnrs.iees.graph.NodeSet;
 import fr.cnrs.iees.graph.TreeNode;
-import fr.cnrs.iees.graph.impl.DefaultEdgeFactory;
-import fr.cnrs.iees.graph.impl.DefaultNodeFactory;
-import fr.cnrs.iees.graph.impl.DefaultTreeNodeFactory;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphFactory;
-import fr.cnrs.iees.identity.IdentityScope;
+import fr.cnrs.iees.properties.PropertyListFactory;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
-import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.ens.biologie.generic.Textable;
 
 /**
@@ -54,38 +48,40 @@ import fr.ens.biologie.generic.Textable;
  */
 public class VisualGraph extends TreeGraph<VisualNode, VisualEdge>//
 		implements//
-		DefaultNodeFactory, //
-		DefaultEdgeFactory, //
-		DefaultTreeNodeFactory, //
+		NodeFactory, //
+		EdgeFactory, //
+		PropertyListFactory, //
 		Textable, //
 		VisualKeys {
 
-	private TreeGraphFactory factory;
+	private TreeGraphFactory factory = null;
 
 	// Constructors
-	public VisualGraph() {
-		super();
-		init();
+	public VisualGraph(TreeGraphFactory factory) {
+		super(factory);
+		this.factory = factory;
+		this.factory.manageGraph(this); // means all new nodes will be added to the graph
+//		init();
 	}
 
-	public VisualGraph(Iterable<VisualNode> list) {
-		super(list);
-		init();
-	}
-	
-	public VisualGraph(Map<String,String> labels) {
-		super();
-		init();
-	}
-	
-	public VisualGraph(VisualNode root) {
-		//???
-		super(root);
-		init();
-	}
-	private void init() {
-		this.factory = new TreeGraphFactory();
-	}
+//	public VisualGraph(Iterable<VisualNode> list) {
+//		super(list);
+//		init();
+//	}
+//	
+//	public VisualGraph(Map<String,String> labels) {
+//		super();
+//		init();
+//	}
+//	
+//	public VisualGraph(VisualNode root) {
+//		//???
+//		super(root);
+//		init();
+//	}
+////	private void init() {
+//		this.factory = new TreeGraphFactory();
+//	}
 	
 
 	public EdgeFactory getEdgeFactory() {
@@ -104,45 +100,53 @@ public class VisualGraph extends TreeGraph<VisualNode, VisualEdge>//
 	// tree.
 
 	// Factory hierarchy needs rewriting. Perhaps Factories2.dia Elements2.dia?
-	@Override
-	public Node makeNode() {
-		throw new TwAppsException("Attempt to instantiate an VisualNode outside of the tree context.");
-	}
-
-	@Override
-	public Node makeNode(ReadOnlyPropertyList arg0) {
-		return makeNode();
-	}
-
-	@Override
-	public Node makeNode(String arg0) {
-		return makeNode();
-	}
-
-	@Override
-	public Node makeNode(Class<? extends Node> arg0) {
-		return makeNode();
-	}
-
-	@Override
-	public Node makeNode(Class<? extends Node> arg0, String arg1) {
-		return makeNode();
-	}
-
-	@Override
-	public Node makeNode(Class<? extends Node> arg0, ReadOnlyPropertyList arg1) {
-		return makeNode();
-	}
-
-	@Override
-	public Node makeNode(Class<? extends Node> arg0, String arg1, ReadOnlyPropertyList arg2) {
-		return makeNode();
-	}
-
-	@Override
-	public Node makeNode(String proposedId, ReadOnlyPropertyList props) {
-		return makeNode();
-	}
+	
+	// CAUTION HERE ! 21/5/2019
+	// JG: this is no longer valid. Now you must first make the TreeNode with one 
+	// of the makeNode() methods and then connect it to its parent with 
+	// TreeNode.connectParent(parent), which takes care of both the parent and the child's
+	// inner fields
+	// by default all TreeNode are instantiated as root nodes.
+	
+//	@Override
+//	public Node makeNode() {
+//		throw new TwAppsException("Attempt to instantiate an VisualNode outside of the tree context.");
+//	}
+//
+//	@Override
+//	public Node makeNode(ReadOnlyPropertyList arg0) {
+//		return makeNode();
+//	}
+//
+//	@Override
+//	public Node makeNode(String arg0) {
+//		return makeNode();
+//	}
+//
+//	@Override
+//	public Node makeNode(Class<? extends Node> arg0) {
+//		return makeNode();
+//	}
+//
+//	@Override
+//	public Node makeNode(Class<? extends Node> arg0, String arg1) {
+//		return makeNode();
+//	}
+//
+//	@Override
+//	public Node makeNode(Class<? extends Node> arg0, ReadOnlyPropertyList arg1) {
+//		return makeNode();
+//	}
+//
+//	@Override
+//	public Node makeNode(Class<? extends Node> arg0, String arg1, ReadOnlyPropertyList arg2) {
+//		return makeNode();
+//	}
+//
+//	@Override
+//	public Node makeNode(String proposedId, ReadOnlyPropertyList props) {
+//		return makeNode();
+//	}
 
 	// -------------------------------EdgeFactory
 
@@ -189,59 +193,66 @@ public class VisualGraph extends TreeGraph<VisualNode, VisualEdge>//
 
 	// ------------------------- TreeNodeFactory
 
-	private VisualNode addANode(VisualNode node) {
-		if (nodes.add(node))
-			return node;
-				
-		else
-			throw new TwAppsException("Attempt to add duplicate node");
+// JG:this is no longer needed as the factory adds the node to its managed graphs (cf the
+// 'manageGraph()' method down below
+	
+//	private VisualNode (VisualNode node) {
+//		if (nodes.add(node))
+//			return node;
+//				
+//		else
+//			throw new TwAppsException("Attempt to add duplicate node");
+//	}
+
+	@Override
+	public VisualNode makeNode(ReadOnlyPropertyList props) {
+		return (VisualNode) factory.makeNode(VisualNode.class, props);
 	}
 
 	@Override
-	public VisualNode makeTreeNode(TreeNode parent, SimplePropertyList props) {
-		return addANode((VisualNode) factory.makeTreeNode(VisualNode.class, parent, props));
+	public VisualNode makeNode() {
+		return (VisualNode) factory.makeNode(VisualNode.class);
 	}
 
 	@Override
-	public VisualNode makeTreeNode(TreeNode parent) {
-		return addANode((VisualNode) factory.makeTreeNode(VisualNode.class, parent));
+	public VisualNode makeNode(String proposedId) {
+		return (VisualNode) factory.makeNode(VisualNode.class, proposedId);
 	}
 
 	@Override
-	public VisualNode makeTreeNode(TreeNode parent, String proposedId) {
-		return addANode((VisualNode) factory.makeTreeNode(VisualNode.class, parent, proposedId));
+	public VisualNode makeNode(String proposedId, ReadOnlyPropertyList props) {
+		return (VisualNode) factory.makeNode(VisualNode.class, proposedId, props);
 	}
 
 	@Override
-	public VisualNode makeTreeNode(TreeNode parent, String proposedId, SimplePropertyList props) {
-		return addANode((VisualNode) factory.makeTreeNode(VisualNode.class, parent, proposedId, props));
+	public TreeNode makeNode(Class<? extends Node> nodeClass) {
+		return (VisualNode) factory.makeNode(nodeClass);
 	}
 
 	@Override
-	public TreeNode makeTreeNode(Class<? extends TreeNode> nodeClass, TreeNode parent) {
-		return addANode((VisualNode) factory.makeTreeNode(nodeClass, parent));
+	public TreeNode makeNode(Class<? extends Node> nodeClass, ReadOnlyPropertyList props) {
+		return (VisualNode) factory.makeNode(nodeClass, props);
 	}
 
 	@Override
-	public TreeNode makeTreeNode(Class<? extends TreeNode> nodeClass, TreeNode parent, SimplePropertyList props) {
-		return addANode((VisualNode) factory.makeTreeNode(nodeClass, parent, props));
+	public TreeNode makeNode(Class<? extends Node> nodeClass, String proposedId) {
+		return (VisualNode) factory.makeNode(nodeClass, proposedId);
 	}
 
 	@Override
-	public TreeNode makeTreeNode(Class<? extends TreeNode> nodeClass, TreeNode parent, String proposedId) {
-		return addANode((VisualNode) factory.makeTreeNode(nodeClass, parent, proposedId));
+	public TreeNode makeNode(Class<? extends Node> nodeClass, String proposedId,
+			ReadOnlyPropertyList props) {
+		return (VisualNode) factory.makeNode(nodeClass, proposedId, props);
 	}
 
 	@Override
-	public TreeNode makeTreeNode(Class<? extends TreeNode> nodeClass, TreeNode parent, String proposedId,
-			SimplePropertyList props) {
-		return addANode((VisualNode) factory.makeTreeNode(nodeClass, parent, proposedId, props));
+	public void manageGraph(NodeSet<? extends Node> graph) {
+		factory.manageGraph(graph);
 	}
 
 	@Override
-	public IdentityScope scope() {
-		// TODO Auto-generated method stub
-		return null;
+	public void unmanageGraph(NodeSet<? extends Node> graph) {
+		factory.unmanageGraph(graph);
 	}
 
 }

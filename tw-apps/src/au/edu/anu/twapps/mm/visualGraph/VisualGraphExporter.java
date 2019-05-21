@@ -29,7 +29,7 @@
 package au.edu.anu.twapps.mm.visualGraph;
 
 import java.io.File;
-import fr.cnrs.iees.graph.MinimalGraph;
+import fr.cnrs.iees.graph.NodeSet;
 import fr.cnrs.iees.graph.io.impl.OmugiGraphExporter;
 
 /**
@@ -48,7 +48,7 @@ public class VisualGraphExporter extends OmugiGraphExporter {
 	
 	
 	@Override
-	public void exportGraph(MinimalGraph<?> graph) {
+	public void exportGraph(NodeSet<?> graph) {
 		if (VisualGraph.class.isAssignableFrom(graph.getClass())) {
 			header = "aot";
 			exportTreeGraph((VisualGraph)graph);

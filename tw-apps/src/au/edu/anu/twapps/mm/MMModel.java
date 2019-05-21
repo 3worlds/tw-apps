@@ -31,25 +31,19 @@ package au.edu.anu.twapps.mm;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import au.edu.anu.twapps.dialogs.Dialogs;
 import au.edu.anu.twapps.exceptions.TwAppsException;
-import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualGraph;
 import au.edu.anu.twapps.mm.visualGraph.VisualGraphExporter;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import au.edu.anu.twcore.project.Project;
-import au.edu.anu.twcore.specificationCheck.CheckImpl;
 import au.edu.anu.twcore.specificationCheck.Checkable;
-import fr.cnrs.iees.graph.DataEdge;
-import fr.cnrs.iees.graph.DataNode;
-import fr.cnrs.iees.graph.Graph;
-import fr.cnrs.iees.graph.Node;
-import fr.cnrs.iees.graph.impl.MutableTreeGraphImpl;
+import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
+import fr.cnrs.iees.graph.impl.TreeGraphFactory;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.graph.io.impl.OmugiGraphExporter;
 import fr.cnrs.iees.identity.impl.PairIdentity;
@@ -63,7 +57,7 @@ import fr.cnrs.iees.twcore.constants.Configuration;
  */
 public class MMModel  implements IMMModel {
 	// Interface supplied to the controller
-	private /*WhatTypeOfGraphAmI*/ TreeGraph currentGraph;
+	private /*WhatTypeOfGraphAmI*/ TreeGraph<TreeGraphNode,ALEdge> currentGraph;
 	private VisualGraph visualGraph;
 	private IMMController controller;
 	private Checkable checker;
@@ -135,13 +129,16 @@ public class MMModel  implements IMMModel {
 		}
 		name = Project.create(name);
 		String rootId = Configuration.N_ROOT+PairIdentity.LABEL_NAME_STR_SEPARATOR+name;
-		currentGraph = new TreeGraph<TreeGraphNode,DataEdge>(/*List of classes*/); //how should be construct this graph??
+		TreeGraphFactory tgf = new TreeGraphFactory("3W-config");
+		currentGraph = new TreeGraph<TreeGraphNode,ALEdge>(tgf/*List of classes*/); //how should be construct this graph??
+		//JG: the TreeGraphFactory can be initialised with a list of class/label pairs
+		
 		// how do we construct nodes
 		//currentGraph.makeTreeNode(null, rootId);
 		// visualGraph can be the same when we figure all this out!?
 		//visualGraph = new TreeGraph<VisualNode,VisualEdge>();
-		visualGraph = new VisualGraph();
-		visualGraph.makeTreeNode(null, rootId);
+		visualGraph = new VisualGraph(new TreeGraphFactory("VisualGraph"));
+		visualGraph.makeNode(rootId);
 		
 		visualGraph.root().setPosition(0.1, 0.5);
 		connectConfigToVisual();
@@ -168,6 +165,7 @@ public class MMModel  implements IMMModel {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void doOpenProject(File file) {
 		// TODO Auto-generated method stub
@@ -176,7 +174,7 @@ public class MMModel  implements IMMModel {
 		if (Project.isOpen())
 			onProjectClosing();
 		Project.open(file);
-		currentGraph = (TreeGraph<TreeGraphNode,DataEdge>) FileImporter.loadGraphFromFile(Project.makeConfigurationFile());
+		currentGraph = (TreeGraph<TreeGraphNode,ALEdge>) FileImporter.loadGraphFromFile(Project.makeConfigurationFile());
 		visualGraph = (VisualGraph) FileImporter.loadGraphFromFile(Project.makeLayoutFile());
 		connectConfigToVisual();
 		onProjectOpened();
