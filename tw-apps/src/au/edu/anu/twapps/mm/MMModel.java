@@ -48,7 +48,8 @@ import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.graph.io.impl.OmugiGraphExporter;
 import fr.cnrs.iees.identity.impl.PairIdentity;
 import fr.cnrs.iees.io.FileImporter;
-import fr.cnrs.iees.twcore.constants.Configuration;
+import fr.cnrs.iees.properties.impl.SimplePropertyListImpl;
+import fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels;
 
 /**
  * Author Ian Davies
@@ -128,12 +129,15 @@ public class MMModel  implements IMMModel {
 			Project.close();
 		}
 		name = Project.create(name);
-		String rootId = Configuration.N_ROOT+PairIdentity.LABEL_NAME_STR_SEPARATOR+name;
+		String rootId = ConfigurationNodeLabels.N_ROOT.label()+PairIdentity.LABEL_NAME_STR_SEPARATOR+name;
 		TreeGraphFactory tgf = new TreeGraphFactory("3W-config");
-		currentGraph = new TreeGraph<TreeGraphNode,ALEdge>(tgf/*List of classes*/); //how should be construct this graph??
+		//how should we construct this graph??
+		currentGraph = new TreeGraph<TreeGraphNode,ALEdge>(tgf/*List of classes*/); 
 		//JG: the TreeGraphFactory can be initialised with a list of class/label pairs
+		// ID: Do we need this list of label/class pairs or are they in some default somewhere???
+		// how do we construct nodes??- the root has no properties?
+		currentGraph.nodeFactory().makeNode(rootId,new SimplePropertyListImpl());
 		
-		// how do we construct nodes
 		//currentGraph.makeTreeNode(null, rootId);
 		// visualGraph can be the same when we figure all this out!?
 		//visualGraph = new TreeGraph<VisualNode,VisualEdge>();
