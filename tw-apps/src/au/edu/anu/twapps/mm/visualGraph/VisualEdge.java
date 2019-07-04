@@ -33,6 +33,7 @@ import java.util.Set;
 
 import au.edu.anu.twapps.exceptions.TwAppsException;
 import fr.cnrs.iees.graph.EdgeFactory;
+import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.impl.ALDataEdge;
 import fr.cnrs.iees.graph.impl.ALEdge;
@@ -41,17 +42,13 @@ import fr.cnrs.iees.properties.PropertyListSetters;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
 
-public class VisualEdge extends ALEdge implements SimplePropertyList,VisualKeys{
+public class VisualEdge extends ALEdge implements SimplePropertyList, VisualKeys {
 	private ALDataEdge configEdge;
 	private SimplePropertyList properties;
 
-	protected VisualEdge(Identity id,Node start, Node end, String label, String name, SimplePropertyList props,
-			EdgeFactory factory) {
-		super(id,start, end, factory);
-		
-		this.properties = props;
-		if (properties==null)
-			properties = new SharedPropertyListImpl(getEdgeKeys());
+	protected VisualEdge(Identity id, Node start, Node end, GraphFactory factory) {
+		super(id, start, end, factory);
+		properties = new SharedPropertyListImpl(getEdgeKeys());
 	}
 
 	public void setConfigEdge(ALDataEdge configEdge) {
@@ -61,17 +58,19 @@ public class VisualEdge extends ALEdge implements SimplePropertyList,VisualKeys{
 	public ALDataEdge getConfigEdge() {
 		return configEdge;
 	}
-	
+
 	public Object getText() {
 		return this.getPropertyValue(veText);
 	}
+
 	private void setSymbol(Object s) {
-		if (getPropertyValue(veSymbol) != null) 
+		if (getPropertyValue(veSymbol) != null)
 			throw new TwAppsException("Attempt to overwrite edge symbol " + id());
 		setProperty(veSymbol, s);
 	}
+
 	private void setText(Object t) {
-		if (getPropertyValue(veText) != null) 
+		if (getPropertyValue(veText) != null)
 			throw new TwAppsException("Attempt to overwrite edge text " + id());
 		setProperty(veText, t);
 	}

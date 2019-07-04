@@ -46,6 +46,7 @@ import fr.ens.biologie.generic.Textable;
  *
  * Date 2 Feb. 2019
  */
+@Deprecated
 public class VisualGraph extends TreeGraph<VisualNode, VisualEdge>//
 		implements//
 		NodeFactory, //

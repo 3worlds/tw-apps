@@ -48,6 +48,7 @@ class ModelMakerTest {
 	public void init() {
 		Dialogs.initialise(new MockDialogs());
 		c = new MockController();
+		GraphState.initialise(new MockGraphState());
 	}
 
 	@Test

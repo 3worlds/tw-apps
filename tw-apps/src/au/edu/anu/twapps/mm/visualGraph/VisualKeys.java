@@ -45,8 +45,7 @@ public interface VisualKeys {
 	
 
 	public final static String veText = "text";
-	public final static String veSymbol = "symbol";
-	
+	public final static String veSymbol = "symbol";	
 	public default PropertyKeys getEdgeKeys() {
 		return new PropertyKeys(veText,veSymbol);
 	}

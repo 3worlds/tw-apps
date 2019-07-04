@@ -36,10 +36,13 @@ import java.util.Map;
 
 import au.edu.anu.twapps.dialogs.Dialogs;
 import au.edu.anu.twapps.exceptions.TwAppsException;
+import au.edu.anu.twapps.mm.visualGraph.VGFactory;
+import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualGraph;
 import au.edu.anu.twapps.mm.visualGraph.VisualGraphExporter;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import au.edu.anu.twcore.project.Project;
+import au.edu.anu.twcore.root.TwConfigFactory;
 import au.edu.anu.twcore.specificationCheck.Checkable;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
@@ -58,8 +61,8 @@ import fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels;
  */
 public class MMModel  implements IMMModel {
 	// Interface supplied to the controller
-	private /*WhatTypeOfGraphAmI*/ TreeGraph<TreeGraphNode,ALEdge> currentGraph;
-	private VisualGraph visualGraph;
+	private TreeGraph<TreeGraphNode,ALEdge> currentGraph;
+	private TreeGraph<VisualNode,VisualEdge> visualGraph;
 	private IMMController controller;
 	private Checkable checker;
 	// Should we avoid using javafx.beans.property? - make ModelMaker a boolean change listener??
@@ -130,20 +133,10 @@ public class MMModel  implements IMMModel {
 		}
 		name = Project.create(name);
 		String rootId = ConfigurationNodeLabels.N_ROOT.label()+PairIdentity.LABEL_NAME_STR_SEPARATOR+name;
-		TreeGraphFactory tgf = new TreeGraphFactory("3W-config");
-		//how should we construct this graph??
-		currentGraph = new TreeGraph<TreeGraphNode,ALEdge>(tgf/*List of classes*/); 
-		//JG: the TreeGraphFactory can be initialised with a list of class/label pairs
-		// ID: Do we need this list of label/class pairs or are they in some default somewhere???
-		// how do we construct nodes??- the root has no properties?
-		currentGraph.nodeFactory().makeNode(rootId,new SimplePropertyListImpl());
-		
-		//currentGraph.makeTreeNode(null, rootId);
-		// visualGraph can be the same when we figure all this out!?
-		//visualGraph = new TreeGraph<VisualNode,VisualEdge>();
-		visualGraph = new VisualGraph(new TreeGraphFactory("VisualGraph"));
-		visualGraph.makeNode(rootId);
-		
+		currentGraph = new TreeGraph<TreeGraphNode,ALEdge>(new TwConfigFactory()); 
+		currentGraph.nodeFactory().makeNode(rootId);
+		visualGraph = new TreeGraph<VisualNode,VisualEdge>(new VGFactory());
+		visualGraph.nodeFactory().makeNode(rootId);		
 		visualGraph.root().setPosition(0.1, 0.5);
 		connectConfigToVisual();
 		onProjectOpened();
@@ -160,11 +153,12 @@ public class MMModel  implements IMMModel {
 	//TODO deal with out nodes
 	private void connectConfigToVisual() {
 		for (VisualNode vn : visualGraph.nodes()) {
-			//AotNode n = currentGraph.findNodeByReference(vn.id());
 			TreeGraphNode n = findMatchingId(vn.id());
 			if (n == null)
 				throw new TwAppsException("Unable to find " + vn.id() + " in currentGraph");
 			vn.setConfigNode(n);
+		}
+		for (VisualNode vn:visualGraph.nodes()) {
 			vn.setCategory();
 		}
 	}
@@ -179,7 +173,7 @@ public class MMModel  implements IMMModel {
 			onProjectClosing();
 		Project.open(file);
 		currentGraph = (TreeGraph<TreeGraphNode,ALEdge>) FileImporter.loadGraphFromFile(Project.makeConfigurationFile());
-		visualGraph = (VisualGraph) FileImporter.loadGraphFromFile(Project.makeLayoutFile());
+		visualGraph =  (TreeGraph<VisualNode, VisualEdge>) FileImporter.loadGraphFromFile(Project.makeLayoutFile());
 		connectConfigToVisual();
 		onProjectOpened();
 	}
@@ -187,7 +181,7 @@ public class MMModel  implements IMMModel {
 	@Override
 	public void doSave() {
 		new OmugiGraphExporter(Project.makeConfigurationFile()).exportGraph(currentGraph);
-		VisualGraphExporter.saveGraphToFile(Project.makeLayoutFile(), visualGraph);
+		new OmugiGraphExporter(Project.makeLayoutFile()).exportGraph(visualGraph);
 		GraphState.setChanged(false);
 	}
 

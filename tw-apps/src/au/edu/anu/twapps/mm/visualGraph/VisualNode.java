@@ -53,20 +53,19 @@ public class VisualNode extends TreeGraphDataNode //
 
 	public VisualNode(Identity id, SimplePropertyList properties, GraphFactory gf) {
 		super(id, properties, gf);
-		if (properties ==null) 
-			this.properties= new SharedPropertyListImpl(getNodeKeys());		
+		if (properties == null)
+			this.properties = new SharedPropertyListImpl(getNodeKeys());
 		setCollapse(false);
 		setCategory();
 	}
 
 	public VisualNode(Identity id, GraphFactory gf) {
 		super(id, null, gf);
-		if (properties ==null) 
-			this.properties= new SharedPropertyListImpl(getNodeKeys());		
+		this.properties = new SharedPropertyListImpl(getNodeKeys());
 		setCollapse(false);
-		setCategory();
+		//setCategory();// TODO Useless unless parent has been set
 	}
-	
+
 	@Override
 	public VisualNode getParent() {
 		return (VisualNode) super.getParent();
@@ -143,7 +142,6 @@ public class VisualNode extends TreeGraphDataNode //
 		return sb.toString();
 	}
 
-
 	public void setConfigNode(TreeGraphNode configNode) {
 		this.configNode = configNode;
 	}
@@ -184,7 +182,6 @@ public class VisualNode extends TreeGraphDataNode //
 			throw new TwAppsException("Attempt to overwrite node text " + id());
 		setProperty(vnText, text);
 	}
-
 
 	public String getLabel() {
 		return this.id().split(PairIdentity.LABEL_NAME_STR_SEPARATOR)[0];

@@ -31,12 +31,13 @@ package au.edu.anu.twapps.mm;
 
 import java.io.File;
 
-import au.edu.anu.twapps.mm.visualGraph.VisualGraph;
+import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
+import fr.cnrs.iees.graph.impl.TreeGraph;
 
 public class MockController implements IMMController{
 	private IMMModel model;
-	private VisualGraph graph;
+	private TreeGraph<VisualNode,VisualEdge> graph;
 	public MockController() {
 		model = new MMModel(this);
 	}
@@ -48,8 +49,8 @@ public class MockController implements IMMController{
 	}
 
 	@Override
-	public void onProjectOpened(VisualGraph visualGraph) {
-		this.graph=visualGraph;
+	public void onProjectOpened(TreeGraph<VisualNode, VisualEdge> layoutGraph) {
+		this.graph=layoutGraph;
 		// Here we would build the graph display and populate the property editors
 		System.out.println("onProjectOpened: "+graph.nNodes());	
 		for (VisualNode n : graph.nodes()) {
@@ -78,5 +79,6 @@ public class MockController implements IMMController{
 		// TODO Auto-generated method stub
 		
 	}
+
 
 }
