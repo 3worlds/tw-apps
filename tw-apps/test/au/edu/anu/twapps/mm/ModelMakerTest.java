@@ -37,6 +37,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import au.edu.anu.twapps.dialogs.Dialogs;
+import au.edu.anu.twcore.graphState.GraphState;
 import au.edu.anu.twcore.project.Project;
 
 class ModelMakerTest {

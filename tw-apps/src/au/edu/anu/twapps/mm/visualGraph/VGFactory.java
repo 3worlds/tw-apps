@@ -5,7 +5,10 @@ import java.util.Map;
 
 import au.edu.anu.rscs.aot.graph.property.Property;
 import fr.cnrs.iees.graph.Node;
+import fr.cnrs.iees.graph.impl.ALEdge;
+import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphFactory;
+import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.properties.ExtendablePropertyList;
 import fr.cnrs.iees.properties.impl.ExtendablePropertyListImpl;
 import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
@@ -37,6 +40,7 @@ public class VGFactory extends TreeGraphFactory implements VisualKeys{
 		addNodeToGraphs(result);
 		return result;
 	}
+	
 	
 	@Override
 	public VisualEdge makeEdge(Node start,Node end,String proposedId) {

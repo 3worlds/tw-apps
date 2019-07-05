@@ -38,20 +38,17 @@ import au.edu.anu.twapps.dialogs.Dialogs;
 import au.edu.anu.twapps.exceptions.TwAppsException;
 import au.edu.anu.twapps.mm.visualGraph.VGFactory;
 import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
-import au.edu.anu.twapps.mm.visualGraph.VisualGraph;
-import au.edu.anu.twapps.mm.visualGraph.VisualGraphExporter;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
+import au.edu.anu.twcore.graphState.GraphState;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.root.TwConfigFactory;
 import au.edu.anu.twcore.specificationCheck.Checkable;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
-import fr.cnrs.iees.graph.impl.TreeGraphFactory;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.graph.io.impl.OmugiGraphExporter;
 import fr.cnrs.iees.identity.impl.PairIdentity;
 import fr.cnrs.iees.io.FileImporter;
-import fr.cnrs.iees.properties.impl.SimplePropertyListImpl;
 import fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels;
 
 /**
