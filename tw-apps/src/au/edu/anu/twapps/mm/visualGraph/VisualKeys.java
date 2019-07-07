@@ -39,14 +39,14 @@ public interface VisualKeys {
 	public final static String vnCategory = "category";
 	public final static String vnParentLine = "parentLine";
 	public final static String vnCollapsed = "collapsed";
-	public default PropertyKeys getNodeKeys() {
+	public static PropertyKeys getNodeKeys() {
 		return new PropertyKeys(vnx, vny, vnText, vnSymbol,vnCategory,vnParentLine,vnCollapsed);
 	}
 	
 
 	public final static String veText = "text";
 	public final static String veSymbol = "symbol";	
-	public default PropertyKeys getEdgeKeys() {
+	public static PropertyKeys getEdgeKeys() {
 		return new PropertyKeys(veText,veSymbol);
 	}
 }
