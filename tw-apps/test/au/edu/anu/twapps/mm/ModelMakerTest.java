@@ -60,7 +60,7 @@ class ModelMakerTest {
 		File pf = Project.getProjectFile();
 		Project.close();
 		// awaiting AotGraphImporter
-		//c.handleOpenProject(pf);
+		c.handleOpenProject(pf);
 	}
 
 }
