@@ -36,13 +36,14 @@ import java.util.Map;
 
 import au.edu.anu.twapps.dialogs.Dialogs;
 import au.edu.anu.twapps.exceptions.TwAppsException;
-import au.edu.anu.twapps.mm.visualGraph.VGFactory;
+import au.edu.anu.twapps.mm.visualGraph.VisualGraphFactory;
 import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import au.edu.anu.twcore.graphState.GraphState;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.root.TwConfigFactory;
 import au.edu.anu.twcore.specificationCheck.Checkable;
+import fr.cnrs.iees.graph.impl.ALDataEdge;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
@@ -131,8 +132,10 @@ public class MMModel  implements IMMModel {
 		name = Project.create(name);
 		String rootId = ConfigurationNodeLabels.N_ROOT.label()+PairIdentity.LABEL_NAME_STR_SEPARATOR+name;
 		currentGraph = new TreeGraph<TreeGraphNode,ALEdge>(new TwConfigFactory()); 
+		//currentGraph = new TreeGraph<TreeGraphNode,ALDataEdge>(new TwConfigFactory()); 
 		currentGraph.nodeFactory().makeNode(rootId);
-		visualGraph = new TreeGraph<VisualNode,VisualEdge>(new VGFactory());
+		
+		visualGraph = new TreeGraph<VisualNode,VisualEdge>(new VisualGraphFactory());
 		visualGraph.nodeFactory().makeNode(rootId);		
 		visualGraph.root().setPosition(0.1, 0.5);
 		connectConfigToVisual();

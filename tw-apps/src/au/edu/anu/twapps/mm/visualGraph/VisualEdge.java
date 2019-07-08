@@ -29,26 +29,22 @@
 
 package au.edu.anu.twapps.mm.visualGraph;
 
-import java.util.Set;
-
 import au.edu.anu.twapps.exceptions.TwAppsException;
 import fr.cnrs.iees.graph.EdgeFactory;
-import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.impl.ALDataEdge;
-import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.identity.Identity;
-import fr.cnrs.iees.properties.PropertyListSetters;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
 
-public class VisualEdge extends ALEdge implements SimplePropertyList, VisualKeys {
+public class VisualEdge extends ALDataEdge implements VisualKeys {
 	private ALDataEdge configEdge;
 	private SimplePropertyList properties;
-
-	protected VisualEdge(Identity id, Node start, Node end, GraphFactory factory) {
-		super(id, start, end, factory);
-		properties = new SharedPropertyListImpl(getEdgeKeys());
+	public VisualEdge(Identity id, Node start, Node end, SimplePropertyList props, EdgeFactory factory) {
+		super(id, start, end, props, factory);
+	}
+	public VisualEdge(Identity id, Node start, Node end, EdgeFactory factory) {
+		super(id,start,end, new SharedPropertyListImpl(VisualKeys.getEdgeKeys()),factory);
 	}
 
 	public void setConfigEdge(ALDataEdge configEdge) {
@@ -60,54 +56,24 @@ public class VisualEdge extends ALEdge implements SimplePropertyList, VisualKeys
 	}
 
 	public Object getText() {
-		return this.getPropertyValue(veText);
+		return properties().getPropertyValue(veText);
 	}
 
 	private void setSymbol(Object s) {
-		if (getPropertyValue(veSymbol) != null)
+		if (properties().getPropertyValue(veSymbol) != null)
 			throw new TwAppsException("Attempt to overwrite edge symbol " + id());
-		setProperty(veSymbol, s);
+		properties().setProperty(veSymbol, s);
 	}
 
 	private void setText(Object t) {
-		if (getPropertyValue(veText) != null)
+		if (properties().getPropertyValue(veText) != null)
 			throw new TwAppsException("Attempt to overwrite edge text " + id());
-		setProperty(veText, t);
+		properties().setProperty(veText, t);
 	}
 
 	public void setVisualElements(Object line, Object text) {
 		setSymbol(line);
 		setText(text);
-	}
-
-	@Override
-	public PropertyListSetters setProperty(String key, Object value) {
-		return ((PropertyListSetters) properties).setProperty(key, value);
-	}
-
-	@Override
-	public Object getPropertyValue(String key) {
-		return properties.getPropertyValue(key);
-	}
-
-	@Override
-	public boolean hasProperty(String key) {
-		return properties.hasProperty(key);
-	}
-
-	@Override
-	public Set<String> getKeysAsSet() {
-		return properties.getKeysAsSet();
-	}
-
-	@Override
-	public int size() {
-		return properties.size();
-	}
-
-	@Override
-	public SimplePropertyList clone() {
-		return (SimplePropertyList) properties.clone();
 	}
 
 }

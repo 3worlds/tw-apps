@@ -31,6 +31,7 @@ package au.edu.anu.twapps.mm.visualGraph;
 
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.EdgeFactory;
+import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.NodeFactory;
 import fr.cnrs.iees.graph.NodeSet;
@@ -47,24 +48,12 @@ import fr.ens.biologie.generic.Textable;
  * Date 2 Feb. 2019
  */
 @Deprecated
-public class VisualGraph extends TreeGraph<VisualNode, VisualEdge>//
-		implements//
-		NodeFactory, //
-		EdgeFactory, //
-		PropertyListFactory, //
-		Textable, //
-		VisualKeys {
+public class VisualGraph extends TreeGraph<VisualNode, VisualEdge> {
 
-	private TreeGraphFactory factory = null;
-
-	// Constructors
-	public VisualGraph(TreeGraphFactory factory) {
+	public VisualGraph(GraphFactory factory) {
 		super(factory);
-		this.factory = factory;
-		this.factory.manageGraph(this); // means all new nodes will be added to the graph
-//		init();
 	}
-
+}
 //	public VisualGraph(Iterable<VisualNode> list) {
 //		super(list);
 //		init();
@@ -85,175 +74,171 @@ public class VisualGraph extends TreeGraph<VisualNode, VisualEdge>//
 //	}
 	
 
-	public EdgeFactory getEdgeFactory() {
-		return this;
-	}
-
 //	public TreeNodeFactory getTreeFactory() {
-	public TreeGraphFactory getTreeFactory() {
-		return factory;
-	}
-
-	// ---------------------- NODE FACTORY -------------------------
-
-	// This is disabled because any new node has to be inserted into the tree at the
-	// proper spot. We dont want free-floating nodes in an AOT graph because it's a
-	// tree.
-
-	// Factory hierarchy needs rewriting. Perhaps Factories2.dia Elements2.dia?
-	
-	// CAUTION HERE ! 21/5/2019
-	// JG: this is no longer valid. Now you must first make the TreeNode with one 
-	// of the makeNode() methods and then connect it to its parent with 
-	// TreeNode.connectParent(parent), which takes care of both the parent and the child's
-	// inner fields
-	// by default all TreeNode are instantiated as root nodes.
-	
+//	public TreeGraphFactory getTreeFactory() {
+//		return factory;
+//	}
+//
+//	// ---------------------- NODE FACTORY -------------------------
+//
+//	// This is disabled because any new node has to be inserted into the tree at the
+//	// proper spot. We dont want free-floating nodes in an AOT graph because it's a
+//	// tree.
+//
+//	// Factory hierarchy needs rewriting. Perhaps Factories2.dia Elements2.dia?
+//	
+//	// CAUTION HERE ! 21/5/2019
+//	// JG: this is no longer valid. Now you must first make the TreeNode with one 
+//	// of the makeNode() methods and then connect it to its parent with 
+//	// TreeNode.connectParent(parent), which takes care of both the parent and the child's
+//	// inner fields
+//	// by default all TreeNode are instantiated as root nodes.
+//	
+////	@Override
+////	public Node makeNode() {
+////		throw new TwAppsException("Attempt to instantiate an VisualNode outside of the tree context.");
+////	}
+////
+////	@Override
+////	public Node makeNode(ReadOnlyPropertyList arg0) {
+////		return makeNode();
+////	}
+////
+////	@Override
+////	public Node makeNode(String arg0) {
+////		return makeNode();
+////	}
+////
+////	@Override
+////	public Node makeNode(Class<? extends Node> arg0) {
+////		return makeNode();
+////	}
+////
+////	@Override
+////	public Node makeNode(Class<? extends Node> arg0, String arg1) {
+////		return makeNode();
+////	}
+////
+////	@Override
+////	public Node makeNode(Class<? extends Node> arg0, ReadOnlyPropertyList arg1) {
+////		return makeNode();
+////	}
+////
+////	@Override
+////	public Node makeNode(Class<? extends Node> arg0, String arg1, ReadOnlyPropertyList arg2) {
+////		return makeNode();
+////	}
+////
+////	@Override
+////	public Node makeNode(String proposedId, ReadOnlyPropertyList props) {
+////		return makeNode();
+////	}
+//
+//	// -------------------------------EdgeFactory
+//
 //	@Override
-//	public Node makeNode() {
-//		throw new TwAppsException("Attempt to instantiate an VisualNode outside of the tree context.");
+//	public VisualEdge makeEdge(Node start, Node end) {
+//		return (VisualEdge) factory.makeEdge(VisualEdge.class, start, end);
 //	}
 //
 //	@Override
-//	public Node makeNode(ReadOnlyPropertyList arg0) {
-//		return makeNode();
+//	public VisualEdge makeEdge(Node start, Node end, ReadOnlyPropertyList props) {
+//		return (VisualEdge) factory.makeEdge(VisualEdge.class, start, end);
 //	}
 //
 //	@Override
-//	public Node makeNode(String arg0) {
-//		return makeNode();
+//	public VisualEdge makeEdge(Node start, Node end, String proposedId, ReadOnlyPropertyList props) {
+//		return (VisualEdge) factory.makeEdge(VisualEdge.class, start, end, proposedId, props);
 //	}
 //
 //	@Override
-//	public Node makeNode(Class<? extends Node> arg0) {
-//		return makeNode();
+//	public VisualEdge makeEdge(Node start, Node end, String proposedId) {
+//		return (VisualEdge) factory.makeEdge(VisualEdge.class, start, end, proposedId);
 //	}
 //
 //	@Override
-//	public Node makeNode(Class<? extends Node> arg0, String arg1) {
-//		return makeNode();
+//	public Edge makeEdge(Class<? extends Edge> edgeClass, Node start, Node end) {
+//		return (VisualEdge) factory.makeEdge(edgeClass, start, end);
 //	}
 //
 //	@Override
-//	public Node makeNode(Class<? extends Node> arg0, ReadOnlyPropertyList arg1) {
-//		return makeNode();
+//	public Edge makeEdge(Class<? extends Edge> edgeClass, Node start, Node end, String proposedId) {
+//		return (VisualEdge) factory.makeEdge(edgeClass, start, end, proposedId);
 //	}
 //
 //	@Override
-//	public Node makeNode(Class<? extends Node> arg0, String arg1, ReadOnlyPropertyList arg2) {
-//		return makeNode();
+//	public Edge makeEdge(Class<? extends Edge> edgeClass, Node start, Node end, ReadOnlyPropertyList props) {
+//		return (VisualEdge) factory.makeEdge(edgeClass, start, end, props);
 //	}
 //
 //	@Override
-//	public Node makeNode(String proposedId, ReadOnlyPropertyList props) {
-//		return makeNode();
+//	public Edge makeEdge(Class<? extends Edge> edgeClass, Node start, Node end, String proposedId,
+//			ReadOnlyPropertyList props) {
+//		return (VisualEdge) factory.makeEdge(edgeClass, start, end, proposedId, props);
 //	}
-
-	// -------------------------------EdgeFactory
-
-	@Override
-	public VisualEdge makeEdge(Node start, Node end) {
-		return (VisualEdge) factory.makeEdge(VisualEdge.class, start, end);
-	}
-
-	@Override
-	public VisualEdge makeEdge(Node start, Node end, ReadOnlyPropertyList props) {
-		return (VisualEdge) factory.makeEdge(VisualEdge.class, start, end);
-	}
-
-	@Override
-	public VisualEdge makeEdge(Node start, Node end, String proposedId, ReadOnlyPropertyList props) {
-		return (VisualEdge) factory.makeEdge(VisualEdge.class, start, end, proposedId, props);
-	}
-
-	@Override
-	public VisualEdge makeEdge(Node start, Node end, String proposedId) {
-		return (VisualEdge) factory.makeEdge(VisualEdge.class, start, end, proposedId);
-	}
-
-	@Override
-	public Edge makeEdge(Class<? extends Edge> edgeClass, Node start, Node end) {
-		return (VisualEdge) factory.makeEdge(edgeClass, start, end);
-	}
-
-	@Override
-	public Edge makeEdge(Class<? extends Edge> edgeClass, Node start, Node end, String proposedId) {
-		return (VisualEdge) factory.makeEdge(edgeClass, start, end, proposedId);
-	}
-
-	@Override
-	public Edge makeEdge(Class<? extends Edge> edgeClass, Node start, Node end, ReadOnlyPropertyList props) {
-		return (VisualEdge) factory.makeEdge(edgeClass, start, end, props);
-	}
-
-	@Override
-	public Edge makeEdge(Class<? extends Edge> edgeClass, Node start, Node end, String proposedId,
-			ReadOnlyPropertyList props) {
-		return (VisualEdge) factory.makeEdge(edgeClass, start, end, proposedId, props);
-	}
-
-	// ------------------------- TreeNodeFactory
-
-// JG:this is no longer needed as the factory adds the node to its managed graphs (cf the
-// 'manageGraph()' method down below
-	
-//	private VisualNode (VisualNode node) {
-//		if (nodes.add(node))
-//			return node;
-//				
-//		else
-//			throw new TwAppsException("Attempt to add duplicate node");
+//
+//	// ------------------------- TreeNodeFactory
+//
+//// JG:this is no longer needed as the factory adds the node to its managed graphs (cf the
+//// 'manageGraph()' method down below
+//	
+////	private VisualNode (VisualNode node) {
+////		if (nodes.add(node))
+////			return node;
+////				
+////		else
+////			throw new TwAppsException("Attempt to add duplicate node");
+////	}
+//
+//	@Override
+//	public VisualNode makeNode(ReadOnlyPropertyList props) {
+//		return (VisualNode) factory.makeNode(VisualNode.class, props);
 //	}
-
-	@Override
-	public VisualNode makeNode(ReadOnlyPropertyList props) {
-		return (VisualNode) factory.makeNode(VisualNode.class, props);
-	}
-
-	@Override
-	public VisualNode makeNode() {
-		return (VisualNode) factory.makeNode(VisualNode.class);
-	}
-
-	@Override
-	public VisualNode makeNode(String proposedId) {
-		return (VisualNode) factory.makeNode(VisualNode.class, proposedId);
-	}
-
-	@Override
-	public VisualNode makeNode(String proposedId, ReadOnlyPropertyList props) {
-		return (VisualNode) factory.makeNode(VisualNode.class, proposedId, props);
-	}
-
-	@Override
-	public TreeNode makeNode(Class<? extends Node> nodeClass) {
-		return (VisualNode) factory.makeNode(nodeClass);
-	}
-
-	@Override
-	public TreeNode makeNode(Class<? extends Node> nodeClass, ReadOnlyPropertyList props) {
-		return (VisualNode) factory.makeNode(nodeClass, props);
-	}
-
-	@Override
-	public TreeNode makeNode(Class<? extends Node> nodeClass, String proposedId) {
-		return (VisualNode) factory.makeNode(nodeClass, proposedId);
-	}
-
-	@Override
-	public TreeNode makeNode(Class<? extends Node> nodeClass, String proposedId,
-			ReadOnlyPropertyList props) {
-		return (VisualNode) factory.makeNode(nodeClass, proposedId, props);
-	}
-
-	@Override
-	public void manageGraph(NodeSet<? extends Node> graph) {
-		factory.manageGraph(graph);
-	}
-
-	@Override
-	public void unmanageGraph(NodeSet<? extends Node> graph) {
-		factory.unmanageGraph(graph);
-	}
-
-}
+//
+//	@Override
+//	public VisualNode makeNode() {
+//		return (VisualNode) factory.makeNode(VisualNode.class);
+//	}
+//
+//	@Override
+//	public VisualNode makeNode(String proposedId) {
+//		return (VisualNode) factory.makeNode(VisualNode.class, proposedId);
+//	}
+//
+//	@Override
+//	public VisualNode makeNode(String proposedId, ReadOnlyPropertyList props) {
+//		return (VisualNode) factory.makeNode(VisualNode.class, proposedId, props);
+//	}
+//
+//	@Override
+//	public TreeNode makeNode(Class<? extends Node> nodeClass) {
+//		return (VisualNode) factory.makeNode(nodeClass);
+//	}
+//
+//	@Override
+//	public TreeNode makeNode(Class<? extends Node> nodeClass, ReadOnlyPropertyList props) {
+//		return (VisualNode) factory.makeNode(nodeClass, props);
+//	}
+//
+//	@Override
+//	public TreeNode makeNode(Class<? extends Node> nodeClass, String proposedId) {
+//		return (VisualNode) factory.makeNode(nodeClass, proposedId);
+//	}
+//
+//	@Override
+//	public TreeNode makeNode(Class<? extends Node> nodeClass, String proposedId,
+//			ReadOnlyPropertyList props) {
+//		return (VisualNode) factory.makeNode(nodeClass, proposedId, props);
+//	}
+//
+//	@Override
+//	public void manageGraph(NodeSet<? extends Node> graph) {
+//		factory.manageGraph(graph);
+//	}
+//
+//	@Override
+//	public void unmanageGraph(NodeSet<? extends Node> graph) {
+//		factory.unmanageGraph(graph);
+//	}
+//
+//}
