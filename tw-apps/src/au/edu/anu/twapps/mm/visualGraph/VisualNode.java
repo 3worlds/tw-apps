@@ -40,8 +40,7 @@ import fr.cnrs.iees.identity.impl.PairIdentity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
 
-public class VisualNode extends TreeGraphDataNode //
-		implements VisualKeys {
+public class VisualNode extends TreeGraphDataNode {
 
 	private TreeGraphNode configNode;
 
@@ -87,12 +86,12 @@ public class VisualNode extends TreeGraphDataNode //
 	}
 
 	public void setCollapse(boolean b) {
-		properties().setProperty(vnCollapsed, b);
+		properties().setProperty(VisualKeys.vnCollapsed, b);
 	}
 
 	public void setCategory() {
 		if (PrimaryTreeLabels.contains(getLabel()))
-			properties().setProperty(vnCategory, getLabel());
+			properties().setProperty(VisualKeys.vnCategory, getLabel());
 		else
 			setCategory(getParent());
 	}
@@ -107,7 +106,7 @@ public class VisualNode extends TreeGraphDataNode //
 	}
 
 	private void setCategory(String category) {
-		properties().setProperty(vnCategory, category);
+		properties().setProperty(VisualKeys.vnCategory, category);
 	}
 
 	public String getLabel() {
@@ -115,11 +114,11 @@ public class VisualNode extends TreeGraphDataNode //
 	}
 
 	public void setX(double x) {
-		properties().setProperty(vnx, x);
+		properties().setProperty(VisualKeys.vnx, x);
 	}
 
 	public void setY(double y) {
-		properties().setProperty(vny, y);
+		properties().setProperty(VisualKeys.vny, y);
 	}
 
 	public void setPosition(double x, double y) {
@@ -128,23 +127,23 @@ public class VisualNode extends TreeGraphDataNode //
 	}
 
 	public double getX() {
-		return (Double) properties().getPropertyValue(vnx);
+		return (Double) properties().getPropertyValue(VisualKeys.vnx);
 	}
 
 	public double getY() {
-		return (Double) properties().getPropertyValue(vny);
+		return (Double) properties().getPropertyValue(VisualKeys.vny);
 	}
 
 	private void setSymbol(Object symbol) {
-		if (properties().getPropertyValue(vnSymbol) != null)
+		if (properties().getPropertyValue(VisualKeys.vnSymbol) != null)
 			throw new TwAppsException("Attempt to overwrite node symbol " + id());
-		properties().setProperty(vnSymbol, symbol);
+		properties().setProperty(VisualKeys.vnSymbol, symbol);
 	}
 
 	private void setText(Object text) {
-		if (properties().getPropertyValue(vnText) != null)
+		if (properties().getPropertyValue(VisualKeys.vnText) != null)
 			throw new TwAppsException("Attempt to overwrite node text " + id());
-		properties().setProperty(vnText, text);
+		properties().setProperty(VisualKeys.vnText, text);
 	}
 
 	public void setVisualElements(Object c, Object t) {
@@ -153,22 +152,22 @@ public class VisualNode extends TreeGraphDataNode //
 	}
 
 	public void setParentLine(Object l) {
-		if (properties().getPropertyValue(vnParentLine) != null) {
+		if (properties().getPropertyValue(VisualKeys.vnParentLine) != null) {
 			throw new TwAppsException("Attempt to overwrite line to parent symbol " + id());
 		}
-		properties().setProperty(vnParentLine, l);
+		properties().setProperty(VisualKeys.vnParentLine, l);
 	}
 
 	public String getCategory() {
-		return (String) properties().getPropertyValue(vnCategory);
+		return (String) properties().getPropertyValue(VisualKeys.vnCategory);
 	}
 
 	public Object getSymbol() {
-		return properties().getPropertyValue(vnSymbol);
+		return properties().getPropertyValue(VisualKeys.vnSymbol);
 	}
 
 	public boolean isCollapsed() {
-		return (Boolean) properties().getPropertyValue(vnCollapsed);
+		return (Boolean) properties().getPropertyValue(VisualKeys.vnCollapsed);
 	}
 
 	public boolean isCollapsedParent() {

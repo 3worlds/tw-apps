@@ -12,8 +12,7 @@ import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
 
 /**
- * A factory for 3Worlds specifications - has predefined labels matching nodes
- * and edges. .makePropertyList returns an extendable property list.
+ * A factory for Visual nodes and edges.
  * 
  * @author Jacques Gignoux - 27 mai 2019
  *
