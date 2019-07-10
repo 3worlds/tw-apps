@@ -31,7 +31,7 @@ package au.edu.anu.twapps.mm.visualGraph;
 
 import au.edu.anu.rscs.aot.graph.property.PropertyKeys;
 
-public interface VisualKeys {
+public class VisualKeys {
 	public final static String vnx = "x";
 	public final static String vny = "y";
 	public final static String vnText = "text";
@@ -39,14 +39,26 @@ public interface VisualKeys {
 	public final static String vnCategory = "category";
 	public final static String vnParentLine = "parentLine";
 	public final static String vnCollapsed = "collapsed";
-	public static PropertyKeys getNodeKeys() {
-		return new PropertyKeys(vnx, vny, vnText, vnSymbol,vnCategory,vnParentLine,vnCollapsed);
-	}
-	
+	private static PropertyKeys nodeKeys;
 
 	public final static String veText = "text";
-	public final static String veSymbol = "symbol";	
-	public static PropertyKeys getEdgeKeys() {
-		return new PropertyKeys(veText,veSymbol);
+	public final static String veSymbol = "symbol";
+
+	private static PropertyKeys edgeKeys;
+
+	static {
+		nodeKeys = new PropertyKeys(vnx, vny, vnText, vnSymbol, vnCategory, vnParentLine, vnCollapsed);
+		edgeKeys = new PropertyKeys(veText, veSymbol);
 	}
+
+	public static PropertyKeys getNodeKeys() {
+		return nodeKeys;
+	}
+
+	public static PropertyKeys getEdgeKeys() {
+		return edgeKeys;
+	}
+
+	private VisualKeys() {
+	};
 }
