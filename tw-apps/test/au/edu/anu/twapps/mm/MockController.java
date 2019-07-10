@@ -55,7 +55,7 @@ public class MockController implements IMMController{
 		System.out.println("onProjectOpened: "+graph.nNodes());	
 		for (VisualNode n : graph.nodes()) {
 			System.out.println(n.toString());
-			System.out.println(n.getConfigNode().toString());
+			//System.out.println(n.getConfigNode().toString());
 		}
 	}
 

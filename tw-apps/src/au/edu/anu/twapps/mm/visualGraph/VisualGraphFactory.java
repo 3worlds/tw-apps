@@ -25,7 +25,9 @@ import fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels;
  * @author Jacques Gignoux - 27 mai 2019
  *
  */
-public class VisualGraphFactory extends TreeGraphFactory implements  VisualKeys {
+public class VisualGraphFactory extends TreeGraphFactory implements VisualKeys {
+
+	private static Map<String, String> vgLabels = new HashMap<>();
 
 	public VisualGraphFactory() {
 		super("VisualGraph");
@@ -35,7 +37,6 @@ public class VisualGraphFactory extends TreeGraphFactory implements  VisualKeys 
 		this();
 	}
 
-	// TODO Assume this will crash with graphimporter!
 	@Override
 	public VisualNode makeNode(String proposedId) {
 		VisualNode result = new VisualNode(scope.newId(proposedId), this);
@@ -49,15 +50,9 @@ public class VisualGraphFactory extends TreeGraphFactory implements  VisualKeys 
 		return result;
 	}
 
-	@Override
-	public SimplePropertyList makePropertyList(Property... properties) {
-		// this is no good here! How can we know if its edge or node properties.
-		return new SharedPropertyListImpl(VisualKeys.getNodeKeys());
-	}
-
-	@Override
-	public SimplePropertyList makePropertyList(String... propertyKeys) {
-		return new SharedPropertyListImpl(propertyKeys);
+	static {
+		vgLabels.put(VisualNode.class.getSimpleName(), VisualNode.class.getName());
+		vgLabels.put(VisualEdge.class.getSimpleName(), VisualEdge.class.getName());
 	}
 
 }
