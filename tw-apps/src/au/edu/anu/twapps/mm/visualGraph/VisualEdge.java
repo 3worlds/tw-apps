@@ -37,14 +37,14 @@ import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
 
-public class VisualEdge extends ALDataEdge  {
+public class VisualEdge extends ALDataEdge  implements VisualKeys{
 	private ALDataEdge configEdge;
-	private SimplePropertyList properties;
+
 	public VisualEdge(Identity id, Node start, Node end, SimplePropertyList props, EdgeFactory factory) {
 		super(id, start, end, props, factory);
 	}
 	public VisualEdge(Identity id, Node start, Node end, EdgeFactory factory) {
-		super(id,start,end, new SharedPropertyListImpl(VisualKeys.getEdgeKeys()),factory);
+		super(id,start,end, new SharedPropertyListImpl(VisualGraphFactory.getEdgeKeys()),factory);
 	}
 
 	public void setConfigEdge(ALDataEdge configEdge) {
@@ -56,19 +56,19 @@ public class VisualEdge extends ALDataEdge  {
 	}
 
 	public Object getText() {
-		return properties().getPropertyValue(VisualKeys.veText);
+		return properties().getPropertyValue(veText);
 	}
 
 	private void setSymbol(Object s) {
-		if (properties().getPropertyValue(VisualKeys.veSymbol) != null)
+		if (properties().getPropertyValue(veSymbol) != null)
 			throw new TwAppsException("Attempt to overwrite edge symbol " + id());
-		properties().setProperty(VisualKeys.veSymbol, s);
+		properties().setProperty(veSymbol, s);
 	}
 
 	private void setText(Object t) {
-		if (properties().getPropertyValue(VisualKeys.veText) != null)
+		if (properties().getPropertyValue(veText) != null)
 			throw new TwAppsException("Attempt to overwrite edge text " + id());
-		properties().setProperty(VisualKeys.veText, t);
+		properties().setProperty(veText, t);
 	}
 
 	public void setVisualElements(Object line, Object text) {

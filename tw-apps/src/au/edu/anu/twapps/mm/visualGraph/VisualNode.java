@@ -37,10 +37,11 @@ import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.identity.impl.PairIdentity;
+import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
 
-public class VisualNode extends TreeGraphDataNode {
+public class VisualNode extends TreeGraphDataNode implements VisualKeys{
 
 	private TreeGraphNode configNode;
 
@@ -51,7 +52,13 @@ public class VisualNode extends TreeGraphDataNode {
 	}
 
 	public VisualNode(Identity id, GraphFactory factory) {
-		super(id, new SharedPropertyListImpl(VisualKeys.getNodeKeys()), factory);
+		super(id, new SharedPropertyListImpl(VisualGraphFactory.getNodeKeys()), factory);
+		setCollapse(false);
+		setCategory();
+	}
+
+	public VisualNode(Identity newId, ReadOnlyPropertyList props, VisualGraphFactory factory) {
+		super(newId,(SimplePropertyList) props,factory);
 		setCollapse(false);
 		setCategory();
 	}
@@ -86,12 +93,12 @@ public class VisualNode extends TreeGraphDataNode {
 	}
 
 	public void setCollapse(boolean b) {
-		properties().setProperty(VisualKeys.vnCollapsed, b);
+		properties().setProperty(vnCollapsed, b);
 	}
 
 	public void setCategory() {
 		if (PrimaryTreeLabels.contains(getLabel()))
-			properties().setProperty(VisualKeys.vnCategory, getLabel());
+			properties().setProperty(vnCategory, getLabel());
 		else
 			setCategory(getParent());
 	}
@@ -106,7 +113,7 @@ public class VisualNode extends TreeGraphDataNode {
 	}
 
 	private void setCategory(String category) {
-		properties().setProperty(VisualKeys.vnCategory, category);
+		properties().setProperty(vnCategory, category);
 	}
 
 	public String getLabel() {
@@ -114,11 +121,11 @@ public class VisualNode extends TreeGraphDataNode {
 	}
 
 	public void setX(double x) {
-		properties().setProperty(VisualKeys.vnx, x);
+		properties().setProperty(vnx, x);
 	}
 
 	public void setY(double y) {
-		properties().setProperty(VisualKeys.vny, y);
+		properties().setProperty(vny, y);
 	}
 
 	public void setPosition(double x, double y) {
@@ -127,23 +134,23 @@ public class VisualNode extends TreeGraphDataNode {
 	}
 
 	public double getX() {
-		return (Double) properties().getPropertyValue(VisualKeys.vnx);
+		return (Double) properties().getPropertyValue(vnx);
 	}
 
 	public double getY() {
-		return (Double) properties().getPropertyValue(VisualKeys.vny);
+		return (Double) properties().getPropertyValue(vny);
 	}
 
 	private void setSymbol(Object symbol) {
-		if (properties().getPropertyValue(VisualKeys.vnSymbol) != null)
+		if (properties().getPropertyValue(vnSymbol) != null)
 			throw new TwAppsException("Attempt to overwrite node symbol " + id());
-		properties().setProperty(VisualKeys.vnSymbol, symbol);
+		properties().setProperty(vnSymbol, symbol);
 	}
 
 	private void setText(Object text) {
-		if (properties().getPropertyValue(VisualKeys.vnText) != null)
+		if (properties().getPropertyValue(vnText) != null)
 			throw new TwAppsException("Attempt to overwrite node text " + id());
-		properties().setProperty(VisualKeys.vnText, text);
+		properties().setProperty(vnText, text);
 	}
 
 	public void setVisualElements(Object c, Object t) {
@@ -152,22 +159,22 @@ public class VisualNode extends TreeGraphDataNode {
 	}
 
 	public void setParentLine(Object l) {
-		if (properties().getPropertyValue(VisualKeys.vnParentLine) != null) {
+		if (properties().getPropertyValue(vnParentLine) != null) {
 			throw new TwAppsException("Attempt to overwrite line to parent symbol " + id());
 		}
-		properties().setProperty(VisualKeys.vnParentLine, l);
+		properties().setProperty(vnParentLine, l);
 	}
 
 	public String getCategory() {
-		return (String) properties().getPropertyValue(VisualKeys.vnCategory);
+		return (String) properties().getPropertyValue(vnCategory);
 	}
 
 	public Object getSymbol() {
-		return properties().getPropertyValue(VisualKeys.vnSymbol);
+		return properties().getPropertyValue(vnSymbol);
 	}
 
 	public boolean isCollapsed() {
-		return (Boolean) properties().getPropertyValue(VisualKeys.vnCollapsed);
+		return (Boolean) properties().getPropertyValue(vnCollapsed);
 	}
 
 	public boolean isCollapsedParent() {
