@@ -80,7 +80,10 @@ public class VisualGraphFactory extends TreeGraphFactory implements VisualKeys {
 
 		@Override
 		public SimplePropertyList makePropertyList(Property... properties) {
-			return new SharedPropertyListImpl(getEdgeKeys());
+			SimplePropertyList pl = new SharedPropertyListImpl(getEdgeKeys());
+			for (Property p:properties) 
+				pl.setProperty(p);
+			return pl;
 		}
 
 		@Override
