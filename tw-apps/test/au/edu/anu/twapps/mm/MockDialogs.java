@@ -39,6 +39,17 @@ public class MockDialogs implements IDialogs{
 	public void errorAlert(String title, String header, String content) {
 		System.out.println("errorAlert "+title+" "+header+" "+content);		
 	}
+	@Override
+	public void infoAlert(String title, String header, String content) {
+		System.out.println("infoAlert "+title+" "+header+" "+content);		
+		
+	}
+
+	@Override
+	public void warnAlert(String title, String header, String content) {
+		System.out.println("warnAlert "+title+" "+header+" "+content);		
+		
+	}
 
 	@Override
 	public File selectDirectory(String title, String currentPath) {
@@ -82,5 +93,6 @@ public class MockDialogs implements IDialogs{
 		// TODO Auto-generated method stub
 		return false;
 	}
+
 
 }

@@ -30,7 +30,6 @@ package au.edu.anu.twapps.dialogs;
 
 import java.io.File;
 
-
 /**
  * Author Ian Davies
  *
@@ -40,9 +39,10 @@ import java.io.File;
 // static methods for dialogs
 public class Dialogs {
 	private static IDialogs impl;
-	
+
 	// prevent instantiation
-	private Dialogs() {};
+	private Dialogs() {
+	};
 
 	public static void initialise(IDialogs impl) {
 		Dialogs.impl = impl;
@@ -50,6 +50,14 @@ public class Dialogs {
 
 	public static void errorAlert(String title, String header, String content) {
 		impl.errorAlert(title, header, content);
+	}
+
+	public static void infoAlert(String title, String header, String content) {
+		impl.infoAlert(title, header, content);
+	}
+
+	public static void warnAlert(String title, String header, String content) {
+		impl.warnAlert(title, header, content);
 	}
 
 	public static File selectDirectory(String title, String currentPath) {
@@ -67,18 +75,18 @@ public class Dialogs {
 	public static File getExternalProjectFile() {
 		return impl.getExternalProjectFile();
 	}
+
 	public static boolean confirmation(String title, String header, String content) {
 		return impl.confirmation(title, header, content);
 	}
 
 	public static File getOpenFile(File directory, String title, Object extensions) {
 		// TODO Auto-generated method stub
-		return impl.getOpenFile(directory,title,extensions);
+		return impl.getOpenFile(directory, title, extensions);
 	}
 
-	public static boolean editList(String title, String header, String content,
-			Object listView) {
-		return impl.editList(title,header,content,listView);
+	public static boolean editList(String title, String header, String content, Object listView) {
+		return impl.editList(title, header, content, listView);
 	}
 
 }

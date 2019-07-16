@@ -45,6 +45,10 @@ import java.io.File;
 public interface IDialogs {
 	public void errorAlert(String title, String header, String content);
 
+	public void infoAlert(String title, String header, String content);
+
+	public void warnAlert(String title, String header, String content);
+
 	public File selectDirectory(String title, String currentPath);
 
 	public YesNoCancel yesNoCancel(String title, String header, String content);
