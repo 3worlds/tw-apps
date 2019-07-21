@@ -117,6 +117,7 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys{
 	}
 
 	public String getLabel() {
+		// TODO: remove this and use archetype helper after refactoring is done.
 		return this.id().split(PairIdentity.LABEL_NAME_STR_SEPARATOR)[0];
 	}
 
