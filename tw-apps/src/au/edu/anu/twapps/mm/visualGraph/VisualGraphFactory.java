@@ -137,9 +137,9 @@ public class VisualGraphFactory extends TreeGraphFactory implements VisualKeys {
 		vgLabels.put(VisualEdge.class.getSimpleName(), VisualEdge.class.getName());
 	}
 	
-	private static PropertyKeys nodeKeys = new PropertyKeys(vnx, vny, vnText, vnSymbol, vnCategory, vnParentLine,
+	private static PropertyKeys nodeKeys = new PropertyKeys(vnx, vny,/* vnText, vnSymbol, vnParentLine.*/ vnCategory,
 			vnCollapsed);
-	private static PropertyKeys edgeKeys = new PropertyKeys(veText, veSymbol);
+	private static PropertyKeys edgeKeys = new PropertyKeys(/*veText, veSymbol*/);
 
 	public static PropertyKeys getNodeKeys() {
 		return nodeKeys;

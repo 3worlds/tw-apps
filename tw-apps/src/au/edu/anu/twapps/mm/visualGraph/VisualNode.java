@@ -41,9 +41,12 @@ import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
 
-public class VisualNode extends TreeGraphDataNode implements VisualKeys{
+public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 
 	private TreeGraphNode configNode;
+	private Object vnSymbol;
+	private Object vnText;
+	private Object vnParentLine;
 
 	public VisualNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -58,7 +61,7 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys{
 	}
 
 	public VisualNode(Identity newId, ReadOnlyPropertyList props, VisualGraphFactory factory) {
-		super(newId,(SimplePropertyList) props,factory);
+		super(newId, (SimplePropertyList) props, factory);
 		setCollapse(false);
 		setCategory();
 	}
@@ -142,16 +145,21 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys{
 		return (Double) properties().getPropertyValue(vny);
 	}
 
+
 	private void setSymbol(Object symbol) {
-		if (properties().getPropertyValue(vnSymbol) != null)
+		if (vnSymbol != null)
+//			if (properties().getPropertyValue(vnSymbol) != null)
 			throw new TwAppsException("Attempt to overwrite node symbol " + id());
-		properties().setProperty(vnSymbol, symbol);
+//		properties().setProperty(vnSymbol, symbol);
+		vnSymbol = symbol;
 	}
 
 	private void setText(Object text) {
-		if (properties().getPropertyValue(vnText) != null)
+		if (vnText != null)
+//		if (properties().getPropertyValue(vnText) != null)
 			throw new TwAppsException("Attempt to overwrite node text " + id());
-		properties().setProperty(vnText, text);
+//		properties().setProperty(vnText, text);
+		vnText = text;
 	}
 
 	public void setVisualElements(Object c, Object t) {
@@ -160,10 +168,12 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys{
 	}
 
 	public void setParentLine(Object l) {
-		if (properties().getPropertyValue(vnParentLine) != null) {
+		if (vnParentLine != null)
+//		if (properties().getPropertyValue(vnParentLine) != null) {
 			throw new TwAppsException("Attempt to overwrite line to parent symbol " + id());
-		}
-		properties().setProperty(vnParentLine, l);
+
+//		properties().setProperty(vnParentLine, l);
+		vnParentLine = l;
 	}
 
 	public String getCategory() {
@@ -171,7 +181,8 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys{
 	}
 
 	public Object getSymbol() {
-		return properties().getPropertyValue(vnSymbol);
+		return vnSymbol;
+//		return properties().getPropertyValue(vnSymbol);
 	}
 
 	public boolean isCollapsed() {

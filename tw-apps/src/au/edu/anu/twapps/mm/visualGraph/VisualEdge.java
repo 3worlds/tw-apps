@@ -39,6 +39,8 @@ import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
 
 public class VisualEdge extends ALDataEdge  implements VisualKeys{
 	private ALDataEdge configEdge;
+	private Object veText;
+	private Object veSymbol;
 
 	public VisualEdge(Identity id, Node start, Node end, SimplePropertyList props, EdgeFactory factory) {
 		super(id, start, end, props, factory);
@@ -56,19 +58,24 @@ public class VisualEdge extends ALDataEdge  implements VisualKeys{
 	}
 
 	public Object getText() {
-		return properties().getPropertyValue(veText);
+//		return properties().getPropertyValue(veText);
+		return veText;
 	}
 
 	private void setSymbol(Object s) {
-		if (properties().getPropertyValue(veSymbol) != null)
+		if (veSymbol!=null)
+//		if (properties().getPropertyValue(veSymbol) != null)
 			throw new TwAppsException("Attempt to overwrite edge symbol " + id());
-		properties().setProperty(veSymbol, s);
+//		properties().setProperty(veSymbol, s);
+		veSymbol = s;
 	}
 
 	private void setText(Object t) {
-		if (properties().getPropertyValue(veText) != null)
+		if (veText!=null)
+//		if (properties().getPropertyValue(veText) != null)
 			throw new TwAppsException("Attempt to overwrite edge text " + id());
-		properties().setProperty(veText, t);
+//		properties().setProperty(veText, t);
+		veText = t;
 	}
 
 	public void setVisualElements(Object line, Object text) {
