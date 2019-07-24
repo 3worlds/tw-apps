@@ -167,6 +167,7 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 		setText(t);
 	}
 
+
 	public void setParentLine(Object l) {
 		if (vnParentLine != null)
 //		if (properties().getPropertyValue(vnParentLine) != null) {
