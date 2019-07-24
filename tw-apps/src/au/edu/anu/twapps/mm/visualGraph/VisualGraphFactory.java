@@ -105,20 +105,20 @@ public class VisualGraphFactory extends TreeGraphFactory implements VisualKeys {
 
 	@Override
 	public VisualNode makeNode(String proposedId) {
-		VisualNode result = new VisualNode(scope.newId(proposedId), this);
+		VisualNode result = new VisualNode(scope.newId(true,proposedId), this);
 		addNodeToGraphs(result);
 		return result;
 	}
 	@Override
 	public VisualNode makeNode(String proposedId, ReadOnlyPropertyList props) {
-		VisualNode result = new VisualNode(scope.newId(proposedId),props,this);
+		VisualNode result = new VisualNode(scope.newId(true,proposedId),props,this);
 		addNodeToGraphs(result);
 		return result;
 	}
 		
 	@Override
 	public VisualEdge makeEdge(Node start, Node end, String proposedId) {
-		VisualEdge result = new VisualEdge(scope.newId(proposedId), start, end, this);
+		VisualEdge result = new VisualEdge(scope.newId(true,proposedId), start, end, this);
 		return result;
 	}
 
