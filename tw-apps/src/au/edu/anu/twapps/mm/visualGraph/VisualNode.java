@@ -44,6 +44,12 @@ import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
 public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 
 	private TreeGraphNode configNode;
+	/**
+	 * These Objects are constructed at startup time. Thus, there is no need to have
+	 * them stored in a property list. To store them in a property list would cause
+	 * problems when reloading the file with the omugiImporter.
+	 */
+
 	private Object vnSymbol;
 	private Object vnText;
 	private Object vnParentLine;
@@ -145,7 +151,6 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 		return (Double) properties().getPropertyValue(vny);
 	}
 
-
 	private void setSymbol(Object symbol) {
 		if (vnSymbol != null)
 //			if (properties().getPropertyValue(vnSymbol) != null)
@@ -166,7 +171,6 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 		setSymbol(c);
 		setText(t);
 	}
-
 
 	public void setParentLine(Object l) {
 		if (vnParentLine != null)

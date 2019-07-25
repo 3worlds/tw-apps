@@ -39,6 +39,11 @@ import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
 
 public class VisualEdge extends ALDataEdge  implements VisualKeys{
 	private ALDataEdge configEdge;
+	/**
+	 * These Objects are constructed at startup time. Thus, there is no need to have
+	 * them stored in a property list. To store them in a property list would cause
+	 * problems when reloading the file with the omugiImporter.
+	 */
 	private Object veText;
 	private Object veSymbol;
 
