@@ -138,7 +138,7 @@ public class VisualGraphFactory extends TreeGraphFactory implements VisualKeys {
 	}
 	
 	private static PropertyKeys nodeKeys = new PropertyKeys(vnx, vny,/* vnText, vnSymbol, vnParentLine.*/ vnCategory,
-			vnCollapsed);
+			vnCollapsed,vnCreatedBy);
 	private static PropertyKeys edgeKeys = new PropertyKeys(/*veText, veSymbol*/);
 
 	public static PropertyKeys getNodeKeys() {

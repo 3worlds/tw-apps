@@ -153,17 +153,13 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 
 	private void setSymbol(Object symbol) {
 		if (vnSymbol != null)
-//			if (properties().getPropertyValue(vnSymbol) != null)
 			throw new TwAppsException("Attempt to overwrite node symbol " + id());
-//		properties().setProperty(vnSymbol, symbol);
 		vnSymbol = symbol;
 	}
 
 	private void setText(Object text) {
 		if (vnText != null)
-//		if (properties().getPropertyValue(vnText) != null)
 			throw new TwAppsException("Attempt to overwrite node text " + id());
-//		properties().setProperty(vnText, text);
 		vnText = text;
 	}
 
@@ -174,10 +170,7 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 
 	public void setParentLine(Object l) {
 		if (vnParentLine != null)
-//		if (properties().getPropertyValue(vnParentLine) != null) {
 			throw new TwAppsException("Attempt to overwrite line to parent symbol " + id());
-
-//		properties().setProperty(vnParentLine, l);
 		vnParentLine = l;
 	}
 
@@ -187,7 +180,6 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 
 	public Object getSymbol() {
 		return vnSymbol;
-//		return properties().getPropertyValue(vnSymbol);
 	}
 
 	public boolean isCollapsed() {
@@ -204,4 +196,11 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 		return false;
 	}
 
+	public String getCreatedBy() {
+		return (String) properties().getPropertyValue(vnCreatedBy);
+	}
+
+	public void setCreatedBy(String label) {
+		properties().setProperty(vnCreatedBy, label);
+	}
 }
