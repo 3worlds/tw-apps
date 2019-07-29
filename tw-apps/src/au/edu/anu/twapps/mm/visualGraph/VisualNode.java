@@ -182,6 +182,14 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 		return vnSymbol;
 	}
 
+	public Object getText() {
+		return vnText;
+	}
+
+	public Object getParentLine() {
+		return vnParentLine;
+	}
+
 	public boolean isCollapsed() {
 		return (Boolean) properties().getPropertyValue(vnCollapsed);
 	}
