@@ -50,5 +50,7 @@ public interface IMMController {
 	public void onNodeSelected(VisualNode n);
 	
 	public void onNewNode(VisualNode n);
+	
+	public void onNodeDeleted();
 
 }
