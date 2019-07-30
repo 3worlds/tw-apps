@@ -86,5 +86,17 @@ public class MockController implements IMMController{
 		
 	}
 
+	@Override
+	public void onTreeCollapse() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onTreeExpand() {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }

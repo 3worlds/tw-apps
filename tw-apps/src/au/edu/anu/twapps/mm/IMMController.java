@@ -52,5 +52,9 @@ public interface IMMController {
 	public void onNewNode(VisualNode n);
 	
 	public void onNodeDeleted();
+	
+	public void onTreeCollapse();
+	
+	public void onTreeExpand();
 
 }
