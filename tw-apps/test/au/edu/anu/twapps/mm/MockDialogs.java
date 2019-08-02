@@ -93,6 +93,11 @@ public class MockDialogs implements IDialogs{
 		// TODO Auto-generated method stub
 		return false;
 	}
+	@Override
+	public int getListChoice(String[] list, String title, String header, String content) {
+		// TODO Auto-generated method stub
+		return -1;
+	}
 
 
 }

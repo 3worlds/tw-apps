@@ -30,6 +30,7 @@
 package au.edu.anu.twapps.mm.visualGraph;
 
 import au.edu.anu.twapps.exceptions.TwAppsException;
+import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.archetype.PrimaryTreeLabels;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.TreeNode;
@@ -37,6 +38,7 @@ import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.identity.impl.PairIdentity;
+import fr.cnrs.iees.properties.ExtendablePropertyList;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
@@ -210,5 +212,21 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 
 	public void setCreatedBy(String label) {
 		properties().setProperty(vnCreatedBy, label);
+	}
+
+	private ExtendablePropertyList getExtendablePropertyList() {
+		if (configNode instanceof TreeGraphDataNode) {
+			TreeGraphDataNode tdn = (TreeGraphDataNode) configNode;
+			return (ExtendablePropertyList) tdn.properties();
+		} else
+			throw new TwAppsException("Attempt to obtain ExtendablePropertyList from " + configNode.id());
+	}
+
+	public void addProperty(String key, Object value) {
+		getExtendablePropertyList().addProperty(key,value);
+	}
+
+	public void addProperty(String key) {
+		getExtendablePropertyList().addProperty(key);
 	}
 }

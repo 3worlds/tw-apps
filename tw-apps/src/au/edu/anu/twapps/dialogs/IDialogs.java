@@ -64,4 +64,5 @@ public interface IDialogs {
 
 	public boolean editList(String title, String header, String content, Object listView);
 
+	public int getListChoice(String[] list,String title,String header,String content);
 }

@@ -88,5 +88,7 @@ public class Dialogs {
 	public static boolean editList(String title, String header, String content, Object listView) {
 		return impl.editList(title, header, content, listView);
 	}
-
+	public static int getListChoice(String[] list,String title,String header,String content) {
+		return impl.getListChoice(list, title, header, content);
+}
 }
