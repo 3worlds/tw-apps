@@ -223,10 +223,22 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 	}
 
 	public void addProperty(String key, Object value) {
-		getExtendablePropertyList().addProperty(key,value);
+		getExtendablePropertyList().addProperty(key, value);
 	}
 
 	public void addProperty(String key) {
 		getExtendablePropertyList().addProperty(key);
+	}
+
+	public boolean configHasProperty(String key) {
+		if (configNode instanceof TreeGraphDataNode)
+			return getExtendablePropertyList().hasProperty(key);
+		return false;
+	};
+
+	public Object configGetPropertyValue(String key) {
+		if (configNode instanceof TreeGraphDataNode)
+			return getExtendablePropertyList().getPropertyValue(key);
+		throw new TwAppsException("Attempt to obtain ExtendablePropertyList from " + configNode.id());
 	}
 }
