@@ -30,6 +30,8 @@
 package au.edu.anu.twapps.mm;
 
 import java.io.File;
+import java.util.List;
+
 import au.edu.anu.twapps.dialogs.IDialogs;
 import au.edu.anu.twapps.dialogs.YesNoCancel;
 
@@ -97,6 +99,11 @@ public class MockDialogs implements IDialogs{
 	public int getListChoice(String[] list, String title, String header, String content) {
 		// TODO Auto-generated method stub
 		return -1;
+	}
+	@Override
+	public List<String> getRadioButtonChoices(String title, String header, String content, List<String[]> entries) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 

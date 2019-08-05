@@ -30,6 +30,7 @@
 package au.edu.anu.twapps.dialogs;
 
 import java.io.File;
+import java.util.List;
 
 //import javafx.stage.FileChooser.ExtensionFilter;
 
@@ -65,4 +66,6 @@ public interface IDialogs {
 	public boolean editList(String title, String header, String content, Object listView);
 
 	public int getListChoice(String[] list,String title,String header,String content);
+	
+	public List<String> getRadioButtonChoices(String title,String header,String content, List<String[]> entries);
 }

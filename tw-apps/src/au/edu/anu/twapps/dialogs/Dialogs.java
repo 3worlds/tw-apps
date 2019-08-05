@@ -29,6 +29,7 @@
 package au.edu.anu.twapps.dialogs;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * Author Ian Davies
@@ -81,14 +82,18 @@ public class Dialogs {
 	}
 
 	public static File getOpenFile(File directory, String title, Object extensions) {
-		// TODO Auto-generated method stub
 		return impl.getOpenFile(directory, title, extensions);
 	}
 
 	public static boolean editList(String title, String header, String content, Object listView) {
 		return impl.editList(title, header, content, listView);
 	}
-	public static int getListChoice(String[] list,String title,String header,String content) {
+
+	public static int getListChoice(String[] list, String title, String header, String content) {
 		return impl.getListChoice(list, title, header, content);
-}
+	}
+
+	public static List<String> getRadioButtonChoices(String title, String header, String content, List<String[]> entries) {
+		return impl.getRadioButtonChoices(title, header, content, entries);
+	}
 }
