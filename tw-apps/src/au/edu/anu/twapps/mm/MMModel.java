@@ -85,7 +85,8 @@ public class MMModel  implements IMMModel {
 
 	@Override
 	public boolean validateGraph() {
-		return checker.validateGraph();
+		return false;
+		//return checker.validateGraph();
 	}
 
 	@Override
