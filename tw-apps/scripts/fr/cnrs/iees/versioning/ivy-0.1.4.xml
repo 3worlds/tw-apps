@@ -1,5 +1,5 @@
 <!--===================================================================================
- ant and ivy scripts for project <tw-apps> version 0.1.5 (Fri Aug 09 15:58:36 AEST 2019)
+ ant and ivy scripts for project <tw-apps> version 0.1.4 (Fri Aug 09 11:05:37 AEST 2019)
  author: Jacques Gignoux <jacques.gignoux@upmc.fr>
 
  CAUTION: this file is generated - DO NOT EDIT!
@@ -13,7 +13,7 @@
 
 	<info	organisation="au.edu.anu.tw-apps"
 			module="tw-apps"
-			revision="0.1.5"
+			revision="0.1.4"
 			status="integration">
 		<license name="gpl3" url="https://www.gnu.org/licenses/gpl-3.0.txt"/>
 		<description>This module contains UI-independent code for ModelMaker and ModelRunner.</description>
