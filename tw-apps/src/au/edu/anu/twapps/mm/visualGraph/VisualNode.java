@@ -99,6 +99,11 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 
 	// helper methods
 	@Override
+	public Iterable<VisualNode> getChildren() {
+		return (Iterable<VisualNode>) super.getChildren();
+	}
+
+	@Override
 	public VisualNode getParent() {
 		return (VisualNode) super.getParent();
 	}
@@ -175,7 +180,14 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 			throw new TwAppsException("Attempt to overwrite line to parent symbol " + id());
 		vnParentLine = l;
 	}
-
+	
+	public void removeParentLine() {
+		if (vnParentLine != null)
+			vnParentLine = null;
+		else
+			throw new TwAppsException("Attempt to remove non-existant line to parent symbol " + id());
+	}
+	
 	public String getCategory() {
 		return (String) properties().getPropertyValue(vnCategory);
 	}
