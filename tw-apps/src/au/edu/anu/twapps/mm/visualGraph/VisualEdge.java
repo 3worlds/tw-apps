@@ -33,12 +33,13 @@ import au.edu.anu.twapps.exceptions.TwAppsException;
 import fr.cnrs.iees.graph.EdgeFactory;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.impl.ALDataEdge;
+import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
 
 public class VisualEdge extends ALDataEdge implements VisualKeys {
-	private ALDataEdge configEdge;
+	private ALEdge configEdge;
 	/**
 	 * These Objects are constructed at startup time. Thus, there is no need to have
 	 * them stored in a property list. To store them in a property list would cause
@@ -55,11 +56,11 @@ public class VisualEdge extends ALDataEdge implements VisualKeys {
 		super(id, start, end, new SharedPropertyListImpl(VisualGraphFactory.getEdgeKeys()), factory);
 	}
 
-	public void setConfigEdge(ALDataEdge configEdge) {
+	public void setConfigEdge(ALEdge configEdge) {
 		this.configEdge = configEdge;
 	}
 
-	public ALDataEdge getConfigEdge() {
+	public ALEdge getConfigEdge() {
 		return configEdge;
 	}
 

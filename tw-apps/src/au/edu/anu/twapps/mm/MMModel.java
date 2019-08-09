@@ -43,6 +43,7 @@ import au.edu.anu.twcore.graphState.GraphState;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.root.TwConfigFactory;
 import au.edu.anu.twcore.specificationCheck.Checkable;
+import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.impl.ALDataEdge;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
@@ -151,6 +152,13 @@ public class MMModel  implements IMMModel {
 		}
 		return null;
 	}
+	private ALEdge findMatchingdId(String id, VisualNode vn) {
+		TreeGraphNode node = vn.getConfigNode();
+		for (ALEdge e: node.edges(Direction.OUT))
+			if (id.equals(e.id()))
+				return e;
+		return null;
+	}
 	//TODO deal with out nodes
 	private void connectConfigToVisual() {
 		for (VisualNode vn : visualGraph.nodes()) {
@@ -158,11 +166,17 @@ public class MMModel  implements IMMModel {
 			if (n == null)
 				throw new TwAppsException("Unable to find " + vn.id() + " in currentGraph");
 			vn.setConfigNode(n);
+			for (ALEdge e: vn.edges(Direction.OUT)) {
+				ALEdge ce = findMatchingdId(e.id(),vn);	
+				VisualEdge ve = (VisualEdge)e;
+				ve.setConfigEdge(ce);
+			}
 		}
 		for (VisualNode vn:visualGraph.nodes()) {
 			vn.setCategory();
 		}
 	}
+
 
 	@SuppressWarnings("unchecked")
 	@Override
