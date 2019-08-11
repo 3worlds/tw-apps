@@ -197,7 +197,7 @@ public class MMModel  implements IMMModel {
 	public void doSave() {
 		new OmugiGraphExporter(Project.makeConfigurationFile()).exportGraph(currentGraph);
 		new OmugiGraphExporter(Project.makeLayoutFile()).exportGraph(visualGraph);
-		GraphState.setChanged(false);
+		GraphState.clear();
 	}
 
 	@Override
@@ -249,7 +249,7 @@ public class MMModel  implements IMMModel {
 
 	@Override
 	public boolean canClose() {
-		if (!GraphState.hasChanged())
+		if (!GraphState.changed())
 			return true;
 		switch (Dialogs.yesNoCancel("Project has changed", "Save changes before closing projecct?", "")) {
 		case yes:
