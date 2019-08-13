@@ -37,12 +37,13 @@ import java.util.Map;
 import au.edu.anu.twapps.dialogs.Dialogs;
 import au.edu.anu.twapps.exceptions.TwAppsException;
 import au.edu.anu.twapps.mm.visualGraph.VisualGraphFactory;
+import au.edu.anu.twapps.mm.configGraph.ConfigGraph;
 import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
+import au.edu.anu.twcore.archetype.TWA;
 import au.edu.anu.twcore.graphState.GraphState;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.root.TwConfigFactory;
-import au.edu.anu.twcore.specificationCheck.Checkable;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.impl.ALDataEdge;
 import fr.cnrs.iees.graph.impl.ALEdge;
@@ -60,10 +61,9 @@ import fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels;
  */
 public class MMModel  implements IMMModel {
 	// Interface supplied to the controller
-	private TreeGraph<TreeGraphNode,ALEdge> currentGraph;
 	private TreeGraph<VisualNode,VisualEdge> visualGraph;
 	private IMMController controller;
-	private Checkable checker;
+	
 	// Should we avoid using javafx.beans.property? - make ModelMaker a boolean change listener??
 
 	public MMModel(IMMController controller) {
@@ -72,23 +72,13 @@ public class MMModel  implements IMMModel {
 
 	private void onProjectClosing() {
 		controller.onProjectClosing();
-		checker=null;
 		Project.close();
 	}
 
 	private void onProjectOpened() {
-		//TODO sort this out
-		// update status of the opened graph?
-		//new CheckImpl(currentGraph); 
-		controller.onProjectOpened(visualGraph);
-		
+		controller.onProjectOpened(visualGraph);		
 	}
 
-	@Override
-	public boolean validateGraph() {
-		return false;
-		//return checker.validateGraph();
-	}
 
 	@Override
 	public void doClearJavaProject() {
@@ -133,8 +123,8 @@ public class MMModel  implements IMMModel {
 		}
 		name = Project.create(name);
 		String rootId = ConfigurationNodeLabels.N_ROOT.label()+PairIdentity.LABEL_NAME_STR_SEPARATOR+name;
-		currentGraph = new TreeGraph<TreeGraphNode,ALEdge>(new TwConfigFactory()); 
-		currentGraph.nodeFactory().makeNode(rootId);
+		ConfigGraph.setGraph(new TreeGraph<TreeGraphNode,ALEdge>(new TwConfigFactory())); 
+		ConfigGraph.getGraph().nodeFactory().makeNode(rootId);
 		
 		visualGraph = new TreeGraph<VisualNode,VisualEdge>(new VisualGraphFactory());
 		visualGraph.nodeFactory().makeNode(rootId);		
@@ -146,7 +136,7 @@ public class MMModel  implements IMMModel {
 	}
 
 	private TreeGraphNode findMatchingId(String id) {
-		for (TreeGraphNode n: (Iterable<TreeGraphNode>) currentGraph.nodes()) {
+		for (TreeGraphNode n: (Iterable<TreeGraphNode>) ConfigGraph.getGraph().nodes()) {
 			if (id.equals(n.id()))
 				return n;
 		}
@@ -187,7 +177,7 @@ public class MMModel  implements IMMModel {
 		if (Project.isOpen())
 			onProjectClosing();
 		Project.open(file);
-		currentGraph = (TreeGraph<TreeGraphNode,ALEdge>) FileImporter.loadGraphFromFile(Project.makeConfigurationFile());
+		ConfigGraph.setGraph((TreeGraph<TreeGraphNode,ALEdge>) FileImporter.loadGraphFromFile(Project.makeConfigurationFile()));
 		visualGraph =  (TreeGraph<VisualNode, VisualEdge>) FileImporter.loadGraphFromFile(Project.makeLayoutFile());
 		connectConfigToVisual();
 		onProjectOpened();
@@ -195,7 +185,7 @@ public class MMModel  implements IMMModel {
 
 	@Override
 	public void doSave() {
-		new OmugiGraphExporter(Project.makeConfigurationFile()).exportGraph(currentGraph);
+		new OmugiGraphExporter(Project.makeConfigurationFile()).exportGraph(ConfigGraph.getGraph());
 		new OmugiGraphExporter(Project.makeLayoutFile()).exportGraph(visualGraph);
 		GraphState.clear();
 	}

@@ -27,40 +27,41 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
   **************************************************************************/
 
-package au.edu.anu.twapps.mm;
+package au.edu.anu.twapps.mm.configGraph;
 
-import java.io.File;
-
+import au.edu.anu.rscs.aot.archetype.CheckMessage;
+import au.edu.anu.twcore.archetype.TWA;
+import fr.cnrs.iees.graph.impl.ALEdge;
+import fr.cnrs.iees.graph.impl.TreeGraph;
+import fr.cnrs.iees.graph.impl.TreeGraphNode;
 
 /**
- * Author Ian Davies
+ * @author Ian Davies
  *
- * Date 10 Jan. 2019
+ * @Date 13 Aug 2019
  */
-//ModelMaker methods called by the Controller
-// The controller HAS one of these
-// ModelMaker IS on of these: ModelMaker implements
-public interface IMMModel {
-	public boolean canClose();
-	public void doClearJavaProject();
-	public void doSetJavaProject();
-	public void doNewProject();
-	public void doOpenProject(File file);
-	public void doMenuExit();
-	public void doLayout();
-	public void doDeploy();
-	public void doSave();
-	public void doSaveAs();
-	public void doImport();
-	public boolean propertyEditable(String label, String key);
+public class ConfigGraph {
+	private static TreeGraph<TreeGraphNode, ALEdge> graph;
+	private static Iterable<CheckMessage> errors;
+
+	private ConfigGraph() {
+	}
+
+	public static void setGraph(TreeGraph<TreeGraphNode, ALEdge> graph) {
+		ConfigGraph.graph = graph;
+		validateGraph();
+	}
+
+	public static TreeGraph<TreeGraphNode, ALEdge> getGraph() {
+		return graph;
+	}
+
+	public static void validateGraph() {
+		errors = TWA.checkSpecifications(graph);
+	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
+	public Iterable<CheckMessage> getErrors(){
+		return errors;
+	}
 
 }
