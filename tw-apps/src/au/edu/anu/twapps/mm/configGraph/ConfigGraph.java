@@ -59,7 +59,7 @@ public class ConfigGraph {
 	public static void validateGraph() {
 		errors = TWA.checkSpecifications(graph);
 		for (CheckMessage e:errors) {
-			System.out.println(e.getTarget()+": "+e.getArchetypeNode());
+			System.out.println(e.getCode()+"\tP1:"+e.getTarget()+"\t"+e.getArchetypeNode()+"\t"+e.getException());
 		}
 	}
 	
