@@ -40,12 +40,10 @@ import au.edu.anu.twapps.mm.visualGraph.VisualGraphFactory;
 import au.edu.anu.twapps.mm.configGraph.ConfigGraph;
 import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
-import au.edu.anu.twcore.archetype.TWA;
 import au.edu.anu.twcore.graphState.GraphState;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.root.TwConfigFactory;
 import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.impl.ALDataEdge;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
@@ -59,12 +57,13 @@ import fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels;
  *
  * Date 10 Dec. 2018
  */
-public class MMModel  implements IMMModel {
+public class MMModel implements IMMModel {
 	// Interface supplied to the controller
-	private TreeGraph<VisualNode,VisualEdge> visualGraph;
+	private TreeGraph<VisualNode, VisualEdge> visualGraph;
 	private IMMController controller;
-	
-	// Should we avoid using javafx.beans.property? - make ModelMaker a boolean change listener??
+
+	// Should we avoid using javafx.beans.property? - make ModelMaker a boolean
+	// change listener??
 
 	public MMModel(IMMController controller) {
 		this.controller = controller;
@@ -72,13 +71,11 @@ public class MMModel  implements IMMModel {
 
 	private void onProjectClosing() {
 		controller.onProjectClosing();
-		Project.close();
 	}
 
 	private void onProjectOpened() {
-		controller.onProjectOpened(visualGraph);		
+		controller.onProjectOpened(visualGraph);
 	}
-
 
 	@Override
 	public void doClearJavaProject() {
@@ -114,20 +111,31 @@ public class MMModel  implements IMMModel {
 	public void doNewProject() {
 		if (!canClose())
 			return;
-		String name = Dialogs.getText("New project", "", "New project name:", "my Project");
-		if (name == null)
-			return;
+		String promptId = "project1";
+		boolean modified = true;
+		promptId = Project.proposeId(promptId);
+		while (modified) {
+			String userName = Dialogs.getText("New project", "", "New project name:", promptId);
+			if (userName==null) 
+				return;
+			if (userName.equals(""))
+				return;
+			userName = Project.formatName(userName);
+			String newName = Project.proposeId(userName);
+			modified = !newName.equals(userName);
+			promptId = newName;
+		}
 		if (Project.isOpen()) {
 			onProjectClosing();
 			Project.close();
 		}
-		name = Project.create(name);
-		String rootId = ConfigurationNodeLabels.N_ROOT.label()+PairIdentity.LABEL_NAME_STR_SEPARATOR+name;
-		ConfigGraph.setGraph(new TreeGraph<TreeGraphNode,ALEdge>(new TwConfigFactory())); 
+		promptId = Project.create(promptId);
+		String rootId = ConfigurationNodeLabels.N_ROOT.label() + PairIdentity.LABEL_NAME_STR_SEPARATOR + promptId;
+		ConfigGraph.setGraph(new TreeGraph<TreeGraphNode, ALEdge>(new TwConfigFactory()));
 		ConfigGraph.getGraph().nodeFactory().makeNode(rootId);
-		
-		visualGraph = new TreeGraph<VisualNode,VisualEdge>(new VisualGraphFactory());
-		visualGraph.nodeFactory().makeNode(rootId);		
+
+		visualGraph = new TreeGraph<VisualNode, VisualEdge>(new VisualGraphFactory());
+		visualGraph.nodeFactory().makeNode(rootId);
 
 		visualGraph.root().setPosition(0.1, 0.5);
 		connectConfigToVisual();
@@ -136,37 +144,38 @@ public class MMModel  implements IMMModel {
 	}
 
 	private TreeGraphNode findMatchingId(String id) {
-		for (TreeGraphNode n: (Iterable<TreeGraphNode>) ConfigGraph.getGraph().nodes()) {
+		for (TreeGraphNode n : (Iterable<TreeGraphNode>) ConfigGraph.getGraph().nodes()) {
 			if (id.equals(n.id()))
 				return n;
 		}
 		return null;
 	}
+
 	private ALEdge findMatchingdId(String id, VisualNode vn) {
 		TreeGraphNode node = vn.getConfigNode();
-		for (ALEdge e: node.edges(Direction.OUT))
+		for (ALEdge e : node.edges(Direction.OUT))
 			if (id.equals(e.id()))
 				return e;
 		return null;
 	}
-	//TODO deal with out nodes
+
+	// TODO deal with out nodes
 	private void connectConfigToVisual() {
 		for (VisualNode vn : visualGraph.nodes()) {
 			TreeGraphNode n = findMatchingId(vn.id());
 			if (n == null)
 				throw new TwAppsException("Unable to find " + vn.id() + " in currentGraph");
 			vn.setConfigNode(n);
-			for (ALEdge e: vn.edges(Direction.OUT)) {
-				ALEdge ce = findMatchingdId(e.id(),vn);	
-				VisualEdge ve = (VisualEdge)e;
+			for (ALEdge e : vn.edges(Direction.OUT)) {
+				ALEdge ce = findMatchingdId(e.id(), vn);
+				VisualEdge ve = (VisualEdge) e;
 				ve.setConfigEdge(ce);
 			}
 		}
-		for (VisualNode vn:visualGraph.nodes()) {
+		for (VisualNode vn : visualGraph.nodes()) {
 			vn.setCategory();
 		}
 	}
-
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -174,11 +183,14 @@ public class MMModel  implements IMMModel {
 		// TODO Auto-generated method stub
 		if (!canClose())
 			return;
-		if (Project.isOpen())
+		if (Project.isOpen()) {
 			onProjectClosing();
+			Project.close();
+		}
 		Project.open(file);
-		ConfigGraph.setGraph((TreeGraph<TreeGraphNode,ALEdge>) FileImporter.loadGraphFromFile(Project.makeConfigurationFile()));
-		visualGraph =  (TreeGraph<VisualNode, VisualEdge>) FileImporter.loadGraphFromFile(Project.makeLayoutFile());
+		ConfigGraph.setGraph(
+				(TreeGraph<TreeGraphNode, ALEdge>) FileImporter.loadGraphFromFile(Project.makeConfigurationFile()));
+		visualGraph = (TreeGraph<VisualNode, VisualEdge>) FileImporter.loadGraphFromFile(Project.makeLayoutFile());
 		connectConfigToVisual();
 		onProjectOpened();
 	}
@@ -251,14 +263,16 @@ public class MMModel  implements IMMModel {
 			return false;
 		}
 	}
+
 	private Map<String, List<String>> nonEditableMap = new HashMap<>();
+
 	@Override
 	public boolean propertyEditable(String classId, String key) {
 		if (!nonEditableMap.containsKey(classId))
 			return true;
 		if (!nonEditableMap.get(classId).contains(key))
 			return true;
-		//TODO build this when the archetype is ready
+		// TODO build this when the archetype is ready
 		return true;
 	}
 
