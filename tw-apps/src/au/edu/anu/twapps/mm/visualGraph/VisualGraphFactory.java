@@ -49,6 +49,10 @@ import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
 public class VisualGraphFactory extends TreeGraphFactory implements VisualKeys {
 
 	private static Map<String, String> vgLabels = new HashMap<>();
+	
+	public void removeEdgeId(VisualEdge edge) {
+		scope.removeId(edge.id());
+	}
 
 	// Property list factory for nodes (anonymous class)
 	private static PropertyListFactory nodePLF = new PropertyListFactory() {
