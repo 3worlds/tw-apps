@@ -57,11 +57,10 @@ public class ConfigGraph {
 	}
 
 	public static void validateGraph() {
-		// Another all-in-one method. We want to check the archetypeArchtype at startup not here!
 		errors = TWA.checkSpecifications(graph);
-//		for (CheckMessage e:errors) {
-//			System.out.println(e.getCode()+" :"+e.getException().getMessage());
-//		}
+		for (CheckMessage e:errors) {
+			System.out.println(e.getCode()+" :"+e.getException().getMessage());
+		}
 	}
 	
 	public Iterable<CheckMessage> getErrors(){

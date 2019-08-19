@@ -138,6 +138,7 @@ public class MMModel implements IMMModel {
 		visualGraph.nodeFactory().makeNode(rootId);
 
 		visualGraph.root().setPosition(0.1, 0.5);
+		visualGraph.root().setCollapse(false);
 		connectConfigToVisual();
 		onProjectOpened();
 		doSave();
