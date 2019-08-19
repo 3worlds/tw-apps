@@ -44,6 +44,7 @@ import au.edu.anu.twcore.graphState.GraphState;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.root.TwConfigFactory;
 import fr.cnrs.iees.graph.Direction;
+import fr.cnrs.iees.graph.NodeFactory;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
@@ -132,7 +133,8 @@ public class MMModel implements IMMModel {
 		promptId = Project.create(promptId);
 		String rootId = ConfigurationNodeLabels.N_ROOT.label() + PairIdentity.LABEL_NAME_STR_SEPARATOR + promptId;
 		ConfigGraph.setGraph(new TreeGraph<TreeGraphNode, ALEdge>(new TwConfigFactory()));
-		ConfigGraph.getGraph().nodeFactory().makeNode(rootId);
+		NodeFactory cf = ConfigGraph.getGraph().nodeFactory();
+		cf.makeNode(cf.nodeClass(ConfigurationNodeLabels.N_ROOT.label()), rootId);
 
 		visualGraph = new TreeGraph<VisualNode, VisualEdge>(new VisualGraphFactory());
 		visualGraph.nodeFactory().makeNode(rootId);

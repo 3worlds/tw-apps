@@ -29,11 +29,18 @@
 
 package au.edu.anu.twapps.mm.configGraph;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import au.edu.anu.rscs.aot.archetype.CheckMessage;
+import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.twcore.archetype.TWA;
+import au.edu.anu.twcore.errorMessaging.ComplianceManager;
+import au.edu.anu.twcore.errorMessaging.archetype.NodeMissingErr;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
+import fr.cnrs.iees.identity.impl.PairIdentity;
 
 /**
  * @author Ian Davies
@@ -56,14 +63,38 @@ public class ConfigGraph {
 		return graph;
 	}
 
+	// private static List<String> get
 	public static void validateGraph() {
 		errors = TWA.checkSpecifications(graph);
-		for (CheckMessage e:errors) {
-			System.out.println(e.getCode()+" :"+e.getException().getMessage());
+		System.out.println("======================================");
+		for (CheckMessage e : errors) {
+			switch (e.getCode()) {
+			case CheckMessage.code1: {
+				List<String> parentClasses = getExistingParents(e.parentList(), e.requiredClass());
+				if (!parentClasses.isEmpty()) {
+					for (String p:parentClasses)
+						//ComplianceManager.add(new NodeMissingErr());
+						System.out.println("Parent '"+p+"' requires child '"+e.requiredClass()+"'. "+e.range());
+			}
+				break;
+			}
+			default : 
+				System.out.println(e.getCode() + " :" + e.getException().getMessage());
+				}
+			
 		}
 	}
-	
-	public Iterable<CheckMessage> getErrors(){
+
+	private static List<String> getExistingParents(StringTable parentList, String requiredClass) {
+		List<String> result = new ArrayList<>();
+		for (TreeGraphNode node : graph.nodes()) {
+			if (parentList.contains(node.classId() + PairIdentity.LABEL_NAME_STR_SEPARATOR))
+				result.add(node.classId());
+		}
+		return result;
+	}
+
+	public Iterable<CheckMessage> getErrors() {
 		return errors;
 	}
 
