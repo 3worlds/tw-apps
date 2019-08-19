@@ -50,10 +50,10 @@ import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
  *
  * @Date 11 Jul 2019
  */
-public class VisualGraphFactory extends TreeGraphFactory implements ExpungeableFactory,VisualKeys {
+public class VisualGraphFactory extends TreeGraphFactory implements ExpungeableFactory, VisualKeys {
 
 	private static Map<String, String> vgLabels = new HashMap<>();
-	
+
 	public void removeEdgeId(VisualEdge edge) {
 		scope.removeId(edge.id());
 	}
@@ -68,7 +68,7 @@ public class VisualGraphFactory extends TreeGraphFactory implements ExpungeableF
 		@Override
 		public SimplePropertyList makePropertyList(Property... properties) {
 			SimplePropertyList pl = new SharedPropertyListImpl(getNodeKeys());
-			for (Property p:properties) 
+			for (Property p : properties)
 				pl.setProperty(p);
 			return pl;
 		}
@@ -89,7 +89,7 @@ public class VisualGraphFactory extends TreeGraphFactory implements ExpungeableF
 		@Override
 		public SimplePropertyList makePropertyList(Property... properties) {
 			SimplePropertyList pl = new SharedPropertyListImpl(getEdgeKeys());
-			for (Property p:properties) 
+			for (Property p : properties)
 				pl.setProperty(p);
 			return pl;
 		}
@@ -107,26 +107,28 @@ public class VisualGraphFactory extends TreeGraphFactory implements ExpungeableF
 	public VisualGraphFactory(String scopeName) {
 		this();
 	}
+
 	public VisualGraphFactory(String scopeName, Map<String, String> labels) {
 		this();
 	}
 
 	@Override
 	public VisualNode makeNode(String proposedId) {
-		VisualNode result = new VisualNode(scope.newId(true,proposedId), this);
+		VisualNode result = new VisualNode(scope.newId(true, proposedId), this);
 		addNodeToGraphs(result);
 		return result;
 	}
+
 	@Override
 	public VisualNode makeNode(String proposedId, ReadOnlyPropertyList props) {
-		VisualNode result = new VisualNode(scope.newId(true,proposedId),props,this);
+		VisualNode result = new VisualNode(scope.newId(true, proposedId), props, this);
 		addNodeToGraphs(result);
 		return result;
 	}
-		
+
 	@Override
 	public VisualEdge makeEdge(Node start, Node end, String proposedId) {
-		VisualEdge result = new VisualEdge(scope.newId(true,proposedId), start, end, this);
+		VisualEdge result = new VisualEdge(scope.newId(true, proposedId), start, end, this);
 		return result;
 	}
 
@@ -144,10 +146,9 @@ public class VisualGraphFactory extends TreeGraphFactory implements ExpungeableF
 		vgLabels.put(VisualNode.class.getSimpleName(), VisualNode.class.getName());
 		vgLabels.put(VisualEdge.class.getSimpleName(), VisualEdge.class.getName());
 	}
-	
-	private static PropertyKeys nodeKeys = new PropertyKeys(vnx, vny,/* vnText, vnSymbol, vnParentLine.*/ vnCategory,
-			vnCollapsed,vnCreatedBy);
-	private static PropertyKeys edgeKeys = new PropertyKeys(/*veText, veSymbol*/);
+
+	private static PropertyKeys nodeKeys = new PropertyKeys(vnx, vny, vnCategory, vnCollapsed, vnCreatedBy);
+	private static PropertyKeys edgeKeys = new PropertyKeys();
 
 	public static PropertyKeys getNodeKeys() {
 		return nodeKeys;
@@ -156,19 +157,20 @@ public class VisualGraphFactory extends TreeGraphFactory implements ExpungeableF
 	public static PropertyKeys getEdgeKeys() {
 		return edgeKeys;
 	}
+
 	@Override
 	public void expungeNode(Node node) {
 		scope.removeId(node.id());
-		for (Edge edge:node.edges())
-			expungeEdge(edge);	
-		for (TreeGraph<TreeGraphNode, ALEdge> g:graphs)
-			g.removeNode( (TreeGraphNode) node);	
+		for (Edge edge : node.edges())
+			expungeEdge(edge);
+		for (TreeGraph<TreeGraphNode, ALEdge> g : graphs)
+			g.removeNode((TreeGraphNode) node);
 	}
 
 	@Override
 	public void expungeEdge(Edge edge) {
 		scope.removeId(edge.id());
-	
+
 	}
 
 }

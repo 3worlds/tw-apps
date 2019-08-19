@@ -30,10 +30,8 @@
 package au.edu.anu.twapps.mm.visualGraph;
 
 import au.edu.anu.twapps.exceptions.TwAppsException;
-import au.edu.anu.twcore.InitialisableNode;
 import au.edu.anu.twcore.archetype.PrimaryTreeLabels;
 import fr.cnrs.iees.graph.GraphFactory;
-import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.identity.Identity;
@@ -58,19 +56,16 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 
 	public VisualNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
-		setCollapse(false);
 		setCategory();
 	}
 
 	public VisualNode(Identity id, GraphFactory factory) {
 		super(id, new SharedPropertyListImpl(VisualGraphFactory.getNodeKeys()), factory);
-		setCollapse(false);
 		setCategory();
 	}
 
 	public VisualNode(Identity newId, ReadOnlyPropertyList props, VisualGraphFactory factory) {
 		super(newId, (SimplePropertyList) props, factory);
-		setCollapse(false);
 		setCategory();
 	}
 
@@ -98,6 +93,7 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 	}
 
 	// helper methods
+	@SuppressWarnings("unchecked")
 	@Override
 	public Iterable<VisualNode> getChildren() {
 		return (Iterable<VisualNode>) super.getChildren();
@@ -180,14 +176,14 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 			throw new TwAppsException("Attempt to overwrite line to parent symbol " + id());
 		vnParentLine = l;
 	}
-	
+
 	public void removeParentLine() {
 		if (vnParentLine != null)
 			vnParentLine = null;
 		else
 			throw new TwAppsException("Attempt to remove non-existant line to parent symbol " + id());
 	}
-	
+
 	public String getCategory() {
 		return (String) properties().getPropertyValue(vnCategory);
 	}
@@ -211,8 +207,8 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 	public boolean isCollapsedParent() {
 		if (isCollapsed())
 			return false;
-		for (TreeNode n : getChildren()) {
-			if (((VisualNode) n).isCollapsed())
+		for (VisualNode n : getChildren()) {
+			if (n.isCollapsed())
 				return true;
 		}
 		return false;
