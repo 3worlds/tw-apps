@@ -37,6 +37,7 @@ import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.twapps.mm.errorMessages.archetype.NodeMissingErr;
 import au.edu.anu.twcore.archetype.TWA;
 import au.edu.anu.twcore.errorMessaging.ComplianceManager;
+import fr.cnrs.iees.graph.Element;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
@@ -66,21 +67,26 @@ public class ConfigGraph {
 	public static void validateGraph() {
 		errors = TWA.checkSpecifications(graph);
 		ComplianceManager.clear();
+		System.out.println("=========New check =============");
 		for (CheckMessage e : errors) {
 			switch (e.getCode()) {
 			case CheckMessage.code1: {
 				// Suppress msgs we can't do anything about immediately
 				List<TreeGraphNode> parentNodes = getExistingParents(e.parentList(), e.requiredClass());
 				if (!parentNodes.isEmpty()) {
-					for (TreeGraphNode n:parentNodes)
-						ComplianceManager.add(new NodeMissingErr(n,e));
-			}
+					for (TreeGraphNode n : parentNodes)
+						ComplianceManager.add(new NodeMissingErr(n, e));
+				}
 				break;
 			}
-			default : 
+			case CheckMessage.code4: {
 				System.out.println(e.getCode() + " :" + e.getException().getMessage());
-				}
-			
+				break;
+			}
+			default:
+				System.out.println(e.getCode() + " :" + e.getException().getMessage());
+			}
+
 		}
 	}
 

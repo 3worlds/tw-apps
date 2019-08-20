@@ -133,17 +133,18 @@ public class MMModel implements IMMModel {
 			Project.close();
 		}
 		promptId = Project.create(promptId);
-		String rootId = ConfigurationNodeLabels.N_ROOT.label() + PairIdentity.LABEL_NAME_STR_SEPARATOR + promptId;
 		ConfigGraph.setGraph(new TreeGraph<TreeGraphNode, ALEdge>(new TwConfigFactory()));
 		NodeFactory cf = ConfigGraph.getGraph().nodeFactory();
-		cf.makeNode(cf.nodeClass(ConfigurationNodeLabels.N_ROOT.label()), rootId);
-
+		cf.makeNode(cf.nodeClass(ConfigurationNodeLabels.N_ROOT.label()), promptId);
 		visualGraph = new TreeGraph<VisualNode, VisualEdge>(new VisualGraphFactory());
-		visualGraph.nodeFactory().makeNode(rootId);
+		visualGraph.nodeFactory().makeNode(promptId);
 
+		connectConfigToVisual();
+		
+		visualGraph.root().setCategory();
 		visualGraph.root().setPosition(0.1, 0.5);
 		visualGraph.root().setCollapse(false);
-		connectConfigToVisual();
+
 		onProjectOpened();
 		doSave();
 	}

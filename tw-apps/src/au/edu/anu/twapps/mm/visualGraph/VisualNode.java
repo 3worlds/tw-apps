@@ -54,17 +54,17 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 
 	public VisualNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
-		setCategory();
+		//setCategory();
 	}
 
 	public VisualNode(Identity id, GraphFactory factory) {
 		super(id, new SharedPropertyListImpl(VisualGraphFactory.getNodeKeys()), factory);
-		setCategory();
+		//setCategory();
 	}
 
 	public VisualNode(Identity newId, ReadOnlyPropertyList props, VisualGraphFactory factory) {
 		super(newId, (SimplePropertyList) props, factory);
-		setCategory();
+		//setCategory();
 	}
 
 	public void setConfigNode(TreeGraphDataNode configNode) {
