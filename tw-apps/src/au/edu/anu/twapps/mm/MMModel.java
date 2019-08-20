@@ -139,7 +139,7 @@ public class MMModel implements IMMModel {
 		visualGraph = new TreeGraph<VisualNode, VisualEdge>(new VisualGraphFactory());
 		visualGraph.nodeFactory().makeNode(promptId);
 
-		connectConfigToVisual();
+		shadowGraph();
 		
 		visualGraph.root().setCategory();
 		visualGraph.root().setPosition(0.1, 0.5);
@@ -149,38 +149,9 @@ public class MMModel implements IMMModel {
 		doSave();
 	}
 
-	private TreeGraphDataNode findMatchingId(String id) {
-		for (TreeGraphNode n : (Iterable<TreeGraphNode>) ConfigGraph.getGraph().nodes()) {
-			if (id.equals(n.id()))
-				return (TreeGraphDataNode)n;
-		}
-		return null;
-	}
-
-	private ALEdge findMatchingdId(String id, VisualNode vn) {
-		TreeGraphNode node = vn.getConfigNode();
-		for (ALEdge e : node.edges(Direction.OUT))
-			if (id.equals(e.id()))
-				return e;
-		return null;
-	}
-
-	// TODO deal with out nodes
-	private void connectConfigToVisual() {
-		for (VisualNode vn : visualGraph.nodes()) {
-			TreeGraphDataNode n = findMatchingId(vn.id());
-			if (n == null)
-				throw new TwAppsException("Unable to find " + vn.id() + " in currentGraph");
-			vn.setConfigNode(n);
-			for (ALEdge e : vn.edges(Direction.OUT)) {
-				ALEdge ce = findMatchingdId(e.id(), vn);
-				VisualEdge ve = (VisualEdge) e;
-				ve.setConfigEdge(ce);
-			}
-		}
-		for (VisualNode vn : visualGraph.nodes()) {
-			vn.setCategory();
-		}
+	private void shadowGraph() {
+		for (VisualNode vn : visualGraph.nodes()) 
+			vn.shadowElements(ConfigGraph.getGraph());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -197,7 +168,7 @@ public class MMModel implements IMMModel {
 		ConfigGraph.setGraph(
 				(TreeGraph<TreeGraphNode, ALEdge>) FileImporter.loadGraphFromFile(Project.makeConfigurationFile()));
 		visualGraph = (TreeGraph<VisualNode, VisualEdge>) FileImporter.loadGraphFromFile(Project.makeLayoutFile());
-		connectConfigToVisual();
+		shadowGraph();
 		onProjectOpened();
 	}
 

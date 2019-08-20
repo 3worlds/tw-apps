@@ -30,10 +30,12 @@
 package au.edu.anu.twapps.mm.visualGraph;
 
 import au.edu.anu.twapps.exceptions.TwAppsException;
+import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.EdgeFactory;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.impl.ALDataEdge;
 import fr.cnrs.iees.graph.impl.ALEdge;
+import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
@@ -96,4 +98,11 @@ public class VisualEdge extends ALDataEdge implements VisualKeys {
 		setText(text);
 	}
 
+	public void shadowElements(TreeGraphDataNode configNode) {
+		for (ALEdge edge : configNode.edges(Direction.OUT))
+			if (edge.id().equals(id())) {
+				configEdge = edge;
+				return;
+			}
+	}
 }

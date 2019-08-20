@@ -31,8 +31,12 @@ package au.edu.anu.twapps.mm.visualGraph;
 
 import au.edu.anu.twapps.exceptions.TwAppsException;
 import au.edu.anu.twcore.archetype.PrimaryTreeLabels;
+import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
+import fr.cnrs.iees.graph.impl.ALEdge;
+import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
+import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.ExtendablePropertyList;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
@@ -80,10 +84,10 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 		StringBuilder sb = new StringBuilder(super.toDetailedString());
 		sb.append(" [");
 		sb.append("Config: ");
-		if (getConfigNode() == null)
+		if (configNode == null)
 			sb.append("null");
 		else
-			sb.append(getConfigNode().toDetailedString());
+			sb.append(configNode.toDetailedString());
 		sb.append("]");
 		sb.append("]");
 		return sb.toString();
@@ -240,5 +244,22 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 
 	public Object configGetPropertyValue(String key) {
 		return getExtendablePropertyList().getPropertyValue(key);
+	}
+
+	public void shadowElements(TreeGraph<TreeGraphNode, ALEdge> configGraph) {
+		for (TreeGraphNode cNode:configGraph.nodes()) {
+			if (cNode.id().equals(id())) {
+				configNode = (TreeGraphDataNode) cNode;
+				for (ALEdge edge :edges(Direction.OUT)) {
+					VisualEdge vEdge = (VisualEdge) edge;
+					vEdge.shadowElements(configNode);
+				}
+				return;
+
+			}
+		}
+	}
+	public String cClassId() {
+		return configNode.classId();
 	}
 }
