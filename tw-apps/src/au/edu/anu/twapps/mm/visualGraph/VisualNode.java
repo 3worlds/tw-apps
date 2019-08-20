@@ -31,8 +31,10 @@ package au.edu.anu.twapps.mm.visualGraph;
 
 import au.edu.anu.twapps.exceptions.TwAppsException;
 import au.edu.anu.twcore.archetype.PrimaryTreeLabels;
+import au.edu.anu.twcore.root.ExpungeableFactory;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
+import fr.cnrs.iees.graph.NodeFactory;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
@@ -71,7 +73,7 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 		//setCategory();
 	}
 
-	public void setConfigNode(TreeGraphDataNode configNode) {
+	protected void setConfigNode(TreeGraphDataNode configNode) {
 		this.configNode = configNode;
 	}
 
@@ -259,7 +261,32 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 			}
 		}
 	}
+	
 	public String cClassId() {
 		return configNode.classId();
+	}
+	
+	public void remove() {
+		ExpungeableFactory vf = (ExpungeableFactory) factory();
+		ExpungeableFactory cf = (ExpungeableFactory) configNode.factory();
+		vf.expungeNode(this);
+		cf.expungeNode(configNode);
+		disconnect();
+		configNode.disconnect();
+	}
+	
+	public VisualNode newChild(String label,String proposedId) {
+		NodeFactory cf = configNode.factory();
+		TreeGraphDataNode cChild = (TreeGraphDataNode) cf.makeNode(cf.nodeClass(label), proposedId);
+		cChild.connectParent(configNode);	 
+		proposedId = cChild.id();
+		VisualNode vChild = (VisualNode) factory().makeNode(proposedId);
+		vChild.connectParent(this);
+		vChild.setConfigNode(cChild);
+		vChild.setCreatedBy(cChild.classId());
+		vChild.setCategory();
+		if (!cChild.id().equals(vChild.id()))
+			throw new TwAppsException("Ids must be the same -[config: "+cChild.id()+"; visual: "+vChild.id());
+		return vChild;
 	}
 }
