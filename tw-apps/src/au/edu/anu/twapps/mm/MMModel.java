@@ -47,6 +47,7 @@ import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.NodeFactory;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
+import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.graph.io.impl.OmugiGraphExporter;
 import fr.cnrs.iees.identity.impl.PairIdentity;
@@ -75,6 +76,7 @@ public class MMModel implements IMMModel {
 	}
 
 	private void onProjectOpened() {
+		ConfigGraph.validateGraph();
 		controller.onProjectOpened(visualGraph);
 	}
 
@@ -146,10 +148,10 @@ public class MMModel implements IMMModel {
 		doSave();
 	}
 
-	private TreeGraphNode findMatchingId(String id) {
+	private TreeGraphDataNode findMatchingId(String id) {
 		for (TreeGraphNode n : (Iterable<TreeGraphNode>) ConfigGraph.getGraph().nodes()) {
 			if (id.equals(n.id()))
-				return n;
+				return (TreeGraphDataNode)n;
 		}
 		return null;
 	}
@@ -165,7 +167,7 @@ public class MMModel implements IMMModel {
 	// TODO deal with out nodes
 	private void connectConfigToVisual() {
 		for (VisualNode vn : visualGraph.nodes()) {
-			TreeGraphNode n = findMatchingId(vn.id());
+			TreeGraphDataNode n = findMatchingId(vn.id());
 			if (n == null)
 				throw new TwAppsException("Unable to find " + vn.id() + " in currentGraph");
 			vn.setConfigNode(n);

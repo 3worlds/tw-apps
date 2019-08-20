@@ -60,6 +60,13 @@ public class VisualEdge extends ALDataEdge implements VisualKeys {
 		this.configEdge = configEdge;
 	}
 
+	public String getDisplayText(boolean classOnly) {
+		if (classOnly)
+			return configEdge.classId();
+		else
+			return configEdge.classId() + ":" + configEdge.id();
+	}
+
 	public ALEdge getConfigEdge() {
 		return configEdge;
 	}

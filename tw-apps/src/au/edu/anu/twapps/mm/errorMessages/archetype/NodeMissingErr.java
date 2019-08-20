@@ -29,9 +29,9 @@
 
 package au.edu.anu.twapps.mm.errorMessages.archetype;
 
-import au.edu.anu.rscs.aot.util.IntegerRange;
+import au.edu.anu.rscs.aot.archetype.CheckMessage;
 import au.edu.anu.twcore.errorMessaging.ErrorMessageAdaptor;
-import fr.cnrs.iees.graph.impl.SimpleDataTreeNode;
+import fr.cnrs.iees.graph.impl.TreeGraphNode;
 
 /**
  * Author Ian Davies
@@ -39,27 +39,11 @@ import fr.cnrs.iees.graph.impl.SimpleDataTreeNode;
  * Date Dec 12, 2018
  */
 public class NodeMissingErr extends ErrorMessageAdaptor{
-//	private IntegerRange expectedRange;
-//	private int foundCount;
-//	private AotNode spec;
-//	private String reference;
 
-public NodeMissingErr(String reference, IntegerRange expectedRange, int foundCount, SimpleDataTreeNode spec) {
-//	this.reference = reference;
-//	this.expectedRange = expectedRange;
-//	this.foundCount = foundCount;
-//	this.spec = spec;
-//	String parent = ArchetypeHelper.getParentLabelFromReference(reference);
-//	String[] parents;
-//	if (parent.equals(""))
-//		parents = ArchetypeHelper.getParentLabels(spec);
-//	else {
-//		parents = new String[1];
-//		parents[0] = parent;
-//	}
-//	msg1 = "Missing Node: Add node " + formatParentChildString(reference, spec) + ".";
-//	msg2 = msg1 + " Expected " + expectedRange.toString() + " but found " + foundCount + ".";
-//	msg3 = msg2 + "\nSpecification:\n" + spec.toDetailedString() + "\n";
-
+public NodeMissingErr(TreeGraphNode parent,CheckMessage cm) {
+	msg1 = "Missing Node: Add node " + cm.requiredClass()+ " to "+parent.id() + ".";
+	msg2 = msg1 + " Expected " + cm.range() + " but found " + cm.count() + ".";
+	msg3 = msg1 + "\n"+cm.getException().getMessage() + "\n";
 }
+
 }

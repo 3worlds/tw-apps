@@ -33,9 +33,7 @@ import au.edu.anu.twapps.exceptions.TwAppsException;
 import au.edu.anu.twcore.archetype.PrimaryTreeLabels;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
-import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.identity.Identity;
-import fr.cnrs.iees.identity.impl.PairIdentity;
 import fr.cnrs.iees.properties.ExtendablePropertyList;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
@@ -43,7 +41,7 @@ import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
 
 public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 
-	private TreeGraphNode configNode;
+	private TreeGraphDataNode configNode;
 	/**
 	 * These Objects are constructed at startup time. Thus, there is no need to have
 	 * them stored in a property list. To store them in a property list would cause
@@ -69,11 +67,11 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 		setCategory();
 	}
 
-	public void setConfigNode(TreeGraphNode configNode) {
+	public void setConfigNode(TreeGraphDataNode configNode) {
 		this.configNode = configNode;
 	}
 
-	public TreeGraphNode getConfigNode() {
+	public TreeGraphDataNode getConfigNode() {
 		return configNode;
 	}
 
@@ -109,16 +107,16 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 	}
 
 	public void setCategory() {
-		if (PrimaryTreeLabels.contains(getLabel()))
-			properties().setProperty(vnCategory, getLabel());
+		if (PrimaryTreeLabels.contains(configNode.classId()))
+			properties().setProperty(vnCategory, configNode.classId());
 		else
 			setCategory(getParent());
 	}
 
 	private void setCategory(VisualNode parent) {
 		if (parent != null) {
-			if (PrimaryTreeLabels.contains(parent.getLabel()))
-				setCategory(parent.getLabel());
+			if (PrimaryTreeLabels.contains(parent.configNode.classId()))
+				setCategory(parent.configNode.classId());
 			else
 				setCategory(parent.getParent());
 		}
@@ -128,9 +126,11 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 		properties().setProperty(vnCategory, category);
 	}
 
-	public String getLabel() {
-		// TODO: remove this and use archetype helper after refactoring is done.
-		return this.id().split(PairIdentity.LABEL_NAME_STR_SEPARATOR)[0];
+	public String getDisplayText(boolean classOnly) {
+		if (classOnly)
+			return configNode.classId();
+		else
+			return configNode.classId() + ":" + configNode.id();
 	}
 
 	public void setX(double x) {
@@ -223,11 +223,7 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 	}
 
 	private ExtendablePropertyList getExtendablePropertyList() {
-		if (configNode instanceof TreeGraphDataNode) {
-			TreeGraphDataNode tdn = (TreeGraphDataNode) configNode;
-			return (ExtendablePropertyList) tdn.properties();
-		} else
-			throw new TwAppsException("Attempt to obtain ExtendablePropertyList from " + configNode.id());
+		return (ExtendablePropertyList) configNode.properties();
 	}
 
 	public void addProperty(String key, Object value) {
@@ -239,14 +235,10 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 	}
 
 	public boolean configHasProperty(String key) {
-		if (configNode instanceof TreeGraphDataNode)
-			return getExtendablePropertyList().hasProperty(key);
-		return false;
+		return getExtendablePropertyList().hasProperty(key);
 	};
 
 	public Object configGetPropertyValue(String key) {
-		if (configNode instanceof TreeGraphDataNode)
-			return getExtendablePropertyList().getPropertyValue(key);
-		throw new TwAppsException("Attempt to obtain ExtendablePropertyList from " + configNode.id());
+		return getExtendablePropertyList().getPropertyValue(key);
 	}
 }
