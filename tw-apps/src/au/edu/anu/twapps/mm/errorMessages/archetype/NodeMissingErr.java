@@ -41,7 +41,10 @@ import fr.cnrs.iees.graph.impl.TreeGraphNode;
 public class NodeMissingErr extends ErrorMessageAdaptor{
 
 public NodeMissingErr(TreeGraphNode parent,CheckMessage cm) {
-	msg1 = "Missing Node: Add node '" + cm.requiredClass()+ "' to '"+parent.classId()+":"+parent.id() + "'.";
+	String s = "child";
+	int diff = cm.range().getLast()-cm.count();
+	if (diff>1)s="children";
+	msg1 = "Missing "+s+": Add '"+ cm.requiredClass()+ "' " +s+" to '"+parent.classId()+":"+parent.id() + "'.";
 	msg2 = msg1 + " Expected " + cm.range() + " but found " + cm.count() + ".";
 	msg3 = msg1 + "\n"+cm.getException().getMessage() + "\n";
 }
