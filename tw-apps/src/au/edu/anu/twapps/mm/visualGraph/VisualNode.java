@@ -309,4 +309,9 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 			throw new TwAppsException("Ids must match -[config: "+cEdge.id()+"; visual: "+result.id());
 		return result;
 	}
+	public void reconnectChild(VisualNode vChild) {
+		TreeGraphNode cChild = vChild.configNode;
+		configNode.connectChild(cChild);
+		connectChild(vChild);
+	}
 }

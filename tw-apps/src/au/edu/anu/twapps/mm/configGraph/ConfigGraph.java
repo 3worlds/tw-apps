@@ -102,5 +102,9 @@ public class ConfigGraph {
 	public Iterable<CheckMessage> getErrors() {
 		return errors;
 	}
+	
+	public static void onParentChanged() {
+		graph.onParentChanged();
+	}
 
 }
