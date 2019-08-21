@@ -29,21 +29,18 @@
 
 package au.edu.anu.twapps.mm.errorMessages.archetype;
 
-import au.edu.anu.rscs.aot.graph.property.Property;
+import au.edu.anu.rscs.aot.archetype.CheckMessage;
 import au.edu.anu.twcore.errorMessaging.ErrorMessageAdaptor;
 
 /**
- * Author Ian Davies
+ * @author Ian Davies
  *
- * Date Dec 12, 2018
+ * @date 22 Aug 2019
  */
-public class PropertyQueryErr extends ErrorMessageAdaptor {
-	public PropertyQueryErr(Property prop, String msg) {
-		// String qMsg = q.toString().replace(q.stateString()+" ","");
-		 msg1 = "Property value error: "+prop.getKey()+"="+prop.getValue();
-		 //; + " but
-		// "+qMsg;
-		 msg2 = "Property value error: "+msg;
-		 msg3 = msg2;
-	}
+public class UnParsedErr extends ErrorMessageAdaptor{
+public UnParsedErr(CheckMessage cm) {
+	msg1 = cm.getCode()+": "+cm.getException().getMessage();
+	msg2 = msg1;
+	msg3 = msg1;
+}
 }

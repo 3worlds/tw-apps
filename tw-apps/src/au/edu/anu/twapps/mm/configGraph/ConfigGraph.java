@@ -37,6 +37,8 @@ import au.edu.anu.rscs.aot.archetype.CheckMessage;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.graph.property.Property;
 import au.edu.anu.twapps.mm.errorMessages.archetype.NodeMissingErr;
+import au.edu.anu.twapps.mm.errorMessages.archetype.PropertyQueryErr;
+import au.edu.anu.twapps.mm.errorMessages.archetype.UnParsedErr;
 import au.edu.anu.twcore.archetype.TWA;
 import au.edu.anu.twcore.errorMessaging.ComplianceManager;
 import fr.cnrs.iees.graph.Element;
@@ -69,10 +71,9 @@ public class ConfigGraph {
 	public static void validateGraph() {
 		Iterable<CheckMessage> errors = TWA.checkSpecifications(graph);
 		ComplianceManager.clear();
-		System.out.println("=========New check =============");
 		for (CheckMessage e : errors) {
 			switch (e.getCode()) {
-			
+
 			case CheckMessage.code1: {
 				// Suppress msgs we can't do anything about immediately
 				List<TreeGraphNode> parentNodes = getExistingParents(e.parentList(), e.requiredClass());
@@ -85,31 +86,29 @@ public class ConfigGraph {
 			// code2 ignore
 			case CheckMessage.code3PropertyClass: {
 				// CheckMessage(CheckMessage.code3,queryNode,e,null,null,null,null,-1)
-				System.out.println(e.getCode() + " :" + e.getException().getMessage());
+				ComplianceManager.add(new UnParsedErr(e));
 				break;
 			}
 			case CheckMessage.code4Query: {
 				// CheckMessage(CheckMessage.code4,item,e,queryNode,null,null,null,-1)
 				if (e.getTarget() instanceof Property) {
-					Property p = (Property) e.getTarget();
-					System.out.println("Property [" + p.getKey() + " = " + p.getValue() + "] Range:" + e.range());
+					ComplianceManager.add(new PropertyQueryErr((Property) e.getTarget(),e.getException().getMessage()));
 
 				} else {
-					System.out.println(e.getTarget().getClass());
-					System.out.println(e.getCode() + " :" + e.getException().getMessage());
+					ComplianceManager.add(new UnParsedErr(e));
 				}
 				break;
 			}
-			case CheckMessage.code6OutEdgeMissing:{
+			case CheckMessage.code6OutEdgeMissing: {
 //				if (ed.factory().edgeClass(ed.classId())==null) {
 //					Exception e = new AotException("Class '" + edgeLabel
 //						+ "' not found for edge " + ed);
 //					checkFailList.add(new CheckMessage(CheckMessage.code6OutEdgeMissing,ed, e, edgeSpec,null,null,edgeMult,-1));
 
-				System.out.println(e.getCode() + " :" + e.getException().getMessage());
-			break;
+				ComplianceManager.add(new UnParsedErr(e));
+				break;
 			}
-			case CheckMessage.code9OutEdgeRangeCheck:{
+			case CheckMessage.code9OutEdgeRangeCheck: {
 //				try {
 //					edgeMult.check(toNodes.size());
 //				} catch (Exception e) {
@@ -118,30 +117,30 @@ public class ConfigGraph {
 //						+ toNodeRef + "] with label '" + edgeLabel
 //						+ "' (found " + toNodes.size() + ") ");
 //					checkFailList.add(new CheckMessage(CheckMessage.code9OutEdgeRangeCheck,node, ee, edgeSpec,null,null,edgeMult,toNodes.size()));
-				System.out.println(e.getCode() + " :" + e.getException().getMessage());
-			break;
+				ComplianceManager.add(new UnParsedErr(e));
+				break;
 			}
-			case CheckMessage.code13MissingProperty:{
+			case CheckMessage.code13MissingProperty: {
 //				if (!nprops.hasProperty(key)) { // property not found
 //					if (!multiplicity.inRange(0)) { // this is an error, this property should be there!
 //						Exception e = new AotException("Required property '"+key+"' missing for element "+ element);
 //						checkFailList.add(new CheckMessage(CheckMessage.code13MissingProperty,element, e, propertyArchetype,null,null,multiplicity,0));
 //					}
 
-				System.out.println(e.getCode() + " :" + e.getException().getMessage());
-			break;
+				ComplianceManager.add(new UnParsedErr(e));
+				break;
 			}
-			case CheckMessage.code14UnknowPropertyType:{
+			case CheckMessage.code14UnknowPropertyType: {
 //				ptype = ValidPropertyTypes.typeOf(pvalue);
 //			if (ptype==null) { // the property type is not in the valid property type list
 //				Exception e = new AotException("Unknown property type for property '"+key
 //					+"' in element "+ element);
 //				checkFailList.add(new CheckMessage(CheckMessage.code14UnknowPropertyType,element, e, propertyArchetype,null,null,null,-1));
 
-				System.out.println(e.getCode() + " :" + e.getException().getMessage());
-			break;
+				ComplianceManager.add(new UnParsedErr(e));
+				break;
 			}
-			case CheckMessage.code15WrongPropertyType:{
+			case CheckMessage.code15WrongPropertyType: {
 //				else if (!ptype.equals(typeName)) { // the property type is not the one required
 //					Exception e = new AotException("Property '"+key
 //						+"' in element '"+ element 
@@ -150,11 +149,11 @@ public class ConfigGraph {
 //						+"' found instead)");
 //					checkFailList.add(new CheckMessage(CheckMessage.code15WrongPropertyType,element,e,propertyArchetype,null,null,null,-1));
 
-				System.out.println(e.getCode() + " :" + e.getException().getMessage());
+				ComplianceManager.add(new UnParsedErr(e));
 				break;
 			}
 			default:
-				System.out.println(e.getCode() + " :" + e.getException().getMessage());
+				ComplianceManager.add(new UnParsedErr(e));
 			}
 
 		}
