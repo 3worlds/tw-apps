@@ -32,6 +32,7 @@ package au.edu.anu.twapps.mm.visualGraph;
 import au.edu.anu.twapps.exceptions.TwAppsException;
 import au.edu.anu.twcore.archetype.PrimaryTreeLabels;
 import au.edu.anu.twcore.root.ExpungeableFactory;
+import au.edu.anu.twcore.root.TwConfigFactory;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.NodeFactory;
@@ -231,6 +232,10 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 	private ExtendablePropertyList getExtendablePropertyList() {
 		return (ExtendablePropertyList) configNode.properties();
 	}
+	
+	public SimplePropertyList cProperties() {
+		return configNode.properties();
+	}
 
 	public void addProperty(String key, Object value) {
 		getExtendablePropertyList().addProperty(key, value);
@@ -241,11 +246,11 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 	}
 
 	public boolean configHasProperty(String key) {
-		return getExtendablePropertyList().hasProperty(key);
+		return configNode.properties().hasProperty(key);
 	};
 
 	public Object configGetPropertyValue(String key) {
-		return getExtendablePropertyList().getPropertyValue(key);
+		return configNode.properties().getPropertyValue(key);
 	}
 
 	public void shadowElements(TreeGraph<TreeGraphNode, ALEdge> configGraph) {
@@ -283,10 +288,25 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 		VisualNode vChild = (VisualNode) factory().makeNode(proposedId);
 		vChild.connectParent(this);
 		vChild.setConfigNode(cChild);
-		vChild.setCreatedBy(cChild.classId());
+		vChild.setCreatedBy(configNode.classId());
 		vChild.setCategory();
 		if (!cChild.id().equals(vChild.id()))
-			throw new TwAppsException("Ids must be the same -[config: "+cChild.id()+"; visual: "+vChild.id());
+			throw new TwAppsException("Ids must match -[config: "+cChild.id()+"; visual: "+vChild.id());
 		return vChild;
+	}
+	
+	public VisualEdge newEdge(String label,VisualNode vEnd) {
+		String proposedId = label+"1";
+		VisualGraphFactory vf = (VisualGraphFactory) factory();
+		VisualEdge result = vf.makeEdge(this, vEnd, proposedId);
+		proposedId = result.id();
+		
+		TreeGraphNode cEnd = vEnd.configNode;
+		TwConfigFactory cf = (TwConfigFactory) configNode.factory();
+		ALEdge cEdge =(ALEdge) cf.makeEdge(cf.edgeClass(label),configNode,cEnd,proposedId);
+		result.setConfigEdge(cEdge);
+		if (!cEdge.id().equals(result.id()))
+			throw new TwAppsException("Ids must match -[config: "+cEdge.id()+"; visual: "+result.id());
+		return result;
 	}
 }
