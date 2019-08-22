@@ -29,19 +29,26 @@
 
 package au.edu.anu.twapps.mm.configGraph;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.tools.ToolProvider;
 
 import au.edu.anu.rscs.aot.archetype.CheckMessage;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.graph.property.Property;
+import au.edu.anu.twapps.dialogs.Dialogs;
 import au.edu.anu.twapps.mm.errorMessages.archetype.NodeMissingErr;
 import au.edu.anu.twapps.mm.errorMessages.archetype.PropertyQueryErr;
 import au.edu.anu.twapps.mm.errorMessages.archetype.UnParsedErr;
 import au.edu.anu.twcore.archetype.TWA;
 import au.edu.anu.twcore.errorMessaging.ComplianceManager;
+import au.edu.anu.twcore.errorMessaging.codeGenerator.CompilerMissingErr;
+import au.edu.anu.twcore.errorMessaging.codeGenerator.MissingResourceFile;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
+import au.edu.anu.twcore.project.TwPaths;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
@@ -66,11 +73,56 @@ public class ConfigGraph {
 		ConfigGraph.userProjectPath = userProjectPath;
 		// Don't validate here as the graph is not yet built
 	}
+	
+	public static void resetUserProjectPath(String path) {
+		userProjectPath = path;
+	}
 
 	public static TreeGraph<TreeGraphDataNode, ALEdge> getGraph() {
 		return graph;
 	}
 
+
+	public static void validateGraph() {
+		Iterable<CheckMessage> errors = TWA.checkSpecifications(graph);
+		ComplianceManager.clear();
+		if (errors != null)
+			for (CheckMessage e : errors)
+				parseArchetypError(e);
+		if (!ComplianceManager.haveErrors()) {
+			boolean haveCompiler = !(ToolProvider.getSystemJavaCompiler() == null);
+			if (!haveCompiler)
+				ComplianceManager.add(new CompilerMissingErr());
+		}
+
+		if (!ComplianceManager.haveErrors()) {
+			CodeGenerator gen = new CodeGenerator();
+			gen.generate(userProjectPath, graph);
+		}
+		if (!ComplianceManager.haveErrors()) {
+			// check twDep.jar is present
+			File file = new File(TwPaths.TW_ROOT + File.separator + TwPaths.TW_DEP_JAR);
+			if (!file.exists())
+				ComplianceManager.add(new MissingResourceFile(file,"Use TwSetup to create this file."));
+		}
+
+		if (!ComplianceManager.haveErrors()) {
+			// prep deployment???
+		}
+	}
+
+	private static List<TreeGraphNode> getExistingParents(StringTable parentList, String requiredClass) {
+		List<TreeGraphNode> result = new ArrayList<>();
+		for (TreeGraphNode node : graph.nodes()) {
+			if (parentList.contains(node.classId() + PairIdentity.LABEL_NAME_STR_SEPARATOR))
+				result.add(node);
+		}
+		return result;
+	}
+
+	public static void onParentChanged() {
+		graph.onParentChanged();
+	}
 	private static void parseArchetypError(CheckMessage e) {
 		switch (e.getCode()) {
 
@@ -156,42 +208,6 @@ public class ConfigGraph {
 			ComplianceManager.add(new UnParsedErr(e));
 		}
 
-	}
-
-	public static void validateGraph() {
-		Iterable<CheckMessage> errors = TWA.checkSpecifications(graph);
-		ComplianceManager.clear();
-		if (errors != null)
-			for (CheckMessage e : errors)
-				parseArchetypError(e);
-		if (!ComplianceManager.haveErrors()) {
-			// compiler present
-		}
-
-		if (!ComplianceManager.haveErrors()) {
-			CodeGenerator gen = new CodeGenerator();
-			gen.generate(userProjectPath, graph);
-		}
-		if (!ComplianceManager.haveErrors()) {
-			// check twDep.jar is present
-		}
-
-		if (!ComplianceManager.haveErrors()) {
-			// prep deployment???
-		}
-	}
-
-	private static List<TreeGraphNode> getExistingParents(StringTable parentList, String requiredClass) {
-		List<TreeGraphNode> result = new ArrayList<>();
-		for (TreeGraphNode node : graph.nodes()) {
-			if (parentList.contains(node.classId() + PairIdentity.LABEL_NAME_STR_SEPARATOR))
-				result.add(node);
-		}
-		return result;
-	}
-
-	public static void onParentChanged() {
-		graph.onParentChanged();
 	}
 
 }
