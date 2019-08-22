@@ -253,10 +253,10 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 		return configNode.properties().getPropertyValue(key);
 	}
 
-	public void shadowElements(TreeGraph<TreeGraphNode, ALEdge> configGraph) {
-		for (TreeGraphNode cNode:configGraph.nodes()) {
+	public void shadowElements(TreeGraph<TreeGraphDataNode, ALEdge> configGraph) {
+		for (TreeGraphDataNode cNode:configGraph.nodes()) {
 			if (cNode.id().equals(id())) {
-				configNode = (TreeGraphDataNode) cNode;
+				configNode = cNode;
 				for (ALEdge edge :edges(Direction.OUT)) {
 					VisualEdge vEdge = (VisualEdge) edge;
 					vEdge.shadowElements(configNode);

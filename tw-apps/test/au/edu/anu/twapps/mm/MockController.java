@@ -98,5 +98,11 @@ public class MockController implements IMMController{
 		
 	}
 
+	@Override
+	public String getUserProjectPath() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 }

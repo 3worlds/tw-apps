@@ -133,7 +133,7 @@ public class MMModel implements IMMModel {
 			Project.close();
 		}
 		promptId = Project.create(promptId);
-		ConfigGraph.setGraph(new TreeGraph<TreeGraphNode, ALEdge>(new TwConfigFactory()));
+		ConfigGraph.setGraph(new TreeGraph<TreeGraphDataNode, ALEdge>(new TwConfigFactory()),controller.getUserProjectPath());
 		NodeFactory cf = ConfigGraph.getGraph().nodeFactory();
 		cf.makeNode(cf.nodeClass(ConfigurationNodeLabels.N_ROOT.label()), promptId);
 		visualGraph = new TreeGraph<VisualNode, VisualEdge>(new VisualGraphFactory());
@@ -166,7 +166,7 @@ public class MMModel implements IMMModel {
 		}
 		Project.open(file);
 		ConfigGraph.setGraph(
-				(TreeGraph<TreeGraphNode, ALEdge>) FileImporter.loadGraphFromFile(Project.makeConfigurationFile()));
+				(TreeGraph<TreeGraphDataNode, ALEdge>) FileImporter.loadGraphFromFile(Project.makeConfigurationFile()),controller.getUserProjectPath());
 		visualGraph = (TreeGraph<VisualNode, VisualEdge>) FileImporter.loadGraphFromFile(Project.makeLayoutFile());
 		shadowGraph();
 		onProjectOpened();

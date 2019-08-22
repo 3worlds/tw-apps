@@ -32,7 +32,6 @@ package au.edu.anu.twapps.mm.configGraph;
 import java.util.ArrayList;
 import java.util.List;
 
-import au.edu.anu.rscs.aot.AotException;
 import au.edu.anu.rscs.aot.archetype.CheckMessage;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.graph.property.Property;
@@ -41,12 +40,14 @@ import au.edu.anu.twapps.mm.errorMessages.archetype.PropertyQueryErr;
 import au.edu.anu.twapps.mm.errorMessages.archetype.UnParsedErr;
 import au.edu.anu.twcore.archetype.TWA;
 import au.edu.anu.twcore.errorMessaging.ComplianceManager;
-import fr.cnrs.iees.graph.Element;
+import au.edu.anu.twcore.project.Project;
+import au.edu.anu.twcore.project.ProjectPaths;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
+import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.identity.impl.PairIdentity;
-import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
+import fr.cnrs.iees.twcore.generators.CodeGenerator;
 
 /**
  * @author Ian Davies
@@ -54,108 +55,129 @@ import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
  * @Date 13 Aug 2019
  */
 public class ConfigGraph {
-	private static TreeGraph<TreeGraphNode, ALEdge> graph;
+	private static TreeGraph<TreeGraphDataNode, ALEdge> graph;
+	private static String userProjectPath;
 
 	private ConfigGraph() {
 	}
 
-	public static void setGraph(TreeGraph<TreeGraphNode, ALEdge> graph) {
+	public static void setGraph(TreeGraph<TreeGraphDataNode, ALEdge> graph, String userProjectPath) {
 		ConfigGraph.graph = graph;
+		ConfigGraph.userProjectPath = userProjectPath;
 		// Don't validate here as the graph is not yet built
 	}
 
-	public static TreeGraph<TreeGraphNode, ALEdge> getGraph() {
+	public static TreeGraph<TreeGraphDataNode, ALEdge> getGraph() {
 		return graph;
+	}
+
+	private static void parseArchetypError(CheckMessage e) {
+		switch (e.getCode()) {
+
+		case CheckMessage.code1: {
+			// Suppress msgs we can't do anything about immediately
+			List<TreeGraphNode> parentNodes = getExistingParents(e.parentList(), e.requiredClass());
+			if (!parentNodes.isEmpty()) {
+				for (TreeGraphNode n : parentNodes)
+					ComplianceManager.add(new NodeMissingErr(n, e));
+			}
+			break;
+		}
+		// code2 ignore
+		case CheckMessage.code3PropertyClass: {
+			// CheckMessage(CheckMessage.code3,queryNode,e,null,null,null,null,-1)
+			ComplianceManager.add(new UnParsedErr(e));
+			break;
+		}
+		case CheckMessage.code4Query: {
+			// CheckMessage(CheckMessage.code4,item,e,queryNode,null,null,null,-1)
+			if (e.getTarget() instanceof Property) {
+				ComplianceManager.add(new PropertyQueryErr((Property) e.getTarget(), e.getException().getMessage()));
+
+			} else {
+				ComplianceManager.add(new UnParsedErr(e));
+			}
+			break;
+		}
+		case CheckMessage.code6OutEdgeMissing: {
+//			if (ed.factory().edgeClass(ed.classId())==null) {
+//				Exception e = new AotException("Class '" + edgeLabel
+//					+ "' not found for edge " + ed);
+//				checkFailList.add(new CheckMessage(CheckMessage.code6OutEdgeMissing,ed, e, edgeSpec,null,null,edgeMult,-1));
+
+			ComplianceManager.add(new UnParsedErr(e));
+			break;
+		}
+		case CheckMessage.code9OutEdgeRangeCheck: {
+//			try {
+//				edgeMult.check(toNodes.size());
+//			} catch (Exception e) {
+//				Exception ee = new AotException("Expected " + nodeToCheck + " to have " 
+//					+ edgeMult + " out edge(s) to nodes that match ["
+//					+ toNodeRef + "] with label '" + edgeLabel
+//					+ "' (found " + toNodes.size() + ") ");
+//				checkFailList.add(new CheckMessage(CheckMessage.code9OutEdgeRangeCheck,node, ee, edgeSpec,null,null,edgeMult,toNodes.size()));
+			ComplianceManager.add(new UnParsedErr(e));
+			break;
+		}
+		case CheckMessage.code13MissingProperty: {
+//			if (!nprops.hasProperty(key)) { // property not found
+//				if (!multiplicity.inRange(0)) { // this is an error, this property should be there!
+//					Exception e = new AotException("Required property '"+key+"' missing for element "+ element);
+//					checkFailList.add(new CheckMessage(CheckMessage.code13MissingProperty,element, e, propertyArchetype,null,null,multiplicity,0));
+//				}
+
+			ComplianceManager.add(new UnParsedErr(e));
+			break;
+		}
+		case CheckMessage.code14UnknowPropertyType: {
+//			ptype = ValidPropertyTypes.typeOf(pvalue);
+//		if (ptype==null) { // the property type is not in the valid property type list
+//			Exception e = new AotException("Unknown property type for property '"+key
+//				+"' in element "+ element);
+//			checkFailList.add(new CheckMessage(CheckMessage.code14UnknowPropertyType,element, e, propertyArchetype,null,null,null,-1));
+
+			ComplianceManager.add(new UnParsedErr(e));
+			break;
+		}
+		case CheckMessage.code15WrongPropertyType: {
+//			else if (!ptype.equals(typeName)) { // the property type is not the one required
+//				Exception e = new AotException("Property '"+key
+//					+"' in element '"+ element 
+//					+"' is not of the required type '" + typeName
+//					+"' (type '"+ptype
+//					+"' found instead)");
+//				checkFailList.add(new CheckMessage(CheckMessage.code15WrongPropertyType,element,e,propertyArchetype,null,null,null,-1));
+
+			ComplianceManager.add(new UnParsedErr(e));
+			break;
+		}
+		default:
+			ComplianceManager.add(new UnParsedErr(e));
+		}
+
 	}
 
 	public static void validateGraph() {
 		Iterable<CheckMessage> errors = TWA.checkSpecifications(graph);
 		ComplianceManager.clear();
-		for (CheckMessage e : errors) {
-			switch (e.getCode()) {
+		if (errors != null)
+			for (CheckMessage e : errors)
+				parseArchetypError(e);
+		if (!ComplianceManager.haveErrors()) {
+			// compiler present
+		}
 
-			case CheckMessage.code1: {
-				// Suppress msgs we can't do anything about immediately
-				List<TreeGraphNode> parentNodes = getExistingParents(e.parentList(), e.requiredClass());
-				if (!parentNodes.isEmpty()) {
-					for (TreeGraphNode n : parentNodes)
-						ComplianceManager.add(new NodeMissingErr(n, e));
-				}
-				break;
-			}
-			// code2 ignore
-			case CheckMessage.code3PropertyClass: {
-				// CheckMessage(CheckMessage.code3,queryNode,e,null,null,null,null,-1)
-				ComplianceManager.add(new UnParsedErr(e));
-				break;
-			}
-			case CheckMessage.code4Query: {
-				// CheckMessage(CheckMessage.code4,item,e,queryNode,null,null,null,-1)
-				if (e.getTarget() instanceof Property) {
-					ComplianceManager.add(new PropertyQueryErr((Property) e.getTarget(),e.getException().getMessage()));
+		if (!ComplianceManager.haveErrors()) {
+			CodeGenerator gen = new CodeGenerator();
+			gen.generate(Project.makeFile(ProjectPaths.CODE).getAbsolutePath(), graph);
+		}
+		if (!ComplianceManager.haveErrors()) {
+			// check twDep.jar is present
+		}
 
-				} else {
-					ComplianceManager.add(new UnParsedErr(e));
-				}
-				break;
-			}
-			case CheckMessage.code6OutEdgeMissing: {
-//				if (ed.factory().edgeClass(ed.classId())==null) {
-//					Exception e = new AotException("Class '" + edgeLabel
-//						+ "' not found for edge " + ed);
-//					checkFailList.add(new CheckMessage(CheckMessage.code6OutEdgeMissing,ed, e, edgeSpec,null,null,edgeMult,-1));
-
-				ComplianceManager.add(new UnParsedErr(e));
-				break;
-			}
-			case CheckMessage.code9OutEdgeRangeCheck: {
-//				try {
-//					edgeMult.check(toNodes.size());
-//				} catch (Exception e) {
-//					Exception ee = new AotException("Expected " + nodeToCheck + " to have " 
-//						+ edgeMult + " out edge(s) to nodes that match ["
-//						+ toNodeRef + "] with label '" + edgeLabel
-//						+ "' (found " + toNodes.size() + ") ");
-//					checkFailList.add(new CheckMessage(CheckMessage.code9OutEdgeRangeCheck,node, ee, edgeSpec,null,null,edgeMult,toNodes.size()));
-				ComplianceManager.add(new UnParsedErr(e));
-				break;
-			}
-			case CheckMessage.code13MissingProperty: {
-//				if (!nprops.hasProperty(key)) { // property not found
-//					if (!multiplicity.inRange(0)) { // this is an error, this property should be there!
-//						Exception e = new AotException("Required property '"+key+"' missing for element "+ element);
-//						checkFailList.add(new CheckMessage(CheckMessage.code13MissingProperty,element, e, propertyArchetype,null,null,multiplicity,0));
-//					}
-
-				ComplianceManager.add(new UnParsedErr(e));
-				break;
-			}
-			case CheckMessage.code14UnknowPropertyType: {
-//				ptype = ValidPropertyTypes.typeOf(pvalue);
-//			if (ptype==null) { // the property type is not in the valid property type list
-//				Exception e = new AotException("Unknown property type for property '"+key
-//					+"' in element "+ element);
-//				checkFailList.add(new CheckMessage(CheckMessage.code14UnknowPropertyType,element, e, propertyArchetype,null,null,null,-1));
-
-				ComplianceManager.add(new UnParsedErr(e));
-				break;
-			}
-			case CheckMessage.code15WrongPropertyType: {
-//				else if (!ptype.equals(typeName)) { // the property type is not the one required
-//					Exception e = new AotException("Property '"+key
-//						+"' in element '"+ element 
-//						+"' is not of the required type '" + typeName
-//						+"' (type '"+ptype
-//						+"' found instead)");
-//					checkFailList.add(new CheckMessage(CheckMessage.code15WrongPropertyType,element,e,propertyArchetype,null,null,null,-1));
-
-				ComplianceManager.add(new UnParsedErr(e));
-				break;
-			}
-			default:
-				ComplianceManager.add(new UnParsedErr(e));
-			}
-
+		if (!ComplianceManager.haveErrors()) {
+			// prep deployment???
 		}
 	}
 

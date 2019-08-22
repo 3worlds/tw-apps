@@ -57,4 +57,6 @@ public interface IMMController {
 	
 	public void onTreeExpand();
 
+	public String getUserProjectPath();
+
 }
