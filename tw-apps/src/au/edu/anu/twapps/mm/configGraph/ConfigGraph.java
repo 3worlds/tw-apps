@@ -170,7 +170,7 @@ public class ConfigGraph {
 
 		if (!ComplianceManager.haveErrors()) {
 			CodeGenerator gen = new CodeGenerator();
-			gen.generate(Project.makeFile(ProjectPaths.CODE).getAbsolutePath(), graph);
+			gen.generate(userProjectPath, graph);
 		}
 		if (!ComplianceManager.haveErrors()) {
 			// check twDep.jar is present
