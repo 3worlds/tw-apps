@@ -27,18 +27,36 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
   **************************************************************************/
 
-package au.edu.anu.twapps.devenv;
+package au.edu.anu.twapps.mm.devEnv;
 
 import java.io.File;
 
-/**
- * Author Ian Davies
- *
- * Date 14 Dec. 2018
- */
-// Interface for various Java development environments
-public interface IDevEnv {
-	public boolean isJavaProject(File dir);
+import au.edu.anu.twapps.dialogs.Dialogs;
+import au.edu.anu.twcore.devenv.DevEnv;
+import au.edu.anu.twcore.devenv.EclipseProject;
+import au.edu.anu.twcore.devenv.IDETypes;
 
-	public File srcRoot();
+public class DevEnvFactory {
+	private DevEnvFactory() {
+	};
+
+	public static boolean makeEnv(File projectRoot, IDETypes type) {
+		switch (type) {
+		case eclipse: {
+			if (new File(projectRoot.getAbsoluteFile() + File.separator + "src").exists())
+				if (new File(projectRoot.getAbsoluteFile() + File.separator + "bin").exists()) {
+					DevEnv.initialise(new EclipseProject(projectRoot));
+					return true;
+				}
+			Dialogs.errorAlert(type.name() + "[" + projectRoot.getName() + "]", "Non-standard directory structure",
+					"Excpected 'src' and 'bin' directories");
+			return false;
+		}
+		default: {
+			Dialogs.errorAlert("IDE", type.name(), "This IDE is not yet supported.");
+			return false;
+		}
+		}
+	}
+
 }
