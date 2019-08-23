@@ -109,6 +109,9 @@ public class ConfigGraph {
 		if (!ComplianceManager.haveErrors()) {
 			// prep deployment???
 		}
+		
+		ComplianceManager.signalState();
+		
 	}
 
 	private static List<TreeGraphNode> getExistingParents(StringTable parentList, String requiredClass) {

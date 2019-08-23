@@ -48,8 +48,8 @@ public class DevEnvFactory {
 					DevEnv.initialise(new EclipseProject(projectRoot));
 					return true;
 				}
-			Dialogs.errorAlert(type.name() + "[" + projectRoot.getName() + "]", "Non-standard directory structure",
-					"Excpected 'src' and 'bin' directories");
+			Dialogs.errorAlert(type.name() + "[" + projectRoot.getName() + "]",
+					"Project is missing or non-standard directory structure", "Expected 'src' and 'bin' directories");
 			return false;
 		}
 		default: {
