@@ -30,19 +30,41 @@
 package au.edu.anu.twapps.mm;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.FileTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
+
+import au.edu.anu.omhtk.jars.Jars;
+import au.edu.anu.rscs.aot.util.FileUtilities;
 import au.edu.anu.twapps.dialogs.Dialogs;
 import au.edu.anu.twapps.exceptions.TwAppsException;
 import au.edu.anu.twapps.mm.visualGraph.VisualGraphFactory;
 import au.edu.anu.twapps.mm.configGraph.ConfigGraph;
+import au.edu.anu.twapps.mm.jars.DataJar;
+import au.edu.anu.twapps.mm.jars.SimulatorJar;
+import au.edu.anu.twapps.mm.jars.UserProjectJar;
 import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
+import au.edu.anu.twcore.devenv.DevEnv;
+import au.edu.anu.twcore.errorMessaging.ComplianceManager;
+import au.edu.anu.twcore.errorMessaging.deploy.DeployClassFileMissing;
+import au.edu.anu.twcore.errorMessaging.deploy.DeployClassOutOfDate;
 import au.edu.anu.twcore.graphState.GraphState;
+import au.edu.anu.twcore.jars.ThreeWorldsJar;
 import au.edu.anu.twcore.project.Project;
+import au.edu.anu.twcore.project.ProjectPaths;
+import au.edu.anu.twcore.project.TwPaths;
 import au.edu.anu.twcore.root.TwConfigFactory;
+import au.edu.anu.twcore.setup.TwSetup;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.NodeFactory;
 import fr.cnrs.iees.graph.impl.ALEdge;
@@ -52,7 +74,12 @@ import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.graph.io.impl.OmugiGraphExporter;
 import fr.cnrs.iees.identity.impl.PairIdentity;
 import fr.cnrs.iees.io.FileImporter;
-import fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels;
+import fr.cnrs.iees.twcore.constants.FileType;
+
+import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 /**
  * Author Ian Davies
@@ -106,8 +133,166 @@ public class MMModel implements IMMModel {
 
 	@Override
 	public void doDeploy() {
-		// TODO Auto-generated method stub
+		/**
+		 * Since initialise and casting are no longer done here I think we just use the
+		 * current graph unless this process makes makes changes to the graph which
+		 * should not be allowed!!!
+		 */
+		generateExecutable();
+		launchExperiment();
+	}
 
+	// JG - called by deploy()
+	private void launchExperiment() {
+		// TODO CHECK THESE ARGS: is arg1 the full path?? check
+		String arg1 = Project.getProjectFile().getAbsolutePath();
+		String arg2 = Project.getProjectName();
+		ProcessBuilder experimentUI = new ProcessBuilder("java", "-jar", "simulator.jar", arg1, arg2);
+		experimentUI.directory(Project.getProjectFile());
+		experimentUI.inheritIO();
+		try {
+			experimentUI.start();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private void pullAllResources() {
+		File fdstRoot = Project.makeFile(Project.RES);
+		File fSrcRoot = DevEnv.srcRoot();
+		List<File> files = (List<File>) FileUtils.listFiles(fSrcRoot, null, true);
+		for (File srcFile : files) {
+			String name = srcFile.getName();
+			if (!(name.endsWith("java") || name.endsWith("class"))) {
+				File dstFile = swapDirectory(srcFile, DevEnv.srcRoot(), fdstRoot);
+				dstFile.mkdirs();
+				FileUtilities.copyFileReplace(srcFile, dstFile);
+			}
+		}
+	}
+
+	private static File swapDirectory(File file, File from, File to) {
+		File result = new File(file.getAbsolutePath().replace(from.getAbsolutePath(), to.getAbsolutePath()));
+		return result;
+	}
+
+	private void pullAllCodeFiles() {
+		File fDstRoot = Project.makeFile(ProjectPaths.CODE);
+		String[] extensions = new String[] { "java" };
+		List<File> lstSrcJava = (List<File>) FileUtils.listFiles(DevEnv.srcRoot(), extensions, true);
+		for (File fSrcJava : lstSrcJava) {
+			if (!fSrcJava.getName().equals("UserCodeRunner.java")) {
+				File fSrcClass = DevEnv.classForSource(fSrcJava);
+				File fDstJava = swapDirectory(fSrcJava, DevEnv.srcRoot(), fDstRoot);
+				File fDstClass = swapDirectory(fSrcClass, DevEnv.classRoot(), fDstRoot);
+				if (!fSrcClass.exists())
+					ComplianceManager.add(new DeployClassFileMissing(fSrcClass, fSrcJava));
+				else {
+					try {
+						FileTime ftSrc = Files.getLastModifiedTime(fSrcJava.toPath());
+						FileTime ftCls = Files.getLastModifiedTime(fSrcClass.toPath());
+						Long ageJava = ftSrc.toMillis();
+						Long ageClass = ftCls.toMillis();
+						if (ageJava > ageClass)
+							ComplianceManager.add(new DeployClassOutOfDate(fSrcJava, fSrcClass, ftSrc, ftCls));
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					FileUtilities.copyFileReplace(fSrcJava, fDstJava);
+					FileUtilities.copyFileReplace(fSrcClass, fDstClass);
+				}
+			}
+		}
+	}
+
+	// JG - called by deploy()
+	private void generateExecutable() {
+		// Get all data source nodes with FileType properties - TODO this node yet to be implemented in arch
+		Set<File> dataFiles = new HashSet<>();
+		List<TreeGraphDataNode> experiments = (List<TreeGraphDataNode>) get(ConfigGraph.getGraph().root().getChildren(),
+				selectOneOrMany(hasTheLabel(N_EXPERIMENT.label())));
+		for (TreeGraphDataNode experiment:experiments) {
+			List<TreeGraphDataNode>  dataSources = (List<TreeGraphDataNode>) get(experiment.getChildren(),selectZeroOrMany(hasTheLabel(N_DATASOURCE.label())));
+			for (TreeGraphDataNode dataSource : dataSources) {
+				// TODO property enum yet to be defined for this node class
+				File f = ((FileType) dataSource.properties().getPropertyValue(P_DESIGN_FILE.key())).getFile();
+				dataFiles.add(f);
+			}
+	}
+		Jars dataPacker = new DataJar(dataFiles);
+		// Save to project root for deployment
+		File dataFile = Project.makeFile("data.jar");
+		dataPacker.saveJar(dataFile);
+		// Are we running from within a jar?
+		if (Jars.getRunningJarFilePath(this.getClass()) == null) {
+			// Create threeWorlds.jar
+			// not this version number???
+			Jars twJar = new ThreeWorldsJar(TwSetup.VERSION_MAJOR, TwSetup.VERSION_MINOR, TwSetup.VERSION_MICRO);
+			File twFile = Project.makeFile("threeWorlds.jar");
+			// we need to make the contents??
+			twJar.saveJar(twFile);
+		}
+		Set<String> userLibraries = new HashSet<>();
+		Set<File> srcFiles = new HashSet<>();
+		Set<File> resFiles = new HashSet<>();
+		Set<File> userCodeJars = new HashSet<>();
+//		if (controller.haveUserProject()) {
+		if (DevEnv.haveUserProject()) {
+//			// 1) Move user dependencies to './modelCode
+//			// TODO: change to ./modelCode/lib
+			Set<String> libraryExclusions = new HashSet<>();
+			libraryExclusions.add(TwPaths.TW_DEP_JAR);
+			userLibraries = copyUserLibraries(DevEnv.getUserLibraries(libraryExclusions));
+			pullAllCodeFiles();
+			pullAllResources();
+		}
+		// make one userCodeJar in root of project
+		loadModelCode(srcFiles, resFiles);
+		Jars upj = new UserProjectJar(srcFiles, resFiles);
+		File userCodeJarFile = Project.makeFile();
+		upj.saveJar(userCodeJarFile);
+		userCodeJars.add(userCodeJarFile);
+		Jars executable = new SimulatorJar(dataFiles, userCodeJars, userLibraries);
+		File executableJarFile = Project.makeFile("Simulator.jar");
+		executable.saveJar(executableJarFile);
+	}
+
+	private Set<String> copyUserLibraries(File[] fJars) {
+		/**
+		 * Copy any libraries used by the Java project to the targetDir. These can then
+		 * be referenced in the simulator.jar
+		 */
+
+		File targetDir = Project.makeFile(ProjectPaths.LIB);
+		targetDir.mkdirs();
+		Set<String> result = new HashSet<>();
+		String relativePath = "." + targetDir.getAbsolutePath().replace(Project.makeFile().getAbsolutePath(), "");
+		if (fJars == null)
+			return result;
+		for (File fJar : fJars) {
+			File outPath = new File(targetDir.getAbsolutePath() + File.separator + fJar.getName());
+			try {
+				Files.copy(fJar.toPath(), outPath.toPath(), StandardCopyOption.REPLACE_EXISTING);
+				String entry = relativePath + "/" + outPath.getName();
+				result.add(entry.replace("\\", "/"));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return result;
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private void loadModelCode(Set<File> srcFiles, Set<File> resFiles) {
+		File srcRoot = Project.makeFile(ProjectPaths.CODE);
+		File resRoot = Project.makeFile(ProjectPaths.RES);
+		if (srcRoot.exists())
+			srcFiles.addAll(FileUtils.listFiles(srcRoot, null, true));
+		if (resRoot.exists())
+			resFiles.addAll(FileUtils.listFiles(resRoot, null, true));
 	}
 
 	@Override
@@ -119,7 +304,7 @@ public class MMModel implements IMMModel {
 		promptId = Project.proposeId(promptId);
 		while (modified) {
 			String userName = Dialogs.getText("New project", "", "New project name:", promptId);
-			if (userName==null) 
+			if (userName == null)
 				return;
 			if (userName.equals(""))
 				return;
@@ -133,14 +318,15 @@ public class MMModel implements IMMModel {
 			Project.close();
 		}
 		promptId = Project.create(promptId);
-		ConfigGraph.setGraph(new TreeGraph<TreeGraphDataNode, ALEdge>(new TwConfigFactory()),controller.getUserProjectPath());
+		ConfigGraph.setGraph(new TreeGraph<TreeGraphDataNode, ALEdge>(new TwConfigFactory()),
+				controller.getUserProjectPath());
 		NodeFactory cf = ConfigGraph.getGraph().nodeFactory();
-		cf.makeNode(cf.nodeClass(ConfigurationNodeLabels.N_ROOT.label()), promptId);
+		cf.makeNode(cf.nodeClass(N_ROOT.label()), promptId);
 		visualGraph = new TreeGraph<VisualNode, VisualEdge>(new VisualGraphFactory());
 		visualGraph.nodeFactory().makeNode(promptId);
 
 		shadowGraph();
-		
+
 		visualGraph.root().setCategory();
 		visualGraph.root().setPosition(0.1, 0.5);
 		visualGraph.root().setCollapse(false);
@@ -150,7 +336,7 @@ public class MMModel implements IMMModel {
 	}
 
 	private void shadowGraph() {
-		for (VisualNode vn : visualGraph.nodes()) 
+		for (VisualNode vn : visualGraph.nodes())
 			vn.shadowElements(ConfigGraph.getGraph());
 	}
 
@@ -166,7 +352,8 @@ public class MMModel implements IMMModel {
 		}
 		Project.open(file);
 		ConfigGraph.setGraph(
-				(TreeGraph<TreeGraphDataNode, ALEdge>) FileImporter.loadGraphFromFile(Project.makeConfigurationFile()),controller.getUserProjectPath());
+				(TreeGraph<TreeGraphDataNode, ALEdge>) FileImporter.loadGraphFromFile(Project.makeConfigurationFile()),
+				controller.getUserProjectPath());
 		visualGraph = (TreeGraph<VisualNode, VisualEdge>) FileImporter.loadGraphFromFile(Project.makeLayoutFile());
 		shadowGraph();
 		onProjectOpened();
