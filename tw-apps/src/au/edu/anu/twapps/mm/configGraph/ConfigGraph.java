@@ -63,20 +63,15 @@ import fr.cnrs.iees.twcore.generators.CodeGenerator;
  */
 public class ConfigGraph {
 	private static TreeGraph<TreeGraphDataNode, ALEdge> graph;
-	private static String userProjectPath;
 
 	private ConfigGraph() {
 	}
 
-	public static void setGraph(TreeGraph<TreeGraphDataNode, ALEdge> graph, String userProjectPath) {
+	public static void setGraph(TreeGraph<TreeGraphDataNode, ALEdge> graph) {
 		ConfigGraph.graph = graph;
-		ConfigGraph.userProjectPath = userProjectPath;
 		// Don't validate here as the graph is not yet built
 	}
 	
-	public static void resetUserProjectPath(String path) {
-		userProjectPath = path;
-	}
 
 	public static TreeGraph<TreeGraphDataNode, ALEdge> getGraph() {
 		return graph;
@@ -97,7 +92,7 @@ public class ConfigGraph {
 
 		if (!ComplianceManager.haveErrors()) {
 			CodeGenerator gen = new CodeGenerator();
-			gen.generate(userProjectPath, graph);
+			gen.generate(graph);
 		}
 		if (!ComplianceManager.haveErrors()) {
 			// check twDep.jar is present
@@ -106,9 +101,9 @@ public class ConfigGraph {
 				ComplianceManager.add(new MissingResourceFile(file,"Use TwSetup to create this file."));
 		}
 
-		if (!ComplianceManager.haveErrors()) {
-			// prep deployment???
-		}
+//		if (!ComplianceManager.haveErrors()) {
+//			// prep deployment???
+//		}
 		
 		ComplianceManager.signalState();
 		

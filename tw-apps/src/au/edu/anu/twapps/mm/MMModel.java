@@ -54,7 +54,7 @@ import au.edu.anu.twapps.mm.jars.SimulatorJar;
 import au.edu.anu.twapps.mm.jars.UserProjectJar;
 import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
-import au.edu.anu.twcore.devenv.DevEnv;
+import au.edu.anu.twcore.devenv.UserProjectLink;
 import au.edu.anu.twcore.errorMessaging.ComplianceManager;
 import au.edu.anu.twcore.errorMessaging.deploy.DeployClassFileMissing;
 import au.edu.anu.twcore.errorMessaging.deploy.DeployClassOutOfDate;
@@ -160,12 +160,12 @@ public class MMModel implements IMMModel {
 
 	private void pullAllResources() {
 		File fdstRoot = Project.makeFile(Project.RES);
-		File fSrcRoot = DevEnv.srcRoot();
+		File fSrcRoot = UserProjectLink.srcRoot();
 		List<File> files = (List<File>) FileUtils.listFiles(fSrcRoot, null, true);
 		for (File srcFile : files) {
 			String name = srcFile.getName();
 			if (!(name.endsWith("java") || name.endsWith("class"))) {
-				File dstFile = swapDirectory(srcFile, DevEnv.srcRoot(), fdstRoot);
+				File dstFile = swapDirectory(srcFile, UserProjectLink.srcRoot(), fdstRoot);
 				dstFile.mkdirs();
 				FileUtilities.copyFileReplace(srcFile, dstFile);
 			}
@@ -180,12 +180,12 @@ public class MMModel implements IMMModel {
 	private void pullAllCodeFiles() {
 		File fDstRoot = Project.makeFile(ProjectPaths.CODE);
 		String[] extensions = new String[] { "java" };
-		List<File> lstSrcJava = (List<File>) FileUtils.listFiles(DevEnv.srcRoot(), extensions, true);
+		List<File> lstSrcJava = (List<File>) FileUtils.listFiles(UserProjectLink.srcRoot(), extensions, true);
 		for (File fSrcJava : lstSrcJava) {
 			if (!fSrcJava.getName().equals("UserCodeRunner.java")) {
-				File fSrcClass = DevEnv.classForSource(fSrcJava);
-				File fDstJava = swapDirectory(fSrcJava, DevEnv.srcRoot(), fDstRoot);
-				File fDstClass = swapDirectory(fSrcClass, DevEnv.classRoot(), fDstRoot);
+				File fSrcClass = UserProjectLink.classForSource(fSrcJava);
+				File fDstJava = swapDirectory(fSrcJava, UserProjectLink.srcRoot(), fDstRoot);
+				File fDstClass = swapDirectory(fSrcClass, UserProjectLink.classRoot(), fDstRoot);
 				if (!fSrcClass.exists())
 					ComplianceManager.add(new DeployClassFileMissing(fSrcClass, fSrcJava));
 				else {
@@ -208,18 +208,20 @@ public class MMModel implements IMMModel {
 
 	// JG - called by deploy()
 	private void generateExecutable() {
-		// Get all data source nodes with FileType properties - TODO this node yet to be implemented in arch
+		// Get all data source nodes with FileType properties - TODO this node yet to be
+		// implemented in arch
 		Set<File> dataFiles = new HashSet<>();
 		List<TreeGraphDataNode> experiments = (List<TreeGraphDataNode>) get(ConfigGraph.getGraph().root().getChildren(),
 				selectOneOrMany(hasTheLabel(N_EXPERIMENT.label())));
-		for (TreeGraphDataNode experiment:experiments) {
-			List<TreeGraphDataNode>  dataSources = (List<TreeGraphDataNode>) get(experiment.getChildren(),selectZeroOrMany(hasTheLabel(N_DATASOURCE.label())));
+		for (TreeGraphDataNode experiment : experiments) {
+			List<TreeGraphDataNode> dataSources = (List<TreeGraphDataNode>) get(experiment.getChildren(),
+					selectZeroOrMany(hasTheLabel(N_DATASOURCE.label())));
 			for (TreeGraphDataNode dataSource : dataSources) {
 				// TODO property enum yet to be defined for this node class
 				File f = ((FileType) dataSource.properties().getPropertyValue(P_DESIGN_FILE.key())).getFile();
 				dataFiles.add(f);
 			}
-	}
+		}
 		Jars dataPacker = new DataJar(dataFiles);
 		// Save to project root for deployment
 		File dataFile = Project.makeFile("data.jar");
@@ -238,12 +240,12 @@ public class MMModel implements IMMModel {
 		Set<File> resFiles = new HashSet<>();
 		Set<File> userCodeJars = new HashSet<>();
 //		if (controller.haveUserProject()) {
-		if (DevEnv.haveUserProject()) {
+		if (UserProjectLink.haveUserProject()) {
 //			// 1) Move user dependencies to './modelCode
 //			// TODO: change to ./modelCode/lib
 			Set<String> libraryExclusions = new HashSet<>();
 			libraryExclusions.add(TwPaths.TW_DEP_JAR);
-			userLibraries = copyUserLibraries(DevEnv.getUserLibraries(libraryExclusions));
+			userLibraries = copyUserLibraries(UserProjectLink.getUserLibraries(libraryExclusions));
 			pullAllCodeFiles();
 			pullAllResources();
 		}
@@ -318,8 +320,7 @@ public class MMModel implements IMMModel {
 			Project.close();
 		}
 		promptId = Project.create(promptId);
-		ConfigGraph.setGraph(new TreeGraph<TreeGraphDataNode, ALEdge>(new TwConfigFactory()),
-				controller.getUserProjectPath());
+		ConfigGraph.setGraph(new TreeGraph<TreeGraphDataNode, ALEdge>(new TwConfigFactory()));
 		NodeFactory cf = ConfigGraph.getGraph().nodeFactory();
 		cf.makeNode(cf.nodeClass(N_ROOT.label()), promptId);
 		visualGraph = new TreeGraph<VisualNode, VisualEdge>(new VisualGraphFactory());
@@ -352,8 +353,7 @@ public class MMModel implements IMMModel {
 		}
 		Project.open(file);
 		ConfigGraph.setGraph(
-				(TreeGraph<TreeGraphDataNode, ALEdge>) FileImporter.loadGraphFromFile(Project.makeConfigurationFile()),
-				controller.getUserProjectPath());
+				(TreeGraph<TreeGraphDataNode, ALEdge>) FileImporter.loadGraphFromFile(Project.makeConfigurationFile()));
 		visualGraph = (TreeGraph<VisualNode, VisualEdge>) FileImporter.loadGraphFromFile(Project.makeLayoutFile());
 		shadowGraph();
 		onProjectOpened();

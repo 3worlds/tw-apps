@@ -32,8 +32,8 @@ package au.edu.anu.twapps.mm.devEnv;
 import java.io.File;
 
 import au.edu.anu.twapps.dialogs.Dialogs;
-import au.edu.anu.twcore.devenv.DevEnv;
-import au.edu.anu.twcore.devenv.EclipseProject;
+import au.edu.anu.twcore.devenv.UserProjectLink;
+import au.edu.anu.twcore.devenv.UDEEclipseProject;
 import au.edu.anu.twcore.devenv.IDETypes;
 
 public class DevEnvFactory {
@@ -45,7 +45,7 @@ public class DevEnvFactory {
 		case eclipse: {
 			if (new File(projectRoot.getAbsoluteFile() + File.separator + "src").exists())
 				if (new File(projectRoot.getAbsoluteFile() + File.separator + "bin").exists()) {
-					DevEnv.initialise(new EclipseProject(projectRoot));
+					UserProjectLink.initialise(new UDEEclipseProject(projectRoot));
 					return true;
 				}
 			Dialogs.errorAlert(type.name() + "[" + projectRoot.getName() + "]",
