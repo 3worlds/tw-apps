@@ -207,6 +207,7 @@ public class MMModel implements IMMModel {
 	}
 
 	// JG - called by deploy()
+	@SuppressWarnings("unchecked")
 	private void generateExecutable() {
 		// Get all data source nodes with FileType properties - TODO this node yet to be
 		// implemented in arch
@@ -222,14 +223,14 @@ public class MMModel implements IMMModel {
 				dataFiles.add(f);
 			}
 		}
-		Jars dataPacker = new DataJar(dataFiles);
-		// Save to project root for deployment
-		String dataJarName = Project.getProjectName()+"Data.jar";
-		File dataFile = Project.makeFile(dataJarName);
-		dataPacker.saveJar(dataFile);
+//		Jars dataPacker = new DataJar(dataFiles);
+//		// Save to project root for deployment
+//		String dataJarName = Project.getProjectName()+"Data.jar";
+//		File dataFile = Project.makeFile(dataJarName);
+//		dataPacker.saveJar(dataFile);
 		// Are we running from within a jar?
 		if (Jars.getRunningJarFilePath(this.getClass()) == null) {
-			// Create threeWorlds.jar
+			// Create threeWorlds.jar not sure about all this now
 			// not this version number???
 			Jars twJar = new ThreeWorldsJar(TwSetup.VERSION_MAJOR, TwSetup.VERSION_MINOR, TwSetup.VERSION_MICRO);
 			File twFile = Project.makeFile("threeWorlds.jar");
@@ -252,15 +253,17 @@ public class MMModel implements IMMModel {
 		}
 		// make one userCodeJar in root of project
 		loadModelCode(srcFiles, resFiles);
-		Jars upj = new UserProjectJar(srcFiles, resFiles);
-		String codeJarName = Project.getProjectName()+"Code.jar";
-
-		File userCodeJarFile = Project.makeFile(codeJarName);
-		upj.saveJar(userCodeJarFile);
-		userCodeJars.add(userCodeJarFile);
-		Jars executable = new SimulatorJar(dataFiles, userCodeJars, userLibraries);
-		File executableJarFile = Project.makeFile("Simulator.jar");
-		executable.saveJar(executableJarFile);
+//		Jars upj = new UserProjectJar(srcFiles, resFiles);
+//		String codeJarName = Project.getProjectName()+"Code.jar";
+//
+//		File userCodeJarFile = Project.makeFile(codeJarName);
+//		upj.saveJar(userCodeJarFile);
+//		userCodeJars.add(userCodeJarFile);
+		//skip all this data, code jars and put all project specific stuff in the Simulator jar 
+		Jars simPacker = new SimulatorJar(dataFiles,srcFiles,resFiles,userLibraries);
+//		Jars executable = new SimulatorJar(dataFiles, userCodeJars, userLibraries);
+		File executableJarFile = Project.makeFile(Project.getProjectName()+"Sim.jar");
+		simPacker.saveJar(executableJarFile);
 	}
 
 	private Set<String> copyUserLibraries(File[] fJars) {
