@@ -54,7 +54,6 @@ import au.edu.anu.twapps.mm.jars.SimulatorJar;
 import au.edu.anu.twapps.mm.jars.UserProjectJar;
 import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
-import au.edu.anu.twcore.devenv.UserProjectLink;
 import au.edu.anu.twcore.errorMessaging.ComplianceManager;
 import au.edu.anu.twcore.errorMessaging.deploy.DeployClassFileMissing;
 import au.edu.anu.twcore.errorMessaging.deploy.DeployClassOutOfDate;
@@ -65,6 +64,7 @@ import au.edu.anu.twcore.project.ProjectPaths;
 import au.edu.anu.twcore.project.TwPaths;
 import au.edu.anu.twcore.root.TwConfigFactory;
 import au.edu.anu.twcore.setup.TwSetup;
+import au.edu.anu.twcore.userProject.UserProjectLink;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.NodeFactory;
 import fr.cnrs.iees.graph.impl.ALEdge;
@@ -224,7 +224,8 @@ public class MMModel implements IMMModel {
 		}
 		Jars dataPacker = new DataJar(dataFiles);
 		// Save to project root for deployment
-		File dataFile = Project.makeFile("data.jar");
+		String dataJarName = Project.getProjectName()+"Data.jar";
+		File dataFile = Project.makeFile(dataJarName);
 		dataPacker.saveJar(dataFile);
 		// Are we running from within a jar?
 		if (Jars.getRunningJarFilePath(this.getClass()) == null) {
@@ -252,7 +253,9 @@ public class MMModel implements IMMModel {
 		// make one userCodeJar in root of project
 		loadModelCode(srcFiles, resFiles);
 		Jars upj = new UserProjectJar(srcFiles, resFiles);
-		File userCodeJarFile = Project.makeFile();
+		String codeJarName = Project.getProjectName()+"Code.jar";
+
+		File userCodeJarFile = Project.makeFile(codeJarName);
 		upj.saveJar(userCodeJarFile);
 		userCodeJars.add(userCodeJarFile);
 		Jars executable = new SimulatorJar(dataFiles, userCodeJars, userLibraries);

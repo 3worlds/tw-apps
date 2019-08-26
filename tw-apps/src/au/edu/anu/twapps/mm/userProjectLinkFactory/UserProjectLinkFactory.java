@@ -27,17 +27,17 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
   **************************************************************************/
 
-package au.edu.anu.twapps.mm.devEnv;
+package au.edu.anu.twapps.mm.userProjectLinkFactory;
 
 import java.io.File;
 
 import au.edu.anu.twapps.dialogs.Dialogs;
-import au.edu.anu.twcore.devenv.UserProjectLink;
-import au.edu.anu.twcore.devenv.UDEEclipseProject;
-import au.edu.anu.twcore.devenv.IDETypes;
+import au.edu.anu.twcore.userProject.IDETypes;
+import au.edu.anu.twcore.userProject.UPLEclipse;
+import au.edu.anu.twcore.userProject.UserProjectLink;
 
-public class DevEnvFactory {
-	private DevEnvFactory() {
+public class UserProjectLinkFactory {
+	private UserProjectLinkFactory() {
 	};
 
 	public static boolean makeEnv(File projectRoot, IDETypes type) {
@@ -45,7 +45,7 @@ public class DevEnvFactory {
 		case eclipse: {
 			if (new File(projectRoot.getAbsoluteFile() + File.separator + "src").exists())
 				if (new File(projectRoot.getAbsoluteFile() + File.separator + "bin").exists()) {
-					UserProjectLink.initialise(new UDEEclipseProject(projectRoot));
+					UserProjectLink.initialise(new UPLEclipse(projectRoot));
 					return true;
 				}
 			Dialogs.errorAlert(type.name() + "[" + projectRoot.getName() + "]",
