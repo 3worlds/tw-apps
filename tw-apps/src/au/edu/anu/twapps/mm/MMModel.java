@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.FileTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -46,33 +45,25 @@ import org.apache.commons.io.FileUtils;
 import au.edu.anu.omhtk.jars.Jars;
 import au.edu.anu.rscs.aot.util.FileUtilities;
 import au.edu.anu.twapps.dialogs.Dialogs;
-import au.edu.anu.twapps.exceptions.TwAppsException;
 import au.edu.anu.twapps.mm.visualGraph.VisualGraphFactory;
 import au.edu.anu.twapps.mm.configGraph.ConfigGraph;
-import au.edu.anu.twapps.mm.jars.DataJar;
 import au.edu.anu.twapps.mm.jars.SimulatorJar;
-import au.edu.anu.twapps.mm.jars.UserProjectJar;
 import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import au.edu.anu.twcore.errorMessaging.ComplianceManager;
 import au.edu.anu.twcore.errorMessaging.deploy.DeployClassFileMissing;
 import au.edu.anu.twcore.errorMessaging.deploy.DeployClassOutOfDate;
 import au.edu.anu.twcore.graphState.GraphState;
-import au.edu.anu.twcore.jars.ThreeWorldsJar;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
 import au.edu.anu.twcore.project.TwPaths;
 import au.edu.anu.twcore.root.TwConfigFactory;
-import au.edu.anu.twcore.setup.TwSetup;
 import au.edu.anu.twcore.userProject.UserProjectLink;
-import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.NodeFactory;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
-import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.graph.io.impl.OmugiGraphExporter;
-import fr.cnrs.iees.identity.impl.PairIdentity;
 import fr.cnrs.iees.io.FileImporter;
 import fr.cnrs.iees.twcore.constants.FileType;
 
@@ -138,16 +129,16 @@ public class MMModel implements IMMModel {
 		 * current graph unless this process makes makes changes to the graph which
 		 * should not be allowed!!!
 		 */
-		generateExecutable(mainClass);
-		launchExperiment();
+		String name = generateExecutable(mainClass);
+		launchExperiment(name);
 	}
 
 	// JG - called by deploy()
-	private void launchExperiment() {
+	private void launchExperiment(String jarName) {
 		// TODO CHECK THESE ARGS: is arg1 the full path?? check
 		String arg1 = Project.getProjectFile().getAbsolutePath();
 		String arg2 = Project.getProjectName();
-		ProcessBuilder experimentUI = new ProcessBuilder("java", "-jar", "simulator.jar", arg1, arg2);
+		ProcessBuilder experimentUI = new ProcessBuilder("java", "-jar",jarName, arg1, arg2);
 		experimentUI.directory(Project.getProjectFile());
 		experimentUI.inheritIO();
 		try {
@@ -208,7 +199,7 @@ public class MMModel implements IMMModel {
 
 	// JG - called by deploy()
 	@SuppressWarnings("unchecked")
-	private void generateExecutable(String mainClass) {
+	private String generateExecutable(String mainClass) {
 		// Get all data source nodes with FileType properties - TODO this node yet to be
 		// implemented in arch
 		Set<File> dataFiles = new HashSet<>();
@@ -218,33 +209,15 @@ public class MMModel implements IMMModel {
 			List<TreeGraphDataNode> dataSources = (List<TreeGraphDataNode>) get(experiment.getChildren(),
 					selectZeroOrMany(hasTheLabel(N_DATASOURCE.label())));
 			for (TreeGraphDataNode dataSource : dataSources) {
-				// TODO property enum yet to be defined for this node class
+				// TODO property enum yet to be defined for data sources 
 				File f = ((FileType) dataSource.properties().getPropertyValue(P_DESIGN_FILE.key())).getFile();
 				dataFiles.add(f);
 			}
 		}
-//		Jars dataPacker = new DataJar(dataFiles);
-//		// Save to project root for deployment
-//		String dataJarName = Project.getProjectName()+"Data.jar";
-//		File dataFile = Project.makeFile(dataJarName);
-//		dataPacker.saveJar(dataFile);
-		// Are we running from within a jar?
-		if (Jars.getRunningJarFilePath(this.getClass()) == null) {
-			// Create threeWorlds.jar not sure about all this now
-			// not this version number???
-			Jars twJar = new ThreeWorldsJar(TwSetup.VERSION_MAJOR, TwSetup.VERSION_MINOR, TwSetup.VERSION_MICRO);
-			File twFile = Project.makeFile("threeWorlds.jar");
-			// we need to make the contents??
-			twJar.saveJar(twFile);
-		}
 		Set<String> userLibraries = new HashSet<>();
-		Set<File> srcFiles = new HashSet<>();
+		Set<File> codeFiles = new HashSet<>();
 		Set<File> resFiles = new HashSet<>();
-		Set<File> userCodeJars = new HashSet<>();
-//		if (controller.haveUserProject()) {
 		if (UserProjectLink.haveUserProject()) {
-//			// 1) Move user dependencies to './modelCode
-//			// TODO: change to ./modelCode/lib
 			Set<String> libraryExclusions = new HashSet<>();
 			libraryExclusions.add(TwPaths.TW_DEP_JAR);
 			userLibraries = copyUserLibraries(UserProjectLink.getUserLibraries(libraryExclusions));
@@ -252,18 +225,12 @@ public class MMModel implements IMMModel {
 			pullAllResources();
 		}
 		// make one userCodeJar in root of project
-		loadModelCode(srcFiles, resFiles);
-//		Jars upj = new UserProjectJar(srcFiles, resFiles);
-//		String codeJarName = Project.getProjectName()+"Code.jar";
-//
-//		File userCodeJarFile = Project.makeFile(codeJarName);
-//		upj.saveJar(userCodeJarFile);
-//		userCodeJars.add(userCodeJarFile);
-		//skip all this data, code jars and put all project specific stuff in the Simulator jar 
-		Jars simPacker = new SimulatorJar(mainClass,dataFiles,srcFiles,resFiles,userLibraries);
+		loadModelCode(codeFiles, resFiles);
+		Jars packer = new SimulatorJar(mainClass,dataFiles,codeFiles,resFiles,userLibraries);
 //		Jars executable = new SimulatorJar(dataFiles, userCodeJars, userLibraries);
-		File executableJarFile = Project.makeFile(Project.getProjectName()+"Sim.jar");
-		simPacker.saveJar(executableJarFile);
+		File executableJarFile = Project.makeFile(Project.getProjectName()+".jar");
+		packer.saveJar(executableJarFile);
+		return executableJarFile.getName();
 	}
 
 	private Set<String> copyUserLibraries(File[] fJars) {

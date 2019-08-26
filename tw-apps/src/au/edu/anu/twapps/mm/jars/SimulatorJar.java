@@ -33,7 +33,8 @@ import java.io.File;
 import java.util.Set;
 
 import au.edu.anu.omhtk.jars.Jars;
-import au.edu.anu.twcore.jars.ThreeWorldsJar;
+import au.edu.anu.twcore.project.Project;
+import au.edu.anu.twcore.project.ProjectPaths;
 import au.edu.anu.twcore.project.TwPaths;
 
 /**
@@ -42,18 +43,50 @@ import au.edu.anu.twcore.project.TwPaths;
  * @date 25 Aug 2019
  */
 public class SimulatorJar extends Jars{
-	public SimulatorJar(String mainClass,Set<File> dataFiles, Set<File> srcFiles, Set<File> resFiles,Set<String> userLibraries) {
-		// This jar contains only a manifest.
+	public SimulatorJar(String mainClass,Set<File> dataFiles, Set<File> codeFiles, Set<File> resFiles,Set<String> userLibraries) {
+//		 This jar user code, data and resources (i.e. user specific jars).
 		// set ModelRunner as main class: could be called germane ha ha.
 		setMainClass(mainClass);
+		// data files
+		String prjDir = Project.getProjectDirectory()+File.separator;
+		for (File s : dataFiles) {
+			String fileName = s.getAbsolutePath();
+			String resourceName = fileName.replace(prjDir, "");
+			resourceName = resourceName.replace(s.getName(), "");
+			resourceName = resourceName.replace("\\", Jars.separator);
+			if (resourceName.endsWith(Jars.separator))
+				resourceName = resourceName.substring(0, resourceName.length() - 1);
+			addFile(s.getAbsolutePath(), resourceName);
+		}
+		// code files
+		String codeRoot = Project.makeFile(ProjectPaths.CODE).getAbsolutePath();
+		for (File file : codeFiles) {// both java and class files
+			String fileName = file.getAbsolutePath();
+			String jarDirectory = file.getAbsolutePath().replace(codeRoot, "");
+			jarDirectory = jarDirectory.replace(file.getName(), "");
+			jarDirectory = formatJarDirectory(jarDirectory);
+			addFile(fileName, jarDirectory);
+		}
+		// resources
+		String resRoot = Project.makeFile(ProjectPaths.RES).getAbsolutePath();
+		for (File file : resFiles) {
+			String fileName = file.getAbsolutePath();
+			String jarDirectory = file.getAbsolutePath().replace(resRoot, "");
+			jarDirectory = jarDirectory.replaceAll(file.getName(), "");
+			jarDirectory = formatJarDirectory(jarDirectory);
+			addFile(fileName, jarDirectory);
+		}
+
 		// dependencies
 		addDependencyOnJar(".." + Jars.separator + TwPaths.TW_DEP_JAR);
-		addDependencyOnJar("data.jar");
-		//addDependencyOnJar(".." + Jars.separator + ThreeWorldsJar.TW_JAR);
 		for (String userLibrary : userLibraries)
 			addDependencyOnJar(userLibrary);
-		for (File f : userCodeJars)
-			addDependencyOnJar(f.getName());
+	}
+	private String formatJarDirectory(String s) {
+		String r = s.replace("\\", Jars.separator);
+		if (r.endsWith("/"))
+			r = r.substring(0, r.lastIndexOf("/"));
+		return r;
 	}
 
 }
