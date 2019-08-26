@@ -42,10 +42,10 @@ import au.edu.anu.twcore.project.TwPaths;
  * @date 25 Aug 2019
  */
 public class SimulatorJar extends Jars{
-	public SimulatorJar(Set<File> dataFiles, Set<File> userCodeJars, Set<String> userLibraries) {
+	public SimulatorJar(String mainClass,Set<File> dataFiles, Set<File> srcFiles, Set<File> resFiles,Set<String> userLibraries) {
 		// This jar contains only a manifest.
 		// set ModelRunner as main class: could be called germane ha ha.
-		setMainClass("fr.ens.biologie.threeWorlds.core.ModelRunner");
+		setMainClass(mainClass);
 		// dependencies
 		addDependencyOnJar(".." + Jars.separator + TwPaths.TW_DEP_JAR);
 		addDependencyOnJar("data.jar");

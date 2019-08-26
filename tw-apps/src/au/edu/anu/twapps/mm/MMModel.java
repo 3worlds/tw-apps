@@ -132,13 +132,13 @@ public class MMModel implements IMMModel {
 	}
 
 	@Override
-	public void doDeploy() {
+	public void doDeploy(String mainClass) {
 		/**
 		 * Since initialise and casting are no longer done here I think we just use the
 		 * current graph unless this process makes makes changes to the graph which
 		 * should not be allowed!!!
 		 */
-		generateExecutable();
+		generateExecutable(mainClass);
 		launchExperiment();
 	}
 
@@ -208,7 +208,7 @@ public class MMModel implements IMMModel {
 
 	// JG - called by deploy()
 	@SuppressWarnings("unchecked")
-	private void generateExecutable() {
+	private void generateExecutable(String mainClass) {
 		// Get all data source nodes with FileType properties - TODO this node yet to be
 		// implemented in arch
 		Set<File> dataFiles = new HashSet<>();
@@ -260,7 +260,7 @@ public class MMModel implements IMMModel {
 //		upj.saveJar(userCodeJarFile);
 //		userCodeJars.add(userCodeJarFile);
 		//skip all this data, code jars and put all project specific stuff in the Simulator jar 
-		Jars simPacker = new SimulatorJar(dataFiles,srcFiles,resFiles,userLibraries);
+		Jars simPacker = new SimulatorJar(mainClass,dataFiles,srcFiles,resFiles,userLibraries);
 //		Jars executable = new SimulatorJar(dataFiles, userCodeJars, userLibraries);
 		File executableJarFile = Project.makeFile(Project.getProjectName()+"Sim.jar");
 		simPacker.saveJar(executableJarFile);
