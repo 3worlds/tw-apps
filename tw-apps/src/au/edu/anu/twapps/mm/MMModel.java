@@ -129,16 +129,15 @@ public class MMModel implements IMMModel {
 		 * current graph unless this process makes makes changes to the graph which
 		 * should not be allowed!!!
 		 */
-		String name = generateExecutable(mainClass);
-		launchExperiment(name);
+		generateExecutable(mainClass);
+		launchExperiment(mainClass);
 	}
 
 	// JG - called by deploy()
-	private void launchExperiment(String jarName) {
+	private void launchExperiment(String mainClass) {
 		// TODO CHECK THESE ARGS: is arg1 the full path?? check
 		String arg1 = Project.getProjectFile().getAbsolutePath();
-		String arg2 = Project.getProjectName();
-		ProcessBuilder experimentUI = new ProcessBuilder("java", "-jar",jarName, arg1, arg2);
+		ProcessBuilder experimentUI = new ProcessBuilder("java", "-jar", Project.getProjectName()+".jar", arg1);
 		experimentUI.directory(Project.getProjectFile());
 		experimentUI.inheritIO();
 		try {
@@ -199,7 +198,7 @@ public class MMModel implements IMMModel {
 
 	// JG - called by deploy()
 	@SuppressWarnings("unchecked")
-	private String generateExecutable(String mainClass) {
+	private void  generateExecutable(String mainClass) {
 		// Get all data source nodes with FileType properties - TODO this node yet to be
 		// implemented in arch
 		Set<File> dataFiles = new HashSet<>();
@@ -230,7 +229,7 @@ public class MMModel implements IMMModel {
 //		Jars executable = new SimulatorJar(dataFiles, userCodeJars, userLibraries);
 		File executableJarFile = Project.makeFile(Project.getProjectName()+".jar");
 		packer.saveJar(executableJarFile);
-		return executableJarFile.getName();
+		//return executableJarFile.getName();
 	}
 
 	private Set<String> copyUserLibraries(File[] fJars) {
