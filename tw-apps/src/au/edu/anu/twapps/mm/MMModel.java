@@ -137,6 +137,7 @@ public class MMModel implements IMMModel {
 	private void launchExperiment(String mainClass) {
 		// TODO CHECK THESE ARGS: is arg1 the full path?? check
 		String arg1 = Project.getProjectFile().getAbsolutePath();
+		arg1 = arg1.replace(TwPaths.TW_ROOT+File.separator, "");
 		ProcessBuilder experimentUI = new ProcessBuilder("java", "-jar", Project.getProjectName()+".jar", arg1);
 		experimentUI.directory(Project.getProjectFile());
 		experimentUI.inheritIO();
