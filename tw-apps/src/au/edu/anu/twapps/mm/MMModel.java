@@ -135,10 +135,9 @@ public class MMModel implements IMMModel {
 
 	// JG - called by deploy()
 	private void launchExperiment(String mainClass) {
-		// TODO CHECK THESE ARGS: is arg1 the full path?? check
-		String arg1 = Project.getProjectFile().getAbsolutePath();
-		arg1 = arg1.replace(TwPaths.TW_ROOT+File.separator, "");
-		ProcessBuilder experimentUI = new ProcessBuilder("java", "-jar", Project.getProjectName()+".jar", arg1);
+		// TODO other args (logging level);
+		String arg1 = Project.getProjectFile().getName();
+		ProcessBuilder experimentUI = new ProcessBuilder("java", "-jar", Project.getProjectUserName()+".jar", arg1);
 		experimentUI.directory(Project.getProjectFile());
 		experimentUI.inheritIO();
 		try {
@@ -228,7 +227,7 @@ public class MMModel implements IMMModel {
 		loadModelCode(codeFiles, resFiles);
 		Jars packer = new SimulatorJar(mainClass,dataFiles,codeFiles,resFiles,userLibraries);
 //		Jars executable = new SimulatorJar(dataFiles, userCodeJars, userLibraries);
-		File executableJarFile = Project.makeFile(Project.getProjectName()+".jar");
+		File executableJarFile = Project.makeFile(Project.getProjectUserName()+".jar");
 		packer.saveJar(executableJarFile);
 		//return executableJarFile.getName();
 	}
