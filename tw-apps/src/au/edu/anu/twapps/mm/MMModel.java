@@ -136,7 +136,7 @@ public class MMModel implements IMMModel {
 		try {
 			experimentUI.start();
 		} catch (Exception e) {
-			ComplianceManager.add(new UnknownErr(CheckMessage.code20,e));
+			ComplianceManager.add(new UnknownErr(CheckMessage.code20Deploy,e));
 		}
 	}
 
