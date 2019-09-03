@@ -55,6 +55,7 @@ import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.identity.impl.PairIdentity;
 import fr.cnrs.iees.twcore.generators.CodeGenerator;
+import fr.cnrs.iees.twcore.generators.ProjectJarGenerator;
 
 /**
  * @author Ian Davies
@@ -101,9 +102,10 @@ public class ConfigGraph {
 				ComplianceManager.add(new MissingResourceFile(file,"Use TwSetup to create this file."));
 		}
 
-//		if (!ComplianceManager.haveErrors()) {
-//			// prep deployment???
-//		}
+		if (!ComplianceManager.haveErrors()) {
+			ProjectJarGenerator gen = new ProjectJarGenerator();
+			gen.generate(graph);
+		}
 		
 		ComplianceManager.signalState();
 		
