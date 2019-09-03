@@ -43,10 +43,14 @@ import java.util.Set;
 import org.apache.commons.io.FileUtils;
 
 import au.edu.anu.omhtk.jars.Jars;
+import au.edu.anu.rscs.aot.archetype.CheckMessage;
+import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.util.FileUtilities;
+import au.edu.anu.rscs.aot.util.IntegerRange;
 import au.edu.anu.twapps.dialogs.Dialogs;
 import au.edu.anu.twapps.mm.visualGraph.VisualGraphFactory;
 import au.edu.anu.twapps.mm.configGraph.ConfigGraph;
+import au.edu.anu.twapps.mm.errorMessages.archetype.UnknownErr;
 import au.edu.anu.twapps.mm.jars.SimulatorJar;
 import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
@@ -60,6 +64,7 @@ import au.edu.anu.twcore.project.TwPaths;
 import au.edu.anu.twcore.root.TwConfigFactory;
 import au.edu.anu.twcore.userProject.UserProjectLink;
 import fr.cnrs.iees.graph.NodeFactory;
+import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
@@ -131,146 +136,9 @@ public class MMModel implements IMMModel {
 		try {
 			experimentUI.start();
 		} catch (Exception e) {
-			// TODO create a deployment error
-			e.printStackTrace();
+			ComplianceManager.add(new UnknownErr(CheckMessage.code20,e));
 		}
 	}
-
-//	// JG - called by deploy()
-//	private void launchExperiment() {
-//		// TODO other args (logging level);
-//		String arg1 = Project.getProjectFile().getName();
-//		ProcessBuilder experimentUI = new ProcessBuilder("java", "-jar", Project.getProjectUserName()+".jar", arg1);
-//		experimentUI.directory(Project.getProjectFile());
-//		experimentUI.inheritIO();
-//		try {
-//			experimentUI.start();
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	}
-
-//	private void pullAllResources() {
-//		File fdstRoot = Project.makeFile(Project.RES);
-//		File fSrcRoot = UserProjectLink.srcRoot();
-//		List<File> files = (List<File>) FileUtils.listFiles(fSrcRoot, null, true);
-//		for (File srcFile : files) {
-//			String name = srcFile.getName();
-//			if (!(name.endsWith("java") || name.endsWith("class"))) {
-//				File dstFile = swapDirectory(srcFile, UserProjectLink.srcRoot(), fdstRoot);
-//				dstFile.mkdirs();
-//				FileUtilities.copyFileReplace(srcFile, dstFile);
-//			}
-//		}
-//	}
-
-//	private static File swapDirectory(File file, File from, File to) {
-//		File result = new File(file.getAbsolutePath().replace(from.getAbsolutePath(), to.getAbsolutePath()));
-//		return result;
-//	}
-
-//	private void pullAllCodeFiles() {
-//		File fDstRoot = Project.makeFile(ProjectPaths.CODE);
-//		String[] extensions = new String[] { "java" };
-//		List<File> lstSrcJava = (List<File>) FileUtils.listFiles(UserProjectLink.srcRoot(), extensions, true);
-//		for (File fSrcJava : lstSrcJava) {
-//			if (!fSrcJava.getName().equals("UserCodeRunner.java")) {
-//				File fSrcClass = UserProjectLink.classForSource(fSrcJava);
-//				File fDstJava = swapDirectory(fSrcJava, UserProjectLink.srcRoot(), fDstRoot);
-//				File fDstClass = swapDirectory(fSrcClass, UserProjectLink.classRoot(), fDstRoot);
-//				if (!fSrcClass.exists())
-//					ComplianceManager.add(new DeployClassFileMissing(fSrcClass, fSrcJava));
-//				else {
-//					try {
-//						FileTime ftSrc = Files.getLastModifiedTime(fSrcJava.toPath());
-//						FileTime ftCls = Files.getLastModifiedTime(fSrcClass.toPath());
-//						Long ageJava = ftSrc.toMillis();
-//						Long ageClass = ftCls.toMillis();
-//						if (ageJava > ageClass)
-//							ComplianceManager.add(new DeployClassOutOfDate(fSrcJava, fSrcClass, ftSrc, ftCls));
-//					} catch (IOException e) {
-//						e.printStackTrace();
-//					}
-//					FileUtilities.copyFileReplace(fSrcJava, fDstJava);
-//					FileUtilities.copyFileReplace(fSrcClass, fDstClass);
-//				}
-//			}
-//		}
-//	}
-//
-	// JG - called by deploy()
-//	@SuppressWarnings("unchecked")
-//	private void  generateExecutable(String mainClass) {
-//		// Get all data source nodes with FileType properties - TODO this node yet to be
-//		// implemented in arch
-//		Set<File> dataFiles = new HashSet<>();
-//		List<TreeGraphDataNode> experiments = (List<TreeGraphDataNode>) get(ConfigGraph.getGraph().root().getChildren(),
-//				selectOneOrMany(hasTheLabel(N_EXPERIMENT.label())));
-//		for (TreeGraphDataNode experiment : experiments) {
-//			List<TreeGraphDataNode> dataSources = (List<TreeGraphDataNode>) get(experiment.getChildren(),
-//					selectZeroOrMany(hasTheLabel(N_DATASOURCE.label())));
-//			for (TreeGraphDataNode dataSource : dataSources) {
-//				// TODO property enum yet to be defined for data sources 
-//				File f = ((FileType) dataSource.properties().getPropertyValue(P_DESIGN_FILE.key())).getFile();
-//				dataFiles.add(f);
-//			}
-//		}
-//		Set<String> userLibraries = new HashSet<>();
-//		Set<File> codeFiles = new HashSet<>();
-//		Set<File> resFiles = new HashSet<>();
-//		if (UserProjectLink.haveUserProject()) {
-//			Set<String> libraryExclusions = new HashSet<>();
-//			libraryExclusions.add(TwPaths.TW_DEP_JAR);
-//			userLibraries = copyUserLibraries(UserProjectLink.getUserLibraries(libraryExclusions));
-//			pullAllCodeFiles();
-//			pullAllResources();
-//		}
-//		// make one userCodeJar in root of project
-//		loadModelCode(codeFiles, resFiles);
-//		Jars packer = new SimulatorJar(mainClass,dataFiles,codeFiles,resFiles,userLibraries);
-////		Jars executable = new SimulatorJar(dataFiles, userCodeJars, userLibraries);
-//		File executableJarFile = Project.makeFile(Project.getProjectUserName()+".jar");
-//		packer.saveJar(executableJarFile);
-//		//return executableJarFile.getName();
-//	}
-
-//	private Set<String> copyUserLibraries(File[] fJars) {
-//		/**
-//		 * Copy any libraries used by the Java project to the targetDir. These can then
-//		 * be referenced in the simulator.jar
-//		 */
-//
-//		File targetDir = Project.makeFile(ProjectPaths.LIB);
-//		targetDir.mkdirs();
-//		Set<String> result = new HashSet<>();
-//		String relativePath = "." + targetDir.getAbsolutePath().replace(Project.makeFile().getAbsolutePath(), "");
-//		if (fJars == null)
-//			return result;
-//		for (File fJar : fJars) {
-//			File outPath = new File(targetDir.getAbsolutePath() + File.separator + fJar.getName());
-//			try {
-//				Files.copy(fJar.toPath(), outPath.toPath(), StandardCopyOption.REPLACE_EXISTING);
-//				String entry = relativePath + "/" + outPath.getName();
-//				result.add(entry.replace("\\", "/"));
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
-//		return result;
-//
-//	}
-
-//	@SuppressWarnings("unchecked")
-//	private void loadModelCode(Set<File> srcFiles, Set<File> resFiles) {
-//		File srcRoot = Project.makeFile(ProjectPaths.CODE);
-//		File resRoot = Project.makeFile(ProjectPaths.RES);
-//		if (srcRoot.exists())
-//			srcFiles.addAll(FileUtils.listFiles(srcRoot, null, true));
-//		if (resRoot.exists())
-//			resFiles.addAll(FileUtils.listFiles(resRoot, null, true));
-//	}
 
 	@Override
 	public void doNewProject() {
