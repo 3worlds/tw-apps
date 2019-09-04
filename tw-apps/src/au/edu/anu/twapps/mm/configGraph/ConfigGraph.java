@@ -42,10 +42,12 @@ import au.edu.anu.twapps.dialogs.Dialogs;
 import au.edu.anu.twapps.mm.errorMessages.archetype.NodeMissingErr;
 import au.edu.anu.twapps.mm.errorMessages.archetype.PropertyQueryErr;
 import au.edu.anu.twapps.mm.errorMessages.archetype.UnParsedErr;
+import au.edu.anu.twapps.mm.errorMessages.archetype.UnsavedErr;
 import au.edu.anu.twcore.archetype.TWA;
 import au.edu.anu.twcore.errorMessaging.ComplianceManager;
 import au.edu.anu.twcore.errorMessaging.codeGenerator.CompilerMissingErr;
 import au.edu.anu.twcore.errorMessaging.codeGenerator.MissingResourceFile;
+import au.edu.anu.twcore.graphState.GraphState;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
 import au.edu.anu.twcore.project.TwPaths;
@@ -106,9 +108,11 @@ public class ConfigGraph {
 			ProjectJarGenerator gen = new ProjectJarGenerator();
 			gen.generate(graph);
 		}
-		
-		ComplianceManager.signalState();
-		
+	
+		if (GraphState.changed())
+			ComplianceManager.add(new UnsavedErr());
+
+		ComplianceManager.signalState();		
 	}
 
 	private static List<TreeGraphNode> getExistingParents(StringTable parentList, String requiredClass) {

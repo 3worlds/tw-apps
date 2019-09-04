@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.FileTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -70,6 +71,8 @@ import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.graph.io.impl.OmugiGraphExporter;
 import fr.cnrs.iees.io.FileImporter;
+import fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels;
+import fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames;
 import fr.cnrs.iees.twcore.constants.FileType;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
@@ -92,6 +95,42 @@ public class MMModel implements IMMModel {
 
 	public MMModel(IMMController controller) {
 		this.controller = controller;
+		buildNonEditableList();
+		
+	}
+	private Map<String, List<String>> nonEditableMap = new HashMap<>();
+
+	private void addEntry(ConfigurationNodeLabels nl,ConfigurationPropertyNames pn) {
+		String nLabel = nl.label();
+		String pKey = pn.key();
+		List<String> lst=nonEditableMap.get(nLabel);
+		if (lst==null) {
+			lst = new ArrayList<>();
+			nonEditableMap.put(nLabel,lst);
+		}
+		lst.add(pKey);		
+	}
+	private void buildNonEditableList() {
+		for (ConfigurationNodeLabels key:ConfigurationNodeLabels.values()) {
+			List<String> keys = new ArrayList<>();
+			// default - subclass is never editable
+			keys.add("subclass");			
+ 			nonEditableMap.put(key.label(),keys);
+		}
+		addEntry(ConfigurationNodeLabels.N_COMPONENT,ConfigurationPropertyNames.P_PARAMETERCLASS);
+		addEntry(ConfigurationNodeLabels.N_SYSTEM,ConfigurationPropertyNames.P_PARAMETERCLASS);
+		addEntry(ConfigurationNodeLabels.N_FUNCTION,ConfigurationPropertyNames.P_FUNCTIONCLASS);
+	}
+	@Override
+	public boolean propertyEditable(String classId, String key) {
+		if (key.equals("parameterClass"))
+			System.out.println(classId);
+		if (!nonEditableMap.containsKey(classId))
+			return true;
+		if (!nonEditableMap.get(classId).contains(key))
+			return true;
+		// TODO build this when the archetype is ready
+		return false;
 	}
 
 	private void onProjectClosing() {
@@ -271,16 +310,5 @@ public class MMModel implements IMMModel {
 		}
 	}
 
-	private Map<String, List<String>> nonEditableMap = new HashMap<>();
-
-	@Override
-	public boolean propertyEditable(String classId, String key) {
-		if (!nonEditableMap.containsKey(classId))
-			return true;
-		if (!nonEditableMap.get(classId).contains(key))
-			return true;
-		// TODO build this when the archetype is ready
-		return true;
-	}
 
 }
