@@ -30,42 +30,22 @@
 package au.edu.anu.twapps.mm;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.io.FileUtils;
-
-import au.edu.anu.omhtk.jars.Jars;
 import au.edu.anu.rscs.aot.archetype.CheckMessage;
-import au.edu.anu.rscs.aot.collections.tables.StringTable;
-import au.edu.anu.rscs.aot.util.FileUtilities;
-import au.edu.anu.rscs.aot.util.IntegerRange;
 import au.edu.anu.twapps.dialogs.Dialogs;
 import au.edu.anu.twapps.mm.visualGraph.VisualGraphFactory;
 import au.edu.anu.twapps.mm.configGraph.ConfigGraph;
 import au.edu.anu.twapps.mm.errorMessages.archetype.UnknownErr;
-import au.edu.anu.twapps.mm.jars.SimulatorJar;
 import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import au.edu.anu.twcore.errorMessaging.ComplianceManager;
-import au.edu.anu.twcore.errorMessaging.deploy.DeployClassFileMissing;
-import au.edu.anu.twcore.errorMessaging.deploy.DeployClassOutOfDate;
 import au.edu.anu.twcore.graphState.GraphState;
 import au.edu.anu.twcore.project.Project;
-import au.edu.anu.twcore.project.ProjectPaths;
-import au.edu.anu.twcore.project.TwPaths;
 import au.edu.anu.twcore.root.TwConfigFactory;
-import au.edu.anu.twcore.userProject.UserProjectLink;
 import fr.cnrs.iees.graph.NodeFactory;
-import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
@@ -73,12 +53,7 @@ import fr.cnrs.iees.graph.io.impl.OmugiGraphExporter;
 import fr.cnrs.iees.io.FileImporter;
 import fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels;
 import fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames;
-import fr.cnrs.iees.twcore.constants.FileType;
-
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
-import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 /**
  * Author Ian Davies
