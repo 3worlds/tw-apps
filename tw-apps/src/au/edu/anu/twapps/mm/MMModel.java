@@ -214,6 +214,7 @@ public class MMModel implements IMMModel {
 		new OmugiGraphExporter(Project.makeConfigurationFile()).exportGraph(ConfigGraph.getGraph());
 		new OmugiGraphExporter(Project.makeLayoutFile()).exportGraph(visualGraph);
 		GraphState.clear();
+		ConfigGraph.validateGraph();
 	}
 
 	@Override
