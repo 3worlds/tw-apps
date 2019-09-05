@@ -37,10 +37,15 @@ import au.edu.anu.twcore.errorMessaging.ErrorMessageAdaptor;
  *
  * @date 22 Aug 2019
  */
-public class UnParsedErr extends ErrorMessageAdaptor{
-public UnParsedErr(CheckMessage cm) {
-	msg1 = cm.getCode()+": "+cm.getException().getMessage();
-	msg2 = msg1;
-	msg3 = msg1;
-}
+public class UnParsedErr extends ErrorMessageAdaptor {
+	public UnParsedErr(CheckMessage cm) {
+		msg1 = cm.getCode() + ": " + cm.getException().getMessage();
+		msg2 = msg1;
+		if (cm.getTarget() != null)
+			msg2 += "\nTarget: " + cm.getTarget();
+		msg3 = msg2;
+		if (cm.getArchetypeNode()!=null)
+			msg3+= "\nSpecification: "+cm.getArchetypeNode();
+
+	}
 }

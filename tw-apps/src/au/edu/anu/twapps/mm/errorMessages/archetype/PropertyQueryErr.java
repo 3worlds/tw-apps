@@ -31,6 +31,7 @@ package au.edu.anu.twapps.mm.errorMessages.archetype;
 
 import au.edu.anu.rscs.aot.graph.property.Property;
 import au.edu.anu.twcore.errorMessaging.ErrorMessageAdaptor;
+import fr.cnrs.iees.graph.TreeNode;
 
 /**
  * Author Ian Davies
@@ -38,12 +39,12 @@ import au.edu.anu.twcore.errorMessaging.ErrorMessageAdaptor;
  * Date Dec 12, 2018
  */
 public class PropertyQueryErr extends ErrorMessageAdaptor {
-	public PropertyQueryErr(Property prop, String msg) {
+	public PropertyQueryErr(Property prop, TreeNode spec, String msg) {
 		// String qMsg = q.toString().replace(q.stateString()+" ","");
 		 msg1 = "Property value error: "+prop.getKey()+"="+prop.getValue();
 		 //; + " but
 		// "+qMsg;
 		 msg2 = "Property value error: "+msg;
-		 msg3 = msg2;
+		 msg3 = msg2+"\n\t"+spec;
 	}
 }

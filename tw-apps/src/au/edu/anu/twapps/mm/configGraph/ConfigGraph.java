@@ -145,7 +145,7 @@ public class ConfigGraph {
 		case CheckMessage.code4Query: {
 			// CheckMessage(CheckMessage.code4,item,e,queryNode,null,null,null,-1)
 			if (e.getTarget() instanceof Property) {
-				ComplianceManager.add(new PropertyQueryErr((Property) e.getTarget(), e.getException().getMessage()));
+				ComplianceManager.add(new PropertyQueryErr((Property) e.getTarget(), e.getArchetypeNode(),e.getException().getMessage()));
 
 			} else {
 				ComplianceManager.add(new UnParsedErr(e));
