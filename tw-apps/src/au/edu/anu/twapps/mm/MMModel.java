@@ -135,11 +135,6 @@ public class MMModel implements IMMModel {
 
 	}
 
-	@Override
-	public void doLayout() {
-		// TODO Auto-generated method stub
-
-	}
 
 	@Override
 	public void doDeploy() {

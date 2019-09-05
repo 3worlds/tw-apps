@@ -47,7 +47,6 @@ public interface IMMModel {
 	public void doNewProject();
 	public void doOpenProject(File file);
 	public void doMenuExit();
-	public void doLayout();
 	public void doDeploy();
 	public void doSave();
 	public void doSaveAs();
