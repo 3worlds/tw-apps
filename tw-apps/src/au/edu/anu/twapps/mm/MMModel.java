@@ -98,8 +98,6 @@ public class MMModel implements IMMModel {
 	}
 	@Override
 	public boolean propertyEditable(String classId, String key) {
-		if (key.equals("parameterClass"))
-			System.out.println(classId);
 		if (!nonEditableMap.containsKey(classId))
 			return true;
 		if (!nonEditableMap.get(classId).contains(key))
