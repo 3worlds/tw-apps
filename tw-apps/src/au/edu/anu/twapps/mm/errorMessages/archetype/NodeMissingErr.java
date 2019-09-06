@@ -41,7 +41,11 @@ import fr.cnrs.iees.graph.impl.TreeGraphNode;
 public class NodeMissingErr extends ErrorMessageAdaptor{
 
 public NodeMissingErr(TreeGraphNode parent,CheckMessage cm) {
-	msg1 = "Missing child: Use '"+parent.classId()+":"+parent.id()+"' to create '"+cm.requiredClass()+ "'.";
+	if (cm.range().getLast()<cm.count()) {
+		msg1 = "Too many children to "+parent.classId();
+	} else {
+		msg1 = "Missing child: Use a '"+parent.classId()+"' to create '"+cm.requiredClass()+ "'.";	
+	}
 	msg2 = msg1 + " Expected " + cm.range() + " but found " + cm.count() + ".";
 	msg3 = msg1 + "\n"+cm.getException().getMessage() + "\n";
 }

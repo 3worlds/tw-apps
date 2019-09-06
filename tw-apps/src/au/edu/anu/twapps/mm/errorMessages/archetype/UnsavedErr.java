@@ -38,7 +38,7 @@ import au.edu.anu.twcore.errorMessaging.ErrorMessageAdaptor;
  */
 public class UnsavedErr extends ErrorMessageAdaptor{
 public UnsavedErr() {
-	msg1 = "Configuration is unsaved.";
+	msg1 = "Configuration is unsaved [press Ctrl+S].";
 	msg2 = msg1+" To deploy the experiment from ModelMaker, the configuration must first be saved.";
 	msg3 = msg2;
 }
