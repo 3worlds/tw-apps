@@ -211,11 +211,20 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 		return (Boolean) properties().getPropertyValue(vnCollapsed);
 	}
 
-	public boolean isCollapsedParent() {
+	public boolean hasCollaspedChild() {
 		if (isCollapsed())
 			return false;
 		for (VisualNode n : getChildren()) {
 			if (n.isCollapsed())
+				return true;
+		}
+		return false;
+	}
+	public boolean hasUncollapsedChildren() {
+		if (isCollapsed())
+			return false;
+		for (VisualNode n: getChildren()) {
+			if (!n.isCollapsed())
 				return true;
 		}
 		return false;
