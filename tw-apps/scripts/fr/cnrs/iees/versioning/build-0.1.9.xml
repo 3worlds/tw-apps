@@ -1,5 +1,5 @@
 <!--===================================================================================
- ant and ivy scripts for project <tw-apps> version 0.1.10 (Tue Sep 10 10:47:00 CEST 2019)
+ ant and ivy scripts for project <tw-apps> version 0.1.9 (Wed Sep 04 11:18:35 AEST 2019)
  author: Jacques Gignoux <jacques.gignoux@upmc.fr>
 
  CAUTION: this file is generated - DO NOT EDIT!
@@ -47,7 +47,7 @@
 			<manifest>
 				<attribute name="Implementation-Vendor" value="CNRS/ANU"/>
 				<attribute name="Implementation-Title" value="au.edu.anu.tw-apps"/>
-				<attribute name="Implementation-Version" value="0.1.10"/>
+				<attribute name="Implementation-Version" value="0.1.9"/>
 				<attribute name="Built-By" value="${user.name}"/>
  			</manifest>
 		</jar>
