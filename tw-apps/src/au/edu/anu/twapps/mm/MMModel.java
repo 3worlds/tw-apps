@@ -268,7 +268,7 @@ public class MMModel implements IMMModel {
 	public boolean canClose() {
 		if (!GraphState.changed())
 			return true;
-		switch (Dialogs.yesNoCancel("Project has changed", "Save changes before closing projecct?", "")) {
+		switch (Dialogs.yesNoCancel("Project has changed", "Save changes before closing "+Project.getProjectUserName()+"?", "")) {
 		case yes:
 			doSave();
 			return true;
