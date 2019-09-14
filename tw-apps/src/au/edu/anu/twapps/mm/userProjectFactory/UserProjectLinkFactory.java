@@ -27,7 +27,7 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
   **************************************************************************/
 
-package au.edu.anu.twapps.mm.userProjectLinkFactory;
+package au.edu.anu.twapps.mm.userProjectFactory;
 
 import java.io.File;
 
