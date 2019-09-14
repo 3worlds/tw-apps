@@ -179,7 +179,7 @@ public class MMModel implements IMMModel {
 		shadowGraph();
 
 		visualGraph.root().setCategory();
-		visualGraph.root().setPosition(0.1, 0.5);
+		visualGraph.root().setPosition(0.5, 0.5);
 		visualGraph.root().setCollapse(false);
 
 		onProjectOpened();
@@ -268,7 +268,7 @@ public class MMModel implements IMMModel {
 	public boolean canClose() {
 		if (!GraphState.changed())
 			return true;
-		switch (Dialogs.yesNoCancel("Project has changed", "Save changes before closing "+Project.getProjectUserName()+"?", "")) {
+		switch (Dialogs.yesNoCancel("Project has changed", "Save '"+Project.getProjectUserName()+"' before closing?", "")) {
 		case yes:
 			doSave();
 			return true;
