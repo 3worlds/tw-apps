@@ -32,7 +32,6 @@ package au.edu.anu.twapps.mm.userProjectFactory;
 import java.io.File;
 
 import au.edu.anu.twapps.dialogs.Dialogs;
-import au.edu.anu.twcore.userProject.IDETypes;
 import au.edu.anu.twcore.userProject.UPLEclipse;
 import au.edu.anu.twcore.userProject.UserProjectLink;
 
