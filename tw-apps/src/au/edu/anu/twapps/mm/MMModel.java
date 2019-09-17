@@ -43,6 +43,8 @@ import au.edu.anu.twapps.exceptions.TwAppsException;
 import au.edu.anu.twapps.mm.visualGraph.VisualGraphFactory;
 import au.edu.anu.twapps.mm.configGraph.ConfigGraph;
 import au.edu.anu.twapps.mm.errorMessages.archetype.UnknownErr;
+import au.edu.anu.twapps.mm.layout.ILayout;
+import au.edu.anu.twapps.mm.layout.TreeLayout;
 import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import au.edu.anu.twcore.errorMessaging.ComplianceManager;
@@ -323,6 +325,7 @@ public class MMModel implements IMMModel {
 		Project.create(twroot.id());
 		ConfigGraph.setGraph(importGraph);
 		visualGraph = importVisual;
+		new TreeLayout(visualGraph).compute();	
 		doSave();
 		onProjectOpened();
 	}
