@@ -34,8 +34,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.logging.Logger;
+
 import au.edu.anu.rscs.aot.archetype.CheckMessage;
 import au.edu.anu.twapps.dialogs.Dialogs;
+import au.edu.anu.twapps.exceptions.TwAppsException;
 import au.edu.anu.twapps.mm.visualGraph.VisualGraphFactory;
 import au.edu.anu.twapps.mm.configGraph.ConfigGraph;
 import au.edu.anu.twapps.mm.errorMessages.archetype.UnknownErr;
@@ -45,14 +49,23 @@ import au.edu.anu.twcore.errorMessaging.ComplianceManager;
 import au.edu.anu.twcore.graphState.GraphState;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.root.TwConfigFactory;
+import fr.cnrs.iees.graph.Direction;
+import fr.cnrs.iees.graph.EdgeFactory;
+import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.NodeFactory;
+import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.ALEdge;
+import fr.cnrs.iees.graph.impl.ALNode;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
+import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.graph.io.impl.OmugiGraphExporter;
 import fr.cnrs.iees.io.FileImporter;
 import fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels;
 import fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames;
+import fr.ens.biologie.generic.utils.Duple;
+import fr.ens.biologie.generic.utils.Logging;
+
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
 /**
@@ -65,37 +78,39 @@ public class MMModel implements IMMModel {
 	private TreeGraph<VisualNode, VisualEdge> visualGraph;
 	private IMMController controller;
 
-	// Should we avoid using javafx.beans.property? - make ModelMaker a boolean
-	// change listener??
+	private static Logger log = Logging.getLogger(MMModel.class);
 
 	public MMModel(IMMController controller) {
 		this.controller = controller;
 		buildNonEditableList();
-		
+
 	}
+
 	private Map<String, List<String>> nonEditableMap = new HashMap<>();
 
-	private void addEntry(ConfigurationNodeLabels nl,ConfigurationPropertyNames pn) {
+	private void addEntry(ConfigurationNodeLabels nl, ConfigurationPropertyNames pn) {
 		String nLabel = nl.label();
 		String pKey = pn.key();
-		List<String> lst=nonEditableMap.get(nLabel);
-		if (lst==null) {
+		List<String> lst = nonEditableMap.get(nLabel);
+		if (lst == null) {
 			lst = new ArrayList<>();
-			nonEditableMap.put(nLabel,lst);
+			nonEditableMap.put(nLabel, lst);
 		}
-		lst.add(pKey);		
+		lst.add(pKey);
 	}
+
 	private void buildNonEditableList() {
-		for (ConfigurationNodeLabels key:ConfigurationNodeLabels.values()) {
+		for (ConfigurationNodeLabels key : ConfigurationNodeLabels.values()) {
 			List<String> keys = new ArrayList<>();
 			// default - subclass is never editable
-			keys.add("subclass");			
- 			nonEditableMap.put(key.label(),keys);
+			keys.add("subclass");
+			nonEditableMap.put(key.label(), keys);
 		}
-		addEntry(ConfigurationNodeLabels.N_COMPONENT,ConfigurationPropertyNames.P_PARAMETERCLASS);
-		addEntry(ConfigurationNodeLabels.N_SYSTEM,ConfigurationPropertyNames.P_PARAMETERCLASS);
-		addEntry(ConfigurationNodeLabels.N_FUNCTION,ConfigurationPropertyNames.P_FUNCTIONCLASS);
+		addEntry(ConfigurationNodeLabels.N_COMPONENT, ConfigurationPropertyNames.P_PARAMETERCLASS);
+		addEntry(ConfigurationNodeLabels.N_SYSTEM, ConfigurationPropertyNames.P_PARAMETERCLASS);
+		addEntry(ConfigurationNodeLabels.N_FUNCTION, ConfigurationPropertyNames.P_FUNCTIONCLASS);
 	}
+
 	@Override
 	public boolean propertyEditable(String classId, String key) {
 		if (!nonEditableMap.containsKey(classId))
@@ -133,17 +148,16 @@ public class MMModel implements IMMModel {
 
 	}
 
-
 	@Override
 	public void doDeploy() {
 		String arg1 = Project.getProjectFile().getName();
-		ProcessBuilder experimentUI = new ProcessBuilder("java", "-jar", Project.getProjectUserName()+".jar", arg1);
+		ProcessBuilder experimentUI = new ProcessBuilder("java", "-jar", Project.getProjectUserName() + ".jar", arg1);
 		experimentUI.directory(Project.getProjectFile());
 		experimentUI.inheritIO();
 		try {
 			experimentUI.start();
 		} catch (Exception e) {
-			ComplianceManager.add(new UnknownErr(CheckMessage.code20Deploy,e));
+			ComplianceManager.add(new UnknownErr(CheckMessage.code20Deploy, e));
 		}
 	}
 
@@ -223,52 +237,102 @@ public class MMModel implements IMMModel {
 
 	}
 
+	private Duple<VisualNode, VisualNode> getMatchingPair(Iterable<VisualNode> visualNodes, Node node1,
+			Node node2) {
+		VisualNode resultNode1 = null;
+		VisualNode resultNode2 = null;
+
+		for (VisualNode node : visualNodes) {
+			if (node.id().equals(node1.id()))
+				resultNode1 = node;
+			else if (node.id().equals(node2.id()))
+				resultNode2 = node;
+			if (resultNode1 != null && resultNode2 != null)
+				return new Duple<VisualNode, VisualNode>(resultNode1, resultNode2);
+		}
+		throw new TwAppsException(
+				"Matching node pair not found in visual graph [" + node1.id() + "," + node2.id() + "]");
+	}
+
+	@SuppressWarnings("unchecked")
 	@Override
 	public void doImport() {
-		// TODO Auto-generated method stub
+		if (!canClose())
+			return;
 		File file = Dialogs.getExternalProjectFile();
 		if (file == null)
 			return;
-//		importGraph.resolveReferences();
-//		Utilities.enforceNameProperty(importGraph);
-//		AotNode importRoot = Utilities.get3worldsroot(importGraph);
-//		String tmpName = null;
-//		if (importRoot != null)
-//			tmpName = importRoot.getName();
-//		if (tmpName == null) {
-//			Dialogs.errorAlert("Import project", "Unable to import project.",
-//					"The file " + file.getName() + " has no root labelled " + N_GRAPHROOT.toString());
-//			return;
-//		}
-//		final String name = NameUtils.validJavaName(NameUtils.wordUpperCaseName(tmpName));
-//		if (!canClose("closing"))
-//			return;
-//		StatusText.message("Importing " + file.getName());
-//		Cursor oldCursor = controller.setCursor(Cursor.WAIT);
-//		Runnable task = () -> {
-//			if (Project.isOpen())
-//				onProjectClosing();
-//			Project.create(name);
-//			currentGraph = importGraph;
-//			AotNode root = Utilities.get3worldsroot(currentGraph);
-//			root.setName(name);
-//			layoutGraph = Utilities.createLayoutGraph(currentGraph);
-//			onProjectOpened();
-//			Utilities.save(currentGraph, layoutGraph);
-//			log.debug("Project importted: " + Project.getCurrentProjectTitle());
-//			StatusText.clear();
-//			controller.setCursor(oldCursor);
-//		};
-//		ExecutorService executor = Executors.newSingleThreadExecutor();
-//		executor.execute(task);
+		log.info("Import: " + file);
+		TreeGraph<TreeGraphDataNode, ALEdge> importGraph = (TreeGraph<TreeGraphDataNode, ALEdge>) FileImporter
+				.loadGraphFromFile(file);
+		// This could be in any state so search for the 3worlds node
+		TreeGraphDataNode twroot = null;
+		for (TreeGraphDataNode root : importGraph.roots()) {
+			if (root.classId().equals(N_ROOT.label()))
+				twroot = root;
+		}
+		if (twroot == null) {
+			Dialogs.errorAlert("Import error", file.getName(),
+					"This file does not a root node called '" + N_ROOT.label() + "'");
+			return;
+		}
+		log.info("Root: " + twroot);
+		TreeGraph<VisualNode, VisualEdge> importVisual = new TreeGraph<VisualNode, VisualEdge>(
+				new VisualGraphFactory());
+		for (TreeGraphDataNode importNode : importGraph.nodes()) {
+			log.info("Creating visual node: " + importNode.id());
+			Node node = importVisual.nodeFactory().makeNode(importNode.id());
+			VisualNode visualNode = (VisualNode) node;
+			visualNode.setConfigNode(importNode);
+		}
 
+		for (TreeGraphDataNode importNode : importGraph.nodes()) {
+			log.info("Creating visual node: " + importNode.id());
+			TreeNode parent = importNode.getParent();
+			if (parent != null) {
+				Duple<VisualNode, VisualNode> vNodes = getMatchingPair(importVisual.nodes(), parent,importNode);
+				vNodes.getSecond().connectParent(vNodes.getFirst());
+			}
+		}
+
+		VisualGraphFactory vf = (VisualGraphFactory) importVisual.edgeFactory();
+		for (TreeGraphDataNode importNode : importGraph.nodes()) {
+			for (ALEdge edge : importNode.edges(Direction.OUT)) {
+				log.info("Creating visual edge: " + edge.id());
+				String visualId = edge.id();
+				Duple<VisualNode, VisualNode> vNodes = getMatchingPair(importVisual.nodes(), edge.startNode(),
+						edge.endNode());
+				VisualEdge visualEdge = vf.makeEdge(vNodes.getFirst(), vNodes.getSecond(), visualId);
+				visualEdge.setConfigEdge(edge);
+			}
+		}
+
+		Random rnd = new Random();
+		for (VisualNode visualNode : importVisual.nodes()) {
+			log.info("Initialising " + visualNode.getDisplayText(false));
+			visualNode.setCategory();
+			visualNode.setPosition(rnd.nextDouble(), rnd.nextDouble());
+			visualNode.setCollapse(false);
+		}
+		if (Project.isOpen()) {
+			onProjectClosing();
+			Project.close();
+		}
+
+		// problem here if the id is not unique within the project scope
+		Project.create(twroot.id());
+		ConfigGraph.setGraph(importGraph);
+		visualGraph = importVisual;
+		doSave();
+		onProjectOpened();
 	}
 
 	@Override
 	public boolean canClose() {
 		if (!GraphState.changed())
 			return true;
-		switch (Dialogs.yesNoCancel("Project has changed", "Save '"+Project.getProjectUserName()+"' before closing?", "")) {
+		switch (Dialogs.yesNoCancel("Project has changed",
+				"Save '" + Project.getProjectUserName() + "' before closing?", "")) {
 		case yes:
 			doSave();
 			return true;
@@ -278,6 +342,5 @@ public class MMModel implements IMMModel {
 			return false;
 		}
 	}
-
 
 }

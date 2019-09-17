@@ -74,7 +74,7 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 		//setCategory();
 	}
 
-	protected void setConfigNode(TreeGraphDataNode configNode) {
+	public void setConfigNode(TreeGraphDataNode configNode) {
 		this.configNode = configNode;
 	}
 
