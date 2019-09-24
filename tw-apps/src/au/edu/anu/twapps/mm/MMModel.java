@@ -217,6 +217,12 @@ public class MMModel implements IMMModel {
 		ConfigGraph.setGraph(
 				(TreeGraph<TreeGraphDataNode, ALEdge>) FileImporter.loadGraphFromFile(Project.makeConfigurationFile()));
 		visualGraph = (TreeGraph<VisualNode, VisualEdge>) FileImporter.loadGraphFromFile(Project.makeLayoutFile());
+		if (visualGraph == null || visualGraph.nNodes() != ConfigGraph.getGraph().nNodes()
+				|| visualGraph.nEdges() != ConfigGraph.getGraph().nEdges()) {
+			Dialogs.warnAlert("Open graph", "The graph layout is missing or corrupt", "Creating new layout");
+			visualGraph = installNewVisualGraph(ConfigGraph.getGraph());
+			doSave();
+		}
 		shadowGraph();
 		onProjectOpened();
 	}
@@ -235,8 +241,7 @@ public class MMModel implements IMMModel {
 
 	}
 
-	private Duple<VisualNode, VisualNode> getMatchingPair(Iterable<VisualNode> visualNodes, Node node1,
-			Node node2) {
+	private Duple<VisualNode, VisualNode> getMatchingPair(Iterable<VisualNode> visualNodes, Node node1, Node node2) {
 		VisualNode resultNode1 = null;
 		VisualNode resultNode2 = null;
 
@@ -252,6 +257,13 @@ public class MMModel implements IMMModel {
 				"Matching node pair not found in visual graph [" + node1.id() + "," + node2.id() + "]");
 	}
 
+	private TreeGraphDataNode findTwRoot(TreeGraph<TreeGraphDataNode, ALEdge> graph) {
+		for (TreeGraphDataNode root : graph.roots())
+			if (root.classId().equals(N_ROOT.label()))
+				return root;
+		return null;
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void doImport() {
@@ -263,23 +275,32 @@ public class MMModel implements IMMModel {
 		log.info("Import: " + file);
 		TreeGraph<TreeGraphDataNode, ALEdge> importGraph = (TreeGraph<TreeGraphDataNode, ALEdge>) FileImporter
 				.loadGraphFromFile(file);
-		// This could be in any state so search for the 3worlds node
-		TreeGraphDataNode twroot = null;
-		for (TreeGraphDataNode root : importGraph.roots()) {
-			if (root.classId().equals(N_ROOT.label()))
-				twroot = root;
-		}
-		if (twroot == null) {
+		TreeGraphDataNode twRoot = findTwRoot(importGraph);
+		if (twRoot == null) {
 			Dialogs.errorAlert("Import error", file.getName(),
 					"This file does not a root node called '" + N_ROOT.label() + "'");
 			return;
 		}
-		log.info("Root: " + twroot);
-		TreeGraph<VisualNode, VisualEdge> importVisual = new TreeGraph<VisualNode, VisualEdge>(
+
+		TreeGraph<VisualNode, VisualEdge> importVisual = installNewVisualGraph(importGraph);
+
+		if (Project.isOpen()) {
+			onProjectClosing();
+			Project.close();
+		}
+		Project.create(twRoot.id());
+		ConfigGraph.setGraph(importGraph);
+		visualGraph = importVisual;
+		doSave();
+		onProjectOpened();
+	}
+
+	private TreeGraph<VisualNode, VisualEdge> installNewVisualGraph(TreeGraph<TreeGraphDataNode, ALEdge> importGraph) {
+		TreeGraph<VisualNode, VisualEdge> newVisualGraph = new TreeGraph<VisualNode, VisualEdge>(
 				new VisualGraphFactory());
 		for (TreeGraphDataNode importNode : importGraph.nodes()) {
 			log.info("Creating visual node: " + importNode.id());
-			Node node = importVisual.nodeFactory().makeNode(importNode.id());
+			Node node = newVisualGraph.nodeFactory().makeNode(importNode.id());
 			VisualNode visualNode = (VisualNode) node;
 			visualNode.setConfigNode(importNode);
 		}
@@ -288,17 +309,17 @@ public class MMModel implements IMMModel {
 			log.info("Creating visual node: " + importNode.id());
 			TreeNode parent = importNode.getParent();
 			if (parent != null) {
-				Duple<VisualNode, VisualNode> vNodes = getMatchingPair(importVisual.nodes(), parent,importNode);
+				Duple<VisualNode, VisualNode> vNodes = getMatchingPair(newVisualGraph.nodes(), parent, importNode);
 				vNodes.getSecond().connectParent(vNodes.getFirst());
 			}
 		}
 
-		VisualGraphFactory vf = (VisualGraphFactory) importVisual.edgeFactory();
+		VisualGraphFactory vf = (VisualGraphFactory) newVisualGraph.edgeFactory();
 		for (TreeGraphDataNode importNode : importGraph.nodes()) {
 			for (ALEdge edge : importNode.edges(Direction.OUT)) {
 				log.info("Creating visual edge: " + edge.id());
 				String visualId = edge.id();
-				Duple<VisualNode, VisualNode> vNodes = getMatchingPair(importVisual.nodes(), edge.startNode(),
+				Duple<VisualNode, VisualNode> vNodes = getMatchingPair(newVisualGraph.nodes(), edge.startNode(),
 						edge.endNode());
 				VisualEdge visualEdge = vf.makeEdge(vNodes.getFirst(), vNodes.getSecond(), visualId);
 				visualEdge.setConfigEdge(edge);
@@ -306,24 +327,15 @@ public class MMModel implements IMMModel {
 		}
 
 		Random rnd = new Random();
-		for (VisualNode visualNode : importVisual.nodes()) {
+		for (VisualNode visualNode : newVisualGraph.nodes()) {
 			log.info("Initialising " + visualNode.getDisplayText(false));
 			visualNode.setCategory();
 			visualNode.setPosition(rnd.nextDouble(), rnd.nextDouble());
 			visualNode.setCollapse(false);
 		}
-		if (Project.isOpen()) {
-			onProjectClosing();
-			Project.close();
-		}
+		new TreeLayout(newVisualGraph).compute();
 
-		// problem here if the id is not unique within the project scope
-		Project.create(twroot.id());
-		ConfigGraph.setGraph(importGraph);
-		visualGraph = importVisual;
-		new TreeLayout(visualGraph).compute();	
-		doSave();
-		onProjectOpened();
+		return newVisualGraph;
 	}
 
 	@Override
