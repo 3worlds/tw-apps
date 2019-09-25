@@ -91,8 +91,8 @@ public class ConfigGraph {
 		}
 
 		if (!ComplianceManager.haveErrors()) {
-			CodeGenerator gen = new CodeGenerator();
-			gen.generate(graph);
+			CodeGenerator gen = new CodeGenerator(graph);
+			gen.generate();
 		}
 		if (!ComplianceManager.haveErrors()) {
 			// check twDep.jar is present
