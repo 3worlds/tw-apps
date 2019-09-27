@@ -75,6 +75,7 @@ public class MMModel implements IMMModel {
 	// Interface supplied to the controller
 	private TreeGraph<VisualNode, VisualEdge> visualGraph;
 	private IMMController controller;
+	public static String[] mmArgs;
 
 	private static Logger log = Logging.getLogger(MMModel.class);
 
@@ -148,8 +149,16 @@ public class MMModel implements IMMModel {
 
 	@Override
 	public void doDeploy() {
-		String arg1 = Project.getProjectFile().getName();
-		ProcessBuilder experimentUI = new ProcessBuilder("java", "-jar", Project.getProjectUserName() + ".jar", arg1);
+		List<String> commands = new ArrayList<>();
+		commands.add("java");
+		commands.add("-jar");
+		commands.add(Project.getProjectUserName() + ".jar");
+		commands.add(Project.getProjectFile().getName());
+		for (String s : mmArgs)
+			commands.add(s);
+
+		ProcessBuilder experimentUI = new ProcessBuilder(commands);
+
 		experimentUI.directory(Project.getProjectFile());
 		experimentUI.inheritIO();
 		try {
