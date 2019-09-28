@@ -231,6 +231,8 @@ public class MMModel implements IMMModel {
 			Dialogs.warnAlert("Open graph", "The graph layout is missing or corrupt", "Creating new layout");
 			visualGraph = installNewVisualGraph(ConfigGraph.getGraph());
 			doSave();
+			if (GraphState.changed())
+				doSave();
 		}
 		shadowGraph();
 		onProjectOpened();
@@ -301,6 +303,8 @@ public class MMModel implements IMMModel {
 		ConfigGraph.setGraph(importGraph);
 		visualGraph = importVisual;
 		doSave();
+		if (GraphState.changed())
+			doSave();
 		onProjectOpened();
 	}
 
