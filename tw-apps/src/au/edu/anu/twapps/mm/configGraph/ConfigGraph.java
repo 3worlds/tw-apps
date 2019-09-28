@@ -71,12 +71,10 @@ public class ConfigGraph {
 		ConfigGraph.graph = graph;
 		// Don't validate here as the graph is not yet built
 	}
-	
 
 	public static TreeGraph<TreeGraphDataNode, ALEdge> getGraph() {
 		return graph;
 	}
-
 
 	public static void validateGraph() {
 		Iterable<CheckMessage> errors = TWA.checkSpecifications(graph);
@@ -98,18 +96,16 @@ public class ConfigGraph {
 			// check twDep.jar is present
 			File file = new File(TwPaths.TW_ROOT + File.separator + TwPaths.TW_DEP_JAR);
 			if (!file.exists())
-				ComplianceManager.add(new MissingResourceFile(file,"Use TwSetup to create this file."));
+				ComplianceManager.add(new MissingResourceFile(file, "Use TwSetup to create this file."));
 		}
-
 		if (!ComplianceManager.haveErrors()) {
 			ProjectJarGenerator gen = new ProjectJarGenerator();
 			gen.generate(graph);
 		}
-	
 		if (GraphState.changed())
 			ComplianceManager.add(new UnsavedErr());
 
-		ComplianceManager.signalState();		
+		ComplianceManager.signalState();
 	}
 
 	private static List<TreeGraphNode> getExistingParents(StringTable parentList, String requiredClass) {
@@ -124,6 +120,7 @@ public class ConfigGraph {
 	public static void onParentChanged() {
 		graph.onParentChanged();
 	}
+
 	private static void parseArchetypError(CheckMessage e) {
 		switch (e.getCode()) {
 
@@ -145,7 +142,8 @@ public class ConfigGraph {
 		case CheckMessage.code4Query: {
 			// CheckMessage(CheckMessage.code4,item,e,queryNode,null,null,null,-1)
 			if (e.getTarget() instanceof Property) {
-				ComplianceManager.add(new PropertyQueryErr((Property) e.getTarget(), e.getArchetypeNode(),e.getException().getMessage()));
+				ComplianceManager.add(new PropertyQueryErr((Property) e.getTarget(), e.getArchetypeNode(),
+						e.getException().getMessage()));
 
 			} else {
 				ComplianceManager.add(new UnParsedErr(e));
