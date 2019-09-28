@@ -319,7 +319,9 @@ public class MMModel implements IMMModel {
 			TreeNode parent = importNode.getParent();
 			if (parent != null) {
 				Duple<VisualNode, VisualNode> vNodes = getMatchingPair(newVisualGraph.nodes(), parent, importNode);
+				// child ---------------------- parent
 				vNodes.getSecond().connectParent(vNodes.getFirst());
+				vNodes.getSecond().setCreatedBy(vNodes.getFirst().cClassId());
 			}
 		}
 
