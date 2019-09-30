@@ -159,7 +159,9 @@ public class TreeLayout implements ILayout {
 		Collections.sort(childList, new Comparator<VisualNode>() {
 			@Override
 			public int compare(VisualNode n1, VisualNode n2) {
-				return n1.id().compareTo(n2.id());
+				String s1 = n1.cClassId()+":"+n1.id();
+				String s2 = n2.cClassId()+":"+n2.id();
+				return s1.compareTo(s2);
 			}
 		});
 		sortedChildMap.put(parent.id(), childList);
