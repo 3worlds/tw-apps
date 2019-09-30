@@ -61,6 +61,7 @@ import fr.cnrs.iees.graph.io.impl.OmugiGraphExporter;
 import fr.cnrs.iees.io.FileImporter;
 import fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels;
 import fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames;
+import fr.cnrs.iees.twcore.generators.ProjectJarGenerator;
 import fr.ens.biologie.generic.utils.Duple;
 import fr.ens.biologie.generic.utils.Logging;
 
@@ -149,6 +150,11 @@ public class MMModel implements IMMModel {
 
 	@Override
 	public void doDeploy() {
+		
+		ProjectJarGenerator gen = new ProjectJarGenerator();
+		gen.generate(ConfigGraph.getGraph());
+		ComplianceManager.signalState();
+		
 		List<String> commands = new ArrayList<>();
 		commands.add("java");
 		commands.add("-jar");
