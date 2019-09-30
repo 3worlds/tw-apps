@@ -104,5 +104,11 @@ public class MockController implements IMMController{
 		return null;
 	}
 
+	@Override
+	public void onNodeRenamed() {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }
