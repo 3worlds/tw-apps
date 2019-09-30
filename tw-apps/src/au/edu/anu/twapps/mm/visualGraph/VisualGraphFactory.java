@@ -173,10 +173,4 @@ public class VisualGraphFactory extends TreeGraphFactory implements ExpungeableF
 
 	}
 
-	@Override
-	public void replaceId(String newId, String existingId) {
-		scope.removeId(existingId);
-		scope.newId(true, newId);
-	}
-
 }
