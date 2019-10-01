@@ -33,7 +33,7 @@ import java.util.Map;
 
 import au.edu.anu.rscs.aot.graph.property.Property;
 import au.edu.anu.rscs.aot.graph.property.PropertyKeys;
-import au.edu.anu.twcore.root.ExpungeableFactory;
+import au.edu.anu.twcore.root.EditableFactory;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.impl.ALEdge;
@@ -50,7 +50,7 @@ import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
  *
  * @Date 11 Jul 2019
  */
-public class VisualGraphFactory extends TreeGraphFactory implements ExpungeableFactory, VisualKeys {
+public class VisualGraphFactory extends TreeGraphFactory implements EditableFactory, VisualKeys {
 
 	private static Map<String, String> vgLabels = new HashMap<>();
 

@@ -31,7 +31,7 @@ package au.edu.anu.twapps.mm.visualGraph;
 
 import au.edu.anu.twapps.exceptions.TwAppsException;
 import au.edu.anu.twcore.archetype.PrimaryTreeLabels;
-import au.edu.anu.twcore.root.ExpungeableFactory;
+import au.edu.anu.twcore.root.EditableFactory;
 import au.edu.anu.twcore.root.TwConfigFactory;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
@@ -281,8 +281,8 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 	}
 	
 	public void remove() {
-		ExpungeableFactory vf = (ExpungeableFactory) factory();
-		ExpungeableFactory cf = (ExpungeableFactory) configNode.factory();
+		EditableFactory vf = (EditableFactory) factory();
+		EditableFactory cf = (EditableFactory) configNode.factory();
 		vf.expungeNode(this);
 		cf.expungeNode(configNode);
 		disconnect();
