@@ -126,27 +126,10 @@ public class MMModel implements IMMModel {
 	}
 
 	private void onProjectOpened() {
-		ConfigGraph.validateGraph();
 		controller.onProjectOpened(visualGraph);
+		ConfigGraph.validateGraph();
 	}
 
-	@Override
-	public void doClearJavaProject() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void doSetJavaProject() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void doMenuExit() {
-		// TODO Auto-generated method stub
-
-	}
 
 	@Override
 	public void doDeploy() {
@@ -252,11 +235,6 @@ public class MMModel implements IMMModel {
 		ConfigGraph.validateGraph();
 	}
 
-	@Override
-	public void doSaveAs() {
-		// TODO Auto-generated method stub
-
-	}
 
 	private Duple<VisualNode, VisualNode> getMatchingPair(Iterable<VisualNode> visualNodes, Node node1, Node node2) {
 		VisualNode resultNode1 = null;
@@ -373,6 +351,27 @@ public class MMModel implements IMMModel {
 		default:
 			return false;
 		}
+	}
+	@Override
+	public void doSaveAs() {
+		// TODO Must do SaveAs
+
+	}
+	@Override
+	public void doClearJavaProject() {
+		// TODO Is this redundant?
+	}
+
+	@Override
+	public void doSetJavaProject() {
+		// TODO Is this redundant?
+
+	}
+
+	@Override
+	public void doMenuExit() {
+		// TODO Is this redundant?
+
 	}
 
 }
