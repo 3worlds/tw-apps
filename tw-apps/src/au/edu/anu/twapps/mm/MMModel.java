@@ -354,7 +354,40 @@ public class MMModel implements IMMModel {
 	}
 	@Override
 	public void doSaveAs() {
-		// TODO Must do SaveAs
+		TreeGraphDataNode cRoot = findTwRoot(ConfigGraph.getGraph());
+		VisualNode vRoot= null;
+		for (VisualNode root: visualGraph.roots())
+		if (root.id().equals(cRoot.id()))
+			vRoot = root;
+		
+		String promptId = vRoot.id();
+		boolean modified = true;
+		promptId = Project.proposeId(promptId);
+		while (modified) {
+			String userName = Dialogs.getText("Save as", "", "New project name:", promptId);
+			if (userName == null)
+				return;
+			if (userName.equals(""))
+				return;
+			userName = Project.formatName(userName);
+			String newName = Project.proposeId(userName);
+			modified = !newName.equals(userName);
+			promptId = newName;
+		}
+		
+		if (Project.isOpen()) {
+			Project.close();
+		}
+		
+		String oldId = vRoot.id();
+		String newId = promptId;
+		
+		vRoot.rename(oldId, newId);
+		vRoot.getConfigNode().rename(oldId, newId);
+		Project.create(newId);
+		doSave();
+		// visualiser must update text of root node
+
 
 	}
 	@Override
