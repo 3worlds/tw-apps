@@ -162,30 +162,21 @@ public class MMModel implements IMMModel {
 	public void doNewProject() {
 		if (!canClose())
 			return;
-		String promptId = "project1";
-		boolean modified = true;
-		promptId = Project.proposeId(promptId);
-		while (modified) {
-			String userName = Dialogs.getText("New project", "", "New project name:", promptId);
-			if (userName == null)
-				return;
-			if (userName.equals(""))
-				return;
-			userName = Project.formatName(userName);
-			String newName = Project.proposeId(userName);
-			modified = !newName.equals(userName);
-			promptId = newName;
-		}
+		
+		String newId = getNewProjectName ("New project", "","New project name:","project1");
+		
+		if (newId==null)
+			return;
 		if (Project.isOpen()) {
 			onProjectClosing();
 			Project.close();
 		}
-		promptId = Project.create(promptId);
+		Project.create(newId);
 		ConfigGraph.setGraph(new TreeGraph<TreeGraphDataNode, ALEdge>(new TwConfigFactory()));
 		NodeFactory cf = ConfigGraph.getGraph().nodeFactory();
-		cf.makeNode(cf.nodeClass(N_ROOT.label()), promptId);
+		cf.makeNode(cf.nodeClass(N_ROOT.label()), newId);
 		visualGraph = new TreeGraph<VisualNode, VisualEdge>(new VisualGraphFactory());
-		visualGraph.nodeFactory().makeNode(promptId);
+		visualGraph.nodeFactory().makeNode(newId);
 
 		shadowGraph();
 
@@ -360,34 +351,36 @@ public class MMModel implements IMMModel {
 		for (VisualNode root: visualGraph.roots())
 		if (root.id().equals(cRoot.id()))
 			vRoot = root;
-		
-		String promptId = vRoot.id();
-		boolean modified = true;
-		promptId = Project.proposeId(promptId);
-		while (modified) {
-			String userName = Dialogs.getText("Save as", "", "New project name:", promptId);
-			if (userName == null)
-				return;
-			if (userName.equals(""))
-				return;
-			userName = Project.formatName(userName);
-			String newName = Project.proposeId(userName);
-			modified = !newName.equals(userName);
-			promptId = newName;
-		}
-		
+		String newId = getNewProjectName ("Save as", "","New project name:",vRoot.id());
+		if (newId==null)
+			return;	
 		if (Project.isOpen()) {
 			Project.close();
-		}
-		
-		String oldId = vRoot.id();
-		String newId = promptId;
-		
+		}	
+		String oldId = vRoot.id();	
 		vRoot.rename(oldId, newId);
 		vRoot.getConfigNode().rename(oldId, newId);
 		Project.create(newId);
 		doSave();
 		Preferences.initialise(Project.makeProjectPreferencesFile());
+	}
+	
+	private String getNewProjectName(String proposedId, String title, String header, String content) {
+		boolean modified = true;
+		String result = Project.proposeId(proposedId);
+		while (modified) {
+			String userName = Dialogs.getText(title, header, content, result);
+			if (userName == null)
+				return null;
+			if (userName.equals(""))
+				return null;
+			userName = Project.formatName(userName);
+			String newName = Project.proposeId(userName);
+			modified = !newName.equals(userName);
+			result = newName;
+		}
+		return result;
+
 	}
 
 }
