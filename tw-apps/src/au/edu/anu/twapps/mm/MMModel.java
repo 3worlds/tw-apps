@@ -151,6 +151,7 @@ public class MMModel implements IMMModel {
 
 		experimentUI.directory(Project.getProjectFile());
 		experimentUI.inheritIO();
+		experimentUI.redirectError(Project.makeFile("DeployErr.log"));
 		try {
 			experimentUI.start();
 		} catch (Exception e) {
@@ -226,7 +227,6 @@ public class MMModel implements IMMModel {
 		GraphState.clear();
 		ConfigGraph.validateGraph();
 	}
-
 
 	private Duple<VisualNode, VisualNode> getMatchingPair(Iterable<VisualNode> visualNodes, Node node1, Node node2) {
 		VisualNode resultNode1 = null;
@@ -344,6 +344,7 @@ public class MMModel implements IMMModel {
 			return false;
 		}
 	}
+	
 	@Override
 	public void doSaveAs() {
 		TreeGraphDataNode cRoot = findTwRoot(ConfigGraph.getGraph());
