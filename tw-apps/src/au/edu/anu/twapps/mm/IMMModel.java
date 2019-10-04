@@ -42,11 +42,8 @@ import java.io.File;
 // ModelMaker IS on of these: ModelMaker implements
 public interface IMMModel {
 	public boolean canClose();
-	public void doClearJavaProject();
-	public void doSetJavaProject();
 	public void doNewProject();
 	public void doOpenProject(File file);
-	public void doMenuExit();
 	public void doDeploy();
 	public void doSave();
 	public void doSaveAs();

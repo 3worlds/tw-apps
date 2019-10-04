@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.logging.Logger;
 
+import au.edu.anu.omhtk.preferences.Preferences;
 import au.edu.anu.rscs.aot.archetype.CheckMessage;
 import au.edu.anu.twapps.dialogs.Dialogs;
 import au.edu.anu.twapps.exceptions.TwAppsException;
@@ -386,25 +387,7 @@ public class MMModel implements IMMModel {
 		vRoot.getConfigNode().rename(oldId, newId);
 		Project.create(newId);
 		doSave();
-		// visualiser must update text of root node
-
-
-	}
-	@Override
-	public void doClearJavaProject() {
-		// TODO Is this redundant?
-	}
-
-	@Override
-	public void doSetJavaProject() {
-		// TODO Is this redundant?
-
-	}
-
-	@Override
-	public void doMenuExit() {
-		// TODO Is this redundant?
-
+		Preferences.initialise(Project.makeProjectPreferencesFile());
 	}
 
 }
