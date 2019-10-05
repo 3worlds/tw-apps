@@ -105,6 +105,7 @@ public class MMModel implements IMMModel {
 			List<String> keys = new ArrayList<>();
 			// default - subclass is never editable
 			keys.add("subclass");
+			keys.add("generatedClassName");
 			nonEditableMap.put(key.label(), keys);
 		}
 		addEntry(ConfigurationNodeLabels.N_COMPONENT, ConfigurationPropertyNames.P_PARAMETERCLASS);
