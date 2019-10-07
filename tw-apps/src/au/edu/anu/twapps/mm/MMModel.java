@@ -166,7 +166,7 @@ public class MMModel implements IMMModel {
 		if (!canClose())
 			return;
 		
-		String newId = getNewProjectName ("New project", "","New project name:","project1");
+		String newId = getNewProjectName ("project1","New project", "","New project name:");
 		
 		if (newId==null)
 			return;
