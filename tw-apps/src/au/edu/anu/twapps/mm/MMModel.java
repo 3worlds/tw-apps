@@ -354,7 +354,7 @@ public class MMModel implements IMMModel {
 		for (VisualNode root: visualGraph.roots())
 		if (root.id().equals(cRoot.id()))
 			vRoot = root;
-		String newId = getNewProjectName ("Save as", "","New project name:",vRoot.id());
+		String newId = getNewProjectName (vRoot.id(),"Save as", "","New project name:");
 		if (newId==null)
 			return;	
 		if (Project.isOpen()) {
