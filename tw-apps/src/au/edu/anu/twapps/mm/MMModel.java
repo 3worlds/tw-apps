@@ -50,6 +50,7 @@ import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import au.edu.anu.twcore.errorMessaging.ComplianceManager;
 import au.edu.anu.twcore.graphState.GraphState;
 import au.edu.anu.twcore.project.Project;
+import au.edu.anu.twcore.project.ProjectPaths;
 import au.edu.anu.twcore.root.TwConfigFactory;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Node;
@@ -153,7 +154,9 @@ public class MMModel implements IMMModel {
 
 		experimentUI.directory(Project.getProjectFile());
 		experimentUI.inheritIO();
-		experimentUI.redirectError(Project.makeFile("DeployErr.log"));
+		File errorLog = Project.makeFile(ProjectPaths.LOGS,"DeployErr.log");
+		errorLog.getParentFile().mkdirs();
+		experimentUI.redirectError(errorLog);
 		try {
 			experimentUI.start();
 		} catch (Exception e) {
