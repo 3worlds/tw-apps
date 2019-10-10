@@ -154,6 +154,8 @@ public class MMModel implements IMMModel {
 		experimentUI.directory(Project.getProjectFile());
 		experimentUI.inheritIO();
 		File errorLog = Project.makeFile(ProjectPaths.LOGS, "DeployErr.log");
+		if (errorLog.exists())
+			errorLog.delete();
 		errorLog.getParentFile().mkdirs();
 		experimentUI.redirectError(errorLog);
 		try {
