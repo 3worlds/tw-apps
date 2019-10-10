@@ -158,9 +158,9 @@ public class MMModel implements IMMModel {
 		experimentUI.redirectError(errorLog);
 		try {
 			Process p = experimentUI.start();
-			p.waitFor();
+			Thread.sleep(1000);
 			if (p.exitValue() != 0)
-				ComplianceManager.add(new UnknownErr(CheckMessage.code20Deploy, new Exception("Deployment error. See "+errorLog)));
+				ComplianceManager.add(new UnknownErr(CheckMessage.code20Deploy, new Exception("ModelRunner error. See "+errorLog)));
 		} catch (Exception e) {
 			ComplianceManager.add(new UnknownErr(CheckMessage.code20Deploy, e));
 		}
