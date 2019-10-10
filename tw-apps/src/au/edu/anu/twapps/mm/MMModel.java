@@ -134,14 +134,13 @@ public class MMModel implements IMMModel {
 		ConfigGraph.validateGraph();
 	}
 
-
 	@Override
 	public void doDeploy() {
-		
+
 		ProjectJarGenerator gen = new ProjectJarGenerator();
 		gen.generate(ConfigGraph.getGraph());
 		ComplianceManager.signalState();
-		
+
 		List<String> commands = new ArrayList<>();
 		commands.add("java");
 		commands.add("-jar");
@@ -154,11 +153,14 @@ public class MMModel implements IMMModel {
 
 		experimentUI.directory(Project.getProjectFile());
 		experimentUI.inheritIO();
-		File errorLog = Project.makeFile(ProjectPaths.LOGS,"DeployErr.log");
+		File errorLog = Project.makeFile(ProjectPaths.LOGS, "DeployErr.log");
 		errorLog.getParentFile().mkdirs();
 		experimentUI.redirectError(errorLog);
 		try {
-			experimentUI.start();
+			Process p = experimentUI.start();
+			p.waitFor();
+			if (p.exitValue() != 0)
+				ComplianceManager.add(new UnknownErr(CheckMessage.code20Deploy, new Exception("Deployment error. See "+errorLog)));
 		} catch (Exception e) {
 			ComplianceManager.add(new UnknownErr(CheckMessage.code20Deploy, e));
 		}
@@ -168,10 +170,10 @@ public class MMModel implements IMMModel {
 	public void doNewProject() {
 		if (!canClose())
 			return;
-		
-		String newId = getNewProjectName ("project1","New project", "","New project name:");
-		
-		if (newId==null)
+
+		String newId = getNewProjectName("project1", "New project", "", "New project name:");
+
+		if (newId == null)
 			return;
 		if (Project.isOpen()) {
 			onProjectClosing();
@@ -349,28 +351,28 @@ public class MMModel implements IMMModel {
 			return false;
 		}
 	}
-	
+
 	@Override
 	public void doSaveAs() {
 		TreeGraphDataNode cRoot = findTwRoot(ConfigGraph.getGraph());
-		VisualNode vRoot= null;
-		for (VisualNode root: visualGraph.roots())
-		if (root.id().equals(cRoot.id()))
-			vRoot = root;
-		String newId = getNewProjectName (vRoot.id(),"Save as", "","New project name:");
-		if (newId==null)
-			return;	
+		VisualNode vRoot = null;
+		for (VisualNode root : visualGraph.roots())
+			if (root.id().equals(cRoot.id()))
+				vRoot = root;
+		String newId = getNewProjectName(vRoot.id(), "Save as", "", "New project name:");
+		if (newId == null)
+			return;
 		if (Project.isOpen()) {
 			Project.close();
-		}	
-		String oldId = vRoot.id();	
+		}
+		String oldId = vRoot.id();
 		vRoot.rename(oldId, newId);
 		vRoot.getConfigNode().rename(oldId, newId);
 		Project.create(newId);
 		doSave();
 		Preferences.initialise(Project.makeProjectPreferencesFile());
 	}
-	
+
 	private String getNewProjectName(String proposedId, String title, String header, String content) {
 		boolean modified = true;
 		String result = Project.proposeId(proposedId);
