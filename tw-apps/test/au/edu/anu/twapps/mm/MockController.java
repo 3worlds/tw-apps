@@ -110,5 +110,11 @@ public class MockController implements IMMController{
 		
 	}
 
+	@Override
+	public void onItemEdit(Object item) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }
