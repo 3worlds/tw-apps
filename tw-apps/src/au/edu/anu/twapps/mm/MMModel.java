@@ -68,6 +68,7 @@ import fr.ens.biologie.generic.utils.Duple;
 import fr.ens.biologie.generic.utils.Logging;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 /**
  * Author Ian Davies
@@ -107,7 +108,10 @@ public class MMModel implements IMMModel {
 			// default - subclass is never editable
 			keys.add("subclass");
 			keys.add("generatedClassName");
-			keys.add("userClassName");
+			keys.add(P_FUNCTIONCLASS.key());
+			keys.add(P_DRIVERCLASS.key());
+			keys.add(P_PARAMETERCLASS.key());
+			keys.add(P_DECORATORCLASS.key());
 			nonEditableMap.put(key.label(), keys);
 		}
 		addEntry(ConfigurationNodeLabels.N_COMPONENT, ConfigurationPropertyNames.P_PARAMETERCLASS);
