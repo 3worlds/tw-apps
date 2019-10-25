@@ -65,7 +65,9 @@ public interface IDialogs {
 
 	public boolean editList(String title, String header, String content, Object listView);
 
-	public int getListChoice(String[] list,String title,String header,String content);
-	
-	public List<String> getRadioButtonChoices(String title,String header,String content, List<String[]> entries);
+	public int getListChoice(String[] list, String title, String header, String content);
+
+	public List<String> getRadioButtonChoices(String title, String header, String content, List<String[]> entries);
+
+	public Object owner();
 }

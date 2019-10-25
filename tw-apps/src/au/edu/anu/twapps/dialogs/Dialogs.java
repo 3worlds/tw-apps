@@ -93,7 +93,12 @@ public class Dialogs {
 		return impl.getListChoice(list, title, header, content);
 	}
 
-	public static List<String> getRadioButtonChoices(String title, String header, String content, List<String[]> entries) {
+	public static List<String> getRadioButtonChoices(String title, String header, String content,
+			List<String[]> entries) {
 		return impl.getRadioButtonChoices(title, header, content, entries);
+	}
+
+	public static Object owner() {
+		return impl.owner();
 	}
 }

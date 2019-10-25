@@ -105,6 +105,11 @@ public class MockDialogs implements IDialogs{
 		// TODO Auto-generated method stub
 		return null;
 	}
+	@Override
+	public Object owner() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 
 }
