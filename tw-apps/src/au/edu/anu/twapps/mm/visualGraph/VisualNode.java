@@ -304,15 +304,14 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 		return vChild;
 	}
 	
-	public VisualEdge newEdge(String label,VisualNode vEnd) {
-		String proposedId = label+"1";
-		VisualGraphFactory vf = (VisualGraphFactory) factory();
-		VisualEdge result = vf.makeEdge(this, vEnd, proposedId);
-		proposedId = result.id();
+	public VisualEdge newEdge(String id,String label,VisualNode vEnd) {
+				VisualGraphFactory vf = (VisualGraphFactory) factory();
+		VisualEdge result = vf.makeEdge(this, vEnd, id);
+		id = result.id();
 		
 		TreeGraphNode cEnd = vEnd.configNode;
 		TwConfigFactory cf = (TwConfigFactory) configNode.factory();
-		ALEdge cEdge =(ALEdge) cf.makeEdge(cf.edgeClass(label),configNode,cEnd,proposedId);
+		ALEdge cEdge =(ALEdge) cf.makeEdge(cf.edgeClass(label),configNode,cEnd,id);
 		result.setConfigEdge(cEdge);
 		if (!cEdge.id().equals(result.id()))
 			throw new TwAppsException("Ids must match -[config: "+cEdge.id()+"; visual: "+result.id());
