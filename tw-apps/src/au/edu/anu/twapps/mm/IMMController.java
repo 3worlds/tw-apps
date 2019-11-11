@@ -50,7 +50,11 @@ public interface IMMController {
 	
 	public void onNewNode(VisualNode n);
 	
+	public void onNewEdge(VisualEdge e);
+	
 	public void onNodeDeleted();
+	
+	public void onEdgeDeleted();
 	
 	public void onNodeRenamed();
 	

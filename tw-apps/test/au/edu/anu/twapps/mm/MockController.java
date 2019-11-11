@@ -116,5 +116,17 @@ public class MockController implements IMMController{
 		
 	}
 
+	@Override
+	public void onNewEdge(VisualEdge e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onEdgeDeleted() {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }
