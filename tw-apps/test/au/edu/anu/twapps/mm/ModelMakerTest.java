@@ -52,15 +52,15 @@ class ModelMakerTest {
 		GraphState.initialise(null);
 	}
 
-	@Test
-	public void test() {
-		c.handleNewProject();
-		assertTrue(Project.makeConfigurationFile().exists());
-		// TODO write visual graph assertTrue(Project.makeLayoutFile().exists());
-		File pf = Project.getProjectFile();
-		Project.close();
-		// awaiting AotGraphImporter
-		c.handleOpenProject(pf);
-	}
+//	@Test
+//	public void test() {
+//		c.handleNewProject();
+//		assertTrue(Project.makeConfigurationFile().exists());
+//		// TODO write visual graph assertTrue(Project.makeLayoutFile().exists());
+//		File pf = Project.getProjectFile();
+//		Project.close();
+//		// awaiting AotGraphImporter
+//		c.handleOpenProject(pf);
+//	}
 
 }

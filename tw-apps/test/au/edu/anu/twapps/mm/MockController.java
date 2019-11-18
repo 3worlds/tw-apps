@@ -60,9 +60,9 @@ public class MockController implements IMMController{
 	}
 
 	
-	public void handleNewProject() {
-		model.doNewProject();
-	}
+//	public void handleNewProject() {
+//		model.doNewProject();
+//	}
 	
 	public void handleOpenProject(File file) {
 		model.doOpenProject(file);

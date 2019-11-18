@@ -177,9 +177,9 @@ public class MMModel implements IMMModel {
 	}
 
 	@Override
-	public void doNewProject() {
-		if (!canClose())
-			return;
+	public void doNewProject(TreeGraph<TreeGraphDataNode, ALEdge> templateConfig) {
+//		if (!canClose())
+//			return;
 
 		String newId = getNewProjectName("prjct1", "New project", "", "New project name:");
 
@@ -189,60 +189,71 @@ public class MMModel implements IMMModel {
 			onProjectClosing();
 			Project.close();
 		}
-		Project.create(newId);
-		ConfigGraph.setGraph(new TreeGraph<TreeGraphDataNode, ALEdge>(new TwConfigFactory()));
-		NodeFactory cf = ConfigGraph.getGraph().nodeFactory();
-		cf.makeNode(cf.nodeClass(N_ROOT.label()), newId);
-		visualGraph = new TreeGraph<VisualNode, VisualEdge>(new VisualGraphFactory());
-		visualGraph.nodeFactory().makeNode(newId);
+		newId = Project.create(newId);
+//		ConfigGraph.setGraph(new TreeGraph<TreeGraphDataNode, ALEdge>(new TwConfigFactory()));
+		TreeGraphDataNode twRoot = findTwRoot(templateConfig);
+		if (!twRoot.id().equals(newId))
+			twRoot.rename(twRoot.id(), newId);
+		TreeGraph<VisualNode, VisualEdge> templateVisual = installNewVisualGraph(templateConfig);
 
-		shadowGraph();
-
-		visualGraph.root().setCategory();
-		visualGraph.root().setPosition(0.5, 0.5);
-		visualGraph.root().setCollapse(false);
-
-		onProjectOpened();
+		ConfigGraph.setGraph(templateConfig);
+		visualGraph = templateVisual;
 		doSave();
+		if (GraphState.changed())
+			doSave();
+		onProjectOpened();
+
+//		NodeFactory cf = ConfigGraph.getGraph().nodeFactory();
+//		cf.makeNode(cf.nodeClass(N_ROOT.label()), newId);
+//		visualGraph = new TreeGraph<VisualNode, VisualEdge>(new VisualGraphFactory());
+//		visualGraph.nodeFactory().makeNode(newId);
+//
+//		shadowGraph();
+//
+//		visualGraph.root().setCategory();
+//		visualGraph.root().setPosition(0.5, 0.5);
+//		visualGraph.root().setCollapse(false);
+
+//		onProjectOpened();
+//		doSave();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void doImport() {
+		if (!canClose())
+			return;
+		File file = Dialogs.getExternalProjectFile();
+		if (file == null)
+			return;
+		log.info("Import: " + file);
+		TreeGraph<TreeGraphDataNode, ALEdge> importGraph = (TreeGraph<TreeGraphDataNode, ALEdge>) FileImporter
+				.loadGraphFromFile(file);
+		TreeGraphDataNode twRoot = findTwRoot(importGraph);
+		if (twRoot == null) {
+			Dialogs.errorAlert("Import error", file.getName(),
+					"This file does not have a root node called '" + N_ROOT.label() + "'");
+			return;
+		}
+		if (Project.isOpen()) {
+			onProjectClosing();
+			Project.close();
+		}
+		String newId = Project.create(twRoot.id());
+		if (!twRoot.id().equals(newId))
+			twRoot.rename(twRoot.id(), newId);
+		TreeGraph<VisualNode, VisualEdge> importVisual = installNewVisualGraph(importGraph);
+		ConfigGraph.setGraph(importGraph);
+		visualGraph = importVisual;
+		doSave();
+		if (GraphState.changed())
+			doSave();
+		onProjectOpened();
 	}
 
 	private void shadowGraph() {
 		for (VisualNode vn : visualGraph.nodes())
 			vn.shadowElements(ConfigGraph.getGraph());
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public void doOpenProject(File file) {
-		// TODO Auto-generated method stub
-		if (!canClose())
-			return;
-		if (Project.isOpen()) {
-			onProjectClosing();
-			Project.close();
-		}
-		Project.open(file);
-		ConfigGraph.setGraph(
-				(TreeGraph<TreeGraphDataNode, ALEdge>) FileImporter.loadGraphFromFile(Project.makeConfigurationFile()));
-		visualGraph = (TreeGraph<VisualNode, VisualEdge>) FileImporter.loadGraphFromFile(Project.makeLayoutFile());
-		if (visualGraph == null || visualGraph.nNodes() != ConfigGraph.getGraph().nNodes()
-				|| visualGraph.nEdges() != ConfigGraph.getGraph().nEdges()) {
-			Dialogs.warnAlert("Open graph", "The graph layout is missing or corrupt", "Creating new layout");
-			visualGraph = installNewVisualGraph(ConfigGraph.getGraph());
-			doSave();
-			if (GraphState.changed())
-				doSave();
-		}
-		shadowGraph();
-		onProjectOpened();
-	}
-
-	@Override
-	public void doSave() {
-		new OmugiGraphExporter(Project.makeConfigurationFile()).exportGraph(ConfigGraph.getGraph());
-		new OmugiGraphExporter(Project.makeLayoutFile()).exportGraph(visualGraph);
-		GraphState.clear();
-		ConfigGraph.validateGraph();
 	}
 
 	private Duple<VisualNode, VisualNode> getMatchingPair(Iterable<VisualNode> visualNodes, Node node1, Node node2) {
@@ -266,39 +277,6 @@ public class MMModel implements IMMModel {
 			if (root.classId().equals(N_ROOT.label()))
 				return root;
 		return null;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public void doImport() {
-		if (!canClose())
-			return;
-		File file = Dialogs.getExternalProjectFile();
-		if (file == null)
-			return;
-		log.info("Import: " + file);
-		TreeGraph<TreeGraphDataNode, ALEdge> importGraph = (TreeGraph<TreeGraphDataNode, ALEdge>) FileImporter
-				.loadGraphFromFile(file);
-		TreeGraphDataNode twRoot = findTwRoot(importGraph);
-		if (twRoot == null) {
-			Dialogs.errorAlert("Import error", file.getName(),
-					"This file does not a root node called '" + N_ROOT.label() + "'");
-			return;
-		}
-
-		TreeGraph<VisualNode, VisualEdge> importVisual = installNewVisualGraph(importGraph);
-
-		if (Project.isOpen()) {
-			onProjectClosing();
-			Project.close();
-		}
-		Project.create(twRoot.id());
-		ConfigGraph.setGraph(importGraph);
-		visualGraph = importVisual;
-		doSave();
-		if (GraphState.changed())
-			doSave();
-		onProjectOpened();
 	}
 
 	private TreeGraph<VisualNode, VisualEdge> installNewVisualGraph(TreeGraph<TreeGraphDataNode, ALEdge> importGraph) {
@@ -344,6 +322,40 @@ public class MMModel implements IMMModel {
 		new TreeLayout(newVisualGraph).compute();
 
 		return newVisualGraph;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void doOpenProject(File file) {
+		// TODO Auto-generated method stub
+		if (!canClose())
+			return;
+		if (Project.isOpen()) {
+			onProjectClosing();
+			Project.close();
+		}
+		Project.open(file);
+		ConfigGraph.setGraph(
+				(TreeGraph<TreeGraphDataNode, ALEdge>) FileImporter.loadGraphFromFile(Project.makeConfigurationFile()));
+		visualGraph = (TreeGraph<VisualNode, VisualEdge>) FileImporter.loadGraphFromFile(Project.makeLayoutFile());
+		if (visualGraph == null || visualGraph.nNodes() != ConfigGraph.getGraph().nNodes()
+				|| visualGraph.nEdges() != ConfigGraph.getGraph().nEdges()) {
+			Dialogs.warnAlert("Open graph", "The graph layout is missing or corrupt", "Creating new layout");
+			visualGraph = installNewVisualGraph(ConfigGraph.getGraph());
+			doSave();
+			if (GraphState.changed())
+				doSave();
+		}
+		shadowGraph();
+		onProjectOpened();
+	}
+
+	@Override
+	public void doSave() {
+		new OmugiGraphExporter(Project.makeConfigurationFile()).exportGraph(ConfigGraph.getGraph());
+		new OmugiGraphExporter(Project.makeLayoutFile()).exportGraph(visualGraph);
+		GraphState.clear();
+		ConfigGraph.validateGraph();
 	}
 
 	@Override
