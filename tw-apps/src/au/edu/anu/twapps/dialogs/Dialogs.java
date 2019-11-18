@@ -64,6 +64,10 @@ public class Dialogs {
 	public static File selectDirectory(String title, String currentPath) {
 		return impl.selectDirectory(title, currentPath);
 	}
+	public static File exportFile(String title, String promptDir, String promptFileName) {
+		return impl.exportFile(title,promptDir,promptFileName);
+
+	}
 
 	public static YesNoCancel yesNoCancel(String title, String header, String content) {
 		return impl.yesNoCancel(title, header, content);

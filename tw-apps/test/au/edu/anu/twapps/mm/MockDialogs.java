@@ -110,6 +110,11 @@ public class MockDialogs implements IDialogs{
 		// TODO Auto-generated method stub
 		return null;
 	}
+	@Override
+	public File exportFile(String title, String promptDir, String promptFileName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 
 }

@@ -51,6 +51,8 @@ public interface IDialogs {
 	public void warnAlert(String title, String header, String content);
 
 	public File selectDirectory(String title, String currentPath);
+	
+	public File exportFile(String title, String promptDir, String promptFileName);
 
 	public YesNoCancel yesNoCancel(String title, String header, String content);
 
