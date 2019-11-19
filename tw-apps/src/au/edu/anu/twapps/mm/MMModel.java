@@ -178,9 +178,6 @@ public class MMModel implements IMMModel {
 
 	@Override
 	public void doNewProject(TreeGraph<TreeGraphDataNode, ALEdge> templateConfig) {
-//		if (!canClose())
-//			return;
-
 		String newId = getNewProjectName("prjct1", "New project", "", "New project name:");
 
 		if (newId == null)
@@ -190,7 +187,6 @@ public class MMModel implements IMMModel {
 			Project.close();
 		}
 		newId = Project.create(newId);
-//		ConfigGraph.setGraph(new TreeGraph<TreeGraphDataNode, ALEdge>(new TwConfigFactory()));
 		TreeGraphDataNode twRoot = findTwRoot(templateConfig);
 		if (!twRoot.id().equals(newId))
 			twRoot.rename(twRoot.id(), newId);
@@ -203,19 +199,6 @@ public class MMModel implements IMMModel {
 			doSave();
 		onProjectOpened();
 
-//		NodeFactory cf = ConfigGraph.getGraph().nodeFactory();
-//		cf.makeNode(cf.nodeClass(N_ROOT.label()), newId);
-//		visualGraph = new TreeGraph<VisualNode, VisualEdge>(new VisualGraphFactory());
-//		visualGraph.nodeFactory().makeNode(newId);
-//
-//		shadowGraph();
-//
-//		visualGraph.root().setCategory();
-//		visualGraph.root().setPosition(0.5, 0.5);
-//		visualGraph.root().setCollapse(false);
-
-//		onProjectOpened();
-//		doSave();
 	}
 
 	@SuppressWarnings("unchecked")
