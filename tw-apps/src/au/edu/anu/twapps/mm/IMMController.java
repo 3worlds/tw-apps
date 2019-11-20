@@ -65,5 +65,7 @@ public interface IMMController {
 	public String getUserProjectPath();
 	
 	public void onItemEdit(Object item);
+	
+	public void doLayout();
 
 }

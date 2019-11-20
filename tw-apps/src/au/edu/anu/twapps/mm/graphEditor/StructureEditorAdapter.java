@@ -50,6 +50,7 @@ import au.edu.anu.rscs.aot.util.IntegerRange;
 import au.edu.anu.twapps.dialogs.Dialogs;
 import au.edu.anu.twapps.mm.IMMController;
 import au.edu.anu.twapps.mm.configGraph.ConfigGraph;
+import au.edu.anu.twapps.mm.layout.TreeLayout;
 import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualGraphFactory;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
@@ -669,7 +670,7 @@ public abstract class StructureEditorAdapter
 			TreeGraphDataNode cloneStartNode = getNode(exportGraph, configEdge.startNode());
 			TreeGraphDataNode cloneEndNode = getNode(exportGraph, configEdge.endNode());
 			if (cloneEndNode != null && cloneStartNode != null) {
-				ALDataEdge cloneEdge = (ALDataEdge) factory.makeEdge(factory.edgeClass(configEdge.classId()),
+				ALEdge cloneEdge = (ALEdge) factory.makeEdge(factory.edgeClass(configEdge.classId()),
 						cloneStartNode, cloneEndNode, configEdge.id());
 				cloneEdgeProperties(configEdge, cloneEdge);
 			}
@@ -714,6 +715,7 @@ public abstract class StructureEditorAdapter
 		TreeGraph<TreeGraphDataNode, ALEdge> importGraph = getImportGraph(childSpec);
 		if (importGraph != null) {
 			importGraph(importGraph, editableNode.getSelectedVisualNode());
+			controller.doLayout();
 			GraphState.setChanged();
 			ConfigGraph.validateGraph();
 		}

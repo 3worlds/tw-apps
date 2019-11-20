@@ -128,5 +128,11 @@ public class MockController implements IMMController{
 		
 	}
 
+	@Override
+	public void doLayout() {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }
