@@ -379,6 +379,7 @@ public class TwSpecifications implements //
 		return result;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void filterRequiredPropertyQuery(VisualNode vnode, SimpleDataTreeNode baseSpec, SimpleDataTreeNode subSpec) {
 		List<SimpleDataTreeNode> queries = getQueries(baseSpec, RequirePropertyQuery.class);
