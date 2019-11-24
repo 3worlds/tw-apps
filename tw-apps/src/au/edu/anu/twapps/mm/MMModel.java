@@ -38,16 +38,16 @@ import java.util.Random;
 import java.util.logging.Logger;
 
 import au.edu.anu.omhtk.preferences.Preferences;
-import au.edu.anu.rscs.aot.archetype.CheckMessage;
+import au.edu.anu.rscs.aot.errorMessaging.ErrorList;
 import au.edu.anu.twapps.dialogs.Dialogs;
 import au.edu.anu.twapps.exceptions.TwAppsException;
 import au.edu.anu.twapps.mm.visualGraph.VisualGraphFactory;
 import au.edu.anu.twapps.mm.configGraph.ConfigGraph;
-import au.edu.anu.twapps.mm.errorMessages.archetype.UnknownErr;
 import au.edu.anu.twapps.mm.layout.TreeLayout;
 import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
-import au.edu.anu.twcore.errorMessaging.ComplianceManager;
+import au.edu.anu.twcore.errorMessaging.ModelBuildErrorMsg;
+import au.edu.anu.twcore.errorMessaging.ModelBuildErrors;
 import au.edu.anu.twcore.graphState.GraphState;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
@@ -143,7 +143,7 @@ public class MMModel implements IMMModel {
 
 		ProjectJarGenerator gen = new ProjectJarGenerator();
 		gen.generate(ConfigGraph.getGraph());
-		ComplianceManager.signalState();
+		ErrorList.signalState();
 
 		List<String> commands = new ArrayList<>();
 		commands.add("java");
@@ -164,13 +164,13 @@ public class MMModel implements IMMModel {
 		experimentUI.redirectError(errorLog);
 		try {
 			Process p = experimentUI.start();
-			Thread.sleep(1000);
+			Thread.sleep(2000);
 			if (!p.isAlive())
-				if (p.exitValue() != 0)
-					ComplianceManager.add(new UnknownErr(CheckMessage.code20Deploy,
-							new Exception("ModelRunner error. See " + errorLog)));
+				if (p.exitValue() != 0) {
+					ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_FAIL,errorLog,Project.getProjectFile()));
+				}
 		} catch (Exception e) {
-			ComplianceManager.add(new UnknownErr(CheckMessage.code20Deploy, e));
+			ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_EXCEPTION,e,Project.getProjectFile()));
 		}
 	}
 
