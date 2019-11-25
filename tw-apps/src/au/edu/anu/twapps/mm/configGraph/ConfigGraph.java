@@ -80,7 +80,7 @@ public class ConfigGraph {
 			ModelBuildErrorMsg mbem = new ModelBuildErrorMsg(ModelBuildErrors.SPECIFICATION, se, graph);
 			if (!mbem.ignore())
 				// Here is where context is shifted from whatever the specs say to whatever the user can do.
-				ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.SPECIFICATION, se, graph));
+				ErrorList.add(mbem);
 		}
 		if (!ErrorList.haveErrors()) {
 			boolean haveCompiler = !(ToolProvider.getSystemJavaCompiler() == null);
