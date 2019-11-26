@@ -75,12 +75,15 @@ public class ConfigGraph {
 	public static void validateGraph() {
 		Iterable<ErrorMessagable> specErrors = TWA.checkSpecifications(graph);
 		ErrorList.clear();
-		for (ErrorMessagable e : specErrors) {
-			SpecificationErrorMsg se = (SpecificationErrorMsg) e;
-			ModelBuildErrorMsg mbem = new ModelBuildErrorMsg(ModelBuildErrors.SPECIFICATION, se, graph);
-			if (!mbem.ignore())
-				// Here is where context is shifted from whatever the specs say to whatever the user can do.
-				ErrorList.add(mbem);
+		if (specErrors != null) {
+			for (ErrorMessagable e : specErrors) {
+				SpecificationErrorMsg se = (SpecificationErrorMsg) e;
+				ModelBuildErrorMsg mbem = new ModelBuildErrorMsg(ModelBuildErrors.SPECIFICATION, se, graph);
+				if (!mbem.ignore())
+					// Here is where context is shifted from whatever the specs say to whatever the
+					// user can do.
+					ErrorList.add(mbem);
+			}
 		}
 		if (!ErrorList.haveErrors()) {
 			boolean haveCompiler = !(ToolProvider.getSystemJavaCompiler() == null);
@@ -92,20 +95,19 @@ public class ConfigGraph {
 			CodeGenerator gen = new CodeGenerator(graph);
 			gen.generate();
 		}
-		if (!ErrorList.haveErrors()) {
-			// check twDep.jar is present
-			File file = new File(TwPaths.TW_ROOT + File.separator + TwPaths.TW_DEP_JAR);
-			if (!file.exists())
-				ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_RESOURCE_MISSING, file));
-			// new MissingResourceFile(file, "Use TwSetup to create this file."));
-		}
+
 		if (!ErrorList.haveErrors()) {
 			ProjectJarGenerator gen = new ProjectJarGenerator();
 			gen.generate(graph);
 		}
-		if (GraphState.changed())
-			ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_PROJECT_UNSAVED));
+		if (!ErrorList.haveErrors()) {
+			File file = new File(TwPaths.TW_ROOT + File.separator + TwPaths.TW_DEP_JAR);
+			if (!file.exists())
+				ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_RESOURCE_MISSING, file,"Run TwSetup or obtain file from developers."));
 
+			if (GraphState.changed())
+				ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_PROJECT_UNSAVED));
+		}
 		ErrorList.signalState();
 	}
 

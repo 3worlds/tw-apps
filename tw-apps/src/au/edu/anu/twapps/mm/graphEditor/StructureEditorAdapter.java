@@ -377,7 +377,7 @@ public abstract class StructureEditorAdapter
 	}
 
 	private String promptForNewNode(String label, String promptName) {
-		return Dialogs.getText("'" + label + "' node name.", "", "Name:", promptName);
+		return Dialogs.getText("'" + label + "' element name.", "", "Name:", promptName);
 	}
 
 	private Class<? extends TreeNode> promptForClass(List<Class<? extends TreeNode>> subClasses,
