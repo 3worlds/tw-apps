@@ -30,12 +30,8 @@
 package au.edu.anu.twapps.mm.configGraph;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.tools.ToolProvider;
 
-import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.errorMessaging.ErrorList;
 import au.edu.anu.rscs.aot.errorMessaging.ErrorMessagable;
 import au.edu.anu.rscs.aot.errorMessaging.impl.SpecificationErrorMsg;
@@ -47,8 +43,6 @@ import au.edu.anu.twcore.project.TwPaths;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
-import fr.cnrs.iees.graph.impl.TreeGraphNode;
-import fr.cnrs.iees.identity.impl.PairIdentity;
 import fr.cnrs.iees.twcore.generators.CodeGenerator;
 import fr.cnrs.iees.twcore.generators.ProjectJarGenerator;
 
@@ -111,14 +105,6 @@ public class ConfigGraph {
 		ErrorList.signalState();
 	}
 
-	private static List<TreeGraphNode> getExistingParents(StringTable parentList, String requiredClass) {
-		List<TreeGraphNode> result = new ArrayList<>();
-		for (TreeGraphNode node : graph.nodes()) {
-			if (parentList.contains(node.classId() + PairIdentity.LABEL_NAME_STR_SEPARATOR))
-				result.add(node);
-		}
-		return result;
-	}
 
 	public static void onParentChanged() {
 		graph.onParentChanged();
