@@ -69,6 +69,8 @@ public interface StructureEditable {
 	
 	public void onRenameNode();
 	
+	public void onRenameEdge(VisualEdge edge);
+	
 	public void onDeleteTree(VisualNode root);
 
 	/* collapse tree from this node */

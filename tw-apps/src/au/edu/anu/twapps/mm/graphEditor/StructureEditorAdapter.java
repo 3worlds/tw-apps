@@ -526,10 +526,28 @@ public abstract class StructureEditorAdapter
 		if (userName != null) {
 			renameNode(userName, editableNode.getSelectedVisualNode());
 			gvisualiser.onNodeRenamed(editableNode.getSelectedVisualNode());
-			controller.onNodeRenamed();
+			controller.onElementRenamed();
 			GraphState.setChanged();
 			ConfigGraph.validateGraph();
 		}
+	}
+	
+	@Override
+	public void onRenameEdge(VisualEdge edge) {
+		String userName = getNewName(edge.classId(), null);
+		if (userName!=null) {
+			renameEdge(userName,edge);
+			gvisualiser.onEdgeRenamed(edge);
+			controller.onElementRenamed();
+			GraphState.setChanged();
+			ConfigGraph.validateGraph();
+		}
+	}
+
+	private void renameEdge(String uniqueId, VisualEdge vEdge) {
+		ALEdge cEdge = vEdge.getConfigEdge();
+		cEdge.rename(cEdge.id(), uniqueId);
+		vEdge.rename(vEdge.id(),uniqueId);
 	}
 
 	private void renameNode(String uniqueId, VisualNode vNode) {

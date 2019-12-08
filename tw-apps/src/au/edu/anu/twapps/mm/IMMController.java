@@ -56,7 +56,7 @@ public interface IMMController {
 	
 	public void onEdgeDeleted();
 	
-	public void onNodeRenamed();
+	public void onElementRenamed();
 	
 	public void onTreeCollapse();
 	

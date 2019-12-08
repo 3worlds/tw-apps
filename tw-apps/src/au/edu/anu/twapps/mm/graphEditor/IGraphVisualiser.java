@@ -66,5 +66,7 @@ public interface IGraphVisualiser {
 	public void onRemoveParentLink(VisualNode vnChild);
 	
 	public void onNodeRenamed(VisualNode vNode);
+	
+	public void onEdgeRenamed(VisualEdge vEdge);
 
 }

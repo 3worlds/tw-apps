@@ -105,12 +105,6 @@ public class MockController implements IMMController{
 	}
 
 	@Override
-	public void onNodeRenamed() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void onItemEdit(Object item) {
 		// TODO Auto-generated method stub
 		
@@ -130,6 +124,12 @@ public class MockController implements IMMController{
 
 	@Override
 	public void doLayout() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onElementRenamed() {
 		// TODO Auto-generated method stub
 		
 	}
