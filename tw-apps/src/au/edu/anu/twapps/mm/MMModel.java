@@ -196,6 +196,7 @@ public class MMModel implements IMMModel {
 		if (GraphState.changed())
 			doSave();
 		onProjectOpened();
+		controller.doLayout();
 
 	}
 
@@ -300,7 +301,6 @@ public class MMModel implements IMMModel {
 			visualNode.setPosition(rnd.nextDouble(), rnd.nextDouble());
 			visualNode.setCollapse(false);
 		}
-		new TreeLayout(newVisualGraph).compute();
 
 		return newVisualGraph;
 	}
