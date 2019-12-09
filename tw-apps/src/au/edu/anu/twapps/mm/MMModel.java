@@ -43,7 +43,6 @@ import au.edu.anu.twapps.dialogs.Dialogs;
 import au.edu.anu.twapps.exceptions.TwAppsException;
 import au.edu.anu.twapps.mm.visualGraph.VisualGraphFactory;
 import au.edu.anu.twapps.mm.configGraph.ConfigGraph;
-import au.edu.anu.twapps.mm.layout.TreeLayout;
 import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrorMsg;
@@ -192,12 +191,11 @@ public class MMModel implements IMMModel {
 
 		ConfigGraph.setGraph(templateConfig);
 		visualGraph = templateVisual;
+		onProjectOpened();
+		controller.doLayout();
 		doSave();
 		if (GraphState.changed())
 			doSave();
-		onProjectOpened();
-		controller.doLayout();
-
 	}
 
 	@SuppressWarnings("unchecked")
