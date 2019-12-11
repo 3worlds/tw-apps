@@ -169,7 +169,7 @@ public class MMModel implements IMMModel {
 					ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_FAIL,errorLog,Project.getProjectFile()));
 				}
 		} catch (Exception e) {
-			ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_EXCEPTION,e,Project.getProjectFile()));
+			ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_EXCEPTION,e,errorLog,Project.getProjectFile()));
 		}
 	}
 
