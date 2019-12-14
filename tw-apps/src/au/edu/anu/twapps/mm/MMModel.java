@@ -229,6 +229,7 @@ public class MMModel implements IMMModel {
 		if (GraphState.changed())
 			doSave();
 		onProjectOpened();
+		controller.doLayout();
 	}
 
 	private void shadowGraph() {
