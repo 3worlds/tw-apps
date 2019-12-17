@@ -214,6 +214,13 @@ public class TwSpecifications implements //
 		return result;
 	}
 
+	private boolean entriesContains(String key,List<String[]> entries) {
+		for (String[] ss:entries)
+			for (String s: ss) 
+				if (s.equals(key))
+					return true;
+		return false;
+	}
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean filterPropertyStringTableOptions(Iterable<SimpleDataTreeNode> propertySpecs,
@@ -224,6 +231,7 @@ public class TwSpecifications implements //
 			entries.addAll(getQueryStringTables(baseSpec, qclass));
 			entries.addAll(getQueryStringTables(subSpec, qclass));
 		}
+		// TODO: this is a mess! to be cleaned up
 		if (!entries.isEmpty()) {
 			List<String> selectedKeys = Dialogs.getRadioButtonChoices(childId, "PropertyChoices", "", entries);
 			if (selectedKeys == null)
@@ -232,13 +240,15 @@ public class TwSpecifications implements //
 			String keyHandled = null;
 			while (iter.hasNext()) {
 				SimpleDataTreeNode ps = iter.next();
-				String key = (String) ps.properties().getPropertyValue(aaHasName);
-				String optionalKey = getSelectedEntry(key, selectedKeys, entries);
-				if (!Objects.equals(key, keyHandled)) {
-					if (optionalKey != null && !optionalKey.equals(key))
-						iter.remove();
-					else if (keyHandled == null)
-						keyHandled = optionalKey;
+				String key = (String) ps.properties().getPropertyValue(aaHasName);	
+				if (entriesContains(key,entries)) {
+					String optionalKey = getSelectedEntry(key, selectedKeys, entries);
+					if (!Objects.equals(key, keyHandled)) {
+						if (optionalKey != null && !optionalKey.equals(key))
+							iter.remove();
+						else if (keyHandled == null)
+							keyHandled = optionalKey;
+					}
 				}
 			}
 		}
@@ -346,7 +356,7 @@ public class TwSpecifications implements //
 			edgeLabel2 = StringTable(([2]"trackField","trackTable"))
 	
 	 */
-	
+
 //	private String[] getAsStrings(SimplePropertyList properties, String key) {
 //		String[] result;
 //		Class<?> c = properties.getPropertyClass(key);
@@ -421,7 +431,8 @@ public class TwSpecifications implements //
 			String[] stringValues = new String[conditions.size() - 2];
 			for (int i = 2; i < conditions.size(); i++)
 				stringValues[i - 2] = conditions.getWithFlatIndex(i);
-			if (props.hasProperty(p1))
+			if (props.hasProperty(p1))// BUG: Works for Fields but for tables, none of these optional properties are
+										// here! They've been stripped.
 				if (props.hasProperty(p2)) {
 					String value = props.getPropertyValue(p2).toString();
 					boolean satisfied = false;
