@@ -426,22 +426,22 @@ public class TwSpecifications implements //
 		ExtendablePropertyList props = (ExtendablePropertyList) vnode.cProperties();
 		for (SimpleDataTreeNode query : queries) {
 			StringTable conditions = (StringTable) query.properties().getPropertyValue(twaConditions);
-			String p1 = conditions.getWithFlatIndex(0);
-			String p2 = conditions.getWithFlatIndex(1);
-			String[] stringValues = new String[conditions.size() - 2];
+			String subjectKey = conditions.getWithFlatIndex(0);
+			String conditionalKey = conditions.getWithFlatIndex(1);
+			String[] conditionalValues = new String[conditions.size() - 2];
 			for (int i = 2; i < conditions.size(); i++)
-				stringValues[i - 2] = conditions.getWithFlatIndex(i);
-			if (props.hasProperty(p1))// BUG: Works for Fields but for tables, none of these optional properties are
-										// here! They've been stripped.
-				if (props.hasProperty(p2)) {
-					String value = props.getPropertyValue(p2).toString();
+				conditionalValues[i - 2] = conditions.getWithFlatIndex(i);
+			if (props.hasProperty(subjectKey))
+				if (props.hasProperty(conditionalKey)) {
+					String value = props.getPropertyValue(conditionalKey).toString();
 					boolean satisfied = false;
-					for (int i = 0; i < stringValues.length; i++)
-						if (value.equals(stringValues[i]))
+					for (int i = 0; i < conditionalValues.length; i++)
+						if (value.equals(conditionalValues[i]))
 							satisfied = true;
 					if (!satisfied)
-						props.removeProperty(p1);
-				}
+						props.removeProperty(subjectKey);
+				} else// conditional key not present so remove subject key
+					props.removeProperty(subjectKey);
 		}
 
 	}
