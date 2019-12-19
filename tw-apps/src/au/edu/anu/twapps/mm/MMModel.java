@@ -110,9 +110,10 @@ public class MMModel implements IMMModel {
 			keys.add(P_PARAMETERCLASS.key());
 			keys.add(P_DECORATORCLASS.key());
 			keys.add(P_DATAELEMENTTYPE.key());
-			keys.add(P_FIELD_TYPE.key());
+			
 			nonEditableMap.put(key.label(), keys);
 		}
+		addEntry(ConfigurationNodeLabels.N_FIELD,P_FIELD_TYPE);
 		addEntry(ConfigurationNodeLabels.N_COMPONENT, ConfigurationPropertyNames.P_PARAMETERCLASS);
 		addEntry(ConfigurationNodeLabels.N_SYSTEM, ConfigurationPropertyNames.P_PARAMETERCLASS);
 		addEntry(ConfigurationNodeLabels.N_FUNCTION, ConfigurationPropertyNames.P_FUNCTIONCLASS);
