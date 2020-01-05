@@ -30,8 +30,6 @@
 package au.edu.anu.twapps.mm.graphEditor;
 
 import java.io.File;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -64,7 +62,6 @@ import au.edu.anu.twcore.archetype.tw.OutEdgeXorQuery;
 import au.edu.anu.twcore.archetype.tw.OutNodeXorQuery;
 import au.edu.anu.twcore.archetype.tw.PropertiesMatchDefinition;
 import au.edu.anu.twcore.archetype.tw.PropertyXorQuery;
-import au.edu.anu.twcore.data.runtime.TwData;
 import au.edu.anu.twcore.graphState.GraphState;
 import au.edu.anu.twcore.project.TwPaths;
 import au.edu.anu.twcore.root.EditableFactory;
@@ -72,7 +69,6 @@ import au.edu.anu.twcore.root.TwConfigFactory;
 import au.edu.anu.twcore.userProject.UserProjectLink;
 import au.edu.anu.twcore.data.FieldNode;
 import au.edu.anu.twcore.data.TableNode;
-import fr.cnrs.iees.OmugiClassLoader;
 //import au.edu.anu.twuifx.mm.visualise.IGraphVisualiser;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
@@ -92,11 +88,8 @@ import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
 import fr.cnrs.iees.properties.ExtendablePropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SimplePropertyListImpl;
-import fr.cnrs.iees.twcore.constants.DataElementType;
-
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
-import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import fr.ens.biologie.generic.utils.Duple;
 import fr.ens.biologie.generic.utils.Logging;
 import fr.ens.biologie.generic.utils.Tuple;
@@ -482,6 +475,7 @@ public abstract class StructureEditorAdapter
 
 	protected void processPropertiesMatchDefinition(VisualNode newChild, SimpleDataTreeNode childBaseSpec,
 			SimpleDataTreeNode childSubSpec) {
+		@SuppressWarnings("unchecked")
 		List<SimpleDataTreeNode> queries = specifications.getQueries(childBaseSpec, PropertiesMatchDefinition.class);
 		if (queries.isEmpty())
 			return;
