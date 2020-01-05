@@ -27,104 +27,107 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
   **************************************************************************/
 
-package au.edu.anu.twapps.mm;
+package au.edu.anu.twapps.mr;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
-import au.edu.anu.twapps.dialogs.IDialogs;
-import au.edu.anu.twapps.dialogs.YesNoCancel;
+import au.edu.anu.omhtk.preferences.Preferences;
+import au.edu.anu.twapps.dialogs.Dialogs;
+import fr.cnrs.iees.graph.impl.ALEdge;
+import fr.cnrs.iees.graph.impl.TreeGraph;
+import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 
-public class MockDialogs implements IDialogs{
+/**
+ * @author Ian Davies
+ *
+ * @date 31 Dec 2019
+ */
+public class MRModel implements IMRModel {
+	private TreeGraph<TreeGraphDataNode, ALEdge> graph;
+	private IMRController controller;
+	private List<File> ISFiles;
+	private int currentIdx;
 
-	@Override
-	public void errorAlert(String title, String header, String content) {
-		System.out.println("errorAlert "+title+" "+header+" "+content);		
-	}
-	@Override
-	public void infoAlert(String title, String header, String content) {
-		System.out.println("infoAlert "+title+" "+header+" "+content);		
-		
-	}
-
-	@Override
-	public void warnAlert(String title, String header, String content) {
-		System.out.println("warnAlert "+title+" "+header+" "+content);		
-		
-	}
-
-	@Override
-	public File selectDirectory(String title, String currentPath) {
-		// TODO Auto-generated method stub
-		return new File(currentPath);
+	public MRModel(IMRController controller) {
+		this.controller = controller;
 	}
 
 	@Override
-	public YesNoCancel yesNoCancel(String title, String header, String content) {
-		// TODO Auto-generated method stub
-		return YesNoCancel.yes;
+	public void doISGenerate() {
+		// output of this is a saved *.isf file
+		Dialogs.infoAlert("Info", "Not implemented", "Show dlg to generated bootstrap driver values and populations");
+
 	}
 
 	@Override
-	public String getText(String title, String header, String content, String prompt) {
-		// TODO Auto-generated method stub
-		return "getText user string";
+	public void doISReload() {
+		// doISClear();
+		if (currentIdx >= 0)
+			Dialogs.infoAlert("Info", "Not implemented",
+					"Load drivers and populations from " + ISFiles.get(currentIdx).getName());
 	}
 
 	@Override
-	public File getExternalProjectFile() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public void doISClear() {
+		Dialogs.infoAlert("Info", "Not implemented", "Clear all drivers and populations");
+		// TODO set all data and populations to appropriate zero values
 
-
-	@Override
-	public boolean confirmation(String title, String header, String content) {
-		// TODO Auto-generated method stub
-		return true;
 	}
 
 	@Override
-	public File getOpenFile(File directory, String title, Object extensions) {
-		// TODO List<ExtensionFilter> extensionsAuto-generated method stub
-		return null;
+	public void doISSaveAs(File file) {
+		Dialogs.infoAlert("Info", "Not implemented", "Save current drivers and populations to " + file);
+
+	}
+
+	private static final String ISCurrentFileIndex = "ISCurrentFileIndex";
+	private static final String ISFileName = "ISFileName";
+	private static final String ISFileCount = "ISFileCount";
+
+	@Override
+	public void getPreferences() {
+		currentIdx = Preferences.getInt(ISCurrentFileIndex, -1);
+		int n = Preferences.getInt(ISFileCount, 0);
+		ISFiles = new ArrayList<>();
+		for (int i = 0; i < n; i++) {
+			String s = Preferences.getString(ISFileName + "_" + i, "");
+			ISFiles.add(new File(s));
+		}
 	}
 
 	@Override
-	public boolean editList(String title, String header, String content, Object listView) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	@Override
-	public int getListChoice(String[] list, String title, String header, String content) {
-		// TODO Auto-generated method stub
-		return -1;
-	}
-	@Override
-	public List<String> getRadioButtonChoices(String title, String header, String content, List<String[]> entries) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public Object owner() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public File exportFile(String title, String promptDir, String promptFileName) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public File saveISFile(File directory, String title) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public int editISFiles(List<File> files, int idx) {
-		// TODO Auto-generated method stub
-		return 0;
+	public void putPreferences() {
+		Preferences.putInt(ISCurrentFileIndex, currentIdx);
+		Preferences.putInt(ISFileCount, ISFiles.size());
+		for (int i = 0; i < ISFiles.size(); i++)
+			Preferences.putString(ISFileName + "_" + i, ISFiles.get(i).getAbsolutePath());
 	}
 
+	@Override
+	public int getISSelection() {
+		return currentIdx;
+	}
+
+	@Override
+	public void setISSelection(int idx) {
+		currentIdx = idx;
+	}
+
+	@Override
+	public List<File> getISFiles() {
+		return ISFiles;
+	}
+
+	@Override
+	public TreeGraph<TreeGraphDataNode, ALEdge> getGraph() {
+		return graph;
+	}
+
+	@Override
+	public void setGraph(TreeGraph<TreeGraphDataNode, ALEdge> graph) {
+		this.graph = graph;
+	}
 
 }

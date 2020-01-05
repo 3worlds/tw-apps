@@ -101,8 +101,14 @@ public class Dialogs {
 			List<String[]> entries) {
 		return impl.getRadioButtonChoices(title, header, content, entries);
 	}
+	public static File saveISFile(File directory, String title) {
+		return impl.saveISFile(directory, title);
+	};
 
 	public static Object owner() {
 		return impl.owner();
+	}
+	public static int editISFiles(List<File> files, int idx) {
+		return impl.editISFiles(files, idx);
 	}
 }

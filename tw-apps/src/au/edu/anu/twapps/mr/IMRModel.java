@@ -27,53 +27,33 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
   **************************************************************************/
 
-package au.edu.anu.twapps.dialogs;
+package au.edu.anu.twapps.mr;
 
 import java.io.File;
 import java.util.List;
 
-//import javafx.stage.FileChooser.ExtensionFilter;
+import fr.cnrs.iees.graph.impl.ALEdge;
+import fr.cnrs.iees.graph.impl.TreeGraph;
+import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 
+//ModelRunner methods called by the Controller
+//The controller HAS one of these
+//ModelRunner IS on of these: ModelRunner implements
 /**
- * Author Ian Davies
+ * @author Ian Davies
  *
- * Date 11 Dec. 2018
+ * @date 31 Dec 2019
  */
-/**
- * 
- * Interface for implementation independent dialogs
- */
-public interface IDialogs {
-	public void errorAlert(String title, String header, String content);
-
-	public void infoAlert(String title, String header, String content);
-
-	public void warnAlert(String title, String header, String content);
-
-	public File selectDirectory(String title, String currentPath);
-	
-	public File exportFile(String title, String promptDir, String promptFileName);
-
-	public YesNoCancel yesNoCancel(String title, String header, String content);
-
-	public String getText(String title, String header, String content, String prompt);
-
-	public File getExternalProjectFile();
-
-	public boolean confirmation(String title, String header, String content);
-
-	// ExtenstionFilter is javafx!!
-	public File getOpenFile(File directory, String title, Object extList);
-
-	public boolean editList(String title, String header, String content, Object listView);
-
-	public int getListChoice(String[] list, String title, String header, String content);
-
-	public List<String> getRadioButtonChoices(String title, String header, String content, List<String[]> entries);
-
-	public Object owner();
-	
-	public File saveISFile(File directory, String title);
-	
-	public int editISFiles(List<File> files, int idx);
+public interface IMRModel {
+	public void doISGenerate();
+	public void setISSelection(int idx);
+	public int  getISSelection();
+	public List<File> getISFiles();
+	public void doISReload();
+	public void doISClear();
+	public void doISSaveAs(File file);
+	public void setGraph(TreeGraph<TreeGraphDataNode, ALEdge> graph);
+	public TreeGraph<TreeGraphDataNode, ALEdge> getGraph();	
+	public void getPreferences();
+	public void putPreferences();
 }
