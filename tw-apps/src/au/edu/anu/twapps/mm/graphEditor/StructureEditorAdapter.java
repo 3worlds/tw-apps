@@ -487,7 +487,7 @@ public abstract class StructureEditorAdapter
 		*/
 		StringTable values = (StringTable) query.properties().getPropertyValue("values");
 		String dataCategory = values.getWithFlatIndex(0);
-		List<TreeGraphDataNode> defs = PropertiesMatchDefinition.getDataDefs(newChild.getConfigNode(), dataCategory);
+		Collection<TreeGraphDataNode> defs = PropertiesMatchDefinition.getDataDefs(newChild.getConfigNode(), dataCategory);
 		if (defs == null) {
 			return;
 		}
