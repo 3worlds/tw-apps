@@ -88,6 +88,9 @@ import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
 import fr.cnrs.iees.properties.ExtendablePropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SimplePropertyListImpl;
+import fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels;
+import fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels;
+
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import fr.ens.biologie.generic.utils.Duple;
@@ -393,11 +396,12 @@ public abstract class StructureEditorAdapter
 			return null;
 	}
 
-	private String getNewName(String label, SimpleDataTreeNode childBaseSpec) {
+	private String getNewName(String label, String defName, SimpleDataTreeNode childBaseSpec) {
 		// default name is label with 1 appended
-		String post = label.substring(1, label.length());
-		String pre = label.substring(0, 1);
-		String promptId = pre.toLowerCase() + post.replaceAll("[aeiou]", "") + "1";
+//		String post = label.substring(1, label.length());
+//		String pre = label.substring(0, 1);
+//		String promptId = pre.toLowerCase() + post.replaceAll("[aeiou]", "") + "1";
+		String promptId = defName;
 		boolean capitalize = false;
 		if (childBaseSpec != null)
 			capitalize = specifications.nameStartsWithUpperCase(childBaseSpec);
@@ -425,7 +429,7 @@ public abstract class StructureEditorAdapter
 	@SuppressWarnings("unchecked")
 	@Override
 	public void onNewChild(String childLabel, SimpleDataTreeNode childBaseSpec) {
-		String promptId = getNewName(childLabel, childBaseSpec);
+		String promptId = getNewName(childLabel, ConfigurationNodeLabels.labelValueOf(childLabel).defName(),childBaseSpec);
 		if (promptId == null)
 			return;
 		String childClassName = (String) childBaseSpec.properties().getPropertyValue(aaIsOfClass);
@@ -504,7 +508,7 @@ public abstract class StructureEditorAdapter
 	public void onNewEdge(Tuple<String, VisualNode, SimpleDataTreeNode> details) {
 		if (editableNode.isCollapsed())
 			gvisualiser.expandTreeFrom(editableNode.getSelectedVisualNode());
-		String id = getNewName(details.getFirst(), null);
+		String id = getNewName(details.getFirst(), ConfigurationEdgeLabels.labelValueOf(details.getFirst()).defName(),null);
 		if (id == null)
 			return;
 		connectTo(id, details);
@@ -553,7 +557,7 @@ public abstract class StructureEditorAdapter
 
 	@Override
 	public void onRenameNode() {
-		String userName = getNewName(editableNode.cClassId(), baseSpec);
+		String userName = getNewName(editableNode.cClassId(), ConfigurationNodeLabels.labelValueOf(editableNode.cClassId()).defName(),baseSpec);
 		if (userName != null) {
 			renameNode(userName, editableNode.getSelectedVisualNode());
 			gvisualiser.onNodeRenamed(editableNode.getSelectedVisualNode());
@@ -565,7 +569,8 @@ public abstract class StructureEditorAdapter
 
 	@Override
 	public void onRenameEdge(VisualEdge edge) {
-		String userName = getNewName(edge.classId(), null);
+		String lbl = edge.getConfigEdge().classId();
+		String userName = getNewName(lbl, ConfigurationEdgeLabels.labelValueOf(lbl).defName(),null);
 		if (userName != null) {
 			renameEdge(userName, edge);
 			gvisualiser.onEdgeRenamed(edge);
