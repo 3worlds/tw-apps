@@ -60,7 +60,7 @@ import au.edu.anu.twcore.archetype.tw.EndNodeHasPropertyQuery;
 import au.edu.anu.twcore.archetype.tw.ExclusiveCategoryQuery;
 import au.edu.anu.twcore.archetype.tw.OutEdgeXorQuery;
 import au.edu.anu.twcore.archetype.tw.OutNodeXorQuery;
-import au.edu.anu.twcore.archetype.tw.PropertiesMatchDefinition;
+import au.edu.anu.twcore.archetype.tw.PropertiesMatchDefinitionQuery;
 import au.edu.anu.twcore.archetype.tw.PropertyXorQuery;
 import au.edu.anu.twcore.graphState.GraphState;
 import au.edu.anu.twcore.project.TwPaths;
@@ -480,7 +480,7 @@ public abstract class StructureEditorAdapter
 	protected void processPropertiesMatchDefinition(VisualNode newChild, SimpleDataTreeNode childBaseSpec,
 			SimpleDataTreeNode childSubSpec) {
 		@SuppressWarnings("unchecked")
-		List<SimpleDataTreeNode> queries = specifications.getQueries(childBaseSpec, PropertiesMatchDefinition.class);
+		List<SimpleDataTreeNode> queries = specifications.getQueries(childBaseSpec, PropertiesMatchDefinitionQuery.class);
 		if (queries.isEmpty())
 			return;
 		SimpleDataTreeNode query = queries.get(0);
@@ -491,7 +491,7 @@ public abstract class StructureEditorAdapter
 		*/
 		StringTable values = (StringTable) query.properties().getPropertyValue("values");
 		String dataCategory = values.getWithFlatIndex(0);
-		Collection<TreeGraphDataNode> defs = PropertiesMatchDefinition.getDataDefs(newChild.getConfigNode(), dataCategory);
+		Collection<TreeGraphDataNode> defs = PropertiesMatchDefinitionQuery.getDataDefs(newChild.getConfigNode(), dataCategory);
 		if (defs == null) {
 			return;
 		}
