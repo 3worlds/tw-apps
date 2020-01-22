@@ -116,14 +116,19 @@ public class MockDialogs implements IDialogs{
 		return null;
 	}
 	@Override
-	public File saveISFile(File directory, String title) {
+	public int editISFiles(List<File> files, int idx) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	@Override
+	public File promptForSaveFile(File directory, String title, String[]... exts) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	@Override
-	public int editISFiles(List<File> files, int idx) {
+	public File promptForOpenFile(File directory, String title, String[]... exts) {
 		// TODO Auto-generated method stub
-		return 0;
+		return null;
 	}
 
 

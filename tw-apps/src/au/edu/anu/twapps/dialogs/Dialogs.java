@@ -64,8 +64,9 @@ public class Dialogs {
 	public static File selectDirectory(String title, String currentPath) {
 		return impl.selectDirectory(title, currentPath);
 	}
+
 	public static File exportFile(String title, String promptDir, String promptFileName) {
-		return impl.exportFile(title,promptDir,promptFileName);
+		return impl.exportFile(title, promptDir, promptFileName);
 
 	}
 
@@ -101,13 +102,19 @@ public class Dialogs {
 			List<String[]> entries) {
 		return impl.getRadioButtonChoices(title, header, content, entries);
 	}
-	public static File saveISFile(File directory, String title) {
-		return impl.saveISFile(directory, title);
+
+	public static File promptForSaveFile(File directory, String title, String[]... exts) {
+		return impl.promptForSaveFile(directory, title, exts);
 	};
+
+	public static File promptForOpenFile(File directory, String title, String[]... exts) {
+		return impl.promptForOpenFile(directory, title, exts);
+	}
 
 	public static Object owner() {
 		return impl.owner();
 	}
+
 	public static int editISFiles(List<File> files, int idx) {
 		return impl.editISFiles(files, idx);
 	}

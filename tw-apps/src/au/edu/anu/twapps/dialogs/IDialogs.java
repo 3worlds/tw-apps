@@ -73,7 +73,9 @@ public interface IDialogs {
 
 	public Object owner();
 	
-	public File saveISFile(File directory, String title);
+	public File promptForSaveFile(File directory, String title,String[]... exts);
+	
+	public File promptForOpenFile(File directory, String title,String[]... exts);
 	
 	public int editISFiles(List<File> files, int idx);
 }
