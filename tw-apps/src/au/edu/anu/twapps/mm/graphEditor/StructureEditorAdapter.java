@@ -96,6 +96,8 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import fr.ens.biologie.generic.utils.Duple;
 import fr.ens.biologie.generic.utils.Logging;
 import fr.ens.biologie.generic.utils.Tuple;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
 
 public abstract class StructureEditorAdapter
 		implements StructureEditable, TwArchetypeConstants, ArchetypeArchetypeConstants {
@@ -429,7 +431,8 @@ public abstract class StructureEditorAdapter
 	@SuppressWarnings("unchecked")
 	@Override
 	public void onNewChild(String childLabel, SimpleDataTreeNode childBaseSpec) {
-		String promptId = getNewName(childLabel, ConfigurationNodeLabels.labelValueOf(childLabel).defName(),childBaseSpec);
+		String promptId = getNewName(childLabel, ConfigurationNodeLabels.labelValueOf(childLabel).defName(),
+				childBaseSpec);
 		if (promptId == null)
 			return;
 		String childClassName = (String) childBaseSpec.properties().getPropertyValue(aaIsOfClass);
@@ -480,7 +483,8 @@ public abstract class StructureEditorAdapter
 	protected void processPropertiesMatchDefinition(VisualNode newChild, SimpleDataTreeNode childBaseSpec,
 			SimpleDataTreeNode childSubSpec) {
 		@SuppressWarnings("unchecked")
-		List<SimpleDataTreeNode> queries = specifications.getQueries(childBaseSpec, PropertiesMatchDefinitionQuery.class);
+		List<SimpleDataTreeNode> queries = specifications.getQueries(childBaseSpec,
+				PropertiesMatchDefinitionQuery.class);
 		if (queries.isEmpty())
 			return;
 		SimpleDataTreeNode query = queries.get(0);
@@ -491,7 +495,8 @@ public abstract class StructureEditorAdapter
 		*/
 		StringTable values = (StringTable) query.properties().getPropertyValue("values");
 		String dataCategory = values.getWithFlatIndex(0);
-		Collection<TreeGraphDataNode> defs = PropertiesMatchDefinitionQuery.getDataDefs(newChild.getConfigNode(), dataCategory);
+		Collection<TreeGraphDataNode> defs = PropertiesMatchDefinitionQuery.getDataDefs(newChild.getConfigNode(),
+				dataCategory);
 		if (defs == null) {
 			return;
 		}
@@ -499,8 +504,14 @@ public abstract class StructureEditorAdapter
 		for (TreeGraphDataNode def : defs) {
 			if (def.classId().equals(N_FIELD.label()))
 				newProps.addProperty(def.id(), ((FieldNode) def).newInstance());
-			else
-				newProps.addProperty(def.id(), ((TableNode) def).newInstance());
+			else {
+				List<Node> dims = (List<Node>) get(def.edges(Direction.OUT),selectZeroOrMany(hasTheLabel(N_DIMENSIONER.label())));
+				if (!dims.isEmpty())
+					newProps.addProperty(def.id(), ((TableNode) def).newInstance());
+				else
+					Dialogs.errorAlert("Node construction error", newChild.getDisplayText(false),
+							"Cannot add '" + def.classId() + ":" + def.id() + "' because it has no dimensions");
+			}
 		}
 	}
 
@@ -508,7 +519,8 @@ public abstract class StructureEditorAdapter
 	public void onNewEdge(Tuple<String, VisualNode, SimpleDataTreeNode> details) {
 		if (editableNode.isCollapsed())
 			gvisualiser.expandTreeFrom(editableNode.getSelectedVisualNode());
-		String id = getNewName(details.getFirst(), ConfigurationEdgeLabels.labelValueOf(details.getFirst()).defName(),null);
+		String id = getNewName(details.getFirst(), ConfigurationEdgeLabels.labelValueOf(details.getFirst()).defName(),
+				null);
 		if (id == null)
 			return;
 		connectTo(id, details);
@@ -557,7 +569,8 @@ public abstract class StructureEditorAdapter
 
 	@Override
 	public void onRenameNode() {
-		String userName = getNewName(editableNode.cClassId(), ConfigurationNodeLabels.labelValueOf(editableNode.cClassId()).defName(),baseSpec);
+		String userName = getNewName(editableNode.cClassId(),
+				ConfigurationNodeLabels.labelValueOf(editableNode.cClassId()).defName(), baseSpec);
 		if (userName != null) {
 			renameNode(userName, editableNode.getSelectedVisualNode());
 			gvisualiser.onNodeRenamed(editableNode.getSelectedVisualNode());
@@ -570,7 +583,7 @@ public abstract class StructureEditorAdapter
 	@Override
 	public void onRenameEdge(VisualEdge edge) {
 		String lbl = edge.getConfigEdge().classId();
-		String userName = getNewName(lbl, ConfigurationEdgeLabels.labelValueOf(lbl).defName(),null);
+		String userName = getNewName(lbl, ConfigurationEdgeLabels.labelValueOf(lbl).defName(), null);
 		if (userName != null) {
 			renameEdge(userName, edge);
 			gvisualiser.onEdgeRenamed(edge);
