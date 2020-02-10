@@ -339,6 +339,8 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 		else if (parentList.size() == 1) {
 			parent.setParentRef(parentList.get(0));
 		} else {
+			if (parentList.size()==4)
+				System.out.println("HERE");
 			// check each table to see if it corresponds to the current parents;
 			// TODO bug here, must have implicit OR for each table entry!!!
 			for (StringTable st : parentList) {
