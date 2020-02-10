@@ -66,6 +66,7 @@ public class TwSpecifications implements //
 		ArchetypeArchetypeConstants, //
 		TwArchetypeConstants {
 	private static boolean equals(StringTable t1, StringTable t2) {
+		//NB: should assume neither table is null.
 		if (t1.ndim()!=t2.ndim())
 			return false;
 		if (t1.size()!=t2.size())

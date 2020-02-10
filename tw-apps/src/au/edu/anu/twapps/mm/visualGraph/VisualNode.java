@@ -334,34 +334,32 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 
 	private static void setupParentReference(VisualNode parent, Map<String, List<StringTable>> map) {
 		List<StringTable> parentList = map.get(parent.cClassId());
-		if (parentList.isEmpty())
-			parent.setParentRef(null);
-		else if (parentList.size() == 1) {
-			parent.setParentRef(parentList.get(0));
-		} else {
-			if (parentList.size()==4)
-				System.out.println("HERE");
-			// check each table to see if it corresponds to the current parents;
-			// TODO bug here, must have implicit OR for each table entry!!!
-			for (StringTable st : parentList) {
-				if (parent.extractParentReference(st) != null) {
-					parent.setParentRef(st);
-					break;
-				}
+		/*
+		 * Check each table and take the first that corresponds to the current set of
+		 * parents. If none (e.g. root) the entry will be null. It follows that this
+		 * method can only be used for a tree with a single root.
+		 */
+		for (StringTable table : parentList) {
+			if (parent.treeMatchesTable(table)) {
+				parent.setParentRef(table);
+				break;
 			}
 		}
+		// This is the empty parent table for the root!
+		if (parent.getParentTable()==null)
+			parent.setParentRef(parentList.get(0));
 		for (VisualNode child : parent.getChildren())
 			setupParentReference(child, map);
 
 	}
 
-	private String extractParentReference(StringTable parents) {
+	private boolean treeMatchesTable(StringTable parents) {
 		TreeNode node = getConfigNode().getParent();
 		for (int i = 0; i < parents.size(); i++) {
 			if (referencedBy(node, parents.getWithFlatIndex(i)))
-				return parents.getWithFlatIndex(i);
+				return true;
 		}
-		return null;
+		return false;
 	}
 
 	public static boolean referencedBy(TreeNode node, String ref) {
