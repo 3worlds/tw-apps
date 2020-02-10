@@ -132,9 +132,8 @@ public abstract class StructureEditorAdapter
 		this.newChild = null;
 		this.editableNode = selectedNode;
 		Set<String> discoveredFile = new HashSet<>();
-		this.baseSpec = specifications.getSpecsOf(editableNode.cClassId(), editableNode.createdBy(), TWA.getRoot(),
+		this.baseSpec = specifications.getSpecsOf(editableNode, TWA.getRoot(),
 				discoveredFile);
-
 		this.subClassSpec = specifications.getSubSpecsOf(baseSpec, editableNode.getSubClass());
 		this.gvisualiser = gv;
 		log.info("BaseSpec: " + baseSpec);
@@ -458,7 +457,9 @@ public abstract class StructureEditorAdapter
 		newChild = editableNode.newChild(childLabel, promptId);
 		newChild.setCollapse(false);
 		newChild.setCategory();
-
+		VisualNodeEditable vne = new VisualNodeEditor(newChild,editableNode.getGraph());
+		StringTable parents = (StringTable) childBaseSpec.properties().getPropertyValue(aaHasParent);
+		newChild.setParentRef(parents);
 		for (SimpleDataTreeNode propertySpec : propertySpecs) {
 			String key = (String) propertySpec.properties().getPropertyValue(aaHasName);
 //			System.out.println(key);
@@ -851,7 +852,12 @@ public abstract class StructureEditorAdapter
 		VisualNode newVNode = vFactory.makeNode(newCNode.id());
 		newCNode.connectParent(cParent);
 		newVNode.connectParent(vParent);
-		newVNode.setCreatedBy(cParent.classId());
+		Set<String> discoveredFile = new HashSet<>();
+		VisualNodeEditable vne = new VisualNodeEditor(newVNode, editableNode.getGraph());
+		SimpleDataTreeNode specs = specifications.getSpecsOf(vne, TWA.getRoot(),
+				discoveredFile);
+		StringTable parents = (StringTable) specs.properties().getPropertyValue(aaHasParent);
+		newVNode.setParentRef(parents);
 		newVNode.setConfigNode(newCNode);
 		newVNode.setCategory();
 		newVNode.setCollapse(false);

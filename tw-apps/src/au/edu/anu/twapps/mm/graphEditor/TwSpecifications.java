@@ -65,17 +65,28 @@ public class TwSpecifications implements //
 		Specifications, //
 		ArchetypeArchetypeConstants, //
 		TwArchetypeConstants {
+	private static boolean equals(StringTable t1, StringTable t2) {
+		if (t1.ndim()!=t2.ndim())
+			return false;
+		if (t1.size()!=t2.size())
+			return false;
+		for (int i = 0; i<t1.size();i++) {
+			if (!t1.getWithFlatIndex(i).equals(t2.getWithFlatIndex(i)))
+				return false;
+		}
+		return true;
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public SimpleDataTreeNode getSpecsOf(String cClassId, String createdBy, TreeNode root,
-			Set<String> discoveredFiles) {
+	public SimpleDataTreeNode getSpecsOf(VisualNodeEditable editNode, TreeNode root, Set<String> discoveredFiles) {
 		for (TreeNode childSpec : root.getChildren()) {
-			if (isOfClass((SimpleDataTreeNode) childSpec, cClassId)) {
-				if (createdBy == null)
-					return (SimpleDataTreeNode) childSpec;
-				if (parentTableContains((SimpleDataTreeNode) childSpec, createdBy))
-					return (SimpleDataTreeNode) childSpec;
+			if (isOfClass((SimpleDataTreeNode) childSpec, editNode.cClassId())) {
+				StringTable parentsSpecTable = (StringTable) ((SimpleDataTreeNode) childSpec).properties()
+						.getPropertyValue(aaHasParent);
+				StringTable parentsTable = editNode.getParentTable();
+				if (equals(parentsTable,parentsSpecTable))
+					return (SimpleDataTreeNode)childSpec;
 			}
 			// search subArchetypes
 			List<SimpleDataTreeNode> saConstraints = (List<SimpleDataTreeNode>) get(childSpec.getChildren(),
@@ -88,7 +99,7 @@ public class TwSpecifications implements //
 					if (!discoveredFiles.contains(fname)) {
 						discoveredFiles.add(fname);
 						Tree<?> tree = (Tree<?>) TWA.getSubArchetype(fname);
-						SimpleDataTreeNode result = getSpecsOf(cClassId, createdBy, tree.root(), discoveredFiles);
+						SimpleDataTreeNode result = getSpecsOf(editNode, tree.root(), discoveredFiles);
 						if (result != null)
 							return result;
 					}
@@ -126,20 +137,29 @@ public class TwSpecifications implements //
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Iterable<SimpleDataTreeNode> getChildSpecsOf(SimpleDataTreeNode parentSpec, SimpleDataTreeNode parentSubSpec,
-			TreeNode root) {
+	public Iterable<SimpleDataTreeNode> getChildSpecsOf(VisualNodeEditable editNode, SimpleDataTreeNode parentSpec,
+			SimpleDataTreeNode parentSubSpec, TreeNode root) {
 		String parentLabel = (String) parentSpec.properties().getPropertyValue(aaIsOfClass);
 		List<SimpleDataTreeNode> children = (List<SimpleDataTreeNode>) get(root.getChildren(),
 				selectZeroOrMany(hasProperty(aaHasParent)));
 		// could have a query here for finding a parent in a parent Stringtable
 		List<SimpleDataTreeNode> result = new ArrayList<>();
-		addChildrenTo(result, parentLabel, children);
+		for (SimpleDataTreeNode n : children)
+			if (editNode.references((StringTable) n.properties().getPropertyValue(aaHasParent)))
+				result.add(n);
+
+		// addChildrenTo(result, parentLabel, children);
 		if (parentSubSpec != null) {
 			// look for children in the subclass tree root
 			children = (List<SimpleDataTreeNode>) get(parentSubSpec.getParent().getChildren(),
 					selectZeroOrMany(hasProperty(aaHasParent)));
-			addChildrenTo(result, parentLabel, children);
+			// addChildrenTo(result, parentLabel, children);
+			for (SimpleDataTreeNode an : children)
+				if (editNode.references((StringTable) an.properties().getPropertyValue(aaHasParent)))
+					result.add(an);
+
 		}
+
 		return result;
 	}
 
@@ -214,13 +234,14 @@ public class TwSpecifications implements //
 		return result;
 	}
 
-	private boolean entriesContains(String key,List<String[]> entries) {
-		for (String[] ss:entries)
-			for (String s: ss) 
+	private boolean entriesContains(String key, List<String[]> entries) {
+		for (String[] ss : entries)
+			for (String s : ss)
 				if (s.equals(key))
 					return true;
 		return false;
 	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean filterPropertyStringTableOptions(Iterable<SimpleDataTreeNode> propertySpecs,
@@ -240,8 +261,8 @@ public class TwSpecifications implements //
 			String keyHandled = null;
 			while (iter.hasNext()) {
 				SimpleDataTreeNode ps = iter.next();
-				String key = (String) ps.properties().getPropertyValue(aaHasName);	
-				if (entriesContains(key,entries)) {
+				String key = (String) ps.properties().getPropertyValue(aaHasName);
+				if (entriesContains(key, entries)) {
 					String optionalKey = getSelectedEntry(key, selectedKeys, entries);
 					if (!Objects.equals(key, keyHandled)) {
 						if (optionalKey != null && !optionalKey.equals(key))
@@ -328,13 +349,13 @@ public class TwSpecifications implements //
 		return ioc.equals(label);
 	}
 
-	private void addChildrenTo(List<SimpleDataTreeNode> result, String parentLabel, List<SimpleDataTreeNode> children) {
-		for (SimpleDataTreeNode child : children) {
-			StringTable t = (StringTable) child.properties().getPropertyValue(aaHasParent);
-			if (t.contains(parentLabel + PairIdentity.LABEL_NAME_SEPARATOR))
-				result.add(child);
-		}
-	}
+//	private void addChildrenTo(List<SimpleDataTreeNode> result, String parentLabel, List<SimpleDataTreeNode> children) {
+//		for (SimpleDataTreeNode child : children) {
+//			StringTable t = (StringTable) child.properties().getPropertyValue(aaHasParent);
+//			if (t.contains(parentLabel + PairIdentity.LABEL_NAME_SEPARATOR))
+//				result.add(child);
+//		}
+//	}
 
 	@SuppressWarnings("unchecked")
 	@Override

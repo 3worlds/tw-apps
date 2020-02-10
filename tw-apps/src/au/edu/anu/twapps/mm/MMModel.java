@@ -32,12 +32,16 @@ package au.edu.anu.twapps.mm;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import au.edu.anu.omhtk.preferences.Preferences;
+import au.edu.anu.rscs.aot.archetype.ArchetypeArchetypeConstants;
+import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.errorMessaging.ErrorList;
 import au.edu.anu.twapps.dialogs.Dialogs;
 import au.edu.anu.twapps.exceptions.TwAppsException;
@@ -45,15 +49,20 @@ import au.edu.anu.twapps.mm.visualGraph.VisualGraphFactory;
 import au.edu.anu.twapps.mm.configGraph.ConfigGraph;
 import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
+import au.edu.anu.twcore.archetype.TWA;
+import au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrorMsg;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrors;
 import au.edu.anu.twcore.graphState.GraphState;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
+import au.edu.anu.twcore.root.EditableFactory;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Node;
+import fr.cnrs.iees.graph.Tree;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.ALEdge;
+import fr.cnrs.iees.graph.impl.SimpleDataTreeNode;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.graph.io.impl.OmugiGraphExporter;
@@ -64,6 +73,9 @@ import fr.cnrs.iees.twcore.generators.ProjectJarGenerator;
 import fr.ens.biologie.generic.utils.Duple;
 import fr.ens.biologie.generic.utils.Logging;
 
+import static au.edu.anu.rscs.aot.queries.CoreQueries.hasProperty;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.selectZeroOrMany;
+import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
@@ -72,7 +84,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
  *
  * Date 10 Dec. 2018
  */
-public class MMModel implements IMMModel {
+public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 	// Interface supplied to the controller
 	private TreeGraph<VisualNode, VisualEdge> visualGraph;
 	private IMMController controller;
@@ -110,10 +122,10 @@ public class MMModel implements IMMModel {
 			keys.add(P_PARAMETERCLASS.key());
 			keys.add(P_DECORATORCLASS.key());
 			keys.add(P_DATAELEMENTTYPE.key());
-			
+
 			nonEditableMap.put(key.label(), keys);
 		}
-		addEntry(ConfigurationNodeLabels.N_FIELD,P_FIELD_TYPE);
+		addEntry(ConfigurationNodeLabels.N_FIELD, P_FIELD_TYPE);
 		addEntry(ConfigurationNodeLabels.N_COMPONENT, ConfigurationPropertyNames.P_PARAMETERCLASS);
 		addEntry(ConfigurationNodeLabels.N_SYSTEM, ConfigurationPropertyNames.P_PARAMETERCLASS);
 		addEntry(ConfigurationNodeLabels.N_FUNCTION, ConfigurationPropertyNames.P_FUNCTIONCLASS);
@@ -167,15 +179,41 @@ public class MMModel implements IMMModel {
 			Thread.sleep(2000);
 			if (!p.isAlive())
 				if (p.exitValue() != 0) {
-					ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_FAIL,errorLog,Project.getProjectFile()));
+					ErrorList.add(
+							new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_FAIL, errorLog, Project.getProjectFile()));
 				}
 		} catch (Exception e) {
-			ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_EXCEPTION,e,errorLog,Project.getProjectFile()));
+			ErrorList.add(
+					new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_EXCEPTION, e, errorLog, Project.getProjectFile()));
 		}
+	}
+
+	private boolean stripOrphanedNodes(TreeGraph<TreeGraphDataNode, ALEdge> graph) {
+		int nRoots = 0;
+		for (TreeGraphDataNode n : graph.roots())
+			nRoots++;
+		if (nRoots != 1) {
+			TreeGraphDataNode twRoot = findTwRoot(graph);
+			for (TreeNode node : graph.nodes()) {
+				if (!node.equals(twRoot) && node.getParent() == null) {
+					EditableFactory cf = (EditableFactory) node.factory();
+					cf.expungeNode(node);
+					node.disconnect();
+				}
+			}
+			return true;
+		}
+		return false;
+
 	}
 
 	@Override
 	public void doNewProject(TreeGraph<TreeGraphDataNode, ALEdge> templateConfig) {
+		if (stripOrphanedNodes(templateConfig)) {
+			Dialogs.errorAlert("Graph creation error", "Tree with multiple roots",
+					"Nodes that have no parent have been removed");
+		}
+
 		String newId = getNewProjectName("prjct1", "New project", "", "New project name:");
 
 		if (newId == null)
@@ -188,15 +226,70 @@ public class MMModel implements IMMModel {
 		TreeGraphDataNode twRoot = findTwRoot(templateConfig);
 		if (!twRoot.id().equals(newId))
 			twRoot.rename(twRoot.id(), newId);
+		// If its not a full tree what do we do?? We could prohibit exporting broken
+		// trees;
+		// As long as the library files are true trees thats ok.
 		TreeGraph<VisualNode, VisualEdge> templateVisual = installNewVisualGraph(templateConfig);
 
 		ConfigGraph.setGraph(templateConfig);
 		visualGraph = templateVisual;
+		setParentReferences(visualGraph.root());
 		onProjectOpened();
 		controller.doLayout();
 		doSave();
 		if (GraphState.changed())
 			doSave();
+	}
+
+	private List<String> getQueryStringTableEntries(SimpleDataTreeNode constraint) {
+		List<String> result = new ArrayList<>();
+		if (constraint == null)
+			return result;
+		for (String key : constraint.properties().getKeysAsArray()) {
+			if (constraint.properties().getPropertyValue(key) instanceof StringTable) {
+				StringTable t = (StringTable) constraint.properties().getPropertyValue(key);
+				for (int i = 0; i < t.size(); i++)
+					result.add(t.getWithFlatIndex(i));
+			}
+		}
+		return result;
+	}
+
+	private void setParentReferences(VisualNode vn) {
+		Map<String, List<StringTable>> classParentMap = new HashMap<>();
+		Set<String> discoveredFiles = new HashSet<>();
+		fillClassParentMap(classParentMap, TWA.getRoot(), discoveredFiles);
+		vn.setupParentReference(classParentMap);		
+	}
+
+
+	private void fillClassParentMap(Map<String, List<StringTable>> classParentMap, TreeNode root,
+			Set<String> discoveredFiles) {
+		for (TreeNode childSpec : root.getChildren()) {
+			String key = (String) ((SimpleDataTreeNode) childSpec).properties().getPropertyValue(aaIsOfClass);
+			List<StringTable> value = classParentMap.get(key);
+			if (value == null)
+				value = new ArrayList<>();
+			StringTable item = (StringTable) ((SimpleDataTreeNode) childSpec).properties()
+					.getPropertyValue(aaHasParent);
+			value.add(item);
+			classParentMap.put(key, value);
+			// search subA
+			List<SimpleDataTreeNode> saConstraints = (List<SimpleDataTreeNode>) get(childSpec.getChildren(),
+					selectZeroOrMany(hasProperty(aaClassName, CheckSubArchetypeQuery.class.getName())));
+			for (SimpleDataTreeNode constraint : saConstraints) {
+				List<String> pars = getQueryStringTableEntries(constraint);
+				if (pars.get(0).equals(P_SA_SUBCLASS.key())) {
+					String fname = pars.get(pars.size() - 1);
+					// prevent infinite recursion
+					if (!discoveredFiles.contains(fname)) {
+						discoveredFiles.add(fname);
+						Tree<?> tree = (Tree<?>) TWA.getSubArchetype(fname);
+						fillClassParentMap(classParentMap, tree.root(), discoveredFiles);
+					}
+				}
+			}
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -210,6 +303,11 @@ public class MMModel implements IMMModel {
 		log.info("Import: " + file);
 		TreeGraph<TreeGraphDataNode, ALEdge> importGraph = (TreeGraph<TreeGraphDataNode, ALEdge>) FileImporter
 				.loadGraphFromFile(file);
+		if (stripOrphanedNodes(importGraph)) {
+			Dialogs.errorAlert("Import graph", "Tree with multiple roots",
+					"Nodes that have no parent have been removed");
+		}
+
 		TreeGraphDataNode twRoot = findTwRoot(importGraph);
 		if (twRoot == null) {
 			Dialogs.errorAlert("Import error", file.getName(),
@@ -223,12 +321,17 @@ public class MMModel implements IMMModel {
 		String newId = Project.create(twRoot.id());
 		if (!twRoot.id().equals(newId))
 			twRoot.rename(twRoot.id(), newId);
+		// If its not a full tree what do we do?? We could prohibit exporting broken
+		// trees;
+		// But we don't export anyway. We just import arbitrary graphs
+
 		TreeGraph<VisualNode, VisualEdge> importVisual = installNewVisualGraph(importGraph);
 		ConfigGraph.setGraph(importGraph);
 		visualGraph = importVisual;
-		doSave();
-		if (GraphState.changed())
-			doSave();
+		setParentReferences(visualGraph.root());
+//		doSave();
+//		if (GraphState.changed())
+//			doSave();
 		onProjectOpened();
 		controller.doLayout();
 	}
@@ -278,8 +381,8 @@ public class MMModel implements IMMModel {
 				Duple<VisualNode, VisualNode> vNodes = getMatchingPair(newVisualGraph.nodes(), parent, importNode);
 				// child ---------------------- parent
 				vNodes.getSecond().connectParent(vNodes.getFirst());
-				vNodes.getSecond().setCreatedBy(vNodes.getFirst().cClassId());
 			}
+
 		}
 
 		VisualGraphFactory vf = (VisualGraphFactory) newVisualGraph.edgeFactory();
@@ -308,25 +411,34 @@ public class MMModel implements IMMModel {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void doOpenProject(File file) {
-		// TODO Auto-generated method stub
 		if (!canClose())
 			return;
+
 		if (Project.isOpen()) {
 			onProjectClosing();
 			Project.close();
 		}
+
 		Project.open(file);
-		ConfigGraph.setGraph(
-				(TreeGraph<TreeGraphDataNode, ALEdge>) FileImporter.loadGraphFromFile(Project.makeConfigurationFile()));
-		visualGraph = (TreeGraph<VisualNode, VisualEdge>) FileImporter.loadGraphFromFile(Project.makeLayoutFile());
-		if (visualGraph == null || visualGraph.nNodes() != ConfigGraph.getGraph().nNodes()
-				|| visualGraph.nEdges() != ConfigGraph.getGraph().nEdges()) {
-			Dialogs.warnAlert("Open graph", "The graph layout is missing or corrupt", "Creating new layout");
-			visualGraph = installNewVisualGraph(ConfigGraph.getGraph());
-			doSave();
-			if (GraphState.changed())
-				doSave();
+		
+		TreeGraph<TreeGraphDataNode, ALEdge> newGraph = (TreeGraph<TreeGraphDataNode, ALEdge>) FileImporter
+				.loadGraphFromFile(Project.makeConfigurationFile());
+		TreeGraph<VisualNode, VisualEdge> importVisual = (TreeGraph<VisualNode, VisualEdge>) FileImporter
+				.loadGraphFromFile(Project.makeLayoutFile());
+
+		if (importVisual == null) {
+			Dialogs.errorAlert("File error", file.getName(), "Layout graph not found. Try importing this file.");
+			return;
 		}
+		if (importVisual.nNodes() != newGraph.nNodes()) {
+			Dialogs.errorAlert("File error", file.getName(),
+					"Layout graph does not have the same number of nodes as the configuration graph.Try importing this file.");
+			return;
+		}
+		// TODO We need to reopen the previous project if there was one.
+
+		ConfigGraph.setGraph(newGraph);
+		visualGraph = importVisual;
 		shadowGraph();
 		onProjectOpened();
 	}

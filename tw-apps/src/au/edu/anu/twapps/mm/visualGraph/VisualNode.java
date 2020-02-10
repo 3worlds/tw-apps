@@ -29,6 +29,10 @@
 
 package au.edu.anu.twapps.mm.visualGraph;
 
+import java.util.List;
+import java.util.Map;
+
+import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.twapps.exceptions.TwAppsException;
 import au.edu.anu.twcore.archetype.PrimaryTreeLabels;
 import au.edu.anu.twcore.root.EditableFactory;
@@ -36,6 +40,7 @@ import au.edu.anu.twcore.root.TwConfigFactory;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.GraphFactory;
 import fr.cnrs.iees.graph.NodeFactory;
+import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
@@ -61,17 +66,17 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 
 	public VisualNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
-		//setCategory();
+		// setCategory();
 	}
 
 	public VisualNode(Identity id, GraphFactory factory) {
 		super(id, new SharedPropertyListImpl(VisualGraphFactory.getNodeKeys()), factory);
-		//setCategory();
+		// setCategory();
 	}
 
 	public VisualNode(Identity newId, ReadOnlyPropertyList props, VisualGraphFactory factory) {
 		super(newId, (SimplePropertyList) props, factory);
-		//setCategory();
+		// setCategory();
 	}
 
 	public void setConfigNode(TreeGraphDataNode configNode) {
@@ -220,28 +225,29 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 		}
 		return false;
 	}
+
 	public boolean hasUncollapsedChildren() {
 		if (isCollapsed())
 			return false;
-		for (VisualNode n: getChildren()) {
+		for (VisualNode n : getChildren()) {
 			if (!n.isCollapsed())
 				return true;
 		}
 		return false;
 	}
 
-	public String getCreatedBy() {
-		return (String) properties().getPropertyValue(vnCreatedBy);
+	public StringTable getParentTable() {
+		return (StringTable) properties().getPropertyValue(vnParentRef);
 	}
 
-	public void setCreatedBy(String label) {
-		properties().setProperty(vnCreatedBy, label);
+	public void setParentRef(StringTable table) {
+		properties().setProperty(vnParentRef, table);
 	}
 
 	private ExtendablePropertyList getExtendablePropertyList() {
 		return (ExtendablePropertyList) configNode.properties();
 	}
-	
+
 	public SimplePropertyList cProperties() {
 		return configNode.properties();
 	}
@@ -263,10 +269,10 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 	}
 
 	public void shadowElements(TreeGraph<TreeGraphDataNode, ALEdge> configGraph) {
-		for (TreeGraphDataNode cNode:configGraph.nodes()) {
+		for (TreeGraphDataNode cNode : configGraph.nodes()) {
 			if (cNode.id().equals(id())) {
 				configNode = cNode;
-				for (ALEdge edge :edges(Direction.OUT)) {
+				for (ALEdge edge : edges(Direction.OUT)) {
 					VisualEdge vEdge = (VisualEdge) edge;
 					vEdge.shadowElements(configNode);
 				}
@@ -275,11 +281,11 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 			}
 		}
 	}
-	
+
 	public String cClassId() {
 		return configNode.classId();
 	}
-	
+
 	public void remove() {
 		EditableFactory vf = (EditableFactory) factory();
 		EditableFactory cf = (EditableFactory) configNode.factory();
@@ -288,38 +294,90 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 		disconnect();
 		configNode.disconnect();
 	}
-	
-	public VisualNode newChild(String label,String proposedId) {
+
+	public VisualNode newChild(String label, String proposedId) {
 		NodeFactory cf = configNode.factory();
 		TreeGraphDataNode cChild = (TreeGraphDataNode) cf.makeNode(cf.nodeClass(label), proposedId);
-		cChild.connectParent(configNode);	 
+		cChild.connectParent(configNode);
 		proposedId = cChild.id();
 		VisualNode vChild = (VisualNode) factory().makeNode(proposedId);
 		vChild.connectParent(this);
 		vChild.setConfigNode(cChild);
-		vChild.setCreatedBy(configNode.classId());
-		vChild.setCategory();
 		if (!cChild.id().equals(vChild.id()))
-			throw new TwAppsException("Ids must match -[config: "+cChild.id()+"; visual: "+vChild.id());
+			throw new TwAppsException("Ids must match -[config: " + cChild.id() + "; visual: " + vChild.id());
 		return vChild;
 	}
-	
-	public VisualEdge newEdge(String id,String label,VisualNode vEnd) {
-				VisualGraphFactory vf = (VisualGraphFactory) factory();
+
+	public VisualEdge newEdge(String id, String label, VisualNode vEnd) {
+		VisualGraphFactory vf = (VisualGraphFactory) factory();
 		VisualEdge result = vf.makeEdge(this, vEnd, id);
 		id = result.id();
-		
+
 		TreeGraphNode cEnd = vEnd.configNode;
 		TwConfigFactory cf = (TwConfigFactory) configNode.factory();
-		ALEdge cEdge =(ALEdge) cf.makeEdge(cf.edgeClass(label),configNode,cEnd,id);
+		ALEdge cEdge = (ALEdge) cf.makeEdge(cf.edgeClass(label), configNode, cEnd, id);
 		result.setConfigEdge(cEdge);
 		if (!cEdge.id().equals(result.id()))
-			throw new TwAppsException("Ids must match -[config: "+cEdge.id()+"; visual: "+result.id());
+			throw new TwAppsException("Ids must match -[config: " + cEdge.id() + "; visual: " + result.id());
 		return result;
 	}
+
 	public void reconnectChild(VisualNode vChild) {
 		TreeGraphNode cChild = vChild.configNode;
 		configNode.connectChild(cChild);
 		connectChild(vChild);
 	}
+
+	public void setupParentReference(Map<String, List<StringTable>> map) {
+		setupParentReference(this, map);
+	}
+
+	private static void setupParentReference(VisualNode parent, Map<String, List<StringTable>> map) {
+		List<StringTable> parentList = map.get(parent.cClassId());
+		if (parentList.isEmpty())
+			parent.setParentRef(null);
+		else if (parentList.size() == 1) {
+			parent.setParentRef(parentList.get(0));
+		} else {
+			// check each table to see if it corresponds to the current parents;
+			for (StringTable st : parentList) {
+				if (parent.extractParentReference(st) != null) {
+					parent.setParentRef(st);
+					break;
+				}
+			}
+
+//			System.out.println(parent.getDisplayText(false));
+//			for (StringTable st:parentList) {
+//				System.out.println(st.toString());
+//			}
+//			System.out.println("--------------");
+		}
+		for (VisualNode child : parent.getChildren())
+			setupParentReference(child, map);
+
+	}
+
+	private String extractParentReference(StringTable parents) {
+		TreeNode node = getConfigNode();
+		for (int i = 0; i < parents.size(); i++) {
+			if (referencedBy(node, parents.getWithFlatIndex(i)))
+				return parents.getWithFlatIndex(i);
+		}
+		return null;
+	}
+
+	public static boolean referencedBy(TreeNode node, String ref) {
+		String[] parts = ref.split("/");
+		for (int i = parts.length - 1; i >= 0; i--) {
+			if (node != null) {
+				if (!node.classId().equals(parts[i].replace(":", "")))
+					return false;
+				node = node.getParent();
+			} else
+				return false;
+		}
+		return true;
+	}
+
 }

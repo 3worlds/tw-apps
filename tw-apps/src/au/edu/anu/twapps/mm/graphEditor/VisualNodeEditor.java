@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import au.edu.anu.rscs.aot.archetype.ArchetypeArchetypeConstants;
+import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.util.IntegerRange;
 import au.edu.anu.twapps.exceptions.TwAppsException;
 import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
@@ -42,6 +43,7 @@ import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import au.edu.anu.twcore.archetype.TwArchetypeConstants;
 import fr.cnrs.iees.OmugiClassLoader;
 import fr.cnrs.iees.graph.Direction;
+import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.ALNode;
 import fr.cnrs.iees.graph.impl.TreeGraph;
@@ -130,8 +132,8 @@ public class VisualNodeEditor implements //
 	}
 
 	@Override
-	public String createdBy() {
-		return visualNode.getCreatedBy();
+	public StringTable getParentTable() {
+		return visualNode.getParentTable();
 	}
 
 	@Override
@@ -189,13 +191,38 @@ public class VisualNodeEditor implements //
 
 	@Override
 	public VisualEdge newEdge(String id, String label, VisualNode vEnd) {
-		return visualNode.newEdge(id, label,vEnd);
+		return visualNode.newEdge(id, label, vEnd);
 	}
 
 	@Override
 	public void reconnectChild(VisualNode vnChild) {
 		visualNode.reconnectChild(vnChild);
-
 	}
+
+	@Override
+	public boolean references(StringTable parents) {
+		TreeNode node = visualNode.getConfigNode();
+		for (int i = 0; i < parents.size(); i++) 
+			if (VisualNode.referencedBy(node, parents.getWithFlatIndex(i)))
+				return true;
+		return false;
+	}
+
+	
+	@Override
+	public TreeGraph<VisualNode, VisualEdge> getGraph() {
+		return visualGraph;
+	}
+
+	@Override
+	public String extractParentReference(StringTable parents) {
+		TreeNode node = visualNode.getConfigNode();
+		for (int i = 0; i < parents.size(); i++) 
+			if (VisualNode.referencedBy(node, parents.getWithFlatIndex(i)))
+				return parents.getWithFlatIndex(i);
+		
+		return null;
+	}
+
 
 }

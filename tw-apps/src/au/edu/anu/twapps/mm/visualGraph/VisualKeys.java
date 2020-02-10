@@ -37,7 +37,7 @@ public interface VisualKeys {
 	public final static String vnCategory = "category";
 //	public final static String vnParentLine = "parentLine";
 	public final static String vnCollapsed = "collapsed";
-	public final static String vnCreatedBy = "createdBy";
+	public final static String vnParentRef = "parentRef";
 
 //	public final static String veText = "text";
 //	public final static String veSymbol = "symbol";

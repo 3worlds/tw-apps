@@ -63,7 +63,8 @@ public interface Specifications {
 	 * get specification of a given node from the configuration graph. If null, it
 	 * won't be checked.
 	 */
-	public SimpleDataTreeNode getSpecsOf(String cClassId, String createdBy, TreeNode root, Set<String> discoveredFiles);
+	public SimpleDataTreeNode getSpecsOf(VisualNodeEditable
+			editNode, TreeNode root, Set<String> discoveredFiles);
 
 	/*Returns the sub archetype spec of the given class of this baseSpec. Often will return null*/
 	public SimpleDataTreeNode getSubSpecsOf(SimpleDataTreeNode baseSpecs, Class<? extends TreeNode> subClass);
@@ -72,7 +73,8 @@ public interface Specifications {
 	 * Specifications of all potential children of a parent with this label and
 	 * optional subClass.
 	 */
-	public Iterable<SimpleDataTreeNode> getChildSpecsOf(SimpleDataTreeNode baseSpec, SimpleDataTreeNode subSpec,
+	public Iterable<SimpleDataTreeNode> getChildSpecsOf(VisualNodeEditable
+			editNode,SimpleDataTreeNode baseSpec, SimpleDataTreeNode subSpec,
 			TreeNode root);
 
 	/* edge specifications nodes of a node with this label and class */

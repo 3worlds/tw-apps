@@ -29,9 +29,11 @@
 
 package au.edu.anu.twapps.mm.graphEditor;
 
+import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.util.IntegerRange;
 import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
+import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
 
 // just experimenting with what services mm requires of an aotnode.
@@ -70,8 +72,6 @@ public interface VisualNodeEditable {
 
 	public String proposeAnId(String proposedName);
 	
-	public String createdBy();
-
 	public VisualNode getSelectedVisualNode();
 
 	public Class<? extends TreeGraphNode> getSubClass();
@@ -85,6 +85,14 @@ public interface VisualNodeEditable {
 	public VisualEdge newEdge(String id, String label,VisualNode vEnd);
 
 	public void reconnectChild(VisualNode vnChild);
+	
+	public boolean references (StringTable parents);
+	
+	public TreeGraph<VisualNode, VisualEdge> getGraph();
+
+	public String extractParentReference(StringTable parents);
+
+	public StringTable getParentTable();
 
 	
 	//public void addProperty(String key, Object defaultValue);

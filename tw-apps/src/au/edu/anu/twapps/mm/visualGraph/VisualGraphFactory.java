@@ -147,7 +147,7 @@ public class VisualGraphFactory extends TreeGraphFactory implements EditableFact
 		vgLabels.put(VisualEdge.class.getSimpleName(), VisualEdge.class.getName());
 	}
 
-	private static PropertyKeys nodeKeys = new PropertyKeys(vnx, vny, vnCategory, vnCollapsed, vnCreatedBy);
+	private static PropertyKeys nodeKeys = new PropertyKeys(vnx, vny, vnCategory, vnCollapsed, vnParentRef);
 	private static PropertyKeys edgeKeys = new PropertyKeys();
 
 	public static PropertyKeys getNodeKeys() {
