@@ -340,18 +340,13 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 			parent.setParentRef(parentList.get(0));
 		} else {
 			// check each table to see if it corresponds to the current parents;
+			// TODO bug here, must have implicit OR for each table entry!!!
 			for (StringTable st : parentList) {
 				if (parent.extractParentReference(st) != null) {
 					parent.setParentRef(st);
 					break;
 				}
 			}
-
-//			System.out.println(parent.getDisplayText(false));
-//			for (StringTable st:parentList) {
-//				System.out.println(st.toString());
-//			}
-//			System.out.println("--------------");
 		}
 		for (VisualNode child : parent.getChildren())
 			setupParentReference(child, map);
@@ -359,7 +354,7 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 	}
 
 	private String extractParentReference(StringTable parents) {
-		TreeNode node = getConfigNode();
+		TreeNode node = getConfigNode().getParent();
 		for (int i = 0; i < parents.size(); i++) {
 			if (referencedBy(node, parents.getWithFlatIndex(i)))
 				return parents.getWithFlatIndex(i);
