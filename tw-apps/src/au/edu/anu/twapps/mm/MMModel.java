@@ -150,6 +150,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		ConfigGraph.validateGraph();
 	}
 
+	private static int nInstances = 0;
 	@Override
 	public void doDeploy() {
 
@@ -161,6 +162,8 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		commands.add("java");
 		commands.add("-jar");
 		commands.add(Project.getProjectUserName() + ".jar");
+		commands.add(""+nInstances);// runTimeId??
+		nInstances++;
 		commands.add(Project.getProjectFile().getName());
 		for (String s : mmArgs)
 			commands.add(s);
