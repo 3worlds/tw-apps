@@ -151,6 +151,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 	}
 
 	private static int nInstances = 0;
+
 	@Override
 	public void doDeploy() {
 
@@ -162,7 +163,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		commands.add("java");
 		commands.add("-jar");
 		commands.add(Project.getProjectUserName() + ".jar");
-		commands.add(""+nInstances);// runTimeId??
+		commands.add("" + nInstances);// runTimeId??
 		nInstances++;
 		commands.add(Project.getProjectFile().getName());
 		for (String s : mmArgs)
@@ -182,8 +183,9 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 			Thread.sleep(2000);
 			if (!p.isAlive())
 				if (p.exitValue() != 0) {
-					ErrorList.add(
-							new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_FAIL, errorLog, Project.getProjectFile()));
+					if (errorLog.exists() && errorLog.length() > 0)
+						ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_FAIL, errorLog,
+								Project.getProjectFile()));
 				}
 		} catch (Exception e) {
 			ErrorList.add(
@@ -262,9 +264,8 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		Map<String, List<StringTable>> classParentMap = new HashMap<>();
 		Set<String> discoveredFiles = new HashSet<>();
 		fillClassParentMap(classParentMap, TWA.getRoot(), discoveredFiles);
-		vn.setupParentReference(classParentMap);		
+		vn.setupParentReference(classParentMap);
 	}
-
 
 	private void fillClassParentMap(Map<String, List<StringTable>> classParentMap, TreeNode root,
 			Set<String> discoveredFiles) {
@@ -423,7 +424,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		}
 
 		Project.open(file);
-		
+
 		TreeGraph<TreeGraphDataNode, ALEdge> newGraph = (TreeGraph<TreeGraphDataNode, ALEdge>) FileImporter
 				.loadGraphFromFile(Project.makeConfigurationFile());
 		TreeGraph<VisualNode, VisualEdge> importVisual = (TreeGraph<VisualNode, VisualEdge>) FileImporter
