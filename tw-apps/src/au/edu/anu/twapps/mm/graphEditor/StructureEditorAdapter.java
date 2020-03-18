@@ -314,12 +314,12 @@ public abstract class StructureEditorAdapter
 
 		// if there is an out node which is not of the same label as proposedEndNode
 		// then return false
-		String currentChoice = getCurrentNodeLabelXORChoice(entries);
+		Duple<String,String> currentChoice = getCurrentNodeLabelXORChoice(entries);
 		// no outNodes with label in the set of duples
 		if (currentChoice == null)
 			return true;
 		// Can't change to other choice
-		if (!currentChoice.equals(proposedEndNode.cClassId())) {
+		if (currentChoice.getSecond().equals(proposedEndNode.cClassId())) {
 			log.info("Fail");
 			return false;
 		}
@@ -327,12 +327,14 @@ public abstract class StructureEditorAdapter
 	}
 
 	// TODO how can this work with multiple queries?
-	private String getCurrentNodeLabelXORChoice(List<Duple<String, String>> entries) {
+	private Duple<String,String> getCurrentNodeLabelXORChoice(List<Duple<String, String>> entries) {
 		for (VisualNode outNode : editableNode.getOutNodes()) {
 			String outLabel = outNode.cClassId();
 			for (Duple<String, String> duple : entries) {
-				if (duple.getFirst().equals(outLabel) || duple.getSecond().equals(outLabel))
-					return outLabel;
+				if (duple.getFirst().equals(outLabel))
+					return duple;
+				else if (duple.getSecond().equals(outLabel))
+					return new Duple<String,String>(outLabel,duple.getFirst());
 			}
 		}
 		return null;
