@@ -125,7 +125,9 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 
 			nonEditableMap.put(key.label(), keys);
 		}
+		addEntry(ConfigurationNodeLabels.N_SPACE, P_SPACETYPE);
 		addEntry(ConfigurationNodeLabels.N_FIELD, P_FIELD_TYPE);
+		addEntry(ConfigurationNodeLabels.N_TABLE, P_FIELD_TYPE);
 		addEntry(ConfigurationNodeLabels.N_COMPONENT, ConfigurationPropertyNames.P_PARAMETERCLASS);
 		addEntry(ConfigurationNodeLabels.N_SYSTEM, ConfigurationPropertyNames.P_PARAMETERCLASS);
 		addEntry(ConfigurationNodeLabels.N_FUNCTION, ConfigurationPropertyNames.P_FUNCTIONCLASS);
