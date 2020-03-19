@@ -73,7 +73,13 @@ public class VisualEdge extends ALDataEdge implements VisualKeys {
 		return configEdge;
 	}
 
+	public boolean hasText() {
+		return veText != null;
+	}
+
 	public Object getText() {
+		if (veText == null)
+			throw new TwAppsException("Attempt to access null edge text object [" + getDisplayText(false) + "]");
 		return veText;
 	}
 
