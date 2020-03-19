@@ -50,6 +50,7 @@ import au.edu.anu.twapps.mm.configGraph.ConfigGraph;
 import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import au.edu.anu.twcore.archetype.TWA;
+import au.edu.anu.twcore.archetype.TwArchetypeConstants;
 import au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrorMsg;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrors;
@@ -115,7 +116,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		for (ConfigurationNodeLabels key : ConfigurationNodeLabels.values()) {
 			List<String> keys = new ArrayList<>();
 			// default - subclass is never editable
-			keys.add("subclass");
+			keys.add(TwArchetypeConstants.twaSubclass);
 			keys.add("generatedClassName");
 			keys.add(P_FUNCTIONCLASS.key());
 			keys.add(P_DRIVERCLASS.key());
@@ -125,12 +126,13 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 
 			nonEditableMap.put(key.label(), keys);
 		}
-		addEntry(ConfigurationNodeLabels.N_SPACE, P_SPACETYPE);
-		addEntry(ConfigurationNodeLabels.N_FIELD, P_FIELD_TYPE);
-		addEntry(ConfigurationNodeLabels.N_TABLE, P_FIELD_TYPE);
-		addEntry(ConfigurationNodeLabels.N_COMPONENT, ConfigurationPropertyNames.P_PARAMETERCLASS);
-		addEntry(ConfigurationNodeLabels.N_SYSTEM, ConfigurationPropertyNames.P_PARAMETERCLASS);
-		addEntry(ConfigurationNodeLabels.N_FUNCTION, ConfigurationPropertyNames.P_FUNCTIONCLASS);
+		addEntry(N_SPACE, P_SPACETYPE);
+		addEntry(N_FIELD, P_FIELD_TYPE);
+		addEntry(N_TABLE, P_FIELD_TYPE);// done by P_DATAELEMENTTYPE above
+		addEntry(N_COMPONENT, P_PARAMETERCLASS);
+		addEntry(N_SYSTEM, P_PARAMETERCLASS);
+		addEntry(N_FUNCTION, P_FUNCTIONCLASS);
+		addEntry(N_FUNCTION,P_FUNCTIONTYPE);
 	}
 
 	@Override

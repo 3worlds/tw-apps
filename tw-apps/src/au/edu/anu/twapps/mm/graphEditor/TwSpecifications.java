@@ -66,12 +66,12 @@ public class TwSpecifications implements //
 		ArchetypeArchetypeConstants, //
 		TwArchetypeConstants {
 	private static boolean equals(StringTable t1, StringTable t2) {
-		//NB: should assume neither table is null.
-		if (t1.ndim()!=t2.ndim())
+		// NB: should assume neither table is null.
+		if (t1.ndim() != t2.ndim())
 			return false;
-		if (t1.size()!=t2.size())
+		if (t1.size() != t2.size())
 			return false;
-		for (int i = 0; i<t1.size();i++) {
+		for (int i = 0; i < t1.size(); i++) {
 			if (!t1.getWithFlatIndex(i).equals(t2.getWithFlatIndex(i)))
 				return false;
 		}
@@ -86,8 +86,8 @@ public class TwSpecifications implements //
 				StringTable parentsSpecTable = (StringTable) ((SimpleDataTreeNode) childSpec).properties()
 						.getPropertyValue(aaHasParent);
 				StringTable parentsTable = editNode.getParentTable();
-				if (equals(parentsTable,parentsSpecTable))
-					return (SimpleDataTreeNode)childSpec;
+				if (equals(parentsTable, parentsSpecTable))
+					return (SimpleDataTreeNode) childSpec;
 			}
 			// search subArchetypes
 			List<SimpleDataTreeNode> saConstraints = (List<SimpleDataTreeNode>) get(childSpec.getChildren(),
@@ -411,6 +411,22 @@ public class TwSpecifications implements //
 		return result;
 	}
 
+	private static String[] enum2Strings(Class<? extends Enum<?>> e) {
+		Enum<?>[] enums = e.getEnumConstants();
+		String[] names = new String[enums.length];
+		for (int i = 0; i < enums.length; i++)
+			names[i] = enums[i].toString();
+		return names;
+	}
+	private static Enum<?> string2Enum(String s,Class<? extends Enum<?>> e){
+		Enum<?>[] enums = e.getEnumConstants();
+		for (int i = 0; i<enums.length;i++) {
+			if (s.equals(enums[i].toString()))
+				return enums[i];
+		}
+		return null;
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void filterRequiredPropertyQuery(VisualNode vnode, SimpleDataTreeNode baseSpec, SimpleDataTreeNode subSpec) {
@@ -425,23 +441,34 @@ public class TwSpecifications implements //
 				pset.add(key);
 				Object obj = vnode.configGetPropertyValue(key);
 				// works with obj ==null
-				if (obj instanceof DataElementType) {
-					String[] list = new String[DataElementType.keySet().size()];
-					for (DataElementType det : DataElementType.values()) {
-						list[det.ordinal()] = det.toString();
-					}
-					// stupid design all this;
-					int choice = Dialogs.getListChoice(list, vnode.getDisplayText(false), key,
+				// gets the string list
+				if (obj instanceof Enum<?>) {
+					Class<? extends Enum<?>> e = (Class<? extends Enum<?>>) obj.getClass();
+					String[] xx = enum2Strings(e);
+					int choice = Dialogs.getListChoice(xx,vnode.getDisplayText(false), key,
 							obj.getClass().getSimpleName());
-					if (choice >= 0) {
-						for (DataElementType det : DataElementType.values()) {
-							if (det.ordinal() == choice) {
-								vnode.getConfigNode().properties().setProperty(key, det);
-								break;
-							}
-						}
-					}
+					if (choice>=0) {
+						Enum<?> value = string2Enum(xx[choice],e);
+						vnode.getConfigNode().properties().setProperty(key, value);
+					}	
 				}
+//				if (obj instanceof DataElementType) {
+//					String[] list = new String[DataElementType.values().length];
+//					for (DataElementType det : DataElementType.values()) {
+//						list[det.ordinal()] = det.toString();
+//					}
+//					// stupid design all this;
+//					int choice = Dialogs.getListChoice(list, vnode.getDisplayText(false), key,
+//							obj.getClass().getSimpleName());
+//					if (choice >= 0) {
+//						for (DataElementType det : DataElementType.values()) {
+//							if (det.ordinal() == choice) {
+//								vnode.getConfigNode().properties().setProperty(key, det);
+//								break;
+//							}
+//						}
+//					}
+//				}
 			}
 		}
 
