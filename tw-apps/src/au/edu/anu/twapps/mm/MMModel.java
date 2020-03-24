@@ -202,18 +202,31 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		for (TreeGraphDataNode n : graph.roots())
 			nRoots++;
 		if (nRoots != 1) {
+			List<TreeNode> rootList = new ArrayList<>();
 			TreeGraphDataNode twRoot = findTwRoot(graph);
 			for (TreeNode node : graph.nodes()) {
 				if (!node.equals(twRoot) && node.getParent() == null) {
-					EditableFactory cf = (EditableFactory) node.factory();
-					cf.expungeNode(node);
-					node.disconnect();
+					rootList.add(node);
 				}
+			}
+			
+			for (TreeNode node: rootList) {
+				deleteTreeFrom(node);
 			}
 			return true;
 		}
 		return false;
 
+	}
+	
+
+	private static void deleteTreeFrom(TreeNode parent) {
+		for (TreeNode child:parent.getChildren()) {
+			deleteTreeFrom(child);
+		}
+		EditableFactory cf = (EditableFactory) parent.factory();
+		cf.expungeNode(parent);
+		parent.disconnect();
 	}
 
 	@Override
