@@ -133,6 +133,8 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		addEntry(N_SYSTEM, P_PARAMETERCLASS);
 		addEntry(N_FUNCTION, P_FUNCTIONCLASS);
 		addEntry(N_FUNCTION,P_FUNCTIONTYPE);
+		addEntry(N_COMPONENTTYPE,P_RELOCATEFUNCTION);
+		
 	}
 
 	@Override
