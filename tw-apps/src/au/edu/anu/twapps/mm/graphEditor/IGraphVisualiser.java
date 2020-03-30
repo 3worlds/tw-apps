@@ -68,5 +68,7 @@ public interface IGraphVisualiser {
 	public void onNodeRenamed(VisualNode vNode);
 	
 	public void onEdgeRenamed(VisualEdge vEdge);
+	
+	public void doFocusedLayout(VisualNode root);
 
 }
