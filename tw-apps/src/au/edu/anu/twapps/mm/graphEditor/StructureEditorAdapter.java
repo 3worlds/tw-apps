@@ -491,19 +491,24 @@ public abstract class StructureEditorAdapter
 		if (queries.isEmpty())
 			return;
 		SimpleDataTreeNode query = queries.get(0);
-		/*-
-		 * 	mustSatisfyQuery variableValuesPropertiesMatchDefinitionQuery
-		className = String("au.edu.anu.twcore.archetype.tw.PropertiesMatchDefinition")
-		values = StringTable(([1]drivers))
-		*/
+
 		StringTable values = (StringTable) query.properties().getPropertyValue("values");
 		String dataCategory = values.getWithFlatIndex(0);
-		Collection<TreeGraphDataNode> defs = PropertiesMatchDefinitionQuery.getDataDefs(newChild.getConfigNode(),
+
+		Duple<Boolean,Collection<TreeGraphDataNode>> defData = PropertiesMatchDefinitionQuery.getDataDefs(newChild.getConfigNode(),
 				dataCategory);
+		Collection<TreeGraphDataNode> defs = defData.getSecond();
+		Boolean useAutoVar = defData.getFirst();
 		if (defs == null) {
 			return;
 		}
+		
 		ExtendablePropertyList newProps = (ExtendablePropertyList) newChild.getConfigNode().properties();
+		if (useAutoVar) {
+			newProps.addProperty("age",0);
+			newProps.addProperty("birthDate",0);
+			//newProps.addProperty("name","Skippy");
+		}
 		for (TreeGraphDataNode def : defs) {
 			if (def.classId().equals(N_FIELD.label()))
 				newProps.addProperty(def.id(), ((FieldNode) def).newInstance());
