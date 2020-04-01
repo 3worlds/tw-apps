@@ -452,23 +452,6 @@ public class TwSpecifications implements //
 						vnode.getConfigNode().properties().setProperty(key, value);
 					}	
 				}
-//				if (obj instanceof DataElementType) {
-//					String[] list = new String[DataElementType.values().length];
-//					for (DataElementType det : DataElementType.values()) {
-//						list[det.ordinal()] = det.toString();
-//					}
-//					// stupid design all this;
-//					int choice = Dialogs.getListChoice(list, vnode.getDisplayText(false), key,
-//							obj.getClass().getSimpleName());
-//					if (choice >= 0) {
-//						for (DataElementType det : DataElementType.values()) {
-//							if (det.ordinal() == choice) {
-//								vnode.getConfigNode().properties().setProperty(key, det);
-//								break;
-//							}
-//						}
-//					}
-//				}
 			}
 		}
 
