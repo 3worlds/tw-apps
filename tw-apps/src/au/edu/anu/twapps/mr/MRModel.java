@@ -46,12 +46,12 @@ import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
  */
 public class MRModel implements IMRModel {
 	private TreeGraph<TreeGraphDataNode, ALEdge> graph;
-	private IMRController controller;
+	//private IMRController controller; // TODO Not used
 	private List<File> ISFiles;
 	private int currentIdx;
 
-	public MRModel(IMRController controller) {
-		this.controller = controller;
+	public MRModel(/*IMRController controller*/) {
+		//this.controller = controller;
 	}
 
 	@Override

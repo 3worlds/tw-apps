@@ -132,9 +132,9 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		addEntry(N_COMPONENT, P_PARAMETERCLASS);
 		addEntry(N_SYSTEM, P_PARAMETERCLASS);
 		addEntry(N_FUNCTION, P_FUNCTIONCLASS);
-		addEntry(N_FUNCTION,P_FUNCTIONTYPE);
-		addEntry(N_COMPONENTTYPE,P_RELOCATEFUNCTION);
-		
+		addEntry(N_FUNCTION, P_FUNCTIONTYPE);
+		addEntry(N_COMPONENTTYPE, P_RELOCATEFUNCTION);
+
 	}
 
 	@Override
@@ -211,8 +211,8 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 					rootList.add(node);
 				}
 			}
-			
-			for (TreeNode node: rootList) {
+
+			for (TreeNode node : rootList) {
 				deleteTreeFrom(node);
 			}
 			return true;
@@ -220,10 +220,9 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		return false;
 
 	}
-	
 
 	private static void deleteTreeFrom(TreeNode parent) {
-		for (TreeNode child:parent.getChildren()) {
+		for (TreeNode child : parent.getChildren()) {
 			deleteTreeFrom(child);
 		}
 		EditableFactory cf = (EditableFactory) parent.factory();
