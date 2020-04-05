@@ -67,135 +67,62 @@ public class ConfigGraph {
 	}
 
 	public static void validateGraph() {
-		Iterable<ErrorMessagable> specErrors = TWA.checkSpecifications(graph);
+		// clears ui message display and disables ui button and displays 'checking...' label
 		ErrorList.clear();
-		if (specErrors != null) {
-			for (ErrorMessagable e : specErrors) {
-				SpecificationErrorMsg se = (SpecificationErrorMsg) e;
-				ModelBuildErrorMsg mbem = new ModelBuildErrorMsg(ModelBuildErrors.SPECIFICATION, se, graph);
-				if (!mbem.ignore())
-					// Here is where context is shifted from whatever the specs say to whatever the
-					// user can do.
-					ErrorList.add(mbem);
+		/**
+		 * Because of the thread below, execution now leaves this method with buttons
+		 * states as set by clear() above.
+		 * 
+		 * The last method "SignalState", simple causes a Platform.runLater to restore
+		 * button states
+		 */
+		Runnable checkTask = () -> {
+			Iterable<ErrorMessagable> specErrors = TWA.checkSpecifications(graph);
+			if (specErrors != null) {
+				for (ErrorMessagable e : specErrors) {
+					SpecificationErrorMsg se = (SpecificationErrorMsg) e;
+					ModelBuildErrorMsg mbem = new ModelBuildErrorMsg(ModelBuildErrors.SPECIFICATION, se, graph);
+					if (!mbem.ignore())
+						/**
+						 * Here is where context is shifted from whatever the specs say to whatever the
+						 * user can do. Sounds good but not really fully satisfactory. There are still
+						 * many confusing msgs.
+						 */
+						ErrorList.add(mbem);
+				}
 			}
-		}
-		if (!ErrorList.haveErrors()) {
-			boolean haveCompiler = !(ToolProvider.getSystemJavaCompiler() == null);
-			if (!haveCompiler)
-				ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.COMPILER_MISSING));
-		}
+			if (!ErrorList.haveErrors()) {
+				boolean haveCompiler = !(ToolProvider.getSystemJavaCompiler() == null);
+				if (!haveCompiler)
+					ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.COMPILER_MISSING));
+			}
 
-		if (!ErrorList.haveErrors()) {
-			CodeGenerator gen = new CodeGenerator(graph);
-			gen.generate();
-		}
+			if (!ErrorList.haveErrors()) {
+				CodeGenerator gen = new CodeGenerator(graph);
+				gen.generate();
+			}
 
-		if (!ErrorList.haveErrors()) {
-			ProjectJarGenerator gen = new ProjectJarGenerator();
-			gen.generate(graph);
-		}
-		if (!ErrorList.haveErrors()) {
-			File file = new File(TwPaths.TW_ROOT + File.separator + TwPaths.TW_DEP_JAR);
-			if (!file.exists())
-				ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_RESOURCE_MISSING, file,"Run TwSetup or obtain file from developers."));
+			if (!ErrorList.haveErrors()) {
+				ProjectJarGenerator gen = new ProjectJarGenerator();
+				gen.generate(graph);
+			}
+			if (!ErrorList.haveErrors()) {
+				File file = new File(TwPaths.TW_ROOT + File.separator + TwPaths.TW_DEP_JAR);
+				if (!file.exists())
+					ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_RESOURCE_MISSING, file,
+							"Run TwSetup or obtain file from developers."));
 
-			if (GraphState.changed())
-				ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_PROJECT_UNSAVED));
-		}
-		ErrorList.signalState();
+				if (GraphState.changed())
+					ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_PROJECT_UNSAVED));
+			}
+			ErrorList.signalState();
+
+		};
+		new Thread(checkTask).start();
 	}
-
 
 	public static void onParentChanged() {
 		graph.onParentChanged();
 	}
-
-//	private static void parseArchetypError(CheckMessage e) {
-//		switch (e.getCode()) {
-//
-//		case CheckMessage.code1: {
-//			// Suppress msgs we can't do anything about immediately
-//			List<TreeGraphNode> parentNodes = getExistingParents(e.parentList(), e.requiredClass());
-//			if (!parentNodes.isEmpty()) {
-//				for (TreeGraphNode n : parentNodes)
-//					ComplianceManager.add(new NodeMissingErr(n, e));
-//			}
-//			break;
-//		}
-//		// code2 ignore
-//		case CheckMessage.code3PropertyClass: {
-//			// CheckMessage(CheckMessage.code3,queryNode,e,null,null,null,null,-1)
-//			ComplianceManager.add(new UnParsedErr(e));
-//			break;
-//		}
-//		case CheckMessage.code4Query: {
-//			// CheckMessage(CheckMessage.code4,item,e,queryNode,null,null,null,-1)
-//			if (e.getTarget() instanceof Property) {
-//				ComplianceManager.add(new PropertyQueryErr((Property) e.getTarget(), e.getArchetypeNode(),
-//						e.getException().getMessage()));
-//
-//			} else {
-//				ComplianceManager.add(new UnParsedErr(e));
-//			}
-//			break;
-//		}
-//		case CheckMessage.code6OutEdgeMissing: {
-////			if (ed.factory().edgeClass(ed.classId())==null) {
-////				Exception e = new AotException("Class '" + edgeLabel
-////					+ "' not found for edge " + ed);
-////				checkFailList.add(new CheckMessage(CheckMessage.code6OutEdgeMissing,ed, e, edgeSpec,null,null,edgeMult,-1));
-//
-//			ComplianceManager.add(new UnParsedErr(e));
-//			break;
-//		}
-//		case CheckMessage.code9OutEdgeRangeCheck: {
-////			try {
-////				edgeMult.check(toNodes.size());
-////			} catch (Exception e) {
-////				Exception ee = new AotException("Expected " + nodeToCheck + " to have " 
-////					+ edgeMult + " out edge(s) to nodes that match ["
-////					+ toNodeRef + "] with label '" + edgeLabel
-////					+ "' (found " + toNodes.size() + ") ");
-////				checkFailList.add(new CheckMessage(CheckMessage.code9OutEdgeRangeCheck,node, ee, edgeSpec,null,null,edgeMult,toNodes.size()));
-//			ComplianceManager.add(new UnParsedErr(e));
-//			break;
-//		}
-//		case CheckMessage.code13MissingProperty: {
-////			if (!nprops.hasProperty(key)) { // property not found
-////				if (!multiplicity.inRange(0)) { // this is an error, this property should be there!
-////					Exception e = new AotException("Required property '"+key+"' missing for element "+ element);
-////					checkFailList.add(new CheckMessage(CheckMessage.code13MissingProperty,element, e, propertyArchetype,null,null,multiplicity,0));
-////				}
-//
-//			ComplianceManager.add(new UnParsedErr(e));
-//			break;
-//		}
-//		case CheckMessage.code14UnknowPropertyType: {
-////			ptype = ValidPropertyTypes.typeOf(pvalue);
-////		if (ptype==null) { // the property type is not in the valid property type list
-////			Exception e = new AotException("Unknown property type for property '"+key
-////				+"' in element "+ element);
-////			checkFailList.add(new CheckMessage(CheckMessage.code14UnknowPropertyType,element, e, propertyArchetype,null,null,null,-1));
-//
-//			ComplianceManager.add(new UnParsedErr(e));
-//			break;
-//		}
-//		case CheckMessage.code15WrongPropertyType: {
-////			else if (!ptype.equals(typeName)) { // the property type is not the one required
-////				Exception e = new AotException("Property '"+key
-////					+"' in element '"+ element 
-////					+"' is not of the required type '" + typeName
-////					+"' (type '"+ptype
-////					+"' found instead)");
-////				checkFailList.add(new CheckMessage(CheckMessage.code15WrongPropertyType,element,e,propertyArchetype,null,null,null,-1));
-//
-//			ComplianceManager.add(new UnParsedErr(e));
-//			break;
-//		}
-//		default:
-//			ComplianceManager.add(new UnParsedErr(e));
-//		}
-
-//	}
 
 }
