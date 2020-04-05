@@ -68,7 +68,7 @@ public class ConfigGraph {
 
 	public static void validateGraph() {
 		// clears ui message display and disables ui button and displays 'checking...' label
-		ErrorList.clear();
+		ErrorList.startCheck();
 		/**
 		 * Because of the thread below, execution now leaves this method with buttons
 		 * states as set by clear() above.
@@ -115,7 +115,7 @@ public class ConfigGraph {
 				if (GraphState.changed())
 					ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_PROJECT_UNSAVED));
 			}
-			ErrorList.signalState();
+			ErrorList.endCheck();
 
 		};
 		new Thread(checkTask).start();

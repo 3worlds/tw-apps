@@ -163,7 +163,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 
 		ProjectJarGenerator gen = new ProjectJarGenerator();
 		gen.generate(ConfigGraph.getGraph());
-		ErrorList.signalState();
+		ErrorList.endCheck();
 
 		List<String> commands = new ArrayList<>();
 		commands.add("java");
