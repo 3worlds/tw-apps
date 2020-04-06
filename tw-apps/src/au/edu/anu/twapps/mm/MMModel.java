@@ -153,7 +153,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 
 	private void onProjectOpened() {
 		controller.onProjectOpened(visualGraph);
-		ConfigGraph.validateGraph();
+		//ConfigGraph.validateGraph();
 	}
 
 	private static int nInstances = 0;
