@@ -29,7 +29,7 @@
 package au.edu.anu.twapps.mm.layout;
 
 public interface ILayout {
-	public default double rescale(double value, double fromMin, double fromMax, double toMin, double toMax) {
+	public static double rescale(double value, double fromMin, double fromMax, double toMin, double toMax) {
 		double fromRange = fromMax - fromMin;
 		double toRange = toMax - toMin;
 		if (fromRange == 0.0)

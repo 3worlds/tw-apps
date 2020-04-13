@@ -203,8 +203,8 @@ public class TreeLayout implements ILayout {
 		SharedPropertyListImpl prop = properties(parent);
 		double x = (Double) prop.getPropertyValue(X);
 		double y = (Double) prop.getPropertyValue(Y);
-		x = rescale(x, fromMin.getX(), fromMax.getX(), toMin.getX(), toMax.getX());
-		y = rescale(y, fromMin.getY(), fromMax.getY(), toMin.getY(), toMax.getY());
+		x = ILayout.rescale(x, fromMin.getX(), fromMax.getX(), toMin.getX(), toMax.getX());
+		y = ILayout.rescale(y, fromMin.getY(), fromMax.getY(), toMin.getY(), toMax.getY());
 		prop.setProperty(X, x);
 		prop.setProperty(Y, y);
 		parent.setX(x);
