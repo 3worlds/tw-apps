@@ -513,7 +513,7 @@ public abstract class StructureEditorAdapter
 			if (def.classId().equals(N_FIELD.label()))
 				newProps.addProperty(def.id(), ((FieldNode) def).newInstance());
 			else {
-				List<Node> dims = (List<Node>) get(def.edges(Direction.OUT),selectZeroOrMany(hasTheLabel(N_DIMENSIONER.label())));
+				List<Node> dims = (List<Node>) get(def.edges(Direction.OUT),edgeListEndNodes(),selectZeroOrMany(hasTheLabel(N_DIMENSIONER.label())));
 				if (!dims.isEmpty())
 					newProps.addProperty(def.id(), ((TableNode) def).newInstance());
 				else
