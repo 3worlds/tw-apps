@@ -29,6 +29,7 @@
 
 package au.edu.anu.twapps.mm.graphEditor;
 
+import au.edu.anu.twapps.mm.layout.LayoutType;
 import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 // TODO move to tw-apps later
@@ -61,7 +62,7 @@ public interface IGraphVisualiser {
 
 	public void onNewParent(VisualNode child);
 
-	public void doLayout(double jitterFaction);
+	public void doLayout(double jitterFaction,LayoutType layoutType);
 
 	public void onRemoveParentLink(VisualNode vnChild);
 	
