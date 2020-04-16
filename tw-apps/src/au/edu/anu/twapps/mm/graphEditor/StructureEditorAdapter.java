@@ -351,7 +351,7 @@ public abstract class StructureEditorAdapter
 			if (edge.getConfigEdge().classId().equals(E_BELONGSTO.label())) {
 				VisualNode myCat = (VisualNode) edge.endNode();
 				VisualNode myCatSet = myCat.getParent();
-				if (proposedCatSet.id().equals(myCatSet.id())) {
+				if (!proposedCatSet.id().equals(myCatSet.id())) {
 					log.info("Fail");
 					return false;
 				}
