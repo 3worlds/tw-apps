@@ -62,7 +62,7 @@ public interface IGraphVisualiser {
 
 	public void onNewParent(VisualNode child);
 
-	public void doLayout(double jitterFaction,LayoutType layoutType);
+	public void doLayout(double jitterFaction,LayoutType layoutType,boolean usePcEdge,boolean useXEdge);
 
 	public void onRemoveParentLink(VisualNode vnChild);
 	
