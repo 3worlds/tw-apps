@@ -134,5 +134,11 @@ public class MockController implements IMMController{
 		
 	}
 
+	@Override
+	public void doFocusedLayout(VisualNode root) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }

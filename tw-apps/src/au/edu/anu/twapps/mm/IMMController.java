@@ -67,5 +67,7 @@ public interface IMMController {
 	public void onItemEdit(Object item);
 	
 	public void doLayout();
+	
+	public void doFocusedLayout(VisualNode root);
 
 }
