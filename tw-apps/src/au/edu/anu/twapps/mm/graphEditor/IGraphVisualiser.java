@@ -62,7 +62,7 @@ public interface IGraphVisualiser {
 
 	public void onNewParent(VisualNode child);
 
-	public void doLayout(double jitterFaction,LayoutType layoutType,boolean usePcEdge,boolean useXEdge);
+	public void doLayout(VisualNode root,double jitterFaction,LayoutType layoutType,boolean usePcEdge,boolean useXEdge);
 
 	public void onRemoveParentLink(VisualNode vnChild);
 	
@@ -70,6 +70,5 @@ public interface IGraphVisualiser {
 	
 	public void onEdgeRenamed(VisualEdge vEdge);
 	
-	public void doFocusedLayout(VisualNode root);
 
 }
