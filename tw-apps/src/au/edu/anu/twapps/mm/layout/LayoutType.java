@@ -2,6 +2,8 @@ package au.edu.anu.twapps.mm.layout;
 
 public enum LayoutType {
 	OrderedTree,
-	RadialTree,
+	RadialTree1,
+	RadialTree2,
 	SpringGraph,
+	LombardiGraph,
 }

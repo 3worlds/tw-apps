@@ -70,4 +70,6 @@ public interface IMMController {
 	
 	public void doFocusedLayout(VisualNode root);
 
+	public void setDefaultTitle();
+
 }

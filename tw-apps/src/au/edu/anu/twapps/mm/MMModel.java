@@ -99,6 +99,185 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 
 	}
 
+	@Override
+	public void doNewProject(TreeGraph<TreeGraphDataNode, ALEdge> templateConfig) {
+
+		/** Does user want to continue if there is unsaved work */
+		if (!canClose()) {
+			return;
+		}
+
+		String newId = getNewProjectName("prjct1", "New project", "", "New project name:");
+		/** Still not to late. User cancelled */
+		if (newId == null)
+			return;
+
+		/** now committed to the new project */
+		if (Project.isOpen()) {
+			onProjectClosing();
+			Project.close();
+		}
+
+		/** Create and open the project */
+		newId = Project.create(newId);
+
+		/** Rename the root id to the project name */
+		TreeGraphDataNode twRoot = findTwRoot(templateConfig);
+		if (!twRoot.id().equals(newId))
+			twRoot.rename(twRoot.id(), newId);
+
+		/** Build a visual graph to shadow the config graph */
+		TreeGraph<VisualNode, VisualEdge> templateVisual = buildVisualGraph(templateConfig);
+
+		/** Make these the current graphs */
+		ConfigGraph.setGraph(templateConfig);
+		visualGraph = templateVisual;
+
+		/** The visual graph parent/child require setting */
+		setupParentReferences(visualGraph.root());
+
+		/**
+		 * Do all that is required of the ui for a newly created project. Currently,
+		 * this just calls the controller to build the ui.
+		 */
+		onProjectOpened();
+
+		/** Create the default layout. */
+		controller.doLayout();
+
+		/**
+		 * Save Config and layout graphs and call config validation. Validation updates
+		 * the ui buttons and message display.
+		 */
+		doSave();
+
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void doOpenProject(File file) {
+
+		/** Does user want to continue if there is unsaved work */
+		if (!canClose())
+			return;
+
+		/** committed to open project */
+		if (Project.isOpen()) {
+			onProjectClosing();
+			Project.close();
+		}
+
+		Project.open(file);
+
+		File cFile = Project.makeConfigurationFile();
+		File vFile = Project.makeLayoutFile();
+		if (!cFile.exists()) {
+			Dialogs.errorAlert("File not found", cFile.getName(), "");
+			Project.close();
+			controller.setDefaultTitle();
+			return;
+		}
+		if (!vFile.exists()) {
+			Dialogs.errorAlert("File not found", vFile.getName(), "");
+			Project.close();
+			controller.setDefaultTitle();
+			return;
+		}
+
+		TreeGraph<TreeGraphDataNode, ALEdge> newGraph = (TreeGraph<TreeGraphDataNode, ALEdge>) FileImporter
+				.loadGraphFromFile(Project.makeConfigurationFile());
+		TreeGraph<VisualNode, VisualEdge> importVisual = (TreeGraph<VisualNode, VisualEdge>) FileImporter
+				.loadGraphFromFile(Project.makeLayoutFile());
+
+		if (importVisual.nNodes() != newGraph.nNodes()) {
+			Dialogs.errorAlert("File error", file.getName(),
+					"Layout graph does not have the same number of nodes as the configuration graph.Try importing this file.");
+			Project.close();
+			return;
+		}
+
+		ConfigGraph.setGraph(newGraph);
+		visualGraph = importVisual;
+		shadowGraph();
+
+		onProjectOpened();
+
+		ConfigGraph.validateGraph();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void doImport() {
+
+		/** Does user want to continue if there is unsaved work */
+		if (!canClose())
+			return;
+
+		File file = Dialogs.getExternalProjectFile();
+		if (file == null)
+			return;
+		log.info("Import: " + file);
+		TreeGraph<TreeGraphDataNode, ALEdge> importGraph = (TreeGraph<TreeGraphDataNode, ALEdge>) FileImporter
+				.loadGraphFromFile(file);
+		int nRoots = 0;
+		for (TreeGraphDataNode n : importGraph.roots()) {
+			nRoots++;
+		}
+		;
+		if (nRoots > 1) {
+			Dialogs.errorAlert("Import error", "Tree has more than one root.",
+					"Graphs with multiple roots cannot be imported");
+			return;
+		}
+
+		TreeGraphDataNode twRoot = findTwRoot(importGraph);
+		if (twRoot == null) {
+			Dialogs.errorAlert("Import error", file.getName(),
+					"This file does not have a root node called '" + N_ROOT.label() + "'");
+			return;
+		}
+
+		if (Project.isOpen()) {
+			onProjectClosing();
+			Project.close();
+		}
+
+		String newId = Project.create(twRoot.id());
+		if (!twRoot.id().equals(newId))
+			twRoot.rename(twRoot.id(), newId);
+
+		TreeGraph<VisualNode, VisualEdge> importVisual = buildVisualGraph(importGraph);
+
+		ConfigGraph.setGraph(importGraph);
+		visualGraph = importVisual;
+		setupParentReferences(visualGraph.root());
+
+		onProjectOpened();
+
+		controller.doLayout();
+
+		doSave();
+
+	}
+
+	private void onProjectClosing() {
+		controller.onProjectClosing();
+		ConfigGraph.setGraph(null);
+		visualGraph = null;
+	}
+
+	private void onProjectOpened() {
+		controller.onProjectOpened(visualGraph);
+	}
+
+	@Override
+	public void doSave() {
+		new OmugiGraphExporter(Project.makeConfigurationFile()).exportGraph(ConfigGraph.getGraph());
+		new OmugiGraphExporter(Project.makeLayoutFile()).exportGraph(visualGraph);
+		GraphState.clear();
+		ConfigGraph.validateGraph();
+	}
+
 	private Map<String, List<String>> nonEditableMap = new HashMap<>();
 
 	private void addEntry(ConfigurationNodeLabels nl, ConfigurationPropertyNames pn) {
@@ -147,15 +326,6 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		return false;
 	}
 
-	private void onProjectClosing() {
-		controller.onProjectClosing();
-	}
-
-	private void onProjectOpened() {
-		controller.onProjectOpened(visualGraph);
-		//ConfigGraph.validateGraph();
-	}
-
 	private static int nInstances = 0;
 
 	@Override
@@ -199,7 +369,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		}
 	}
 
-	private boolean stripOrphanedNodes(TreeGraph<TreeGraphDataNode, ALEdge> graph) {
+	private static boolean stripOrphanedNodes(TreeGraph<TreeGraphDataNode, ALEdge> graph) {
 		int nRoots = 0;
 		for (TreeGraphDataNode n : graph.roots())
 			nRoots++;
@@ -211,6 +381,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 					rootList.add(node);
 				}
 			}
+			// still has concurrentModificationExcpetion;
 
 			for (TreeNode node : rootList) {
 				deleteTreeFrom(node);
@@ -230,40 +401,6 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		parent.disconnect();
 	}
 
-	@Override
-	public void doNewProject(TreeGraph<TreeGraphDataNode, ALEdge> templateConfig) {
-		if (stripOrphanedNodes(templateConfig)) {
-			Dialogs.errorAlert("Graph creation error", "Tree with multiple roots",
-					"Nodes that have no parent have been removed");
-		}
-
-		String newId = getNewProjectName("prjct1", "New project", "", "New project name:");
-
-		if (newId == null)
-			return;
-		if (Project.isOpen()) {
-			onProjectClosing();
-			Project.close();
-		}
-		newId = Project.create(newId);
-		TreeGraphDataNode twRoot = findTwRoot(templateConfig);
-		if (!twRoot.id().equals(newId))
-			twRoot.rename(twRoot.id(), newId);
-		// If its not a full tree what do we do?? We could prohibit exporting broken
-		// trees;
-		// As long as the library files are true trees thats ok.
-		TreeGraph<VisualNode, VisualEdge> templateVisual = installNewVisualGraph(templateConfig);
-
-		ConfigGraph.setGraph(templateConfig);
-		visualGraph = templateVisual;
-		setParentReferences(visualGraph.root());
-		onProjectOpened();
-		controller.doLayout();
-		doSave();
-		if (GraphState.changed())
-			doSave();
-	}
-
 	private List<String> getQueryStringTableEntries(SimpleDataTreeNode constraint) {
 		List<String> result = new ArrayList<>();
 		if (constraint == null)
@@ -278,7 +415,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		return result;
 	}
 
-	private void setParentReferences(VisualNode vn) {
+	private void setupParentReferences(VisualNode vn) {
 		Map<String, List<StringTable>> classParentMap = new HashMap<>();
 		Set<String> discoveredFiles = new HashSet<>();
 		fillClassParentMap(classParentMap, TWA.getRoot(), discoveredFiles);
@@ -314,56 +451,13 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public void doImport() {
-		if (!canClose())
-			return;
-		File file = Dialogs.getExternalProjectFile();
-		if (file == null)
-			return;
-		log.info("Import: " + file);
-		TreeGraph<TreeGraphDataNode, ALEdge> importGraph = (TreeGraph<TreeGraphDataNode, ALEdge>) FileImporter
-				.loadGraphFromFile(file);
-		if (stripOrphanedNodes(importGraph)) {
-			Dialogs.errorAlert("Import graph", "Tree with multiple roots",
-					"Nodes that have no parent have been removed");
-		}
-
-		TreeGraphDataNode twRoot = findTwRoot(importGraph);
-		if (twRoot == null) {
-			Dialogs.errorAlert("Import error", file.getName(),
-					"This file does not have a root node called '" + N_ROOT.label() + "'");
-			return;
-		}
-		if (Project.isOpen()) {
-			onProjectClosing();
-			Project.close();
-		}
-		String newId = Project.create(twRoot.id());
-		if (!twRoot.id().equals(newId))
-			twRoot.rename(twRoot.id(), newId);
-		// If its not a full tree what do we do?? We could prohibit exporting broken
-		// trees;
-		// But we don't export anyway. We just import arbitrary graphs
-
-		TreeGraph<VisualNode, VisualEdge> importVisual = installNewVisualGraph(importGraph);
-		ConfigGraph.setGraph(importGraph);
-		visualGraph = importVisual;
-		setParentReferences(visualGraph.root());
-//		doSave();
-//		if (GraphState.changed())
-//			doSave();
-		onProjectOpened();
-		controller.doLayout();
-	}
-
 	private void shadowGraph() {
 		for (VisualNode vn : visualGraph.nodes())
 			vn.shadowElements(ConfigGraph.getGraph());
 	}
 
-	private Duple<VisualNode, VisualNode> getMatchingPair(Iterable<VisualNode> visualNodes, Node node1, Node node2) {
+	private static Duple<VisualNode, VisualNode> getMatchingPair(Iterable<VisualNode> visualNodes, Node node1,
+			Node node2) {
 		VisualNode resultNode1 = null;
 		VisualNode resultNode2 = null;
 
@@ -379,14 +473,15 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 				"Matching node pair not found in visual graph [" + node1.id() + "," + node2.id() + "]");
 	}
 
-	private TreeGraphDataNode findTwRoot(TreeGraph<TreeGraphDataNode, ALEdge> graph) {
+	private static TreeGraphDataNode findTwRoot(TreeGraph<TreeGraphDataNode, ALEdge> graph) {
 		for (TreeGraphDataNode root : graph.roots())
 			if (root.classId().equals(N_ROOT.label()))
 				return root;
 		return null;
 	}
 
-	private TreeGraph<VisualNode, VisualEdge> installNewVisualGraph(TreeGraph<TreeGraphDataNode, ALEdge> importGraph) {
+	private static TreeGraph<VisualNode, VisualEdge> buildVisualGraph(
+			TreeGraph<TreeGraphDataNode, ALEdge> importGraph) {
 		TreeGraph<VisualNode, VisualEdge> newVisualGraph = new TreeGraph<VisualNode, VisualEdge>(
 				new VisualGraphFactory());
 		for (TreeGraphDataNode importNode : importGraph.nodes()) {
@@ -428,49 +523,6 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		}
 
 		return newVisualGraph;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public void doOpenProject(File file) {
-		if (!canClose())
-			return;
-
-		if (Project.isOpen()) {
-			onProjectClosing();
-			Project.close();
-		}
-
-		Project.open(file);
-
-		TreeGraph<TreeGraphDataNode, ALEdge> newGraph = (TreeGraph<TreeGraphDataNode, ALEdge>) FileImporter
-				.loadGraphFromFile(Project.makeConfigurationFile());
-		TreeGraph<VisualNode, VisualEdge> importVisual = (TreeGraph<VisualNode, VisualEdge>) FileImporter
-				.loadGraphFromFile(Project.makeLayoutFile());
-
-		if (importVisual == null) {
-			Dialogs.errorAlert("File error", file.getName(), "Layout graph not found. Try importing this file.");
-			return;
-		}
-		if (importVisual.nNodes() != newGraph.nNodes()) {
-			Dialogs.errorAlert("File error", file.getName(),
-					"Layout graph does not have the same number of nodes as the configuration graph.Try importing this file.");
-			return;
-		}
-		// TODO We need to reopen the previous project if there was one.
-
-		ConfigGraph.setGraph(newGraph);
-		visualGraph = importVisual;
-		shadowGraph();
-		onProjectOpened();
-	}
-
-	@Override
-	public void doSave() {
-		new OmugiGraphExporter(Project.makeConfigurationFile()).exportGraph(ConfigGraph.getGraph());
-		new OmugiGraphExporter(Project.makeLayoutFile()).exportGraph(visualGraph);
-		GraphState.clear();
-		ConfigGraph.validateGraph();
 	}
 
 	@Override

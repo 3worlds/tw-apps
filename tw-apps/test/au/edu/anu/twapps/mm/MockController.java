@@ -136,7 +136,13 @@ public class MockController implements IMMController{
 
 	@Override
 	public void doFocusedLayout(VisualNode root) {
-		// TODO Auto-generated method stub
+		System.out.println("Run layout from "+root.getDisplayText(false));
+		
+	}
+
+	@Override
+	public void setDefaultTitle() {
+		System.out.println("TITLE SET TO DEFAULT");
 		
 	}
 
