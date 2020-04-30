@@ -28,6 +28,10 @@
   **************************************************************************/
 package au.edu.anu.twapps.mm.layout;
 
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.util.Random;
+
 public interface ILayout {
 	public static double rescale(double value, double fromMin, double fromMax, double toMin, double toMax) {
 		double fromRange = fromMax - fromMin;
@@ -38,6 +42,22 @@ public interface ILayout {
 		return p * toRange + toMin;
 	}
 
-	public ILayout compute();
+	public static double jitter(double value, double jitterFraction, Random rnd) {
+		double delta = rnd.nextDouble() * jitterFraction;
+		if (rnd.nextBoolean())
+			return value + delta;
+		else
+			return value - delta;
+	}
+
+	public static Rectangle2D getFittingFrame() {
+		return new Rectangle2D.Double(0.05, 0.05, 0.9, 0.9);
+	}
+
+	public static Rectangle2D getBoundingFrame(Point2D min, Point2D max) {
+		return new Rectangle2D.Double(min.getX(), min.getY(), max.getX() - min.getX(), max.getY() - min.getY());
+	}
+
+	public ILayout compute(double jitterFrac);
 
 }
