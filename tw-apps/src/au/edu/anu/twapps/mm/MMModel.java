@@ -67,6 +67,8 @@ import fr.cnrs.iees.graph.impl.SimpleDataTreeNode;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.graph.io.impl.OmugiGraphExporter;
+import fr.cnrs.iees.identity.IdentityScope;
+import fr.cnrs.iees.identity.impl.LocalScope;
 import fr.cnrs.iees.io.FileImporter;
 import fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels;
 import fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames;
@@ -106,8 +108,10 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		if (!canClose()) {
 			return;
 		}
-
-		String newId = getNewProjectName("prjct1", "New project", "", "New project name:");
+		// collect all relevant ids into a temporary scope.
+		
+		IdentityScope prjScope = getProjectScope(templateConfig);		
+		String newId = getNewProjectName(prjScope,"prjct1", "New project", "", "New project name:");
 		/** Still not to late. User cancelled */
 		if (newId == null)
 			return;
@@ -151,6 +155,14 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		 */
 		doSave();
 
+	}
+	private static IdentityScope getProjectScope(TreeGraph<TreeGraphDataNode, ALEdge> graph) {
+		LocalScope result = new LocalScope("Projects");
+		for (String prjName: Project.getAllProjectNames())
+			result.newId(true,prjName);	
+		for (Node n : graph.nodes()) 
+			result.newId(true,n.id());
+		return result;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -381,7 +393,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 					rootList.add(node);
 				}
 			}
-			// still has concurrentModificationExcpetion;
+			// TODO: still has concurrentModificationException;
 
 			for (TreeNode node : rootList) {
 				deleteTreeFrom(node);
@@ -434,6 +446,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 			value.add(item);
 			classParentMap.put(key, value);
 			// search subA
+
 			List<SimpleDataTreeNode> saConstraints = (List<SimpleDataTreeNode>) get(childSpec.getChildren(),
 					selectZeroOrMany(hasProperty(aaClassName, CheckSubArchetypeQuery.class.getName())));
 			for (SimpleDataTreeNode constraint : saConstraints) {
@@ -548,7 +561,8 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		for (VisualNode root : visualGraph.roots())
 			if (root.id().equals(cRoot.id()))
 				vRoot = root;
-		String newId = getNewProjectName(vRoot.id(), "Save as", "", "New project name:");
+		IdentityScope prjScope = getProjectScope(ConfigGraph.getGraph());
+		String newId = getNewProjectName(prjScope,vRoot.id(), "Save as", "", "New project name:");
 		if (newId == null)
 			return;
 		if (Project.isOpen()) {
@@ -562,9 +576,9 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		Preferences.initialise(Project.makeProjectPreferencesFile());
 	}
 
-	private String getNewProjectName(String proposedId, String title, String header, String content) {
-		boolean modified = true;
-		String result = Project.proposeId(proposedId);
+	private String getNewProjectName(IdentityScope scope,String proposedId, String title, String header, String content) {
+		boolean modified = true;	
+		String result = scope.newId(false, proposedId).id();
 		while (modified) {
 			String userName = Dialogs.getText(title, header, content, result);
 			if (userName == null)
@@ -572,7 +586,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 			if (userName.equals(""))
 				return null;
 			userName = Project.formatName(userName);
-			String newName = Project.proposeId(userName);
+			String newName = scope.newId(false,userName).id();
 			modified = !newName.equals(userName);
 			result = newName;
 		}
