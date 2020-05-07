@@ -197,7 +197,7 @@ public abstract class StructureEditorAdapter
 			log.info(edgeLabel);
 			List<VisualNode> endNodes = findNodesLabelled(toNodeRef.replace(":", ""));
 			for (VisualNode endNode : endNodes) {
-				if (!editableNode.getSelectedVisualNode().id().equals(endNode.id()))
+				if (!editableNode.getSelectedVisualNode().id().equals(endNode.id())) // no edges to self
 					if (!editableNode.hasOutEdgeTo(endNode, edgeLabel)) {
 						if (satisfyExclusiveCategoryQuery(edgeSpec, endNode, edgeLabel))
 							if (satisfyOutNodeXorQuery(edgeSpec, endNode, edgeLabel))

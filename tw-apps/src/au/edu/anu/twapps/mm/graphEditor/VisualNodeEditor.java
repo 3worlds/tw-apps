@@ -50,6 +50,7 @@ import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.identity.Identity;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 
 public class VisualNodeEditor implements //
 		VisualNodeEditable, //
@@ -165,10 +166,20 @@ public class VisualNodeEditor implements //
 		return (Iterable<VisualEdge>) visualNode.edges(Direction.OUT);
 	}
 
+	private static boolean ignoreDuplicateEdgesBetween(TreeGraphNode start,TreeGraphNode end,String edgeLabel){
+		if (end.classId().equals(N_DIMENSIONER.label()) && start.classId().equals(N_TABLE.label())
+				&& E_SIZEDBY.label().equals(edgeLabel))
+			return true;
+		return false;
+	}
+
 	@Override
 	public boolean hasOutEdgeTo(VisualNode vEnd, String edgeLabel) {
+
 		TreeGraphNode cStart = visualNode.getConfigNode();
 		TreeGraphNode cEnd = vEnd.getConfigNode();
+		if (ignoreDuplicateEdgesBetween(cStart,cEnd,edgeLabel))
+			return false;
 		for (ALEdge cEdge : cStart.edges(Direction.OUT)) {
 			ALNode cEndNode = cEdge.endNode();
 			if (cEndNode.id().equals(cEnd.id()))
@@ -202,13 +213,12 @@ public class VisualNodeEditor implements //
 	@Override
 	public boolean references(StringTable parents) {
 		TreeNode node = visualNode.getConfigNode();
-		for (int i = 0; i < parents.size(); i++) 
+		for (int i = 0; i < parents.size(); i++)
 			if (VisualNode.referencedBy(node, parents.getWithFlatIndex(i)))
 				return true;
 		return false;
 	}
 
-	
 	@Override
 	public TreeGraph<VisualNode, VisualEdge> getGraph() {
 		return visualGraph;
@@ -217,12 +227,11 @@ public class VisualNodeEditor implements //
 	@Override
 	public String extractParentReference(StringTable parents) {
 		TreeNode node = visualNode.getConfigNode();
-		for (int i = 0; i < parents.size(); i++) 
+		for (int i = 0; i < parents.size(); i++)
 			if (VisualNode.referencedBy(node, parents.getWithFlatIndex(i)))
 				return parents.getWithFlatIndex(i);
-		
+
 		return null;
 	}
-
 
 }
