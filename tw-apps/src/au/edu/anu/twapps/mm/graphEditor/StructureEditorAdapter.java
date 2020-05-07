@@ -133,8 +133,7 @@ public abstract class StructureEditorAdapter
 		this.newChild = null;
 		this.editableNode = selectedNode;
 		Set<String> discoveredFile = new HashSet<>();
-		this.baseSpec = specifications.getSpecsOf(editableNode, TWA.getRoot(),
-				discoveredFile);
+		this.baseSpec = specifications.getSpecsOf(editableNode, TWA.getRoot(), discoveredFile);
 		this.subClassSpec = specifications.getSubSpecsOf(baseSpec, editableNode.getSubClass());
 		this.gvisualiser = gv;
 		log.info("BaseSpec: " + baseSpec);
@@ -315,7 +314,7 @@ public abstract class StructureEditorAdapter
 
 		// if there is an out node which is not of the same label as proposedEndNode
 		// then return false
-		Duple<String,String> currentChoice = getCurrentNodeLabelXORChoice(entries);
+		Duple<String, String> currentChoice = getCurrentNodeLabelXORChoice(entries);
 		// no outNodes with label in the set of duples
 		if (currentChoice == null)
 			return true;
@@ -328,14 +327,14 @@ public abstract class StructureEditorAdapter
 	}
 
 	// TODO how can this work with multiple queries?
-	private Duple<String,String> getCurrentNodeLabelXORChoice(List<Duple<String, String>> entries) {
+	private Duple<String, String> getCurrentNodeLabelXORChoice(List<Duple<String, String>> entries) {
 		for (VisualNode outNode : editableNode.getOutNodes()) {
 			String outLabel = outNode.cClassId();
 			for (Duple<String, String> duple : entries) {
 				if (duple.getFirst().equals(outLabel))
 					return duple;
 				else if (duple.getSecond().equals(outLabel))
-					return new Duple<String,String>(outLabel,duple.getFirst());
+					return new Duple<String, String>(outLabel, duple.getFirst());
 			}
 		}
 		return null;
@@ -460,7 +459,7 @@ public abstract class StructureEditorAdapter
 		newChild = editableNode.newChild(childLabel, promptId);
 		newChild.setCollapse(false);
 		newChild.setCategory();
-		VisualNodeEditable vne = new VisualNodeEditor(newChild,editableNode.getGraph());
+		VisualNodeEditable vne = new VisualNodeEditor(newChild, editableNode.getGraph());
 		StringTable parents = (StringTable) childBaseSpec.properties().getPropertyValue(aaHasParent);
 		newChild.setParentRef(parents);
 		for (SimpleDataTreeNode propertySpec : propertySpecs) {
@@ -478,12 +477,15 @@ public abstract class StructureEditorAdapter
 
 					SimpleDataTreeNode constraint = (SimpleDataTreeNode) get(propertySpec.getChildren(),
 							selectZeroOrOne(hasProperty(aaClassName, IsInValueSetQuery.class.getName())));
-					if (constraint!=null) {
+					if (constraint != null) {
 						StringTable classes = (StringTable) constraint.properties().getPropertyValue(twaValues);
-						if (classes.size()>1) {
-							System.out.println("CHOICE NOT HANDLED YET FOR "+key);
-						} else if (classes.size()==1) {
-							defValue = TwSpecifications.string2Enum(classes.getWithFlatIndex(0),e);
+						if (classes.size() > 1) {
+							String[] names = ValidPropertyTypes.namesOf(e);
+							int choice = Dialogs.getListChoice(names, newChild.getDisplayText(false), key,
+									e.getClass().getSimpleName());
+							defValue = ValidPropertyTypes.valueOf(names[choice], e);
+						} else if (classes.size() == 1) {
+							defValue = ValidPropertyTypes.valueOf(classes.getWithFlatIndex(0), e);
 						}
 					}
 				}
@@ -499,7 +501,6 @@ public abstract class StructureEditorAdapter
 		controller.onNewNode(newChild);
 	}
 
-	
 	protected void processPropertiesMatchDefinition(VisualNode newChild, SimpleDataTreeNode childBaseSpec,
 			SimpleDataTreeNode childSubSpec) {
 		@SuppressWarnings("unchecked")
@@ -512,25 +513,26 @@ public abstract class StructureEditorAdapter
 		StringTable values = (StringTable) query.properties().getPropertyValue("values");
 		String dataCategory = values.getWithFlatIndex(0);
 
-		Duple<Boolean,Collection<TreeGraphDataNode>> defData = PropertiesMatchDefinitionQuery.getDataDefs(newChild.getConfigNode(),
-				dataCategory);
+		Duple<Boolean, Collection<TreeGraphDataNode>> defData = PropertiesMatchDefinitionQuery
+				.getDataDefs(newChild.getConfigNode(), dataCategory);
 		Collection<TreeGraphDataNode> defs = defData.getSecond();
 		Boolean useAutoVar = defData.getFirst();
 		if (defs == null) {
 			return;
 		}
-		
+
 		ExtendablePropertyList newProps = (ExtendablePropertyList) newChild.getConfigNode().properties();
 		if (useAutoVar) {
-			newProps.addProperty("age",0);
-			newProps.addProperty("birthDate",0);
-			//newProps.addProperty("name","Skippy");
+			newProps.addProperty("age", 0);
+			newProps.addProperty("birthDate", 0);
+			// newProps.addProperty("name","Skippy");
 		}
 		for (TreeGraphDataNode def : defs) {
 			if (def.classId().equals(N_FIELD.label()))
 				newProps.addProperty(def.id(), ((FieldNode) def).newInstance());
 			else {
-				List<Node> dims = (List<Node>) get(def.edges(Direction.OUT),edgeListEndNodes(),selectZeroOrMany(hasTheLabel(N_DIMENSIONER.label())));
+				List<Node> dims = (List<Node>) get(def.edges(Direction.OUT), edgeListEndNodes(),
+						selectZeroOrMany(hasTheLabel(N_DIMENSIONER.label())));
 				if (!dims.isEmpty())
 					newProps.addProperty(def.id(), ((TableNode) def).newInstance());
 				else
@@ -878,8 +880,7 @@ public abstract class StructureEditorAdapter
 		newVNode.connectParent(vParent);
 		Set<String> discoveredFile = new HashSet<>();
 		VisualNodeEditable vne = new VisualNodeEditor(newVNode, editableNode.getGraph());
-		SimpleDataTreeNode specs = specifications.getSpecsOf(vne, TWA.getRoot(),
-				discoveredFile);
+		SimpleDataTreeNode specs = specifications.getSpecsOf(vne, TWA.getRoot(), discoveredFile);
 		StringTable parents = (StringTable) specs.properties().getPropertyValue(aaHasParent);
 		newVNode.setParentRef(parents);
 		newVNode.setConfigNode(newCNode);

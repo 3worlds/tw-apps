@@ -53,8 +53,8 @@ import fr.cnrs.iees.graph.Tree;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.SimpleDataTreeNode;
 import fr.cnrs.iees.identity.impl.PairIdentity;
+import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
 import fr.cnrs.iees.properties.ExtendablePropertyList;
-import fr.cnrs.iees.twcore.constants.DataElementType;
 import fr.ens.biologie.generic.utils.Duple;
 
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
@@ -140,7 +140,7 @@ public class TwSpecifications implements //
 	@Override
 	public Iterable<SimpleDataTreeNode> getChildSpecsOf(VisualNodeEditable editNode, SimpleDataTreeNode parentSpec,
 			SimpleDataTreeNode parentSubSpec, TreeNode root) {
-		String parentLabel = (String) parentSpec.properties().getPropertyValue(aaIsOfClass);
+		//String parentLabel = (String) parentSpec.properties().getPropertyValue(aaIsOfClass);
 		List<SimpleDataTreeNode> children = (List<SimpleDataTreeNode>) get(root.getChildren(),
 				selectZeroOrMany(hasProperty(aaHasParent)));
 		// could have a query here for finding a parent in a parent Stringtable
@@ -325,7 +325,6 @@ public class TwSpecifications implements //
 					return TWA.getSubArchetype(pars.get((pars.size() - 1)));
 				}
 		}
-//		throw new TwuifxException("Sub archetype graph not found for " + subClass.getName());
 		return null;
 	}
 
@@ -334,29 +333,11 @@ public class TwSpecifications implements //
 				selectZeroOrOne(andQuery(hasTheLabel(aaMustSatisfyQuery), hasProperty(aaClassName, constraintClass))));
 	}
 
-	private static boolean parentTableContains(SimpleDataTreeNode node, String createdBy) {
-		StringTable st = (StringTable) node.properties().getPropertyValue(aaHasParent);
-		return st.contains(createdBy + PairIdentity.LABEL_NAME_STR_SEPARATOR);
-	}
-
-//	@SuppressWarnings({ "unchecked" })
-//	private List<SimpleDataTreeNode> getConstraints(SimpleDataTreeNode spec, String constraintClass) {
-//		return (List<SimpleDataTreeNode>) get(spec.getChildren(),
-//				selectZeroOrMany(andQuery(hasTheLabel(aaMustSatisfyQuery), hasProperty(aaClassName, constraintClass))));
-//	}
 
 	private boolean isOfClass(SimpleDataTreeNode child, String label) {
 		String ioc = (String) child.properties().getPropertyValue(aaIsOfClass);
 		return ioc.equals(label);
 	}
-
-//	private void addChildrenTo(List<SimpleDataTreeNode> result, String parentLabel, List<SimpleDataTreeNode> children) {
-//		for (SimpleDataTreeNode child : children) {
-//			StringTable t = (StringTable) child.properties().getPropertyValue(aaHasParent);
-//			if (t.contains(parentLabel + PairIdentity.LABEL_NAME_SEPARATOR))
-//				result.add(child);
-//		}
-//	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -371,28 +352,6 @@ public class TwSpecifications implements //
 		return result;
 	}
 
-	/*-
-	  	mustSatisfyQuery trackItemConditionSpec
-			className = String("au.edu.anu.twcore.archetype.tw.OutEdgeXorQuery")
-			edgeLabel1 = String("trackPopulation")
-			edgeLabel2 = StringTable(([2]"trackField","trackTable"))
-	
-	 */
-
-//	private String[] getAsStrings(SimplePropertyList properties, String key) {
-//		String[] result;
-//		Class<?> c = properties.getPropertyClass(key);
-//		if (c.equals(String.class)) {
-//			result = new String[1];
-//			result[0]= (String) properties.getPropertyValue(key);
-//		} else {
-//			StringTable st = (StringTable) properties.getPropertyValue(key);
-//			result= new String[st.size()];
-//			for (int i=0;i<result.length;i++)
-//				result[i] = st.getWithFlatIndex(i);
-//		}
-//		return result;
-//	}
 
 	/*-
 	 * className = String("au.edu.anu.twcore.archetype.tw.OutNodeXorQuery")
@@ -411,21 +370,6 @@ public class TwSpecifications implements //
 		return result;
 	}
 
-	private static String[] enum2Strings(Class<? extends Enum<?>> e) {
-		Enum<?>[] enums = e.getEnumConstants();
-		String[] names = new String[enums.length];
-		for (int i = 0; i < enums.length; i++)
-			names[i] = enums[i].toString();
-		return names;
-	}
-	public static Enum<?> string2Enum(String s,Class<? extends Enum<?>> e){
-		Enum<?>[] enums = e.getEnumConstants();
-		for (int i = 0; i<enums.length;i++) {
-			if (s.equals(enums[i].toString()))
-				return enums[i];
-		}
-		return null;
-	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -444,11 +388,11 @@ public class TwSpecifications implements //
 				// gets the string list
 				if (obj instanceof Enum<?>) {
 					Class<? extends Enum<?>> e = (Class<? extends Enum<?>>) obj.getClass();
-					String[] xx = enum2Strings(e);
-					int choice = Dialogs.getListChoice(xx,vnode.getDisplayText(false), key,
+					String[] names = ValidPropertyTypes.namesOf(e);
+					int choice = Dialogs.getListChoice(names,vnode.getDisplayText(false), key,
 							obj.getClass().getSimpleName());
 					if (choice>=0) {
-						Enum<?> value = string2Enum(xx[choice],e);
+						Enum<?> value = ValidPropertyTypes.valueOf(names[choice],e);
 						vnode.getConfigNode().properties().setProperty(key, value);
 					}	
 				}
