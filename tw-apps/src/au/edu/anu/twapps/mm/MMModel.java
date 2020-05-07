@@ -427,6 +427,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		return result;
 	}
 
+	// This uses the twa archetype. If the archetype changes this function may crash;
 	private void setupParentReferences(VisualNode vn) {
 		Map<String, List<StringTable>> classParentMap = new HashMap<>();
 		Set<String> discoveredFiles = new HashSet<>();

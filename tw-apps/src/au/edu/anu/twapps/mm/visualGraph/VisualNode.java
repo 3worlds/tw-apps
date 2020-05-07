@@ -330,7 +330,14 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 	}
 
 	private static void setupParentReference(VisualNode parent, Map<String, List<StringTable>> map) {
+		if (parent == null)
+			throw new TwAppsException("Parent is null.");
+		if (map == null)
+			throw new TwAppsException("Map is null when processing parent " + parent.getDisplayText(false));
 		List<StringTable> parentList = map.get(parent.cClassId());
+		if (parentList == null)
+			throw new TwAppsException("ParentList is null for parent " + parent.getDisplayText(false));
+
 		/**
 		 * Check each table and take the first that corresponds to the current set of
 		 * parents. If none (e.g. root) the entry will be null. It follows that this
