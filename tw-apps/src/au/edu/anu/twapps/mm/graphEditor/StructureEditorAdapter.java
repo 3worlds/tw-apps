@@ -58,6 +58,7 @@ import au.edu.anu.twcore.archetype.TwArchetypeConstants;
 import au.edu.anu.twcore.archetype.tw.ChildXorPropertyQuery;
 import au.edu.anu.twcore.archetype.tw.EndNodeHasPropertyQuery;
 import au.edu.anu.twcore.archetype.tw.ExclusiveCategoryQuery;
+import au.edu.anu.twcore.archetype.tw.IsInValueSetQuery;
 import au.edu.anu.twcore.archetype.tw.OutEdgeXorQuery;
 import au.edu.anu.twcore.archetype.tw.OutNodeXorQuery;
 import au.edu.anu.twcore.archetype.tw.PropertiesMatchDefinitionQuery;
@@ -471,6 +472,21 @@ public abstract class StructureEditorAdapter
 			} else {
 				String type = (String) propertySpec.properties().getPropertyValue(aaType);
 				Object defValue = ValidPropertyTypes.getDefaultValue(type);
+
+				if (defValue instanceof Enum<?>) {
+					Class<? extends Enum<?>> e = (Class<? extends Enum<?>>) defValue.getClass();
+
+					SimpleDataTreeNode constraint = (SimpleDataTreeNode) get(propertySpec.getChildren(),
+							selectZeroOrOne(hasProperty(aaClassName, IsInValueSetQuery.class.getName())));
+					if (constraint!=null) {
+						StringTable classes = (StringTable) constraint.properties().getPropertyValue(twaValues);
+						if (classes.size()>1) {
+							System.out.println("CHOICE NOT HANDLED YET FOR "+key);
+						} else if (classes.size()==1) {
+							defValue = TwSpecifications.string2Enum(classes.getWithFlatIndex(0),e);
+						}
+					}
+				}
 				log.info("Add property: " + key);
 				newChild.addProperty(key, defValue);
 			}
@@ -483,6 +499,7 @@ public abstract class StructureEditorAdapter
 		controller.onNewNode(newChild);
 	}
 
+	
 	protected void processPropertiesMatchDefinition(VisualNode newChild, SimpleDataTreeNode childBaseSpec,
 			SimpleDataTreeNode childSubSpec) {
 		@SuppressWarnings("unchecked")

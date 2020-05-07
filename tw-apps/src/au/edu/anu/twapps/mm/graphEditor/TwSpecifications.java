@@ -418,7 +418,7 @@ public class TwSpecifications implements //
 			names[i] = enums[i].toString();
 		return names;
 	}
-	private static Enum<?> string2Enum(String s,Class<? extends Enum<?>> e){
+	public static Enum<?> string2Enum(String s,Class<? extends Enum<?>> e){
 		Enum<?>[] enums = e.getEnumConstants();
 		for (int i = 0; i<enums.length;i++) {
 			if (s.equals(enums[i].toString()))
