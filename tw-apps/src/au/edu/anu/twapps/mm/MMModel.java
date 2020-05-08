@@ -584,9 +584,12 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 			String userName = Dialogs.getText(title, header, content, result);
 			if (userName == null)
 				return null;
+			
+			userName = userName.replace("_", "");
+
 			if (userName.equals(""))
 				return null;
-			userName = Project.formatName(userName);
+			
 			String newName = scope.newId(false,userName).id();
 			modified = !newName.equals(userName);
 			result = newName;
@@ -594,5 +597,6 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		return result;
 
 	}
+	
 
 }
