@@ -70,7 +70,6 @@ import au.edu.anu.twcore.root.TwConfigFactory;
 import au.edu.anu.twcore.userProject.UserProjectLink;
 import au.edu.anu.twcore.data.FieldNode;
 import au.edu.anu.twcore.data.TableNode;
-//import au.edu.anu.twuifx.mm.visualise.IGraphVisualiser;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Node;
@@ -92,7 +91,6 @@ import fr.cnrs.iees.properties.impl.SimplePropertyListImpl;
 import fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels;
 import fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels;
 
-import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import fr.ens.biologie.generic.utils.Duple;
 import fr.ens.biologie.generic.utils.Logging;
@@ -242,6 +240,7 @@ public abstract class StructureEditorAdapter
 				OutEdgeXorQuery.class);
 		for (SimpleDataTreeNode query : queries) {
 			if (queryReferencesLabel(proposedEdgeLabel, query, twaEdgeLabel1, twaEdgeLabel2)) {
+				// TODO OutEdgeXorQuery.propose(editableNode.getConfig(),edgeList1,edgeList2);
 				Set<String> qp1 = new HashSet<>();
 				Set<String> qp2 = new HashSet<>();
 				qp1.addAll(getEdgeLabelRefs(query.properties(), twaEdgeLabel1));
@@ -301,63 +300,52 @@ public abstract class StructureEditorAdapter
 		log.info(edgeSpec.toString());
 		List<SimpleDataTreeNode> queries = specifications.getQueries((SimpleDataTreeNode) edgeSpec.getParent(),
 				OutNodeXorQuery.class);
-//		for (SimpleDataTreeNode query:queries) {
-//			
-//		}
+
+		// query not required
 		if (queries.isEmpty())
 			return true;
+
+		// May find more than one of these queries
 		List<Duple<String, String>> entries = specifications.getNodeLabelDuples(queries);
 
-		// can have either of the entires
+		// Uncommitted: therefore we can have either of the entries
 		if (!editableNode.hasOutEdges())
 			return true;
 
-		// if there is an out node which is not of the same label as proposedEndNode
-		// then return false
-		Duple<String, String> currentChoice = getCurrentNodeLabelXORChoice(entries);
-		// no outNodes with label in the set of duples
-		if (currentChoice == null)
-			return true;
-		// Can't change to other choice
-		if (currentChoice.getSecond().equals(proposedEndNode.cClassId())) {
-			log.info("Fail");
-			return false;
+		boolean result = false;
+		String pLabel = proposedEndNode.cClassId();
+		for (Duple<String, String> entry : entries) {
+			// is query relevant to this endNode?
+			if (pLabel.equals(entry.getFirst()) || pLabel.equals(entry.getSecond()))
+				result = result || OutNodeXorQuery.propose(editableNode.getConfigNode(),
+						proposedEndNode.getConfigNode(), entry.getFirst(), entry.getSecond());
+			else
+				result = result || false;
 		}
-		return true;
+		return result;
+
 	}
 
-	// TODO how can this work with multiple queries?
-	private Duple<String, String> getCurrentNodeLabelXORChoice(List<Duple<String, String>> entries) {
-		for (VisualNode outNode : editableNode.getOutNodes()) {
-			String outLabel = outNode.cClassId();
-			for (Duple<String, String> duple : entries) {
-				if (duple.getFirst().equals(outLabel))
-					return duple;
-				else if (duple.getSecond().equals(outLabel))
-					return new Duple<String, String>(outLabel, duple.getFirst());
-			}
-		}
-		return null;
-	}
+//	private Duple<String, String> getCurrentNodeLabelXORChoice(List<Duple<String, String>> entries) {
+//		for (VisualNode outNode : editableNode.getOutNodes()) {
+//			String outLabel = outNode.cClassId();
+//			for (Duple<String, String> duple : entries) {
+//				if (duple.getFirst().equals(outLabel))
+//					return duple;
+//				else if (duple.getSecond().equals(outLabel))
+//					return new Duple<String, String>(outLabel, duple.getFirst());
+//			}
+//		}
+//		return null;
+//	}
 
 	@SuppressWarnings("unchecked")
-	private boolean satisfyExclusiveCategoryQuery(SimpleDataTreeNode edgeSpec, VisualNode proposedEndNode,
+	private boolean satisfyExclusiveCategoryQuery(SimpleDataTreeNode edgeSpec, VisualNode proposedCat,
 			String edgeLabel) {
 		if (specifications.getQueries((SimpleDataTreeNode) edgeSpec.getParent(), ExclusiveCategoryQuery.class)
 				.isEmpty())
 			return true;
-		VisualNode proposedCatSet = proposedEndNode.getParent();
-		for (VisualEdge edge : editableNode.getOutEdges()) {
-			if (edge.getConfigEdge().classId().equals(E_BELONGSTO.label())) {
-				VisualNode myCat = (VisualNode) edge.endNode();
-				VisualNode myCatSet = myCat.getParent();
-				if (!proposedCatSet.id().equals(myCatSet.id())) {
-					log.info("Fail");
-					return false;
-				}
-			}
-		}
-		return true;
+		return ExclusiveCategoryQuery.propose(editableNode.getConfigNode(), proposedCat.getConfigNode());
 	}
 
 	public List<VisualNode> orphanedChildList(Iterable<SimpleDataTreeNode> childSpecs) {

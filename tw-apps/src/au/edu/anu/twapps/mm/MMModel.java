@@ -75,6 +75,7 @@ import fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames;
 import fr.cnrs.iees.twcore.generators.ProjectJarGenerator;
 import fr.ens.biologie.generic.utils.Duple;
 import fr.ens.biologie.generic.utils.Logging;
+import fr.ens.biologie.generic.utils.NameUtils;
 
 import static au.edu.anu.rscs.aot.queries.CoreQueries.hasProperty;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.selectZeroOrMany;
@@ -584,11 +585,11 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 			String userName = Dialogs.getText(title, header, content, result);
 			if (userName == null)
 				return null;
-			
-			userName = userName.replace("_", "");
-
+	
 			if (userName.equals(""))
 				return null;
+	
+			userName = NameUtils.validJavaName(userName);
 			
 			String newName = scope.newId(false,userName).id();
 			modified = !newName.equals(userName);

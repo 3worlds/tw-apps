@@ -35,7 +35,6 @@ import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 // TODO move to tw-apps later
 import fr.cnrs.iees.graph.impl.TreeGraph;
 
-
 /**
  * @author Ian Davies
  *
@@ -43,32 +42,32 @@ import fr.cnrs.iees.graph.impl.TreeGraph;
  */
 public interface IGraphVisualiser {
 	public void initialiseView();
-	
+
 	public void onNewNode(VisualNode node);
-	
+
 	public void onNewEdge(VisualEdge edge);
-	
+
 	public void collapseTreeFrom(VisualNode childRoot);
-	
+
 	public void expandTreeFrom(VisualNode childRoot);
-	
+
 	public TreeGraph<VisualNode, VisualEdge> getVisualGraph();
 
 	public void close();
 
 	public void removeView(VisualNode node);
-	
+
 	public void removeView(VisualEdge edge);
 
 	public void onNewParent(VisualNode child);
 
-	public void doLayout(VisualNode root,double jitterFaction,LayoutType layoutType,boolean usePcEdge,boolean useXEdge);
+	public void doLayout(VisualNode root, double jitterFaction, LayoutType layoutType, boolean pcShowing,
+			boolean xlShowing, boolean sideline);
 
 	public void onRemoveParentLink(VisualNode vnChild);
-	
+
 	public void onNodeRenamed(VisualNode vNode);
-	
+
 	public void onEdgeRenamed(VisualEdge vEdge);
-	
 
 }
