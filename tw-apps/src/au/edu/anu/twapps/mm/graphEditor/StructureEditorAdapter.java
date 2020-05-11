@@ -3,13 +3,13 @@
  *                                                                        *
  *  Copyright 2018: Jacques Gignoux & Ian D. Davies                       *
  *       jacques.gignoux@upmc.fr                                          *
- *       ian.davies@anu.edu.au                                            * 
+ *       ian.davies@anu.edu.au                                            *
  *                                                                        *
  *  TW-APPS contains ModelMaker and ModelRunner, programs used to         *
  *  construct and run 3Worlds configuration graphs. All code herein is    *
  *  independent of UI implementation.                                     *
  *                                                                        *
- **************************************************************************                                       
+ **************************************************************************
  *  This file is part of TW-APPS (3Worlds applications).                  *
  *                                                                        *
  *  TW-APPS is free software: you can redistribute it and/or modify       *
@@ -20,7 +20,7 @@
  *  TW-APPS is distributed in the hope that it will be useful,            *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *  GNU General Public License for more details.                          *                         
+ *  GNU General Public License for more details.                          *
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-APPS.                                                   *
@@ -254,10 +254,10 @@ public abstract class StructureEditorAdapter
 						es2.add(e.classId());
 				/*- 4 cases:
 				 * 1) es2>0 and es2>0 (error cond. nothing allowed)
-				 * 2) es1==0& es2==0 (both empty - any allowed) 
+				 * 2) es1==0& es2==0 (both empty - any allowed)
 				 * 3) es1>0 & es2==0 ( only edge of es1 type allowed)
 				 * 4) es1==0 & es2>0 (only edge of es2 type allowed);
-				 * 
+				 *
 				 */
 				if (!es1.isEmpty() && !es2.isEmpty()) // 1 error only possible from handmade config
 					return false;
@@ -627,7 +627,9 @@ public abstract class StructureEditorAdapter
 								+ "'\nbefore attempting to rename this node again.\n");
 
 			}
-			if (cNode.classId().equals(N_RECORD.label()) || cNode.classId().equals(N_INITIALISER.label())) {
+			// JG 11/5/2020: Initialiser is now deprecated
+//			if (cNode.classId().equals(N_RECORD.label()) || cNode.classId().equals(N_INITIALISER.label())) {
+			if (cNode.classId().equals(N_RECORD.label())) {
 				String remoteProject = UserProjectLink.projectRoot().getName();
 				Dialogs.warnAlert("Linked project '" + remoteProject + "'",
 						"Renaming code file from  '" + cNode.id() + "' to '" + uniqueId + "' in project '"
