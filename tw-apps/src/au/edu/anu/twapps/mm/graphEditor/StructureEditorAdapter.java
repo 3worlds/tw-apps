@@ -326,19 +326,6 @@ public abstract class StructureEditorAdapter
 
 	}
 
-//	private Duple<String, String> getCurrentNodeLabelXORChoice(List<Duple<String, String>> entries) {
-//		for (VisualNode outNode : editableNode.getOutNodes()) {
-//			String outLabel = outNode.cClassId();
-//			for (Duple<String, String> duple : entries) {
-//				if (duple.getFirst().equals(outLabel))
-//					return duple;
-//				else if (duple.getSecond().equals(outLabel))
-//					return new Duple<String, String>(outLabel, duple.getFirst());
-//			}
-//		}
-//		return null;
-//	}
-
 	@SuppressWarnings("unchecked")
 	private boolean satisfyExclusiveCategoryQuery(SimpleDataTreeNode edgeSpec, VisualNode proposedCat,
 			String edgeLabel) {
@@ -371,8 +358,11 @@ public abstract class StructureEditorAdapter
 		return baseSpec != null;
 	}
 
-	private String promptForNewNode(String label, String promptName) {
-		return Dialogs.getText("'" + label + "' element name.", "", "Name:", promptName,Dialogs.vsAlphaAlphaNumeric);
+	private String promptForNewNode(String label, String promptName, boolean capitalize) {
+		String strPattern = Dialogs.vsAlphaAlphaNumeric;
+		if (capitalize)
+			strPattern = Dialogs.vsAlphaCapAlphaNumeric;
+		return Dialogs.getText("'" + label + "' element name.", "", "Name:", promptName, strPattern);
 	}
 
 	private Class<? extends TreeNode> promptForClass(List<Class<? extends TreeNode>> subClasses,
@@ -401,15 +391,15 @@ public abstract class StructureEditorAdapter
 		boolean modified = true;
 		promptId = editableNode.proposeAnId(promptId);
 		while (modified) {
-			String userName = promptForNewNode(label, promptId);
+			String userName = promptForNewNode(label, promptId, capitalize);
 			if (userName == null)
 				return null;// cancel
 			userName = userName.trim();
 			if (userName.equals(""))
 				return null; // implicit cancel
-			// userName = promptId;
-			if (capitalize)
-				userName = WordUtils.capitalize(userName);
+			// userName = promptId;		
+//			if (capitalize)
+//				userName = WordUtils.capitalize(userName);
 			String newName = editableNode.proposeAnId(userName);
 			modified = !newName.equals(userName);
 			promptId = newName;

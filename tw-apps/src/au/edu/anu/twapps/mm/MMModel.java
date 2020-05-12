@@ -591,6 +591,8 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 
 			if (userName.equals(""))
 				return null;
+			
+			userName = NameUtils.validJavaName(userName);
 
 			String newName = scope.newId(false, userName).id();
 			modified = !newName.equals(userName);
