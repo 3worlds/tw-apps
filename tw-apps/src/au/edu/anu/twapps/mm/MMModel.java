@@ -112,7 +112,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		// collect all relevant ids into a temporary scope.
 
 		IdentityScope prjScope = getProjectScope(templateConfig);
-		String newId = getNewProjectName(prjScope, "prj1", "New project", "", "New project name:");
+		String newId = getNewProjectName(prjScope, "Prj1", "New project", "", "New project name:");
 		/** Still not to late. User cancelled */
 		if (newId == null)
 			return;
@@ -585,7 +585,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		boolean modified = true;
 		String result = scope.newId(false, proposedId).id();
 		while (modified) {
-			String userName = Dialogs.getText(title, header, content, result, Dialogs.vsAlphaAlphaNumeric);
+			String userName = Dialogs.getText(title, header, content, result, Dialogs.vsAlphaCapAlphaNumeric);
 			if (userName == null)
 				return null;
 

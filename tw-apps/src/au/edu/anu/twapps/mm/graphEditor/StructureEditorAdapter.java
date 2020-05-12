@@ -359,7 +359,7 @@ public abstract class StructureEditorAdapter
 	}
 
 	private String promptForNewNode(String label, String promptName, boolean capitalize) {
-		String strPattern = Dialogs.vsAlphaAlphaNumeric;
+		String strPattern = Dialogs.vsAlphaAlphaNumericSpace;
 		if (capitalize)
 			strPattern = Dialogs.vsAlphaCapAlphaNumeric;
 		return Dialogs.getText("'" + label + "' element name.", "", "Name:", promptName, strPattern);

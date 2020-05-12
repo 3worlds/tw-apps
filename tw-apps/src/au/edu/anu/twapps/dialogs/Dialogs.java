@@ -126,12 +126,12 @@ public class Dialogs {
 	public static final String vsNumeric = "([0-9]*)?";
 	public static final String vsAlpha = "([a-zA-Z]*)?";
 	public static final String vsAlphaNumeric = "([a-zA-Z0-9]*)?";
-	public static final String vsAlphaAlphaNumeric = "([a-zA-Z][a-zA-Z0-9]*)?";
+	public static final String vsAlphaAlphaNumericSpace = "([a-zA-Z][a-zA-Z0-9 ]*)?";
 	public static final String vsAlphaCapAlphaNumeric = "([A-Z][a-zA-Z0-9]*)?";
 
 	public static void main(String[] args) {
 
-		String regex = vsAlphaCapAlphaNumeric;
+		String regex = vsAlphaAlphaNumericSpace;
 
 		List<String> names = new ArrayList<String>();
 		names.add("prj1"); // 1
@@ -146,6 +146,9 @@ public class Dialogs {
 		names.add("A"); // 10
 		names.add(""); // 11
 		names.add("BlahAndBlah");// 12
+		names.add("Blah And              Blah");// 13
+		names.add(" Blah And Blah");// 14
+		names.add(" Blah");// 15
 
 		Pattern pattern = Pattern.compile(regex);
 
