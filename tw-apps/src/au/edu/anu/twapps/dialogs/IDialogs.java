@@ -56,7 +56,7 @@ public interface IDialogs {
 
 	public YesNoCancel yesNoCancel(String title, String header, String content);
 
-	public String getText(String title, String header, String content, String prompt);
+	public String getText(String title, String header, String content, String prompt,String strValidation);
 
 	public File getExternalProjectFile();
 

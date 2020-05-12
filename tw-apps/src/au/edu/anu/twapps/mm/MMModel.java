@@ -110,9 +110,9 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 			return;
 		}
 		// collect all relevant ids into a temporary scope.
-		
-		IdentityScope prjScope = getProjectScope(templateConfig);		
-		String newId = getNewProjectName(prjScope,"prj1", "New project", "", "New project name:");
+
+		IdentityScope prjScope = getProjectScope(templateConfig);
+		String newId = getNewProjectName(prjScope, "prj1", "New project", "", "New project name:");
 		/** Still not to late. User cancelled */
 		if (newId == null)
 			return;
@@ -157,12 +157,13 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		doSave();
 
 	}
+
 	private static IdentityScope getProjectScope(TreeGraph<TreeGraphDataNode, ALEdge> graph) {
 		LocalScope result = new LocalScope("Projects");
-		for (String prjName: Project.getAllProjectNames())
-			result.newId(true,prjName);	
-		for (Node n : graph.nodes()) 
-			result.newId(true,n.id());
+		for (String prjName : Project.getAllProjectNames())
+			result.newId(true, prjName);
+		for (Node n : graph.nodes())
+			result.newId(true, n.id());
 		return result;
 	}
 
@@ -428,7 +429,8 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		return result;
 	}
 
-	// This uses the twa archetype. If the archetype changes this function may crash;
+	// This uses the twa archetype. If the archetype changes this function may
+	// crash;
 	private void setupParentReferences(VisualNode vn) {
 		Map<String, List<StringTable>> classParentMap = new HashMap<>();
 		Set<String> discoveredFiles = new HashSet<>();
@@ -564,7 +566,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 			if (root.id().equals(cRoot.id()))
 				vRoot = root;
 		IdentityScope prjScope = getProjectScope(ConfigGraph.getGraph());
-		String newId = getNewProjectName(prjScope,vRoot.id(), "Save as", "", "New project name:");
+		String newId = getNewProjectName(prjScope, vRoot.id(), "Save as", "", "New project name:");
 		if (newId == null)
 			return;
 		if (Project.isOpen()) {
@@ -578,26 +580,24 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		Preferences.initialise(Project.makeProjectPreferencesFile());
 	}
 
-	private String getNewProjectName(IdentityScope scope,String proposedId, String title, String header, String content) {
-		boolean modified = true;	
+	private String getNewProjectName(IdentityScope scope, String proposedId, String title, String header,
+			String content) {
+		boolean modified = true;
 		String result = scope.newId(false, proposedId).id();
 		while (modified) {
-			String userName = Dialogs.getText(title, header, content, result);
+			String userName = Dialogs.getText(title, header, content, result, Dialogs.vsAlphaAlphaNumeric);
 			if (userName == null)
 				return null;
-	
+
 			if (userName.equals(""))
 				return null;
-	
-			userName = NameUtils.validJavaName(userName);
-			
-			String newName = scope.newId(false,userName).id();
+
+			String newName = scope.newId(false, userName).id();
 			modified = !newName.equals(userName);
 			result = newName;
 		}
 		return result;
 
 	}
-	
 
 }

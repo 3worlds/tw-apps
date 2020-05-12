@@ -29,7 +29,10 @@
 package au.edu.anu.twapps.dialogs;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Author Ian Davies
@@ -74,8 +77,8 @@ public class Dialogs {
 		return impl.yesNoCancel(title, header, content);
 	}
 
-	public static String getText(String title, String header, String content, String prompt) {
-		return impl.getText(title, header, content, prompt);
+	public static String getText(String title, String header, String content, String prompt, String strValidation) {
+		return impl.getText(title, header, content, prompt, strValidation);
 	}
 
 	public static File getExternalProjectFile() {
@@ -117,5 +120,36 @@ public class Dialogs {
 
 	public static int editISFiles(List<File> files, int idx) {
 		return impl.editISFiles(files, idx);
+	}
+
+	
+	public static final String vsNumeric = "([0-9]*)?";
+	public static final String vsAlpha = "([a-zA-Z]*)?";
+	public static final String vsAlphaNumeric = "([a-zA-Z0-9]*)?";
+	public static final String vsAlphaAlphaNumeric = "([a-zA-Z][a-zA-Z0-9]*)?";
+
+	public static void main(String[] args) {
+
+		String regex = vsAlphaAlphaNumeric;
+
+		List<String> names = new ArrayList<String>();
+		names.add("prj1"); // 1
+		names.add("1prj"); // 2
+		names.add("*)(*"); // 3
+		names.add("123"); // 4
+		names.add("1"); // 5
+		names.add("abc"); // 6
+		names.add("Abc"); // 7
+		names.add("ABC"); // 8
+		names.add("a"); // 9
+		names.add("A"); // 10
+		names.add(""); // 11
+
+		Pattern pattern = Pattern.compile(regex);
+
+		for (String name : names) {
+			Matcher matcher = pattern.matcher(name);
+			System.out.println((names.indexOf(name) + 1) + ") " + matcher.matches());
+		}
 	}
 }

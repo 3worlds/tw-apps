@@ -66,7 +66,7 @@ public class MockDialogs implements IDialogs{
 	}
 
 	@Override
-	public String getText(String title, String header, String content, String prompt) {
+	public String getText(String title, String header, String content, String prompt,String validFormat) {
 		// TODO Auto-generated method stub
 		return "getText user string";
 	}
