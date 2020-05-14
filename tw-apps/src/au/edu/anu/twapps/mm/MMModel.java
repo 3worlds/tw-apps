@@ -286,6 +286,10 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 
 	@Override
 	public void doSave() {
+		File pf = Project.getProjectFile();
+		// User may have deleted their project during a session but has asked to save
+		if (!pf.exists())
+			pf.mkdirs();
 		new OmugiGraphExporter(Project.makeConfigurationFile()).exportGraph(ConfigGraph.getGraph());
 		new OmugiGraphExporter(Project.makeLayoutFile()).exportGraph(visualGraph);
 		GraphState.clear();
@@ -544,6 +548,15 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 
 	@Override
 	public boolean canClose() {
+		if (Project.isOpen()) {
+			File pf = Project.getProjectFile();
+			if (!pf.exists()) {
+				// user has deltled project during a session.
+				pf.mkdirs();
+				doSave();
+				return true;
+			}
+		}
 		if (!GraphState.changed())
 			return true;
 		switch (Dialogs.yesNoCancel("Project has changed",
@@ -591,7 +604,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 
 			if (userName.equals(""))
 				return null;
-			
+
 			userName = NameUtils.validJavaName(userName);
 
 			String newName = scope.newId(false, userName).id();
