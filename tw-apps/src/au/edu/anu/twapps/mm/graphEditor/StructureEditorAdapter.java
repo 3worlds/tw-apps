@@ -397,7 +397,7 @@ public abstract class StructureEditorAdapter
 			userName = userName.trim();
 			if (userName.equals(""))
 				return null; // implicit cancel
-			// userName = promptId;		
+			// userName = promptId;
 //			if (capitalize)
 //				userName = WordUtils.capitalize(userName);
 			String newName = editableNode.proposeAnId(userName);
@@ -858,12 +858,15 @@ public abstract class StructureEditorAdapter
 		VisualNode newVNode = vFactory.makeNode(newCNode.id());
 		newCNode.connectParent(cParent);
 		newVNode.connectParent(vParent);
+		newVNode.setConfigNode(newCNode);
 		Set<String> discoveredFile = new HashSet<>();
 		VisualNodeEditable vne = new VisualNodeEditor(newVNode, editableNode.getGraph());
+		// this depends on the parent table been present so its circular
+		// This will break eventually when finding the spec without knowing the precise
+		// parent when there can be more than one.
 		SimpleDataTreeNode specs = specifications.getSpecsOf(vne, TWA.getRoot(), discoveredFile);
 		StringTable parents = (StringTable) specs.properties().getPropertyValue(aaHasParent);
 		newVNode.setParentRef(parents);
-		newVNode.setConfigNode(newCNode);
 		newVNode.setCategory();
 		newVNode.setCollapse(false);
 		newVNode.setPosition(Math.random() * 0.5, Math.random() * 0.5);

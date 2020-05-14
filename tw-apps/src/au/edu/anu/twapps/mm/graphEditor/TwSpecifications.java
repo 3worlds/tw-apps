@@ -86,7 +86,10 @@ public class TwSpecifications implements //
 				StringTable parentsSpecTable = (StringTable) ((SimpleDataTreeNode) childSpec).properties()
 						.getPropertyValue(aaHasParent);
 				StringTable parentsTable = editNode.getParentTable();
-				if (equals(parentsTable, parentsSpecTable))
+				//Dodgy: the parentTable is unknown during an import;
+				if (parentsTable==null)
+					return (SimpleDataTreeNode) childSpec;
+				else if (equals(parentsTable, parentsSpecTable))
 					return (SimpleDataTreeNode) childSpec;
 			}
 			// search subArchetypes
