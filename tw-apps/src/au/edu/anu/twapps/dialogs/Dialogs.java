@@ -126,7 +126,7 @@ public class Dialogs {
 	public static final String vsNumeric = "([0-9]*)?";
 	public static final String vsAlpha = "([a-zA-Z]*)?";
 	public static final String vsAlphaNumeric = "([a-zA-Z0-9]*)?";
-	public static final String vsAlphaAlphaNumericSpace = "([*a-zA-Z][a-zA-Z0-9 *]*)?";// Need the " " space to allow for null string
+	public static final String vsAlphaAlphaNumericSpace = "([a-zA-Z][a-zA-Z0-9 ]*)?";// Need the " " space to allow for null string
 	public static final String vsAlphaCapAlphaNumeric = "([A-Z][a-zA-Z0-9]*)?";
 
 	public static final String test = "([*a-zA-Z][a-zA-Z0-9 *]*)?";

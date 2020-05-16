@@ -87,7 +87,7 @@ public class VisualNodeEditor implements //
 
 	@Override
 	public boolean canRename() {
-		return !visualNode.cClassId().equals(N_ROOT.label());
+		return (!visualNode.cClassId().equals(N_ROOT.label()) && !visualNode.id().contains("*"));
 	}
 
 	@Override
@@ -166,7 +166,7 @@ public class VisualNodeEditor implements //
 		return (Iterable<VisualEdge>) visualNode.edges(Direction.OUT);
 	}
 
-	private static boolean ignoreDuplicateEdgesBetween(TreeGraphNode start,TreeGraphNode end,String edgeLabel){
+	private static boolean ignoreDuplicateEdgesBetween(TreeGraphNode start, TreeGraphNode end, String edgeLabel) {
 		if (end.classId().equals(N_DIMENSIONER.label()) && start.classId().equals(N_TABLE.label())
 				&& E_SIZEDBY.label().equals(edgeLabel))
 			return true;
@@ -178,7 +178,7 @@ public class VisualNodeEditor implements //
 
 		TreeGraphNode cStart = visualNode.getConfigNode();
 		TreeGraphNode cEnd = vEnd.getConfigNode();
-		if (ignoreDuplicateEdgesBetween(cStart,cEnd,edgeLabel))
+		if (ignoreDuplicateEdgesBetween(cStart, cEnd, edgeLabel))
 			return false;
 		for (ALEdge cEdge : cStart.edges(Direction.OUT)) {
 			ALNode cEndNode = cEdge.endNode();
