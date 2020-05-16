@@ -42,7 +42,7 @@ import fr.ens.biologie.generic.utils.Tuple;
  * Date 11 Jan. 2019
  */
 public interface StructureEditable {
-	/* These methods are all in the context of a single user selected VisualNode*/
+	/* These methods are all in the context of a single user selected VisualNode */
 
 	/*
 	 * Filters a list of possible children depending on current state of the
@@ -50,53 +50,53 @@ public interface StructureEditable {
 	 */
 	public List<SimpleDataTreeNode> filterChildSpecs(Iterable<SimpleDataTreeNode> childNodeSpecs);
 
-	 /* Filters a list of edgeSpecs to produce a list of duples of edge labels and end nodes */
-	public List<Tuple<String, VisualNode,SimpleDataTreeNode>> filterEdgeSpecs(Iterable<SimpleDataTreeNode> edgeSpecs);
+	/*
+	 * Filters a list of edgeSpecs to produce a list of duples of edge labels and
+	 * end nodes
+	 */
+	public List<Tuple<String, VisualNode, SimpleDataTreeNode>> filterEdgeSpecs(Iterable<SimpleDataTreeNode> edgeSpecs);
 
-	/* list of nodes that are eligible children of the edit node*/
+	/* list of nodes that are eligible children of the edit node */
 	public List<VisualNode> orphanedChildList(Iterable<SimpleDataTreeNode> childSpecs);
 
-	/* create child on childSpec */
-	public void onNewChild(String childLabel, SimpleDataTreeNode childBaseSpec);
+	/* create child on childSpec - optional childId */
+	void onNewChild(String childLabel, String childId, SimpleDataTreeNode childBaseSpec);
 
 	/* add edge called String,to an end node */
-	public void onNewEdge(Tuple<String, VisualNode,SimpleDataTreeNode> details);
-	
+	public void onNewEdge(Tuple<String, VisualNode, SimpleDataTreeNode> details);
+
 	public void onDeleteEdge(VisualEdge edge);
 
 	/* delete this node */
 	public void onDeleteNode();
-	
+
 	public void onRenameNode();
-	
+
 	public void onRenameEdge(VisualEdge edge);
-	
+
 	public void onDeleteTree(VisualNode root);
 
 	/* collapse tree from this node */
 	public void onCollapseTree(VisualNode childRoot);
-	
+
 	/* collapse all expanded trees from this node */
 	public void onCollapseTrees();
 
 	/* expand tree from this node */
 	public void onExpandTree(VisualNode childRoot);
-	
+
 	/* expand all collapsed trees from this node */
 	public void onExpandTrees();
-	
-	/* connect node as child of this node*/
+
+	/* connect node as child of this node */
 	public void onReconnectChild(VisualNode childNode);
 
-	/* build implementation specific gui*/
+	/* build implementation specific gui */
 	public void buildgui();
-
 
 	void onExportTree(VisualNode root);
 
-
 	void onImportTree(SimpleDataTreeNode childSpec);
-
 
 	void onDeleteParentLink(VisualNode child);
 

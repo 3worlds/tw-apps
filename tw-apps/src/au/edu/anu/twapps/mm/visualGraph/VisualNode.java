@@ -50,8 +50,9 @@ import fr.cnrs.iees.properties.ExtendablePropertyList;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
+import fr.ens.biologie.generic.SaveableAsText;
 
-public class VisualNode extends TreeGraphDataNode implements VisualKeys {
+public class VisualNode extends TreeGraphDataNode implements VisualKeys, SaveableAsText {
 
 	private TreeGraphDataNode configNode;
 	/**
@@ -367,11 +368,17 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys {
 	}
 
 	public static boolean referencedBy(TreeNode node, String ref) {
-		String[] parts = ref.split("/");
+		String[] parts = ref.split("" + SLASH);
 		for (int i = parts.length - 1; i >= 0; i--) {
 			if (node != null) {
-				if (!node.classId().equals(parts[i].replace(":", "")))
+				String[] pair = parts[i].split("" + COLON);
+
+				if (!node.classId().equals(pair[0]))
 					return false;
+				else if (pair.length > 1) {
+					if (!node.id().equals(pair[1]))
+						return false;
+				}
 				node = node.getParent();
 			} else
 				return false;

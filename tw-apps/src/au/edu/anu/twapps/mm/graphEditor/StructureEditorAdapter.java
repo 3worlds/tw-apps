@@ -409,9 +409,11 @@ public abstract class StructureEditorAdapter
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void onNewChild(String childLabel, SimpleDataTreeNode childBaseSpec) {
-		String promptId = getNewName(childLabel, ConfigurationNodeLabels.labelValueOf(childLabel).defName(),
-				childBaseSpec);
+	public void onNewChild(String childLabel, String childId, SimpleDataTreeNode childBaseSpec) {
+		String promptId = childId;
+		if (promptId == null)
+			promptId = getNewName(childLabel, ConfigurationNodeLabels.labelValueOf(childLabel).defName(),
+					childBaseSpec);
 		if (promptId == null)
 			return;
 		String childClassName = (String) childBaseSpec.properties().getPropertyValue(aaIsOfClass);
