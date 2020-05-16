@@ -495,6 +495,9 @@ public abstract class StructureEditorAdapter
 
 		Duple<Boolean, Collection<TreeGraphDataNode>> defData = PropertiesMatchDefinitionQuery
 				.getDataDefs(newChild.getConfigNode(), dataCategory);
+		if (defData==null)
+			return;
+		
 		Collection<TreeGraphDataNode> defs = defData.getSecond();
 		Boolean useAutoVar = defData.getFirst();
 		if (defs == null) {
