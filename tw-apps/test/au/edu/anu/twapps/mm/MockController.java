@@ -142,9 +142,9 @@ public class MockController implements IMMController{
 
 	@Override
 	public void setDefaultTitle() {
-		System.out.println("TITLE SET TO DEFAULT");
-		
+		System.out.println("TITLE SET TO DEFAULT");		
 	}
+
 
 
 }

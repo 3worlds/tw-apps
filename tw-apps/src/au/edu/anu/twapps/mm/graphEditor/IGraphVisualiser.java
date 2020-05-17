@@ -69,5 +69,7 @@ public interface IGraphVisualiser {
 	public void onNodeRenamed(VisualNode vNode);
 
 	public void onEdgeRenamed(VisualEdge vEdge);
+	
+	public void doFilterEdges(VisualNode root, int pathLength);
 
 }
