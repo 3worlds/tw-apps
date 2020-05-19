@@ -70,6 +70,6 @@ public interface IGraphVisualiser {
 
 	public void onEdgeRenamed(VisualEdge vEdge);
 	
-	public void doFilterEdges(VisualNode root, int pathLength);
+	public void showLocalGraph(VisualNode root, int depth);
 
 }
