@@ -58,7 +58,7 @@ public class VersionSettings {
 			{"au.edu.anu.rscs.aot", "omugi", "[0.2.16,)", null},
 			{"au.edu.anu.rscs.aot", "qgraph", "[0.1.3,)", null},
 			{"au.edu.anu.rscs.aot", "aot", "[0.1.8,)", null},
-			{"fr.cnrs.iees.tw-core", "tw-core", "[0.3.17,)", null},
+			{"fr.cnrs.iees.tw-core", "tw-core", "[0.3.18,)", null},
 			{"org.apache.commons", "commons-text", "[1,)", null},
 	};
 
