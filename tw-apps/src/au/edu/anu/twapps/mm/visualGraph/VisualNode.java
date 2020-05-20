@@ -50,7 +50,9 @@ import fr.cnrs.iees.properties.ExtendablePropertyList;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
+import fr.cnrs.iees.twcore.constants.ConfigurationReservedNodeId;
 import fr.ens.biologie.generic.SaveableAsText;
+import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
 public class VisualNode extends TreeGraphDataNode implements VisualKeys, SaveableAsText {
 
@@ -325,6 +327,15 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 		configNode.connectChild(cChild);
 		connectChild(vChild);
 	}
+
+	public boolean isPredefined() {
+		return ConfigurationReservedNodeId.isPredefined(id());
+	}
+
+	public boolean isRoot() {
+		return cClassId().equals(N_ROOT.label());
+	}
+
 
 	public void setupParentReference(Map<String, List<StringTable>> map) {
 		setupParentReference(this, map);

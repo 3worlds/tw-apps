@@ -71,5 +71,7 @@ public interface IGraphVisualiser {
 	public void onEdgeRenamed(VisualEdge vEdge);
 	
 	public void showLocalGraph(VisualNode root, int depth);
+	
+	public void collapsePredef();
 
 }

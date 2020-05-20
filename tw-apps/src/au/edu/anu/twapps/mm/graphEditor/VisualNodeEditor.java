@@ -81,13 +81,13 @@ public class VisualNodeEditor implements //
 	}
 
 	@Override
-	public boolean canDelete() {
-		return !visualNode.cClassId().equals(N_ROOT.label());
+	public boolean isPredefined() {
+		return visualNode.isPredefined();
 	}
 
 	@Override
-	public boolean canRename() {
-		return (!visualNode.cClassId().equals(N_ROOT.label()) && !visualNode.id().contains("*"));
+	public boolean isRoot() {
+		return visualNode.cClassId().equals(N_ROOT.label());
 	}
 
 	@Override

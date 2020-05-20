@@ -90,6 +90,7 @@ import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SimplePropertyListImpl;
 import fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels;
 import fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels;
+import fr.cnrs.iees.twcore.constants.ConfigurationReservedNodeId;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import fr.ens.biologie.generic.utils.Duple;
@@ -145,14 +146,21 @@ public abstract class StructureEditorAdapter
 		List<String[]> tables = specifications.getQueryStringTables(baseSpec, ChildXorPropertyQuery.class);
 		tables.addAll(specifications.getQueryStringTables(subClassSpec, ChildXorPropertyQuery.class));
 		for (SimpleDataTreeNode childSpec : childSpecs) {
-			String childLabel = (String) childSpec.properties().getPropertyValue(aaIsOfClass);
-			IntegerRange range = specifications.getMultiplicityOf(childSpec);
-			if (editableNode.moreChildrenAllowed(range, childLabel)) {
-				if (!tables.isEmpty()) {
-					if (allowedChild(childLabel, tables))
+			boolean reserved = false;
+			if (childSpec.properties().hasProperty(aaHasId)) {
+				reserved = ConfigurationReservedNodeId
+						.isPredefined((String) childSpec.properties().getPropertyValue(aaHasId));
+			}
+			if (!reserved) {
+				String childLabel = (String) childSpec.properties().getPropertyValue(aaIsOfClass);
+				IntegerRange range = specifications.getMultiplicityOf(childSpec);
+				if (editableNode.moreChildrenAllowed(range, childLabel)) {
+					if (!tables.isEmpty()) {
+						if (allowedChild(childLabel, tables))
+							result.add(childSpec);
+					} else
 						result.add(childSpec);
-				} else
-					result.add(childSpec);
+				}
 			}
 		}
 		Collections.sort(result, new Comparator<Node>() {
@@ -495,9 +503,9 @@ public abstract class StructureEditorAdapter
 
 		Duple<Boolean, Collection<TreeGraphDataNode>> defData = PropertiesMatchDefinitionQuery
 				.getDataDefs(newChild.getConfigNode(), dataCategory);
-		if (defData==null)
+		if (defData == null)
 			return;
-		
+
 		Collection<TreeGraphDataNode> defs = defData.getSecond();
 		Boolean useAutoVar = defData.getFirst();
 		if (defs == null) {

@@ -145,6 +145,12 @@ public class MockController implements IMMController{
 		System.out.println("TITLE SET TO DEFAULT");		
 	}
 
+	@Override
+	public void collapsePredef() {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 
 }

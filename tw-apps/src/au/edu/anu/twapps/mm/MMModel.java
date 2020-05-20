@@ -150,6 +150,12 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		/** Create the default layout. */
 		controller.doLayout();
 
+		/** hide the predefined nodes for new models */
+		controller.collapsePredef();
+
+		/** Re apply layout after collapsing predefined tree. */
+		controller.doLayout();
+
 		/**
 		 * Save Config and layout graphs and call config validation. Validation updates
 		 * the ui buttons and message display.

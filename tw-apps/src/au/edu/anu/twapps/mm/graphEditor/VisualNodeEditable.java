@@ -48,13 +48,10 @@ public interface VisualNodeEditable {
 	/* get the configuration node under-pinning this */
 	public TreeGraphNode getConfigNode();
 
-	/*
-	 * normally true unless this is the configuration root (3worlds:<projectName>)
-	 */
-	public boolean canDelete();
-	
-	public boolean canRename();
 
+	public boolean isPredefined();
+	
+	public boolean isRoot();
 	/* true if the this node can have more children of this label */
 	public boolean moreChildrenAllowed(IntegerRange range, String childLabel);
 
