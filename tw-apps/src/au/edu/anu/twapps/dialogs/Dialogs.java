@@ -121,7 +121,12 @@ public class Dialogs {
 	public static int editISFiles(List<File> files, int idx) {
 		return impl.editISFiles(files, idx);
 	}
-
+	
+	public static boolean isValid(String s,String regex) {
+		Pattern pattern = Pattern.compile(regex);
+		Matcher matcher = pattern.matcher(s);
+		return matcher.matches();
+	}
 	
 	public static final String vsNumeric = "([0-9]*)?";
 	public static final String vsAlpha = "([a-zA-Z]*)?";

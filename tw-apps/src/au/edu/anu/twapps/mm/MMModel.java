@@ -236,6 +236,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		File file = Dialogs.getExternalProjectFile();
 		if (file == null)
 			return;
+
 		log.info("Import: " + file);
 		TreeGraph<TreeGraphDataNode, ALEdge> importGraph = (TreeGraph<TreeGraphDataNode, ALEdge>) FileImporter
 				.loadGraphFromFile(file);
@@ -251,18 +252,28 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		}
 
 		TreeGraphDataNode twRoot = findTwRoot(importGraph);
+
 		if (twRoot == null) {
 			Dialogs.errorAlert("Import error", file.getName(),
 					"This file does not have a root node called '" + N_ROOT.label() + "'");
 			return;
 		}
 
+		//(IdentityScope scope, String proposedId, String title, String header, String content)
+		IdentityScope prjScope = getProjectScope(importGraph);
+		String newId = getNewProjectName(prjScope, "Prj1", "Import '"+file.getName()+"'", "", "New project name:");
+		/** Still not to late. User cancelled */
+		if (newId == null)
+			return;
+
+
 		if (Project.isOpen()) {
 			onProjectClosing();
 			Project.close();
 		}
 
-		String newId = Project.create(twRoot.id());
+		
+		newId = Project.create(newId);
 		if (!twRoot.id().equals(newId))
 			twRoot.rename(twRoot.id(), newId);
 
@@ -275,7 +286,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		onProjectOpened();
 
 		controller.doLayout();
-	
+
 		/** hide the predefined nodes for imported graphs */
 		controller.collapsePredef();
 
