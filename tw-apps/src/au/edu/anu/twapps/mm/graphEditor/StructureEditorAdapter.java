@@ -152,16 +152,17 @@ public abstract class StructureEditorAdapter
 						.isPredefined((String) childSpec.properties().getPropertyValue(aaHasId));
 			}
 			if (!reserved) {
-			String childLabel = (String) childSpec.properties().getPropertyValue(aaIsOfClass);
-			IntegerRange range = specifications.getMultiplicityOf(childSpec);
-			if (editableNode.moreChildrenAllowed(range, childLabel)) {
-				if (!tables.isEmpty()) {
-					if (allowedChild(childLabel, tables))
+				String childLabel = (String) childSpec.properties().getPropertyValue(aaIsOfClass);
+				IntegerRange range = specifications.getMultiplicityOf(childSpec);
+				if (editableNode.moreChildrenAllowed(range, childLabel)) {
+					if (!tables.isEmpty()) {
+						if (allowedChild(childLabel, tables))
+							result.add(childSpec);
+					} else
 						result.add(childSpec);
-				} else
-					result.add(childSpec);
+				}
 			}
-		}}
+		}
 		Collections.sort(result, new Comparator<Node>() {
 			@Override
 			public int compare(Node o1, Node o2) {
@@ -320,14 +321,9 @@ public abstract class StructureEditorAdapter
 			return true;
 
 		boolean result = false;
-		String pLabel = proposedEndNode.cClassId();
 		for (Duple<String, String> entry : entries) {
-			// is query relevant to this endNode?
-			if (pLabel.equals(entry.getFirst()) || pLabel.equals(entry.getSecond()))
-				result = result || OutNodeXorQuery.propose(editableNode.getConfigNode(),
-						proposedEndNode.getConfigNode(), entry.getFirst(), entry.getSecond());
-			else
-				result = result || false;
+			result = result || OutNodeXorQuery.propose(editableNode.getConfigNode(), proposedEndNode.getConfigNode(),
+					entry.getFirst(), entry.getSecond());
 		}
 		return result;
 
