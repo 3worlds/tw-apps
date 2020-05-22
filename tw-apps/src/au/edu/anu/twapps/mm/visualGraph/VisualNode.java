@@ -87,6 +87,22 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 		return configNode;
 	}
 
+	public boolean isVisible() {
+		if (properties().getPropertyValue(vnVisible)==null)
+			properties().setProperty(vnVisible, true);
+		return (Boolean) properties().getPropertyValue(vnVisible);
+	}
+
+	public void setVisible(boolean value) {
+		properties().setProperty(vnVisible, value);
+	}
+
+	public boolean parentIsVisible() {
+		if (getParent() == null)
+			return true;
+		return getParent().isVisible();
+	}
+
 	@Override
 	public String toDetailedString() {
 		StringBuilder sb = new StringBuilder(super.toDetailedString());
@@ -317,6 +333,7 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 		TwConfigFactory cf = (TwConfigFactory) configNode.factory();
 		ALEdge cEdge = (ALEdge) cf.makeEdge(cf.edgeClass(label), configNode, cEnd, id);
 		result.setConfigEdge(cEdge);
+		result.setVisible(true);
 		if (!cEdge.id().equals(result.id()))
 			throw new TwAppsException("Ids must match -[config: " + cEdge.id() + "; visual: " + result.id());
 		return result;
@@ -335,7 +352,6 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 	public boolean isRoot() {
 		return cClassId().equals(N_ROOT.label());
 	}
-
 
 	public void setupParentReference(Map<String, List<StringTable>> map) {
 		setupParentReference(this, map);

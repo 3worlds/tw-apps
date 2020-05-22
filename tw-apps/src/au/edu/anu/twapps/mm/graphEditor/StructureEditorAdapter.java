@@ -441,6 +441,7 @@ public abstract class StructureEditorAdapter
 		// make the node
 		newChild = editableNode.newChild(childLabel, promptId);
 		newChild.setCollapse(false);
+		newChild.setVisible(true);
 		newChild.setCategory();
 		VisualNodeEditable vne = new VisualNodeEditor(newChild, editableNode.getGraph());
 		StringTable parents = (StringTable) childBaseSpec.properties().getPropertyValue(aaHasParent);
@@ -829,6 +830,7 @@ public abstract class StructureEditorAdapter
 					importEdge.id());
 			VisualEdge newVEdge = vFactory.makeEdge(vStart, vEnd, newCEdge.id());
 			newVEdge.setConfigEdge(newCEdge);
+			newVEdge.setVisible(true);
 			cloneEdgeProperties(importEdge, newCEdge);
 			gvisualiser.onNewEdge(newVEdge);
 		});
@@ -876,6 +878,7 @@ public abstract class StructureEditorAdapter
 		StringTable parents = (StringTable) specs.properties().getPropertyValue(aaHasParent);
 		newVNode.setParentRef(parents);
 		newVNode.setCategory();
+		newVNode.setVisible(true);
 		newVNode.setCollapse(false);
 		newVNode.setPosition(Math.random() * 0.5, Math.random() * 0.5);
 		// Collect outEdges and pair with visual node.

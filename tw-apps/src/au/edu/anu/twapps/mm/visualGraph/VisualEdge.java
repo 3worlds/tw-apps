@@ -104,6 +104,16 @@ public class VisualEdge extends ALDataEdge implements VisualKeys {
 		setText(text);
 	}
 
+	public boolean isVisible() {
+		if (properties().getPropertyValue(veVisible) == null)
+			properties().setProperty(veVisible, true);
+		return (Boolean) properties().getPropertyValue(veVisible);
+	}
+
+	public void setVisible(boolean value) {
+		properties().setProperty(veVisible, value);
+	}
+
 	public void shadowElements(TreeGraphDataNode configNode) {
 		for (ALEdge edge : configNode.edges(Direction.OUT))
 			if (edge.id().equals(id())) {

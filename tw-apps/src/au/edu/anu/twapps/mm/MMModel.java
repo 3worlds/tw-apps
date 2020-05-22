@@ -555,12 +555,14 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 						edge.endNode());
 				VisualEdge visualEdge = vf.makeEdge(vNodes.getFirst(), vNodes.getSecond(), visualId);
 				visualEdge.setConfigEdge(edge);
+				visualEdge.setVisible(true);
 			}
 		}
 
 		Random rnd = new Random();
 		for (VisualNode visualNode : newVisualGraph.nodes()) {
 			log.info("Initialising " + visualNode.getDisplayText(false));
+			visualNode.setVisible(true);
 			visualNode.setCategory();
 			visualNode.setPosition(rnd.nextDouble(), rnd.nextDouble());
 			visualNode.setCollapse(false);
