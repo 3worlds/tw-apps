@@ -205,9 +205,9 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		}
 
 		TreeGraph<TreeGraphDataNode, ALEdge> newGraph = (TreeGraph<TreeGraphDataNode, ALEdge>) FileImporter
-				.loadGraphFromFile(Project.makeConfigurationFile());
+				.loadGraphFromFile(cFile);
 		TreeGraph<VisualNode, VisualEdge> importVisual = (TreeGraph<VisualNode, VisualEdge>) FileImporter
-				.loadGraphFromFile(Project.makeLayoutFile());
+				.loadGraphFromFile(vFile);
 
 		if (importVisual.nNodes() != newGraph.nNodes()) {
 			Dialogs.errorAlert("File error", file.getName(),
@@ -259,20 +259,19 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 			return;
 		}
 
-		//(IdentityScope scope, String proposedId, String title, String header, String content)
+		// (IdentityScope scope, String proposedId, String title, String header, String
+		// content)
 		IdentityScope prjScope = getProjectScope(importGraph);
-		String newId = getNewProjectName(prjScope, "Prj1", "Import '"+file.getName()+"'", "", "New project name:");
+		String newId = getNewProjectName(prjScope, "Prj1", "Import '" + file.getName() + "'", "", "New project name:");
 		/** Still not to late. User cancelled */
 		if (newId == null)
 			return;
-
 
 		if (Project.isOpen()) {
 			onProjectClosing();
 			Project.close();
 		}
 
-		
 		newId = Project.create(newId);
 		if (!twRoot.id().equals(newId))
 			twRoot.rename(twRoot.id(), newId);

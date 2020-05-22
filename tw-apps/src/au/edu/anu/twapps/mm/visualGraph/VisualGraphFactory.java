@@ -101,7 +101,7 @@ public class VisualGraphFactory extends TreeGraphFactory implements EditableFact
 	};
 
 	public VisualGraphFactory() {
-		super("VGF");
+		super("VGF",vgLabels);
 	}
 
 	public VisualGraphFactory(String scopeName) {
@@ -128,6 +128,7 @@ public class VisualGraphFactory extends TreeGraphFactory implements EditableFact
 
 	@Override
 	public VisualEdge makeEdge(Node start, Node end, String proposedId) {
+		//Edge e = inherited makeEdge(start,end,proposedId);
 		VisualEdge result = new VisualEdge(scope.newId(true, proposedId), start, end, this);
 		return result;
 	}
