@@ -31,6 +31,7 @@ package au.edu.anu.twapps.mm;
 
 import java.io.File;
 
+import au.edu.anu.twapps.mm.layout.LayoutType;
 import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import fr.cnrs.iees.graph.impl.TreeGraph;
@@ -134,11 +135,6 @@ public class MockController implements IMMController{
 		
 	}
 
-	@Override
-	public void doFocusedLayout(VisualNode root) {
-		System.out.println("Run layout from "+root.getDisplayText(false));
-		
-	}
 
 	@Override
 	public void setDefaultTitle() {
@@ -147,6 +143,12 @@ public class MockController implements IMMController{
 
 	@Override
 	public void collapsePredef() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void doFocusedLayout(VisualNode root, LayoutType layout) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -29,6 +29,7 @@
 
 package au.edu.anu.twapps.mm;
 
+import au.edu.anu.twapps.mm.layout.LayoutType;
 import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import fr.cnrs.iees.graph.impl.TreeGraph;
@@ -68,7 +69,7 @@ public interface IMMController {
 	
 	public void doLayout();
 	
-	public void doFocusedLayout(VisualNode root);
+	public void doFocusedLayout(VisualNode root, LayoutType layout);
 	
 	public void setDefaultTitle();
 	

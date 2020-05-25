@@ -73,5 +73,7 @@ public interface IGraphVisualiser {
 	public void showLocalGraph(VisualNode root, int depth);
 	
 	public void collapsePredef();
+	
+	public void onSelectAll();
 
 }

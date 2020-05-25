@@ -97,12 +97,6 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 		properties().setProperty(vnVisible, value);
 	}
 
-	public boolean parentIsVisible() {
-		if (getParent() == null)
-			return true;
-		return getParent().isVisible();
-	}
-
 	@Override
 	public String toDetailedString() {
 		StringBuilder sb = new StringBuilder(super.toDetailedString());
