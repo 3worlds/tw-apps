@@ -66,7 +66,7 @@ public class VisualNodeEditor implements //
 
 	@Override
 	public boolean hasChildren() {
-		return !isLeaf();
+		return visualNode.hasChildren();
 	}
 
 	@Override
@@ -108,11 +108,13 @@ public class VisualNodeEditor implements //
 
 	@Override
 	public boolean hasOutEdges() {
+		// !isLeaf
 		return visualNode.edges(Direction.OUT).iterator().hasNext();
 	}
 
 	@Override
 	public boolean isLeaf() {
+		// no out edges OR children
 		return visualNode.isLeaf();
 	}
 

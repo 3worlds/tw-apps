@@ -39,6 +39,7 @@ import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
+import fr.ens.biologie.generic.utils.Duple;
 
 public class VisualEdge extends ALDataEdge implements VisualKeys {
 	private ALEdge configEdge;
@@ -49,6 +50,7 @@ public class VisualEdge extends ALDataEdge implements VisualKeys {
 	 */
 	private Object veText;
 	private Object veSymbol;
+	private Object veArrowhead;
 
 	public VisualEdge(Identity id, Node start, Node end, SimplePropertyList props, EdgeFactory factory) {
 		super(id, start, end, props, factory);
@@ -83,14 +85,17 @@ public class VisualEdge extends ALDataEdge implements VisualKeys {
 		return veText;
 	}
 
-	public Object getSymbol() {
-		return veSymbol;
+	public Duple<Object, Object> getSymbol() {
+		return new Duple<Object, Object>(veSymbol, veArrowhead);
 	}
 
-	private void setSymbol(Object s) {
+	private void setSymbol(Object line, Object arrowhead) {
 		if (veSymbol != null)
-			throw new TwAppsException("Attempt to overwrite edge symbol " + id());
-		veSymbol = s;
+			throw new TwAppsException("Attempt to overwrite edge line " + id());
+		veSymbol = line;
+		if (veArrowhead != null)
+			throw new TwAppsException("Attempt to overwrite edge line arrowhead" + id());
+		veArrowhead = arrowhead;
 	}
 
 	private void setText(Object t) {
@@ -99,8 +104,8 @@ public class VisualEdge extends ALDataEdge implements VisualKeys {
 		veText = t;
 	}
 
-	public void setVisualElements(Object line, Object text) {
-		setSymbol(line);
+	public void setVisualElements(Object line, Object arrowhead, Object text) {
+		setSymbol(line, arrowhead);
 		setText(text);
 	}
 

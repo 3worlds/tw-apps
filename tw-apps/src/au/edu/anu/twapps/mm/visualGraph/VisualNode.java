@@ -52,6 +52,8 @@ import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
 import fr.cnrs.iees.twcore.constants.ConfigurationReservedNodeId;
 import fr.ens.biologie.generic.SaveableAsText;
+import fr.ens.biologie.generic.utils.Duple;
+
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
 public class VisualNode extends TreeGraphDataNode implements VisualKeys, SaveableAsText {
@@ -66,6 +68,7 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 	private Object vnSymbol;
 	private Object vnText;
 	private Object vnParentLine;
+	private Object vnArrowhead;
 
 	public VisualNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
@@ -88,7 +91,7 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 	}
 
 	public boolean isVisible() {
-		if (properties().getPropertyValue(vnVisible)==null)
+		if (properties().getPropertyValue(vnVisible) == null)
 			properties().setProperty(vnVisible, true);
 		return (Boolean) properties().getPropertyValue(vnVisible);
 	}
@@ -193,17 +196,25 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 		setText(t);
 	}
 
-	public void setParentLine(Object l) {
+	public void setParentLine(Object line, Object arrowhead) {
 		if (vnParentLine != null)
-			throw new TwAppsException("Attempt to overwrite line to parent symbol " + id());
-		vnParentLine = l;
+			throw new TwAppsException("Attempt to overwrite line to parent line " + id());
+		vnParentLine = line;
+		if (vnArrowhead != null)
+			throw new TwAppsException("Attempt to overwrite arrowhead of parent line " + id());
+		vnArrowhead = arrowhead;
 	}
 
 	public void removeParentLine() {
 		if (vnParentLine != null)
 			vnParentLine = null;
 		else
-			throw new TwAppsException("Attempt to remove non-existant line to parent symbol " + id());
+			throw new TwAppsException("Attempt to remove non-existant line to parent line " + id());
+		if (vnArrowhead != null)
+			vnArrowhead = null;
+		else
+			throw new TwAppsException("Attempt to remove non-existant arrowhead of parent line " + id());
+
 	}
 
 	public String getCategory() {
@@ -218,8 +229,8 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 		return vnText;
 	}
 
-	public Object getParentLine() {
-		return vnParentLine;
+	public Duple<Object, Object> getParentLine() {
+		return new Duple<Object, Object>(vnParentLine, vnArrowhead);
 	}
 
 	public boolean isCollapsed() {

@@ -74,5 +74,7 @@ public interface IMMController {
 	public void setDefaultTitle();
 	
 	public void collapsePredef();
+	
+	public LayoutType getCurrentLayout();
 
 }

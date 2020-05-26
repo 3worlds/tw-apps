@@ -153,6 +153,12 @@ public class MockController implements IMMController{
 		
 	}
 
+	@Override
+	public LayoutType getCurrentLayout() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 
 }
