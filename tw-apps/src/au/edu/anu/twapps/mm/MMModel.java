@@ -586,6 +586,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		}
 		if (!GraphState.changed())
 			return true;
+
 		switch (Dialogs.yesNoCancel("Project has changed",
 				"Save '" + Project.getProjectUserName() + "' before closing?", "")) {
 		case yes:

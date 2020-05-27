@@ -118,7 +118,8 @@ public class UndoRedo {
 	}
 
 	public static void finalise() {
-		clear();
+		if (Project.isOpen())
+			clear();
 		mementos = null;
 	}
 
