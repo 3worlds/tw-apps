@@ -82,10 +82,10 @@ public class Memento {
 			String name = filename.substring(0, filename.indexOf("."));
 			scope.newId(true, name);
 		}
-		String newName1 = scope.newId(true, "$undoA$1").id();
+		String newName1 = scope.newId(true, UndoRedo.configName+1).id();
 		String newName2 = newName1.replace(UndoRedo.configName, UndoRedo.layoutName);
-		File f1 = Project.makeFile(newName1, GraphFileFormats.TGOMUGI.extension().split(" ")[0]);
-		File f2 = Project.makeFile(newName2, GraphFileFormats.TGOMUGI.extension().split(" ")[0]);
+		File f1 = Project.makeFile(newName1+GraphFileFormats.TGOMUGI.extension().split(" ")[0]);
+		File f2 = Project.makeFile(newName2+GraphFileFormats.TGOMUGI.extension().split(" ")[0]);
 		return new Duple<File, File>(f1, f2);
 	}
 

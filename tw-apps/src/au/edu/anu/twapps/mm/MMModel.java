@@ -161,6 +161,8 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		 * the ui buttons and message display.
 		 */
 		doSave();
+		
+		UndoRedo.saveState(ConfigGraph.getGraph(),visualGraph);
 
 	}
 
@@ -223,6 +225,9 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		onProjectOpened();
 
 		ConfigGraph.validateGraph();
+		
+		UndoRedo.saveState(ConfigGraph.getGraph(),visualGraph);
+
 	}
 
 	@SuppressWarnings("unchecked")
@@ -293,6 +298,8 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		controller.doLayout();
 
 		doSave();
+		
+		UndoRedo.saveState(ConfigGraph.getGraph(),visualGraph);
 
 	}
 

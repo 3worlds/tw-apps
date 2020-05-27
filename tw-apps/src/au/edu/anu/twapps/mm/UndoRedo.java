@@ -97,8 +97,8 @@ public class UndoRedo {
 	 * file names with underscores can't be used by the project's main file so these
 	 * names should be safe.
 	 */
-	final static String configName = "_stateA_";
-	final static String layoutName = "_stateB_";
+	final static String configName = "__stateA";
+	final static String layoutName = "__stateB";
 
 	private static List<Memento> mementos;// should be a linked list
 	private static int index;
@@ -107,7 +107,7 @@ public class UndoRedo {
 
 	/**
 	 * NB: This class does not deal with updating the ui with graphs returned from
-	 * prev(); Therefore, while next can be called from anywhere, prev can only be
+	 * prev(); Therefore, while saveState can be called from anywhere, getPrevState and getSuccState can only be
 	 * called by the controller in the first instance which then delegates to
 	 * MMModel to effect updates.
 	 */
@@ -124,38 +124,42 @@ public class UndoRedo {
 	}
 
 	// go back
-	public boolean canUndo() {
+	public static boolean canUndo() {
 		return index > 0;
 	}
 
 	// go forward
-	public boolean canRedo() {
+	public static boolean canRedo() {
 		if (mementos == null)
 			return false;
 		return index < (mementos.size() - 1);
 	}
 
-	public void saveState(TreeGraph<TreeGraphDataNode, ALEdge> a, TreeGraph<VisualNode, VisualEdge> b) {
+	public static void saveState(TreeGraph<TreeGraphDataNode, ALEdge> a, TreeGraph<VisualNode, VisualEdge> b) {
 		Memento m = new Memento(a, b);
 		mementos.add(index + 1, m);
 	}
 
-	public Duple<TreeGraph<TreeGraphDataNode, ALEdge>, TreeGraph<VisualNode, VisualEdge>> getPrevState() {
+	public static Duple<TreeGraph<TreeGraphDataNode, ALEdge>, TreeGraph<VisualNode, VisualEdge>> getPrevState() {
 		index--;
 		Memento m = mementos.get(index);
 		return m.restore();
 	}
 
-	public Duple<TreeGraph<TreeGraphDataNode, ALEdge>, TreeGraph<VisualNode, VisualEdge>> getSuccState() {
+	public static Duple<TreeGraph<TreeGraphDataNode, ALEdge>, TreeGraph<VisualNode, VisualEdge>> getSuccState() {
 		index++;
 		Memento m = mementos.get(index);
 		return m.restore();
 	}
 
+	private static void deleteFile(File file) {
+		if (file.exists())
+			file.delete();
+	}
 	private static void clear() {
 		for (Duple<File, File> filePair : getFiles()) {
-			filePair.getFirst().delete();
-			filePair.getSecond().delete();
+			deleteFile(filePair.getFirst());
+			deleteFile(filePair.getSecond());
 		}
 		index = -1;
 	}
