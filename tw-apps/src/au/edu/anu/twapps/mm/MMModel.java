@@ -300,10 +300,12 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		controller.onProjectClosing();
 		ConfigGraph.setGraph(null);
 		visualGraph = null;
+		UndoRedo.finalise();
 	}
 
 	private void onProjectOpened() {
 		controller.onProjectOpened(visualGraph);
+		UndoRedo.initialise();
 	}
 
 	@Override
