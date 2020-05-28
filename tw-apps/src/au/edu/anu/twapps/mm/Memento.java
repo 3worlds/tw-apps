@@ -53,9 +53,11 @@ import fr.ens.biologie.generic.utils.Duple;
 public class Memento {
 
 	private Duple<File, File> filePair;
+	private String desc;
 
-	public Memento(TreeGraph<TreeGraphDataNode, ALEdge> a, TreeGraph<VisualNode, VisualEdge> b) {
-		filePair = next();
+	public Memento(String desc, TreeGraph<TreeGraphDataNode, ALEdge> a, TreeGraph<VisualNode, VisualEdge> b) {
+		this.filePair = next();
+		this.desc = desc;
 		new OmugiGraphExporter(filePair.getFirst()).exportGraph(a);
 		new OmugiGraphExporter(filePair.getSecond()).exportGraph(b);
 	}
@@ -75,19 +77,22 @@ public class Memento {
 	}
 
 	private static Duple<File, File> next() {
-		List<Duple<File, File>> filePairs = UndoRedo.getFiles();
+		List<Duple<File, File>> filePairs = Rollover.getFiles();
 		IdentityScope scope = new LocalScope("UNDO");
 		for (Duple<File, File> filePair : filePairs) {
 			String filename = filePair.getFirst().getName();
 			String name = filename.substring(0, filename.indexOf("."));
 			scope.newId(true, name);
 		}
-		String newName1 = scope.newId(true, UndoRedo.configName+1).id();
-		String newName2 = newName1.replace(UndoRedo.configName, UndoRedo.layoutName);
-		File f1 = Project.makeFile(newName1+GraphFileFormats.TGOMUGI.extension().split(" ")[0]);
-		File f2 = Project.makeFile(newName2+GraphFileFormats.TGOMUGI.extension().split(" ")[0]);
+		String newName1 = scope.newId(true, Rollover.configName + 1).id();
+		String newName2 = newName1.replace(Rollover.configName, Rollover.layoutName);
+		File f1 = Project.makeFile(newName1 + GraphFileFormats.TGOMUGI.extension().split(" ")[0]);
+		File f2 = Project.makeFile(newName2 + GraphFileFormats.TGOMUGI.extension().split(" ")[0]);
 		return new Duple<File, File>(f1, f2);
 	}
 
+	public String getDesc() {
+		return desc;
+	}
 
 }

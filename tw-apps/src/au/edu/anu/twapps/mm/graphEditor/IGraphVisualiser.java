@@ -75,5 +75,7 @@ public interface IGraphVisualiser {
 	public void collapsePredef();
 	
 	public void onSelectAll();
+	
+	public void onRollback(TreeGraph<VisualNode, VisualEdge> layoutGraph);
 
 }

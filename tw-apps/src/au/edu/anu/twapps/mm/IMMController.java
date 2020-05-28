@@ -76,5 +76,7 @@ public interface IMMController {
 	public void collapsePredef();
 	
 	public LayoutType getCurrentLayout();
+	
+	public void onRollback(TreeGraph<VisualNode, VisualEdge> layoutGraph);
 
 }

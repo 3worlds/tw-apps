@@ -58,6 +58,7 @@ import au.edu.anu.twcore.graphState.GraphState;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
 import au.edu.anu.twcore.root.EditableFactory;
+import au.edu.anu.twcore.userProject.UserProjectLink;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.Tree;
@@ -162,9 +163,11 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		 */
 		doSave();
 		
-		UndoRedo.saveState(ConfigGraph.getGraph(),visualGraph);
+		Rollover.saveState("Start",ConfigGraph.getGraph(),visualGraph);
 
 	}
+	
+
 
 	private static IdentityScope getProjectScope(TreeGraph<TreeGraphDataNode, ALEdge> graph) {
 		LocalScope result = new LocalScope("Projects");
@@ -226,9 +229,18 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 
 		ConfigGraph.validateGraph();
 		
-		UndoRedo.saveState(ConfigGraph.getGraph(),visualGraph);
+		Rollover.saveState("Start",ConfigGraph.getGraph(),visualGraph);
 
 	}
+	@Override
+	public void rollback(Duple<TreeGraph<TreeGraphDataNode, ALEdge>, TreeGraph<VisualNode, VisualEdge>> pair) {
+		 ConfigGraph.setGraph(pair.getFirst());
+		 visualGraph = pair.getSecond();
+		 shadowGraph();
+		 controller.onRollback(visualGraph);
+		 ConfigGraph.validateGraph();	
+	}
+
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -299,7 +311,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 
 		doSave();
 		
-		UndoRedo.saveState(ConfigGraph.getGraph(),visualGraph);
+		Rollover.saveState("Start",ConfigGraph.getGraph(),visualGraph);
 
 	}
 
@@ -307,12 +319,12 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		controller.onProjectClosing();
 		ConfigGraph.setGraph(null);
 		visualGraph = null;
-		UndoRedo.finalise();
+		Rollover.finalise();
 	}
 
 	private void onProjectOpened() {
 		controller.onProjectOpened(visualGraph);
-		UndoRedo.initialise();
+		Rollover.initialise();
 	}
 
 	@Override
@@ -649,5 +661,6 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		return result;
 
 	}
+
 
 }

@@ -159,6 +159,12 @@ public class MockController implements IMMController{
 		return null;
 	}
 
+	@Override
+	public void onRollback(TreeGraph<VisualNode, VisualEdge> layoutGraph) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 
 }
