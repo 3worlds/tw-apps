@@ -58,6 +58,8 @@ public class Memento {
 	public Memento(String desc, TreeGraph<TreeGraphDataNode, ALEdge> a, TreeGraph<VisualNode, VisualEdge> b) {
 		this.filePair = next();
 		this.desc = desc;
+		if (filePair.getFirst().exists())
+			System.out.println("MEMENTO OVERWRITING");
 		new OmugiGraphExporter(filePair.getFirst()).exportGraph(a);
 		new OmugiGraphExporter(filePair.getSecond()).exportGraph(b);
 	}
@@ -93,6 +95,9 @@ public class Memento {
 
 	public String getDesc() {
 		return desc;
+	}
+	public String getFilename() {
+		return filePair.getFirst().getName();
 	}
 
 }

@@ -32,22 +32,14 @@ package au.edu.anu.twapps.mm;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-
 import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import au.edu.anu.twcore.project.Project;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
-import fr.cnrs.iees.graph.io.impl.OmugiGraphExporter;
-import fr.cnrs.iees.identity.IdentityScope;
-import fr.cnrs.iees.identity.impl.LocalScope;
-import fr.cnrs.iees.io.FileImporter;
-import fr.cnrs.iees.io.GraphFileFormats;
 import fr.ens.biologie.generic.utils.Duple;
 
 /**
@@ -124,8 +116,8 @@ public class Rollover {
 
 	// go forward
 	public static boolean canRedo() {
-		if (mementos == null)
-			return false;
+//		if (mementos == null)
+//			return false;
 		return index < (mementos.size() - 1);
 	}
 
@@ -137,29 +129,32 @@ public class Rollover {
 		return mementos.get(index + 1).getDesc();
 	}
 
-	public static void saveState(String desc, TreeGraph<TreeGraphDataNode, ALEdge> a,
+	public static void preserveState(String desc, TreeGraph<TreeGraphDataNode, ALEdge> a,
 			TreeGraph<VisualNode, VisualEdge> b) {
 		Memento m = new Memento(desc, a, b);
 		index++;
 		mementos.add(index, m);
+//		show("preserve");
 	}
 
 	public static Duple<TreeGraph<TreeGraphDataNode, ALEdge>, TreeGraph<VisualNode, VisualEdge>> getPrevState() {
-		Memento m = mementos.get(index);
 		index--;
+		Memento m = mementos.get(index);
+//		show("getPrev");
 		return m.restore();
 	}
 
 	public static Duple<TreeGraph<TreeGraphDataNode, ALEdge>, TreeGraph<VisualNode, VisualEdge>> getSuccState() {
-		Memento m = mementos.get(index);
 		index++;
+		Memento m = mementos.get(index);
+//		show("getSucc");
 		return m.restore();
 	}
-	
-	public static Duple<TreeGraph<TreeGraphDataNode, ALEdge>, TreeGraph<VisualNode, VisualEdge>> getStateAt(int i){
-		//TODO
-		return null;
-	}
+
+//	public static Duple<TreeGraph<TreeGraphDataNode, ALEdge>, TreeGraph<VisualNode, VisualEdge>> getStateAt(int i){
+//		//TODO
+//		return mementos.get(i).restore();
+//	}
 
 	private static void deleteFile(File file) {
 		if (file.exists())
@@ -191,5 +186,15 @@ public class Rollover {
 		}
 		return result;
 	}
+
+//	private static void show(String msg) {
+//		System.out.println(msg + "------");
+//		for (int i = 0; i < mementos.size(); i++) {
+//			if (i == index)
+//				System.out.println(i + ") ->" + mementos.get(i).getDesc() + " [" + mementos.get(i).getFilename() + "]");
+//			else
+//				System.out.println(i + ") " + mementos.get(i).getDesc() + " [" + mementos.get(i).getFilename() + "]");
+//		}
+//	}
 
 }

@@ -163,7 +163,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		 */
 		doSave();
 		
-		Rollover.saveState("Start",ConfigGraph.getGraph(),visualGraph);
+		Rollover.preserveState("init",ConfigGraph.getGraph(),visualGraph);
 
 	}
 	
@@ -229,7 +229,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 
 		ConfigGraph.validateGraph();
 		
-		Rollover.saveState("Start",ConfigGraph.getGraph(),visualGraph);
+		Rollover.preserveState("init",ConfigGraph.getGraph(),visualGraph);
 
 	}
 	@Override
@@ -311,7 +311,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 
 		doSave();
 		
-		Rollover.saveState("Start",ConfigGraph.getGraph(),visualGraph);
+		Rollover.preserveState("init",ConfigGraph.getGraph(),visualGraph);
 
 	}
 
