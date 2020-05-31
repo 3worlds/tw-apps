@@ -165,6 +165,18 @@ public class MockController implements IMMController{
 		
 	}
 
+	@Override
+	public void getPreferences() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void putPreferences() {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 
 }

@@ -30,6 +30,11 @@
 package au.edu.anu.twapps.mm;
 
 import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.List;
 
 import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
@@ -41,63 +46,91 @@ import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.graph.io.impl.OmugiGraphExporter;
 import fr.cnrs.iees.identity.IdentityScope;
 import fr.cnrs.iees.identity.impl.LocalScope;
-import fr.cnrs.iees.io.FileImporter;
 import fr.cnrs.iees.io.GraphFileFormats;
 import fr.ens.biologie.generic.utils.Duple;
+import fr.ens.biologie.generic.utils.Tuple;
 
 /**
  * @author Ian Davies
  *
- * @date 27 May 2020
+ * @date 1 Jun 2020
  */
-public class Memento {
+//Undo/Redo pattern: ModelMaker specific memento
 
-	private Duple<File, File> filePair;
+public class MMMemento implements IMemento{
+	final static String configName = "__stateA";
+	final static String layoutName = "__stateB";
+	final static String prefName = "__stateC";
+
+	private Tuple<File, File, File> state;
 	private String desc;
 
-	public Memento(String desc, TreeGraph<TreeGraphDataNode, ALEdge> a, TreeGraph<VisualNode, VisualEdge> b) {
-		this.filePair = next();
+	/**
+	 * really no need to create these files. To avoid potential dangling refs, just, write / read to tmp file and
+	 * clean up the tmp.
+	 */
+
+	public MMMemento(String desc, TreeGraph<TreeGraphDataNode, ALEdge> a, TreeGraph<VisualNode, VisualEdge> b, File c) {
+		this.state = nextState();
 		this.desc = desc;
-		if (filePair.getFirst().exists())
-			System.out.println("MEMENTO OVERWRITING");
-		new OmugiGraphExporter(filePair.getFirst()).exportGraph(a);
-		new OmugiGraphExporter(filePair.getSecond()).exportGraph(b);
+		new OmugiGraphExporter(state.getFirst()).exportGraph(a);
+		new OmugiGraphExporter(state.getSecond()).exportGraph(b);
+		try {
+			Files.copy(c.toPath(), state.getThird().toPath(), StandardCopyOption.REPLACE_EXISTING);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
-	@SuppressWarnings("unchecked")
-	public Duple<TreeGraph<TreeGraphDataNode, ALEdge>, TreeGraph<VisualNode, VisualEdge>> restore() {
-
-		TreeGraph<TreeGraphDataNode, ALEdge> a = (TreeGraph<TreeGraphDataNode, ALEdge>) FileImporter
-				.loadGraphFromFile(filePair.getFirst());
-
-		TreeGraph<VisualNode, VisualEdge> b = (TreeGraph<VisualNode, VisualEdge>) FileImporter
-				.loadGraphFromFile(filePair.getSecond());
-
-		Duple<TreeGraph<TreeGraphDataNode, ALEdge>, TreeGraph<VisualNode, VisualEdge>> result = new Duple<TreeGraph<TreeGraphDataNode, ALEdge>, TreeGraph<VisualNode, VisualEdge>>(
-				a, b);
-		return result;
+	public Tuple<File, File, File> getState() {
+		return state;
 	}
 
-	private static Duple<File, File> next() {
-		List<Duple<File, File>> filePairs = Rollover.getFiles();
+	private Tuple<File, File, File> nextState() {
+		List<Duple<File, File>> filePairs = getFiles();
 		IdentityScope scope = new LocalScope("UNDO");
 		for (Duple<File, File> filePair : filePairs) {
 			String filename = filePair.getFirst().getName();
 			String name = filename.substring(0, filename.indexOf("."));
 			scope.newId(true, name);
 		}
-		String newName1 = scope.newId(true, Rollover.configName + 1).id();
-		String newName2 = newName1.replace(Rollover.configName, Rollover.layoutName);
+		String newName1 = scope.newId(true, configName + 1).id();
+		String newName2 = newName1.replace(configName, layoutName);
+		String newName3 = newName1.replace(configName, prefName);
 		File f1 = Project.makeFile(newName1 + GraphFileFormats.TGOMUGI.extension().split(" ")[0]);
 		File f2 = Project.makeFile(newName2 + GraphFileFormats.TGOMUGI.extension().split(" ")[0]);
-		return new Duple<File, File>(f1, f2);
+		File f3 = Project.makeFile(newName3 + ".xml");
+		return new Tuple<File, File, File>(f1, f2, f3);
 	}
 
-	public String getDesc() {
-		return desc;
+	private static List<Duple<File, File>> getFiles() {
+		File[] files = Project.getProjectFile().listFiles(new FilenameFilter() {
+
+			@Override
+			public boolean accept(File dir, String name) {
+
+				return name.startsWith(configName);
+			}
+
+		});
+		List<Duple<File, File>> result = new ArrayList<>();
+		for (File f : files) {
+			String b = f.getAbsolutePath().replace(configName, layoutName);
+			result.add(new Duple<File, File>(f, new File(b)));
+		}
+		return result;
 	}
-	public String getFilename() {
-		return filePair.getFirst().getName();
+
+	@Override
+	public void finalise() {
+		state.getFirst().delete();
+		state.getSecond().delete();
+		state.getThird().delete();		
+	}
+
+	@Override
+	public String getDescription() {
+		return desc;
 	}
 
 }

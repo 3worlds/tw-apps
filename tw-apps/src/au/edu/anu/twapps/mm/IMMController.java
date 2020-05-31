@@ -78,5 +78,9 @@ public interface IMMController {
 	public LayoutType getCurrentLayout();
 	
 	public void onRollback(TreeGraph<VisualNode, VisualEdge> layoutGraph);
+	
+	public void getPreferences();
+	
+	public void putPreferences();
 
 }

@@ -30,6 +30,11 @@
 package au.edu.anu.twapps.mm;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -104,6 +109,14 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 	}
 
 	@Override
+	public void addState(String desc) {
+		Preferences.flush();
+		controller.putPreferences();
+		Caretaker.addState(new MMMemento(desc, ConfigGraph.getGraph(), visualGraph,
+				Project.makeProjectPreferencesFile()));
+	}
+
+	@Override
 	public void doNewProject(TreeGraph<TreeGraphDataNode, ALEdge> templateConfig) {
 
 		/** Does user want to continue if there is unsaved work */
@@ -162,12 +175,11 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		 * the ui buttons and message display.
 		 */
 		doSave();
-		
-		Rollover.preserveState("init",ConfigGraph.getGraph(),visualGraph);
+
+//		Rollover.preserveState("init", ConfigGraph.getGraph(), visualGraph);
+		addState("init");
 
 	}
-	
-
 
 	private static IdentityScope getProjectScope(TreeGraph<TreeGraphDataNode, ALEdge> graph) {
 		LocalScope result = new LocalScope("Projects");
@@ -228,19 +240,49 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		onProjectOpened();
 
 		ConfigGraph.validateGraph();
-		
-		Rollover.preserveState("init",ConfigGraph.getGraph(),visualGraph);
+
+//		Rollover.preserveState("init", ConfigGraph.getGraph(), visualGraph);
+		addState("init");
 
 	}
+
+//	@Override
+//	public void rollback(Duple<TreeGraph<TreeGraphDataNode, ALEdge>, TreeGraph<VisualNode, VisualEdge>> pair) {
+//		ConfigGraph.setGraph(pair.getFirst());
+//		visualGraph = pair.getSecond();
+//		shadowGraph();
+//		controller.onRollback(visualGraph);
+//		ConfigGraph.validateGraph();
+//	}
+
 	@Override
-	public void rollback(Duple<TreeGraph<TreeGraphDataNode, ALEdge>, TreeGraph<VisualNode, VisualEdge>> pair) {
-		 ConfigGraph.setGraph(pair.getFirst());
-		 visualGraph = pair.getSecond();
-		 shadowGraph();
-		 controller.onRollback(visualGraph);
-		 ConfigGraph.validateGraph();	
-	}
+	@SuppressWarnings("unchecked")
+	public void restore(MMMemento m) {
+		TreeGraph<TreeGraphDataNode, ALEdge> a = (TreeGraph<TreeGraphDataNode, ALEdge>) FileImporter
+				.loadGraphFromFile(m.getState().getFirst());
 
+		TreeGraph<VisualNode, VisualEdge> b = (TreeGraph<VisualNode, VisualEdge>) FileImporter
+				.loadGraphFromFile(m.getState().getSecond());
+
+		try {
+			Files.copy(m.getState().getThird().toPath(), Project.makeProjectPreferencesFile().toPath(),
+					StandardCopyOption.REPLACE_EXISTING);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		controller.getPreferences();
+
+		ConfigGraph.setGraph(a);
+		visualGraph = b;
+
+		shadowGraph();
+
+		controller.onRollback(visualGraph);
+
+		ConfigGraph.validateGraph();
+
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -310,8 +352,9 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		controller.doLayout();
 
 		doSave();
-		
-		Rollover.preserveState("init",ConfigGraph.getGraph(),visualGraph);
+
+//		Rollover.preserveState("init", ConfigGraph.getGraph(), visualGraph);
+		addState("init");
 
 	}
 
@@ -319,12 +362,12 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		controller.onProjectClosing();
 		ConfigGraph.setGraph(null);
 		visualGraph = null;
-		Rollover.finalise();
+		Caretaker.finalise();
 	}
 
 	private void onProjectOpened() {
 		controller.onProjectOpened(visualGraph);
-		Rollover.initialise();
+		Caretaker.initialise();
 	}
 
 	@Override
@@ -661,6 +704,5 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		return result;
 
 	}
-
 
 }

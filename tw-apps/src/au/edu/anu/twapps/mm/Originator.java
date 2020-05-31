@@ -29,44 +29,13 @@
 
 package au.edu.anu.twapps.mm;
 
-import java.io.File;
-
-import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
-import au.edu.anu.twapps.mm.visualGraph.VisualNode;
-import fr.cnrs.iees.graph.impl.ALEdge;
-import fr.cnrs.iees.graph.impl.TreeGraph;
-import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
-import fr.ens.biologie.generic.utils.Duple;
-
 /**
- * Author Ian Davies
+ * @author Ian Davies
  *
- * Date 10 Jan. 2019
+ * @date 1 Jun 2020
  */
-//ModelMaker methods called by the Controller
-// The controller HAS one of these
-// ModelMaker IS on of these: ModelMaker implements
-// Effectively a singleton listener pattern
-public interface IMMModel extends Originator{
-	public boolean canClose();
-
-	public void doNewProject(TreeGraph<TreeGraphDataNode, ALEdge> templateGraph);
-
-	public void doOpenProject(File file);
-
-	public void doDeploy();
-
-	public void doSave();
-
-	public void doSaveAs();
-
-	public void doImport();
-
-	public boolean propertyEditable(String label, String key);
-
-//	public void rollback(Duple<TreeGraph<TreeGraphDataNode, ALEdge>, TreeGraph<VisualNode, VisualEdge>> pair);
+//Undo/Redo pattern
+public interface Originator {
 	
-	public void restore(MMMemento m);
-	
-
+	public void addState(String desc) ;
 }
