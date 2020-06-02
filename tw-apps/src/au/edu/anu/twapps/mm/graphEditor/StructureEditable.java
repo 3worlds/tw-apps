@@ -63,30 +63,30 @@ public interface StructureEditable {
 	void onNewChild(String childLabel, String childId, SimpleDataTreeNode childBaseSpec);
 
 	/* add edge called String,to an end node */
-	public void onNewEdge(Tuple<String, VisualNode, SimpleDataTreeNode> details);
+	public void onNewEdge(Tuple<String, VisualNode, SimpleDataTreeNode> details,double duration);
 
 	public void onDeleteEdge(VisualEdge edge);
 
 	/* delete this node */
-	public void onDeleteNode();
+	public void onDeleteNode(double duration);
 
 	public void onRenameNode();
 
 	public void onRenameEdge(VisualEdge edge);
 
-	public void onDeleteTree(VisualNode root);
+	public void onDeleteTree(VisualNode root,double duration);
 
 	/* collapse tree from this node */
-	public void onCollapseTree(VisualNode childRoot);
+	public void onCollapseTree(VisualNode childRoot,double duration);
 
 	/* collapse all expanded trees from this node */
-	public void onCollapseTrees();
+	public void onCollapseTrees(double duration);
 
 	/* expand tree from this node */
-	public void onExpandTree(VisualNode childRoot);
+	public void onExpandTree(VisualNode childRoot,double duration);
 
 	/* expand all collapsed trees from this node */
-	public void onExpandTrees();
+	public void onExpandTrees(double duration);
 
 	/* connect node as child of this node */
 	public void onReconnectChild(VisualNode childNode);
@@ -96,7 +96,7 @@ public interface StructureEditable {
 
 	void onExportTree(VisualNode root);
 
-	void onImportTree(SimpleDataTreeNode childSpec);
+	void onImportTree(SimpleDataTreeNode childSpec,double duration);
 
 	void onDeleteParentLink(VisualNode child);
 

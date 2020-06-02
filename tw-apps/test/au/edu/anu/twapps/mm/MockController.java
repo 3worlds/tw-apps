@@ -123,11 +123,6 @@ public class MockController implements IMMController{
 		
 	}
 
-	@Override
-	public void doLayout() {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	public void onElementRenamed() {
@@ -147,11 +142,6 @@ public class MockController implements IMMController{
 		
 	}
 
-	@Override
-	public void doFocusedLayout(VisualNode root, LayoutType layout) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	public LayoutType getCurrentLayout() {
@@ -173,6 +163,18 @@ public class MockController implements IMMController{
 
 	@Override
 	public void putPreferences() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void doLayout(double duration) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void doFocusedLayout(VisualNode root, LayoutType layout, double duration) {
 		// TODO Auto-generated method stub
 		
 	}

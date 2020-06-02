@@ -160,15 +160,17 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		 * this just calls the controller to build the ui.
 		 */
 		onProjectOpened();
+		
+		final double duration = 1.0;
 
 		/** Create the default layout. */
-		controller.doLayout();
+		controller.doLayout(duration);
 
 		/** hide the predefined nodes for new models */
 		controller.collapsePredef();
 
 		/** Re apply layout after collapsing predefined tree. */
-		controller.doLayout();
+		controller.doLayout(duration);
 
 		/**
 		 * Save Config and layout graphs and call config validation. Validation updates
@@ -343,13 +345,14 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 
 		onProjectOpened();
 
-		controller.doLayout();
+		final double duration = 1.0;
+		controller.doLayout(duration);
 
 		/** hide the predefined nodes for imported graphs */
 		controller.collapsePredef();
 
 		/** Re apply layout after collapsing predefined tree. */
-		controller.doLayout();
+		controller.doLayout(duration);
 
 		doSave();
 

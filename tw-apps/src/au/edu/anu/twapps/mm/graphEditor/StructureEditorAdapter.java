@@ -530,20 +530,20 @@ public abstract class StructureEditorAdapter
 	}
 
 	@Override
-	public void onNewEdge(Tuple<String, VisualNode, SimpleDataTreeNode> details) {
+	public void onNewEdge(Tuple<String, VisualNode, SimpleDataTreeNode> details,double duration) {
 		if (editableNode.isCollapsed())
-			gvisualiser.expandTreeFrom(editableNode.getSelectedVisualNode());
+			gvisualiser.expandTreeFrom(editableNode.getSelectedVisualNode(),duration);
 		String id = getNewName(details.getFirst(), ConfigurationEdgeLabels.labelValueOf(details.getFirst()).defName(),
 				null);
 		if (id == null)
 			return;
-		connectTo(id, details);
+		connectTo(id, details,duration);
 
 		ConfigGraph.validateGraph();
 		GraphState.setChanged();
 	}
 
-	private void connectTo(String id, Tuple<String, VisualNode, SimpleDataTreeNode> p) {
+	private void connectTo(String id, Tuple<String, VisualNode, SimpleDataTreeNode> p,double duration) {
 		VisualEdge vEdge = editableNode.newEdge(id, p.getFirst(), p.getSecond());
 		if (vEdge.getConfigEdge() instanceof ALDataEdge) {
 			ALDataEdge edge = (ALDataEdge) vEdge.getConfigEdge();
@@ -559,14 +559,14 @@ public abstract class StructureEditorAdapter
 			}
 			controller.onNewEdge(vEdge);
 		}
-		gvisualiser.onNewEdge(vEdge);
+		gvisualiser.onNewEdge(vEdge,duration);
 
 	}
 
-	private void deleteNode(VisualNode vNode) {
+	private void deleteNode(VisualNode vNode,double duration) {
 		// don't leave nodes hidden
 		if (vNode.hasCollaspedChild())
-			gvisualiser.expandTreeFrom(vNode);
+			gvisualiser.expandTreeFrom(vNode,duration);
 		// remove from view while still intact
 		gvisualiser.removeView(vNode);
 		// this and its config from graphs and disconnect
@@ -574,8 +574,8 @@ public abstract class StructureEditorAdapter
 	}
 
 	@Override
-	public void onDeleteNode() {
-		deleteNode(editableNode.getSelectedVisualNode());
+	public void onDeleteNode(double duration) {
+		deleteNode(editableNode.getSelectedVisualNode(),duration);
 		controller.onNodeDeleted();
 		GraphState.setChanged();
 		ConfigGraph.validateGraph();
@@ -642,34 +642,34 @@ public abstract class StructureEditorAdapter
 	}
 
 	@Override
-	public void onCollapseTree(VisualNode childRoot) {
-		gvisualiser.collapseTreeFrom(childRoot);
+	public void onCollapseTree(VisualNode childRoot,double duration) {
+		gvisualiser.collapseTreeFrom(childRoot,duration);
 		controller.onTreeCollapse();
 		GraphState.setChanged();
 	}
 
 	@Override
-	public void onCollapseTrees() {
+	public void onCollapseTrees(double duration) {
 		for (VisualNode child : editableNode.getSelectedVisualNode().getChildren()) {
 			if (!child.isCollapsed())
-				gvisualiser.collapseTreeFrom(child);
+				gvisualiser.collapseTreeFrom(child,duration);
 		}
 		controller.onTreeCollapse();
 		GraphState.setChanged();
 	}
 
 	@Override
-	public void onExpandTree(VisualNode childRoot) {
-		gvisualiser.expandTreeFrom(childRoot);
+	public void onExpandTree(VisualNode childRoot,double duration) {
+		gvisualiser.expandTreeFrom(childRoot,duration);
 		controller.onTreeExpand();
 		GraphState.setChanged();
 	}
 
 	@Override
-	public void onExpandTrees() {
+	public void onExpandTrees(double duration) {
 		for (VisualNode child : editableNode.getSelectedVisualNode().getChildren()) {
 			if (child.isCollapsed())
-				gvisualiser.expandTreeFrom(child);
+				gvisualiser.expandTreeFrom(child,duration);
 		}
 		controller.onTreeExpand();
 		GraphState.setChanged();
@@ -683,20 +683,20 @@ public abstract class StructureEditorAdapter
 		GraphState.setChanged();
 	}
 
-	private void deleteTree(VisualNode root) {
+	private void deleteTree(VisualNode root,double duration) {
 		// avoid concurrent modification
 		List<VisualNode> list = new LinkedList<>();
 		for (VisualNode child : root.getChildren())
 			list.add(child);
 
 		for (VisualNode child : list)
-			deleteTree(child);
-		deleteNode(root);
+			deleteTree(child,duration);
+		deleteNode(root,duration);
 	}
 
 	@Override
-	public void onDeleteTree(VisualNode root) {
-		deleteTree(root);
+	public void onDeleteTree(VisualNode root,double duration) {
+		deleteTree(root,duration);
 		controller.onNodeDeleted();
 		GraphState.setChanged();
 		ConfigGraph.validateGraph();
@@ -793,17 +793,17 @@ public abstract class StructureEditorAdapter
 	}
 
 	@Override
-	public void onImportTree(SimpleDataTreeNode childSpec) {
+	public void onImportTree(SimpleDataTreeNode childSpec,double duration) {
 		TreeGraph<TreeGraphDataNode, ALEdge> importGraph = getImportGraph(childSpec);
 		if (importGraph != null) {
-			importGraph(importGraph, editableNode.getSelectedVisualNode());
-			controller.doLayout();
+			importGraph(importGraph, editableNode.getSelectedVisualNode(),duration);
+			controller.doLayout(duration);
 			GraphState.setChanged();
 			ConfigGraph.validateGraph();
 		}
 	}
 
-	private void importGraph(TreeGraph<TreeGraphDataNode, ALEdge> configSubGraph, VisualNode vParent) {
+	private void importGraph(TreeGraph<TreeGraphDataNode, ALEdge> configSubGraph, VisualNode vParent,double duration) {
 		// Only trees are exported not graph lists. Therefore, it is proper to do this
 		// by recursion
 
@@ -832,7 +832,7 @@ public abstract class StructureEditorAdapter
 			newVEdge.setConfigEdge(newCEdge);
 			newVEdge.setVisible(true);
 			cloneEdgeProperties(importEdge, newCEdge);
-			gvisualiser.onNewEdge(newVEdge);
+			gvisualiser.onNewEdge(newVEdge,duration);
 		});
 
 	}

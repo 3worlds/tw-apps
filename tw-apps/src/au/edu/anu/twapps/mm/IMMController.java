@@ -67,9 +67,9 @@ public interface IMMController {
 	
 	public void onItemEdit(Object item);
 	
-	public void doLayout();
+	public void doLayout(double duration);
 	
-	public void doFocusedLayout(VisualNode root, LayoutType layout);
+	public void doFocusedLayout(VisualNode root, LayoutType layout,double duration);
 	
 	public void setDefaultTitle();
 	

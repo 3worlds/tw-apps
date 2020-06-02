@@ -41,15 +41,15 @@ import fr.cnrs.iees.graph.impl.TreeGraph;
  * @date 9 Aug 2019
  */
 public interface IGraphVisualiser {
-	public void initialiseView();
+	public void initialiseView(double duration);
 
 	public void onNewNode(VisualNode node);
 
-	public void onNewEdge(VisualEdge edge);
+	public void onNewEdge(VisualEdge edge, double duration);
 
-	public void collapseTreeFrom(VisualNode childRoot);
+	public void collapseTreeFrom(VisualNode childRoot, double duration);
 
-	public void expandTreeFrom(VisualNode childRoot);
+	public void expandTreeFrom(VisualNode childRoot, double duration);
 
 	public TreeGraph<VisualNode, VisualEdge> getVisualGraph();
 
@@ -62,20 +62,20 @@ public interface IGraphVisualiser {
 	public void onNewParent(VisualNode child);
 
 	public void doLayout(VisualNode root, double jitterFaction, LayoutType layoutType, boolean pcShowing,
-			boolean xlShowing, boolean sideline);
+			boolean xlShowing, boolean sideline, double duration);
 
 	public void onRemoveParentLink(VisualNode vnChild);
 
 	public void onNodeRenamed(VisualNode vNode);
 
 	public void onEdgeRenamed(VisualEdge vEdge);
-	
+
 	public void showLocalGraph(VisualNode root, int depth);
-	
+
 	public void collapsePredef();
-	
+
 	public void onSelectAll();
-	
+
 	public void onRollback(TreeGraph<VisualNode, VisualEdge> layoutGraph);
 
 }
