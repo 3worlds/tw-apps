@@ -112,8 +112,11 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 	public void addState(String desc) {
 		Preferences.flush();
 		controller.putPreferences();
+		
 		Caretaker.addState(new MMMemento(desc, ConfigGraph.getGraph(), visualGraph,
 				Project.makeProjectPreferencesFile()));
+		
+	// controller.setButtonState();
 	}
 
 	@Override

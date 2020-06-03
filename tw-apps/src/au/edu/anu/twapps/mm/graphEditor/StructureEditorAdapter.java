@@ -532,7 +532,7 @@ public abstract class StructureEditorAdapter
 	@Override
 	public void onNewEdge(Tuple<String, VisualNode, SimpleDataTreeNode> details,double duration) {
 		if (editableNode.isCollapsed())
-			gvisualiser.expandTreeFrom(editableNode.getSelectedVisualNode(),duration);
+			gvisualiser.expandTreeFrom(editableNode.getSelectedVisualNode(),false,duration);
 		String id = getNewName(details.getFirst(), ConfigurationEdgeLabels.labelValueOf(details.getFirst()).defName(),
 				null);
 		if (id == null)
@@ -566,7 +566,7 @@ public abstract class StructureEditorAdapter
 	private void deleteNode(VisualNode vNode,double duration) {
 		// don't leave nodes hidden
 		if (vNode.hasCollaspedChild())
-			gvisualiser.expandTreeFrom(vNode,duration);
+			gvisualiser.expandTreeFrom(vNode,false,duration);
 		// remove from view while still intact
 		gvisualiser.removeView(vNode);
 		// this and its config from graphs and disconnect
@@ -643,7 +643,7 @@ public abstract class StructureEditorAdapter
 
 	@Override
 	public void onCollapseTree(VisualNode childRoot,double duration) {
-		gvisualiser.collapseTreeFrom(childRoot,duration);
+		gvisualiser.collapseTreeFrom(childRoot,true,duration);
 		controller.onTreeCollapse();
 		GraphState.setChanged();
 	}
@@ -652,7 +652,7 @@ public abstract class StructureEditorAdapter
 	public void onCollapseTrees(double duration) {
 		for (VisualNode child : editableNode.getSelectedVisualNode().getChildren()) {
 			if (!child.isCollapsed())
-				gvisualiser.collapseTreeFrom(child,duration);
+				gvisualiser.collapseTreeFrom(child,true,duration);
 		}
 		controller.onTreeCollapse();
 		GraphState.setChanged();
@@ -660,7 +660,7 @@ public abstract class StructureEditorAdapter
 
 	@Override
 	public void onExpandTree(VisualNode childRoot,double duration) {
-		gvisualiser.expandTreeFrom(childRoot,duration);
+		gvisualiser.expandTreeFrom(childRoot,true,duration);
 		controller.onTreeExpand();
 		GraphState.setChanged();
 	}
@@ -669,7 +669,7 @@ public abstract class StructureEditorAdapter
 	public void onExpandTrees(double duration) {
 		for (VisualNode child : editableNode.getSelectedVisualNode().getChildren()) {
 			if (child.isCollapsed())
-				gvisualiser.expandTreeFrom(child,duration);
+				gvisualiser.expandTreeFrom(child,true,duration);
 		}
 		controller.onTreeExpand();
 		GraphState.setChanged();
