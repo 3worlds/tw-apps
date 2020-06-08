@@ -63,8 +63,6 @@ public interface IMMController {
 	
 	public void onTreeExpand();
 
-	public String getUserProjectPath();
-	
 	public void onItemEdit(Object item);
 	
 	public void doLayout(double duration);
