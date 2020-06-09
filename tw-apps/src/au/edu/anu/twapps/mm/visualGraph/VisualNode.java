@@ -155,7 +155,11 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 		if (classOnly)
 			return configNode.classId();
 		else
-			return configNode.classId() + ":" + configNode.id();
+			return configNode.toShortString();
+	}
+	
+	public String getDisplayText() {
+		return configNode.toShortString();
 	}
 
 	public void setX(double x) {
@@ -366,10 +370,10 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 		if (parent == null)
 			throw new TwAppsException("Parent is null.");
 		if (map == null)
-			throw new TwAppsException("Map is null when processing parent " + parent.getDisplayText(false));
+			throw new TwAppsException("Map is null when processing parent " + parent.getDisplayText());
 		List<StringTable> parentList = map.get(parent.cClassId());
 		if (parentList == null)
-			throw new TwAppsException("ParentList is null for parent " + parent.getDisplayText(false));
+			throw new TwAppsException("ParentList is null for parent " + parent.getDisplayText());
 
 		/**
 		 * Check each table and take the first that corresponds to the current set of

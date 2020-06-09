@@ -465,7 +465,7 @@ public abstract class StructureEditorAdapter
 						StringTable classes = (StringTable) constraint.properties().getPropertyValue(twaValues);
 						if (classes.size() > 1) {
 							String[] names = ValidPropertyTypes.namesOf(e);
-							int choice = Dialogs.getListChoice(names, newChild.getDisplayText(false), key,
+							int choice = Dialogs.getListChoice(names, newChild.getDisplayText(), key,
 									e.getClass().getSimpleName());
 							defValue = ValidPropertyTypes.valueOf(names[choice], e);
 						} else if (classes.size() == 1) {
@@ -523,7 +523,7 @@ public abstract class StructureEditorAdapter
 				if (!dims.isEmpty())
 					newProps.addProperty(def.id(), ((TableNode) def).newInstance());
 				else
-					Dialogs.errorAlert("Node construction error", newChild.getDisplayText(false),
+					Dialogs.errorAlert("Node construction error", newChild.getDisplayText(),
 							"Cannot add '" + def.classId() + ":" + def.id() + "' because it has no dimensions");
 			}
 		}
@@ -729,7 +729,7 @@ public abstract class StructureEditorAdapter
 
 	@Override
 	public void onExportTree(VisualNode root) {
-		String filePrompt = root.getDisplayText(false).replace(":", "_") + ".utg";
+		String filePrompt = root.getDisplayText().replace(":", "_") + ".utg";
 		File file = Dialogs.exportFile("", TwPaths.USER_ROOT, filePrompt);
 		if (file == null)
 			return;

@@ -632,7 +632,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 
 		Random rnd = new Random();
 		for (VisualNode visualNode : newVisualGraph.nodes()) {
-			log.info("Initialising " + visualNode.getDisplayText(false));
+			log.info("Initialising " + visualNode.getDisplayText());
 			visualNode.setVisible(true);
 			visualNode.setCategory();
 			visualNode.setPosition(rnd.nextDouble(), rnd.nextDouble());

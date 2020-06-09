@@ -398,7 +398,7 @@ public class TwSpecifications implements //
 				if (obj instanceof Enum<?>) {
 					Class<? extends Enum<?>> e = (Class<? extends Enum<?>>) obj.getClass();
 					String[] names = ValidPropertyTypes.namesOf(e);
-					int choice = Dialogs.getListChoice(names, vnode.getDisplayText(false), key,
+					int choice = Dialogs.getListChoice(names, vnode.getDisplayText(), key,
 							obj.getClass().getSimpleName());
 					if (choice >= 0) {
 						Enum<?> value = ValidPropertyTypes.valueOf(names[choice], e);
