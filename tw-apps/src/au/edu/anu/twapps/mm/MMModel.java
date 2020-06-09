@@ -108,13 +108,15 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 
 	@Override
 	public void addState(String desc) {
+		if (!Project.getProjectFile().exists()) {
+			doSave();
+		}
 		Preferences.flush();
 		controller.putPreferences();
 
 		Caretaker.addState(
 				new MMMemento(desc, ConfigGraph.getGraph(), visualGraph, Project.makeProjectPreferencesFile()));
 
-		// controller.setButtonState();
 	}
 
 	@Override
