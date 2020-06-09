@@ -49,6 +49,7 @@ import au.edu.anu.twcore.archetype.tw.IsInValueSetQuery;
 import au.edu.anu.twcore.archetype.tw.NameStartsWithUpperCaseQuery;
 import au.edu.anu.twcore.archetype.tw.RequirePropertyQuery;
 import fr.cnrs.iees.OmugiClassLoader;
+import fr.cnrs.iees.graph.DataHolder;
 import fr.cnrs.iees.graph.Tree;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.SimpleDataTreeNode;
@@ -86,11 +87,18 @@ public class TwSpecifications implements //
 				StringTable parentsSpecTable = (StringTable) ((SimpleDataTreeNode) childSpec).properties()
 						.getPropertyValue(aaHasParent);
 				StringTable parentsTable = editNode.getParentTable();
-				//Dodgy: the parentTable is unknown during an import;
-				if (parentsTable==null)
+				// Dodgy: the parentTable is unknown during an import;
+				if (parentsTable == null)
 					return (SimpleDataTreeNode) childSpec;
-				else if (equals(parentsTable, parentsSpecTable))
-					return (SimpleDataTreeNode) childSpec;
+				else if (equals(parentsTable, parentsSpecTable)) {
+					DataHolder dh = (DataHolder) childSpec;
+					if (dh.properties().hasProperty(aaHasId)) {
+						String hasId = (String) dh.properties().getPropertyValue(aaHasId);
+						if (editNode.getConfigNode().id().equals(hasId))
+							return (SimpleDataTreeNode) childSpec;
+					} else
+						return (SimpleDataTreeNode) childSpec;
+				}
 			}
 			// search subArchetypes
 			List<SimpleDataTreeNode> saConstraints = (List<SimpleDataTreeNode>) get(childSpec.getChildren(),
@@ -143,7 +151,8 @@ public class TwSpecifications implements //
 	@Override
 	public Iterable<SimpleDataTreeNode> getChildSpecsOf(VisualNodeEditable editNode, SimpleDataTreeNode parentSpec,
 			SimpleDataTreeNode parentSubSpec, TreeNode root) {
-		//String parentLabel = (String) parentSpec.properties().getPropertyValue(aaIsOfClass);
+		// String parentLabel = (String)
+		// parentSpec.properties().getPropertyValue(aaIsOfClass);
 		List<SimpleDataTreeNode> children = (List<SimpleDataTreeNode>) get(root.getChildren(),
 				selectZeroOrMany(hasProperty(aaHasParent)));
 		// could have a query here for finding a parent in a parent Stringtable
@@ -336,7 +345,6 @@ public class TwSpecifications implements //
 				selectZeroOrOne(andQuery(hasTheLabel(aaMustSatisfyQuery), hasProperty(aaClassName, constraintClass))));
 	}
 
-
 	private boolean isOfClass(SimpleDataTreeNode child, String label) {
 		String ioc = (String) child.properties().getPropertyValue(aaIsOfClass);
 		return ioc.equals(label);
@@ -355,7 +363,6 @@ public class TwSpecifications implements //
 		return result;
 	}
 
-
 	/*-
 	 * className = String("au.edu.anu.twcore.archetype.tw.OutNodeXorQuery")
 	 * nodeLabel1 = String("componentType")
@@ -372,7 +379,6 @@ public class TwSpecifications implements //
 		}
 		return result;
 	}
-
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -392,12 +398,12 @@ public class TwSpecifications implements //
 				if (obj instanceof Enum<?>) {
 					Class<? extends Enum<?>> e = (Class<? extends Enum<?>>) obj.getClass();
 					String[] names = ValidPropertyTypes.namesOf(e);
-					int choice = Dialogs.getListChoice(names,vnode.getDisplayText(false), key,
+					int choice = Dialogs.getListChoice(names, vnode.getDisplayText(false), key,
 							obj.getClass().getSimpleName());
-					if (choice>=0) {
-						Enum<?> value = ValidPropertyTypes.valueOf(names[choice],e);
+					if (choice >= 0) {
+						Enum<?> value = ValidPropertyTypes.valueOf(names[choice], e);
 						vnode.getConfigNode().properties().setProperty(key, value);
-					}	
+					}
 				}
 			}
 		}

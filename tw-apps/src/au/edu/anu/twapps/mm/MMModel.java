@@ -32,12 +32,11 @@ package au.edu.anu.twapps.mm;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -63,7 +62,6 @@ import au.edu.anu.twcore.graphState.GraphState;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
 import au.edu.anu.twcore.root.EditableFactory;
-import au.edu.anu.twcore.userProject.UserProjectLink;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.Tree;
@@ -112,11 +110,11 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 	public void addState(String desc) {
 		Preferences.flush();
 		controller.putPreferences();
-		
-		Caretaker.addState(new MMMemento(desc, ConfigGraph.getGraph(), visualGraph,
-				Project.makeProjectPreferencesFile()));
-		
-	// controller.setButtonState();
+
+		Caretaker.addState(
+				new MMMemento(desc, ConfigGraph.getGraph(), visualGraph, Project.makeProjectPreferencesFile()));
+
+		// controller.setButtonState();
 	}
 
 	@Override
@@ -163,7 +161,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		 * this just calls the controller to build the ui.
 		 */
 		onProjectOpened();
-		
+
 		final double duration = 1.0;
 
 		/** Create the default layout. */
@@ -304,11 +302,12 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		log.info("Import: " + file);
 		TreeGraph<TreeGraphDataNode, ALEdge> importGraph = (TreeGraph<TreeGraphDataNode, ALEdge>) FileImporter
 				.loadGraphFromFile(file);
+		
+		Iterator<TreeGraphDataNode> iter = importGraph.roots().iterator();
 		int nRoots = 0;
-		for (TreeGraphDataNode n : importGraph.roots()) {
+		while (iter.hasNext())
 			nRoots++;
-		}
-		;
+		
 		if (nRoots > 1) {
 			Dialogs.errorAlert("Import error", "Tree has more than one root.",
 					"Graphs with multiple roots cannot be imported");
@@ -374,6 +373,8 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 	private void onProjectOpened() {
 		controller.onProjectOpened(visualGraph);
 		Caretaker.initialise();
+		/** Cleanup stranded undo file */
+		MMMemento.deleteStrandedFiles();
 	}
 
 	@Override
@@ -480,28 +481,28 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		}
 	}
 
-	private static boolean stripOrphanedNodes(TreeGraph<TreeGraphDataNode, ALEdge> graph) {
-		int nRoots = 0;
-		for (TreeGraphDataNode n : graph.roots())
-			nRoots++;
-		if (nRoots != 1) {
-			List<TreeNode> rootList = new ArrayList<>();
-			TreeGraphDataNode twRoot = findTwRoot(graph);
-			for (TreeNode node : graph.nodes()) {
-				if (!node.equals(twRoot) && node.getParent() == null) {
-					rootList.add(node);
-				}
-			}
-			// TODO: still has concurrentModificationException;
-
-			for (TreeNode node : rootList) {
-				deleteTreeFrom(node);
-			}
-			return true;
-		}
-		return false;
-
-	}
+//	private static boolean stripOrphanedNodes(TreeGraph<TreeGraphDataNode, ALEdge> graph) {
+//		int nRoots = 0;
+//		for (TreeGraphDataNode n : graph.roots())
+//			nRoots++;
+//		if (nRoots != 1) {
+//			List<TreeNode> rootList = new ArrayList<>();
+//			TreeGraphDataNode twRoot = findTwRoot(graph);
+//			for (TreeNode node : graph.nodes()) {
+//				if (!node.equals(twRoot) && node.getParent() == null) {
+//					rootList.add(node);
+//				}
+//			}
+//			// TODO: still has concurrentModificationException;
+//
+//			for (TreeNode node : rootList) {
+//				deleteTreeFrom(node);
+//			}
+//			return true;
+//		}
+//		return false;
+//
+//	}
 
 	private static void deleteTreeFrom(TreeNode parent) {
 		for (TreeNode child : parent.getChildren()) {

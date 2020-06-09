@@ -45,7 +45,6 @@ public class Caretaker {
 	public static void initialise() {
 		clear();
 	}
-
 	public static void finalise() {
 		clear();
 	}

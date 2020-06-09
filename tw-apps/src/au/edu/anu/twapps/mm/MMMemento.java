@@ -58,9 +58,9 @@ import fr.ens.biologie.generic.utils.Tuple;
 //Undo/Redo pattern: ModelMaker specific memento
 
 public class MMMemento implements IMemento{
-	final static String configName = "__stateA";
-	final static String layoutName = "__stateB";
-	final static String prefName = "__stateC";
+	private final static String configName = "__stateA";
+	private final static String layoutName = "__stateB";
+	private final static String prefName = "__stateC";
 
 	private Tuple<File, File, File> state;
 	private String desc;
@@ -121,16 +121,37 @@ public class MMMemento implements IMemento{
 		return result;
 	}
 
+	private static void deleteFile(File f) {
+		if (f.exists())
+			f.delete();
+	}
 	@Override
 	public void finalise() {
-		state.getFirst().delete();
-		state.getSecond().delete();
-		state.getThird().delete();		
+		deleteFile(state.getFirst());
+		deleteFile(state.getSecond());
+		deleteFile(state.getThird());
 	}
 
 	@Override
 	public String getDescription() {
 		return desc;
+	}
+
+	public static void deleteStrandedFiles() {
+		
+		File[] files = Project.getProjectFile().listFiles(new FilenameFilter() {
+
+			@Override
+			public boolean accept(File dir, String name) {
+				return (name.startsWith(configName) || name.startsWith(layoutName)
+						|| name.startsWith(prefName));
+			}
+
+		});
+		for (File f : files)
+			f.delete();
+
+		
 	}
 
 }
