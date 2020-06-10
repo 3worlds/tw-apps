@@ -178,6 +178,8 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		 * the ui buttons and message display.
 		 */
 		doSave();
+		
+		addState("init");
 
 	}
 
@@ -240,6 +242,8 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		onProjectOpened();
 
 		ConfigGraph.validateGraph();
+
+		addState("init");
 
 	}
 
@@ -343,6 +347,8 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 
 		doSave();
 
+		addState("init");
+
 	}
 
 	private void onProjectClosing() {
@@ -357,7 +363,6 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		Caretaker.initialise();
 		/** Cleanup stranded undo file */
 		MMMemento.deleteStrandedFiles();
-		addState("init");
 	}
 
 	@Override
