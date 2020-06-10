@@ -443,7 +443,7 @@ public abstract class StructureEditorAdapter
 		newChild.setCollapse(false);
 		newChild.setVisible(true);
 		newChild.setCategory();
-		VisualNodeEditable vne = new VisualNodeEditor(newChild, editableNode.getGraph());
+//		VisualNodeEditable vne = new VisualNodeEditor(newChild, editableNode.getGraph());
 		StringTable parents = (StringTable) childBaseSpec.properties().getPropertyValue(aaHasParent);
 		newChild.setParentRef(parents);
 		for (SimpleDataTreeNode propertySpec : propertySpecs) {
@@ -518,6 +518,7 @@ public abstract class StructureEditorAdapter
 			if (def.classId().equals(N_FIELD.label()))
 				newProps.addProperty(def.id(), ((FieldNode) def).newInstance());
 			else {
+				@SuppressWarnings("unchecked")
 				List<Node> dims = (List<Node>) get(def.edges(Direction.OUT), edgeListEndNodes(),
 						selectZeroOrMany(hasTheLabel(N_DIMENSIONER.label())));
 				if (!dims.isEmpty())

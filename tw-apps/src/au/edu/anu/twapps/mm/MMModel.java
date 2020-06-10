@@ -61,7 +61,6 @@ import au.edu.anu.twcore.errorMessaging.ModelBuildErrors;
 import au.edu.anu.twcore.graphState.GraphState;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.project.ProjectPaths;
-import au.edu.anu.twcore.root.EditableFactory;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.Tree;
@@ -103,7 +102,6 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 	public MMModel(IMMController controller) {
 		this.controller = controller;
 		buildNonEditableList();
-
 	}
 
 	@Override
@@ -181,9 +179,6 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		 */
 		doSave();
 
-//		Rollover.preserveState("init", ConfigGraph.getGraph(), visualGraph);
-		addState("init");
-
 	}
 
 	private static IdentityScope getProjectScope(TreeGraph<TreeGraphDataNode, ALEdge> graph) {
@@ -246,19 +241,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 
 		ConfigGraph.validateGraph();
 
-//		Rollover.preserveState("init", ConfigGraph.getGraph(), visualGraph);
-		addState("init");
-
 	}
-
-//	@Override
-//	public void rollback(Duple<TreeGraph<TreeGraphDataNode, ALEdge>, TreeGraph<VisualNode, VisualEdge>> pair) {
-//		ConfigGraph.setGraph(pair.getFirst());
-//		visualGraph = pair.getSecond();
-//		shadowGraph();
-//		controller.onRollback(visualGraph);
-//		ConfigGraph.validateGraph();
-//	}
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -304,12 +287,12 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		log.info("Import: " + file);
 		TreeGraph<TreeGraphDataNode, ALEdge> importGraph = (TreeGraph<TreeGraphDataNode, ALEdge>) FileImporter
 				.loadGraphFromFile(file);
-		
+
 		Iterator<TreeGraphDataNode> iter = importGraph.roots().iterator();
 		int nRoots = 0;
 		while (iter.hasNext())
 			nRoots++;
-		
+
 		if (nRoots > 1) {
 			Dialogs.errorAlert("Import error", "Tree has more than one root.",
 					"Graphs with multiple roots cannot be imported");
@@ -360,9 +343,6 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 
 		doSave();
 
-//		Rollover.preserveState("init", ConfigGraph.getGraph(), visualGraph);
-		addState("init");
-
 	}
 
 	private void onProjectClosing() {
@@ -377,14 +357,21 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		Caretaker.initialise();
 		/** Cleanup stranded undo file */
 		MMMemento.deleteStrandedFiles();
+		addState("init");
 	}
 
 	@Override
 	public void doSave() {
 		File pf = Project.getProjectFile();
-		// User may have deleted their project during a session but has asked to save
-		if (!pf.exists())
+		/**
+		 * User may have deleted their project during a session but has asked to save or
+		 * this has been called following a rollback file error.
+		 */
+		if (!pf.exists()) {
 			pf.mkdirs();
+			Caretaker.initialise();
+			addState("init");
+		}
 		new OmugiGraphExporter(Project.makeConfigurationFile()).exportGraph(ConfigGraph.getGraph());
 		new OmugiGraphExporter(Project.makeLayoutFile()).exportGraph(visualGraph);
 		GraphState.clear();
@@ -506,14 +493,14 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 //
 //	}
 
-	private static void deleteTreeFrom(TreeNode parent) {
-		for (TreeNode child : parent.getChildren()) {
-			deleteTreeFrom(child);
-		}
-		EditableFactory cf = (EditableFactory) parent.factory();
-		cf.expungeNode(parent);
-		parent.disconnect();
-	}
+//	private static void deleteTreeFrom(TreeNode parent) {
+//		for (TreeNode child : parent.getChildren()) {
+//			deleteTreeFrom(child);
+//		}
+//		EditableFactory cf = (EditableFactory) parent.factory();
+//		cf.expungeNode(parent);
+//		parent.disconnect();
+//	}
 
 	private List<String> getQueryStringTableEntries(SimpleDataTreeNode constraint) {
 		List<String> result = new ArrayList<>();
@@ -551,6 +538,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 			classParentMap.put(key, value);
 			// search subA
 
+			@SuppressWarnings("unchecked")
 			List<SimpleDataTreeNode> saConstraints = (List<SimpleDataTreeNode>) get(childSpec.getChildren(),
 					selectZeroOrMany(hasProperty(aaClassName, CheckSubArchetypeQuery.class.getName())));
 			for (SimpleDataTreeNode constraint : saConstraints) {

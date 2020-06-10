@@ -151,13 +151,6 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 		properties().setProperty(vnCategory, category);
 	}
 
-	public String getDisplayText(boolean classOnly) {
-		if (classOnly)
-			return configNode.classId();
-		else
-			return configNode.toShortString();
-	}
-	
 	public String getDisplayText() {
 		return configNode.toShortString();
 	}
