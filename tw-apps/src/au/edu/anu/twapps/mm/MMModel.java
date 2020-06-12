@@ -178,7 +178,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		 * the ui buttons and message display.
 		 */
 		doSave();
-		
+
 		addState("init");
 
 	}
@@ -229,8 +229,8 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 				.loadGraphFromFile(vFile);
 
 		if (importVisual.nNodes() != newGraph.nNodes()) {
-			Dialogs.errorAlert("File error", file.getName(),
-					"Layout graph does not have the same number of nodes as the configuration graph.Try importing this file.");
+			Dialogs.errorAlert("File error", file.getName(), "Files '" + cFile.getName() + "' and '" + vFile.getName()
+					+ "' do not match. Possibly due to a parsing error in '"+cFile.getName()+"'.");
 			Project.close();
 			return;
 		}
