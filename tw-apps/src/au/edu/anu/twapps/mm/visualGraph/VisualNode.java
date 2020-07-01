@@ -151,8 +151,22 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 		properties().setProperty(vnCategory, category);
 	}
 
-	public String getDisplayText() {
-		return configNode.toShortString();
+	public String getDisplayText(ElementDisplayText option) {
+		switch (option) {
+		case RoleName: {
+			return configNode.toShortString();
+		}
+		case Role: {
+			return configNode.classId();
+		}
+		case Name: {
+			return configNode.id();
+		}
+		default: {
+			return "";
+		}
+		}
+
 	}
 
 	public void setX(double x) {
@@ -363,10 +377,10 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 		if (parent == null)
 			throw new TwAppsException("Parent is null.");
 		if (map == null)
-			throw new TwAppsException("Map is null when processing parent " + parent.getDisplayText());
+			throw new TwAppsException("Map is null when processing parent " + parent.getDisplayText(ElementDisplayText.RoleName));
 		List<StringTable> parentList = map.get(parent.cClassId());
 		if (parentList == null)
-			throw new TwAppsException("ParentList is null for parent " + parent.getDisplayText());
+			throw new TwAppsException("ParentList is null for parent " + parent.getDisplayText(ElementDisplayText.RoleName));
 
 		/**
 		 * Check each table and take the first that corresponds to the current set of

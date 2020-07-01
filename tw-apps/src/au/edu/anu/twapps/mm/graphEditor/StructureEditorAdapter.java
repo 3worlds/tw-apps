@@ -50,6 +50,7 @@ import au.edu.anu.rscs.aot.util.IntegerRange;
 import au.edu.anu.twapps.dialogs.Dialogs;
 import au.edu.anu.twapps.mm.IMMController;
 import au.edu.anu.twapps.mm.configGraph.ConfigGraph;
+import au.edu.anu.twapps.mm.visualGraph.ElementDisplayText;
 import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualGraphFactory;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
@@ -475,7 +476,7 @@ public abstract class StructureEditorAdapter
 						StringTable classes = (StringTable) constraint.properties().getPropertyValue(twaValues);
 						if (classes.size() > 1) {
 							String[] names = ValidPropertyTypes.namesOf(e);
-							int choice = Dialogs.getListChoice(names, newChild.getDisplayText(), key,
+							int choice = Dialogs.getListChoice(names, newChild.getDisplayText(ElementDisplayText.RoleName), key,
 									e.getClass().getSimpleName());
 							defValue = ValidPropertyTypes.valueOf(names[choice], e);
 						} else if (classes.size() == 1) {
@@ -534,7 +535,7 @@ public abstract class StructureEditorAdapter
 				if (!dims.isEmpty())
 					newProps.addProperty(def.id(), ((TableNode) def).newInstance());
 				else
-					Dialogs.errorAlert("Node construction error", newChild.getDisplayText(),
+					Dialogs.errorAlert("Node construction error", newChild.getDisplayText(ElementDisplayText.RoleName),
 							"Cannot add '" + def.classId() + ":" + def.id() + "' because it has no dimensions");
 			}
 		}
@@ -740,7 +741,7 @@ public abstract class StructureEditorAdapter
 
 	@Override
 	public void onExportTree(VisualNode root) {
-		String filePrompt = root.getDisplayText().replace(":", "_") + ".utg";
+		String filePrompt = root.getDisplayText(ElementDisplayText.RoleName).replace(":", "_") + ".utg";
 		File file = Dialogs.exportFile("", TwPaths.USER_ROOT, filePrompt);
 		if (file == null)
 			return;

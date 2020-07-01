@@ -64,11 +64,21 @@ public class VisualEdge extends ALDataEdge implements VisualKeys {
 		this.configEdge = configEdge;
 	}
 
-	public String getDisplayText(boolean full) {
-		if (full)
+	public String getDisplayText(ElementDisplayText option) {
+		switch (option) {
+		case RoleName: {
 			return configEdge.toShortString();
-		else
-			return configEdge.classId() + ":";
+		}
+		case Role: {
+			return configEdge.classId();
+		}
+		case Name: {
+			return configEdge.id();
+		}
+		default: {
+			return "";
+		}
+		}
 	}
 
 	public ALEdge getConfigEdge() {
@@ -81,7 +91,7 @@ public class VisualEdge extends ALDataEdge implements VisualKeys {
 
 	public Object getText() {
 		if (veText == null)
-			throw new TwAppsException("Attempt to access null edge text object [" + getDisplayText(true) + "]");
+			throw new TwAppsException("Attempt to access null edge text object [" + getDisplayText(ElementDisplayText.RoleName) + "]");
 		return veText;
 	}
 

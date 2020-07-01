@@ -51,6 +51,7 @@ import au.edu.anu.twapps.dialogs.Dialogs;
 import au.edu.anu.twapps.exceptions.TwAppsException;
 import au.edu.anu.twapps.mm.visualGraph.VisualGraphFactory;
 import au.edu.anu.twapps.mm.configGraph.ConfigGraph;
+import au.edu.anu.twapps.mm.visualGraph.ElementDisplayText;
 import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import au.edu.anu.twcore.archetype.TWA;
@@ -627,7 +628,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 
 		Random rnd = new Random();
 		for (VisualNode visualNode : newVisualGraph.nodes()) {
-			log.info("Initialising " + visualNode.getDisplayText());
+			log.info("Initialising " + visualNode.getDisplayText(ElementDisplayText.RoleName));
 			visualNode.setVisible(true);
 			visualNode.setCategory();
 			visualNode.setPosition(rnd.nextDouble(), rnd.nextDouble());

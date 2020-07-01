@@ -41,6 +41,7 @@ import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.Query;
 import au.edu.anu.rscs.aot.util.IntegerRange;
 import au.edu.anu.twapps.dialogs.Dialogs;
+import au.edu.anu.twapps.mm.visualGraph.ElementDisplayText;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import au.edu.anu.twcore.archetype.TWA;
 import au.edu.anu.twcore.archetype.TwArchetypeConstants;
@@ -398,7 +399,7 @@ public class TwSpecifications implements //
 				if (obj instanceof Enum<?>) {
 					Class<? extends Enum<?>> e = (Class<? extends Enum<?>>) obj.getClass();
 					String[] names = ValidPropertyTypes.namesOf(e);
-					int choice = Dialogs.getListChoice(names, vnode.getDisplayText(), key,
+					int choice = Dialogs.getListChoice(names, vnode.getDisplayText(ElementDisplayText.RoleName), key,
 							obj.getClass().getSimpleName());
 					if (choice >= 0) {
 						Enum<?> value = ValidPropertyTypes.valueOf(names[choice], e);
