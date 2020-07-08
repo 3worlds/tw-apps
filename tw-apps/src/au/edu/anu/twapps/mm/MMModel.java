@@ -186,8 +186,17 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 
 	private static IdentityScope getProjectScope(TreeGraph<TreeGraphDataNode, ALEdge> graph) {
 		LocalScope result = new LocalScope("Projects");
+		/**
+		 * If a project is open, the project name is the same as the root node name. If
+		 * so, this would force an increment in the name meaning this function will inc
+		 * by 2 instead of 1.
+		 */
+		String openName = "";
+		if (Project.isOpen())
+			openName = Project.getProjectUserName();
 		for (String prjName : Project.getAllProjectNames())
-			result.newId(true, prjName);
+			if (!openName.equals(prjName))
+				result.newId(true, prjName);
 		for (Node n : graph.nodes())
 			result.newId(true, n.id());
 		return result;
@@ -231,7 +240,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 
 		if (importVisual.nNodes() != newGraph.nNodes()) {
 			Dialogs.errorAlert("File error", file.getName(), "Files '" + cFile.getName() + "' and '" + vFile.getName()
-					+ "' do not match. Possibly due to a parsing error in '"+cFile.getName()+"'.");
+					+ "' do not match. Possibly due to a parsing error in '" + cFile.getName() + "'.");
 			Project.close();
 			return;
 		}
