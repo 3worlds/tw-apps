@@ -419,7 +419,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 			keys.add(P_PARAMETERCLASS.key());
 			keys.add(P_DECORATORCLASS.key());
 			keys.add(P_DATAELEMENTTYPE.key());
-			keys.add(P_LTCONSTANTCLASS.key());
+			keys.add(P_CONSTANTCLASS.key());
 
 			nonEditableMap.put(key.label(), keys);
 		}
