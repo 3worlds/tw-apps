@@ -189,16 +189,15 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		/**
 		 * If a project is open, the project name is the same as the root node name. If
 		 * so, this would force an increment in the name meaning this function will inc
-		 * by 2 instead of 1.
+		 * by 2 instead of 1. Well this is no good. Prj1 always produces Prj1 for ever.
 		 */
-		String openName = "";
-		if (Project.isOpen())
-			openName = Project.getProjectUserName();
 		for (String prjName : Project.getAllProjectNames())
-			if (!openName.equals(prjName))
-				result.newId(true, prjName);
-		for (Node n : graph.nodes())
-			result.newId(true, n.id());
+			result.newId(true, prjName);
+
+		for (Node n : graph.nodes()) { // check its not already there because project name is the same as root.id()
+			if (result.newId(false, n.id()).id().equals(n.id()))
+				result.newId(true, n.id());
+		}
 		return result;
 	}
 
