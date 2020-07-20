@@ -45,7 +45,6 @@ import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.twcore.generators.CodeGenerator;
 import fr.cnrs.iees.twcore.generators.ProjectJarGenerator;
-import fr.cnrs.iees.twcore.generators.doco.DocoGenerator;
 
 /**
  * @author Ian Davies
@@ -108,10 +107,6 @@ public class ConfigGraph {
 				gen.generate(graph);
 			}
 			
-			if (!ErrorList.haveErrors()) {
-				DocoGenerator gen = new DocoGenerator(graph);
-				gen.generate();
-			}
 			if (!ErrorList.haveErrors()) {
 				File file = new File(TwPaths.TW_ROOT + File.separator + TwPaths.TW_DEP_JAR);
 				if (!file.exists())
