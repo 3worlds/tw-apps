@@ -29,8 +29,12 @@
 
 package au.edu.anu.twapps.mm;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.ProcessBuilder.Redirect;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
@@ -41,7 +45,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import au.edu.anu.omhtk.preferences.Preferences;
 import au.edu.anu.rscs.aot.archetype.ArchetypeArchetypeConstants;
@@ -61,7 +70,6 @@ import au.edu.anu.twcore.errorMessaging.ModelBuildErrorMsg;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrors;
 import au.edu.anu.twcore.graphState.GraphState;
 import au.edu.anu.twcore.project.Project;
-import au.edu.anu.twcore.project.ProjectPaths;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.Tree;
@@ -81,8 +89,7 @@ import fr.ens.biologie.generic.utils.Duple;
 import fr.ens.biologie.generic.utils.Logging;
 import fr.ens.biologie.generic.utils.NameUtils;
 
-import static au.edu.anu.rscs.aot.queries.CoreQueries.hasProperty;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.selectZeroOrMany;
+import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
@@ -462,27 +469,73 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		for (String s : mmArgs)
 			commands.add(s);
 
-		ProcessBuilder experimentUI = new ProcessBuilder(commands);
+		ProcessBuilder builder = new ProcessBuilder(commands);
 
-		experimentUI.directory(Project.getProjectFile());
-		experimentUI.inheritIO();
-		File errorLog = Project.makeFile(ProjectPaths.LOGS, "DeployErr.log");
-		if (errorLog.exists())
-			errorLog.delete();
-		errorLog.getParentFile().mkdirs();
-		experimentUI.redirectError(errorLog);
+		builder.directory(Project.getProjectFile());
+		// builder.inheritIO();
+//		File errorLog = Project.makeFile(ProjectPaths.LOGS, "DeployErr.log");
+//		if (errorLog.exists())
+//			errorLog.delete();
+//		errorLog.getParentFile().mkdirs();
+		// experimentUI.redirectError(errorLog);
+//		String s= "";
+//		StringReader sr = new StringReader(s);
+//		var errorStream = new BufferedReader(sr);
+		builder.redirectError(Redirect.PIPE);
+//		experimentUI.redirectError(errorStream);
+
+		var executor = Executors.newSingleThreadExecutor();
 		try {
-			Process p = experimentUI.start();
-			Thread.sleep(2000);
-			if (!p.isAlive())
-				if (p.exitValue() != 0) {
-					if (errorLog.exists() && errorLog.length() > 0)
-						ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_FAIL, errorLog,
-								Project.getProjectFile()));
-				}
+			/**
+			 * Better:
+			 * 
+			 * Start a thread to launch MR and put the stderr in some kind of buffered
+			 * stream reader to to parse lines
+			 * use waitfor to block the thread so that when MR quits, the thread quits
+			 */
+			Process proc = builder.start();
+			// proc.waitFor();
+			// controller.redirectOutputToTask(proc.getErrorStream());
+			// http://zetcode.com/java/processbuilder/
+			var task = new ProcessTask(proc.getErrorStream());
+			Future<List<String>> future = executor.submit(task);
+//			Thread.sleep(2000);
+//			if (!p.isAlive())
+//				if (p.exitValue() != 0) {
+//					if (errorLog.exists() && errorLog.length() > 0)
+//						ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_FAIL, errorLog,
+//								Project.getProjectFile()));
+//				}
+			// To be deleted
+			var results = future.get(10, TimeUnit.SECONDS);
+			if (!results.isEmpty())
+				ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_FAIL, results, Project.getProjectFile()));
+
+			System.out.println("Have errors: " + !results.isEmpty());
+//			for (String res:results) {
+//				System.out.println(res);
+//			}
+
 		} catch (Exception e) {
-			ErrorList.add(
-					new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_EXCEPTION, e, errorLog, Project.getProjectFile()));
+			ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_EXCEPTION, e, commands));
+		} finally {
+			executor.shutdown();
+			System.out.println("executor.shutdown()");
+
+		}
+	}
+
+	private static class ProcessTask implements Callable<List<String>> {
+
+		private InputStream inputStream;
+
+		public ProcessTask(InputStream inputStream) {
+			this.inputStream = inputStream;
+		}
+
+		@Override
+		public List<String> call() {
+			return new BufferedReader(new InputStreamReader(inputStream)).lines().collect(Collectors.toList());
 		}
 	}
 
