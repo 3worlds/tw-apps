@@ -30,6 +30,7 @@
 package au.edu.anu.twapps.mm;
 
 import java.io.File;
+import java.io.InputStream;
 
 import au.edu.anu.twapps.mm.layout.LayoutType;
 import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
@@ -170,6 +171,12 @@ public class MockController implements IMMController{
 
 	@Override
 	public void doFocusedLayout(VisualNode root, LayoutType layout, double duration) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void redirectOutputToUI(InputStream errorStream) {
 		// TODO Auto-generated method stub
 		
 	}

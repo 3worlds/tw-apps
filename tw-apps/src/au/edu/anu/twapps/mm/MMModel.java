@@ -470,74 +470,22 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 			commands.add(s);
 
 		ProcessBuilder builder = new ProcessBuilder(commands);
-
 		builder.directory(Project.getProjectFile());
-		// builder.inheritIO();
-//		File errorLog = Project.makeFile(ProjectPaths.LOGS, "DeployErr.log");
-//		if (errorLog.exists())
-//			errorLog.delete();
-//		errorLog.getParentFile().mkdirs();
-		// experimentUI.redirectError(errorLog);
-//		String s= "";
-//		StringReader sr = new StringReader(s);
-//		var errorStream = new BufferedReader(sr);
 		builder.redirectError(Redirect.PIPE);
-//		experimentUI.redirectError(errorStream);
-
-		var executor = Executors.newSingleThreadExecutor();
-		try {
-			/**
-			 * Better:
-			 * 
-			 * Start a thread to launch MR and put the stderr in some kind of buffered
-			 * stream reader to to parse lines
-			 * use waitfor to block the thread so that when MR quits, the thread quits
-			 */
-			Process proc = builder.start();
-			// proc.waitFor();
-			// controller.redirectOutputToTask(proc.getErrorStream());
-			// http://zetcode.com/java/processbuilder/
-			var task = new ProcessTask(proc.getErrorStream());
-			Future<List<String>> future = executor.submit(task);
-//			Thread.sleep(2000);
-//			if (!p.isAlive())
-//				if (p.exitValue() != 0) {
-//					if (errorLog.exists() && errorLog.length() > 0)
-//						ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_FAIL, errorLog,
-//								Project.getProjectFile()));
-//				}
-			// To be deleted
-			var results = future.get(10, TimeUnit.SECONDS);
-			if (!results.isEmpty())
-				ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_FAIL, results, Project.getProjectFile()));
-
-			System.out.println("Have errors: " + !results.isEmpty());
-//			for (String res:results) {
-//				System.out.println(res);
-//			}
-
-		} catch (Exception e) {
-			ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_EXCEPTION, e, commands));
-		} finally {
-			executor.shutdown();
-			System.out.println("executor.shutdown()");
-
-		}
+		Runnable launchTask = () -> {
+			try {
+				Process proc = builder.start();
+				controller.redirectOutputToUI(proc.getErrorStream());
+				int ret = proc.waitFor();
+				if (ret != 0)
+					throw new TwAppsException("ModelRunner quit with return value: " + ret);
+			} catch (Exception e) {
+				ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_EXCEPTION, e, commands));
+			}
+		};
+		new Thread(launchTask).start();
 	}
 
-	private static class ProcessTask implements Callable<List<String>> {
-
-		private InputStream inputStream;
-
-		public ProcessTask(InputStream inputStream) {
-			this.inputStream = inputStream;
-		}
-
-		@Override
-		public List<String> call() {
-			return new BufferedReader(new InputStreamReader(inputStream)).lines().collect(Collectors.toList());
-		}
-	}
 
 //	private static boolean stripOrphanedNodes(TreeGraph<TreeGraphDataNode, ALEdge> graph) {
 //		int nRoots = 0;
