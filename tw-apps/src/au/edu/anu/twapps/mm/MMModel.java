@@ -471,21 +471,22 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 
 		ProcessBuilder builder = new ProcessBuilder(commands);
 		builder.directory(Project.getProjectFile());
-		builder.redirectError(Redirect.PIPE);
-		Runnable launchTask = () -> {
-			try {
-				Process proc = builder.start();
-				controller.redirectOutputToUI(proc.getErrorStream());
-				int ret = proc.waitFor();
-				if (ret != 0)
-					throw new TwAppsException("ModelRunner quit with return value: " + ret);
-			} catch (Exception e) {
-				ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_EXCEPTION, e, commands));
-			}
-		};
-		new Thread(launchTask).start();
+		builder.inheritIO();
+		try {
+			builder.start();
+		} catch (IOException e) {
+			ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_EXCEPTION, e, commands));
+		}
+		// controller.redirectOutputToUI(proc.getErrorStream());
+		// int ret = proc.waitFor();
+		// (ret != 0)
+		// throw new TwAppsException("ModelRunner quit with return value: " + ret);
+		// } catch (Exception e) {
+//		ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_EXCEPTION, e, commands));
+		// }
+		// };
+		// new Thread(launchTask).start();
 	}
-
 
 //	private static boolean stripOrphanedNodes(TreeGraph<TreeGraphDataNode, ALEdge> graph) {
 //		int nRoots = 0;

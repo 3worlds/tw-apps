@@ -83,6 +83,6 @@ public interface IMMController {
 	
 	public void putPreferences();
 
-	public void redirectOutputToUI(InputStream errorStream);
+//	public void redirectOutputToUI(InputStream errorStream);
 
 }

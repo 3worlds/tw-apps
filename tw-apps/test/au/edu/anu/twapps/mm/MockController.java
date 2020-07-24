@@ -175,11 +175,11 @@ public class MockController implements IMMController{
 		
 	}
 
-	@Override
-	public void redirectOutputToUI(InputStream errorStream) {
-		// TODO Auto-generated method stub
-		
-	}
+//	@Override
+//	public void redirectOutputToUI(InputStream errorStream) {
+//		// TODO Auto-generated method stub
+//		
+//	}
 
 
 
