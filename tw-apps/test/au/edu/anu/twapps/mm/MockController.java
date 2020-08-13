@@ -30,8 +30,6 @@
 package au.edu.anu.twapps.mm;
 
 import java.io.File;
-import java.io.InputStream;
-
 import au.edu.anu.twapps.mm.layout.LayoutType;
 import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
