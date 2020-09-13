@@ -391,7 +391,7 @@ public abstract class StructureEditorAdapter
 			return null;
 	}
 
-	private String getNewName(String label, String defName, SimpleDataTreeNode childBaseSpec) {
+	private String getNewName(String title, String label, String defName, SimpleDataTreeNode childBaseSpec) {
 		// default name is label with 1 appended
 //		String post = label.substring(1, label.length());
 //		String pre = label.substring(0, 1);
@@ -405,7 +405,7 @@ public abstract class StructureEditorAdapter
 		boolean modified = true;
 		promptId = editableNode.proposeAnId(promptId);
 		while (modified) {
-			String userName = promptForNewNode(label, promptId, capitalize);
+			String userName = promptForNewNode(title, promptId, capitalize);
 			if (userName == null)
 				return null;// cancel
 			userName = userName.trim();
@@ -426,7 +426,7 @@ public abstract class StructureEditorAdapter
 	public void onNewChild(String childLabel, String childId, SimpleDataTreeNode childBaseSpec) {
 		String promptId = childId;
 		if (promptId == null)
-			promptId = getNewName(childLabel, ConfigurationNodeLabels.labelValueOf(childLabel).defName(),
+			promptId = getNewName(childLabel,childLabel, ConfigurationNodeLabels.labelValueOf(childLabel).defName(),
 					childBaseSpec);
 		if (promptId == null)
 			return;
@@ -545,7 +545,7 @@ public abstract class StructureEditorAdapter
 	public void onNewEdge(Tuple<String, VisualNode, SimpleDataTreeNode> details, double duration) {
 		if (editableNode.isCollapsed())
 			gvisualiser.expandTreeFrom(editableNode.getSelectedVisualNode(), false, duration);
-		String id = getNewName(details.getFirst(), ConfigurationEdgeLabels.labelValueOf(details.getFirst()).defName(),
+		String id = getNewName(details.getFirst(),details.getFirst(), ConfigurationEdgeLabels.labelValueOf(details.getFirst()).defName(),
 				null);
 		if (id == null)
 			return;
@@ -595,7 +595,7 @@ public abstract class StructureEditorAdapter
 
 	@Override
 	public void onRenameNode() {
-		String userName = getNewName(editableNode.cClassId(),
+		String userName = getNewName(editableNode.cClassId()+":"+editableNode.getConfigNode().id(),editableNode.cClassId(),
 				ConfigurationNodeLabels.labelValueOf(editableNode.cClassId()).defName(), baseSpec);
 		if (userName != null) {
 			renameNode(userName, editableNode.getSelectedVisualNode());
@@ -609,7 +609,7 @@ public abstract class StructureEditorAdapter
 	@Override
 	public void onRenameEdge(VisualEdge edge) {
 		String lbl = edge.getConfigEdge().classId();
-		String userName = getNewName(lbl, ConfigurationEdgeLabels.labelValueOf(lbl).defName(), null);
+		String userName = getNewName(lbl+":"+edge.id(),lbl, ConfigurationEdgeLabels.labelValueOf(lbl).defName(), null);
 		if (userName != null) {
 			renameEdge(userName, edge);
 			gvisualiser.onEdgeRenamed(edge);
