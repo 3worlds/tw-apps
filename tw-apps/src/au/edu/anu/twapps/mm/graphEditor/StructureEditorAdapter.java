@@ -31,6 +31,7 @@ package au.edu.anu.twapps.mm.graphEditor;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -45,6 +46,7 @@ import java.util.logging.Logger;
 import org.apache.commons.text.WordUtils;
 
 import au.edu.anu.rscs.aot.archetype.ArchetypeArchetypeConstants;
+import au.edu.anu.rscs.aot.collections.tables.Dimensioner;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.util.IntegerRange;
 import au.edu.anu.twapps.dialogs.Dialogs;
@@ -89,11 +91,16 @@ import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
 import fr.cnrs.iees.properties.ExtendablePropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SimplePropertyListImpl;
+import fr.cnrs.iees.twcore.constants.BorderListType;
 import fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels;
 import fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels;
 import fr.cnrs.iees.twcore.constants.ConfigurationReservedNodeId;
+import fr.cnrs.iees.twcore.constants.SpaceType;
+import fr.cnrs.iees.uit.space.Box;
+import fr.cnrs.iees.uit.space.Point;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import fr.ens.biologie.generic.utils.Duple;
 import fr.ens.biologie.generic.utils.Logging;
 import fr.ens.biologie.generic.utils.Tuple;
@@ -230,7 +237,8 @@ public abstract class StructureEditorAdapter
 	private boolean satisfiesEdgeMultiplicity(SimpleDataTreeNode edgeSpec, String edgeLabel) {
 		IntegerRange range = specifications.getMultiplicityOf(edgeSpec);
 		@SuppressWarnings("unchecked")
-		List<Edge> edges = (List<Edge>) get( editableNode.getConfigNode().edges(Direction.OUT), selectZeroOrMany(hasTheLabel(edgeLabel)));
+		List<Edge> edges = (List<Edge>) get(editableNode.getConfigNode().edges(Direction.OUT),
+				selectZeroOrMany(hasTheLabel(edgeLabel)));
 		if (edges.size() >= range.getLast())
 			return false;
 		else
@@ -426,7 +434,7 @@ public abstract class StructureEditorAdapter
 	public void onNewChild(String childLabel, String childId, SimpleDataTreeNode childBaseSpec) {
 		String promptId = childId;
 		if (promptId == null)
-			promptId = getNewName(childLabel,childLabel, ConfigurationNodeLabels.labelValueOf(childLabel).defName(),
+			promptId = getNewName(childLabel, childLabel, ConfigurationNodeLabels.labelValueOf(childLabel).defName(),
 					childBaseSpec);
 		if (promptId == null)
 			return;
@@ -476,7 +484,8 @@ public abstract class StructureEditorAdapter
 						StringTable classes = (StringTable) constraint.properties().getPropertyValue(twaValues);
 						if (classes.size() > 1) {
 							String[] names = ValidPropertyTypes.namesOf(e);
-							int choice = Dialogs.getListChoice(names, newChild.getDisplayText(ElementDisplayText.RoleName), key,
+							int choice = Dialogs.getListChoice(names,
+									newChild.getDisplayText(ElementDisplayText.RoleName), key,
 									e.getClass().getSimpleName());
 							defValue = ValidPropertyTypes.valueOf(names[choice], e);
 						} else if (classes.size() == 1) {
@@ -493,8 +502,42 @@ public abstract class StructureEditorAdapter
 
 		processPropertiesMatchDefinition(newChild, childBaseSpec, childSubSpec);
 
+		if (newChild.cClassId().equals(N_SPACE.label()))
+			setDefaultSpaceDims(newChild.getConfigNode());
+
 		controller.onNewNode(newChild);
 	}
+
+	protected void setDefaultSpaceDims(TreeGraphDataNode spaceNode) {
+		SpaceType st = (SpaceType) spaceNode.properties().getPropertyValue(P_SPACETYPE.key());
+		int nDims = st.dimensions();
+		// borderType BorderTypeList
+		Dimensioner bd = new Dimensioner(nDims * 2);
+		Dimensioner[] d1 = new Dimensioner[1];
+		d1[0] = bd;
+		BorderListType defBlt = BorderListType.defaultValue();
+		BorderListType blt = new BorderListType(d1);
+		for (int i = 0; i < blt.size(); i++)
+			if (i % 2 == 0)
+				blt.setWithFlatIndex(defBlt.getWithFlatIndex(0), i);
+			else
+				blt.setWithFlatIndex(defBlt.getWithFlatIndex(1), i);
+		spaceNode.properties().setProperty(P_SPACE_BORDERTYPE.key(), blt);
+
+		// observationWindow Box. ok so not really a box since what is a 1d box?
+		Point[] points = new Point[2]; // upper/lower or lower/upper bounds
+		double[] lowerBounds = new double[nDims];
+		double[] upperBounds = new double[nDims];
+		Arrays.fill(lowerBounds, 0.0);
+		Arrays.fill(upperBounds, 0.0);// Leave it to queries to indicate a +ve range is needed.
+		Point p1 = Point.newPoint(lowerBounds);
+		for (int i = 0; i < 2; i++) {
+			points[0] = Point.newPoint(lowerBounds);
+			points[1] = Point.newPoint(upperBounds);
+		}
+		Box bounds = Box.boundingBox(points[0], points[1]);
+		spaceNode.properties().setProperty(P_SPACE_OBSWINDOW.key(), bounds);
+	};
 
 	protected void processPropertiesMatchDefinition(VisualNode newChild, SimpleDataTreeNode childBaseSpec,
 			SimpleDataTreeNode childSubSpec) {
@@ -545,8 +588,8 @@ public abstract class StructureEditorAdapter
 	public void onNewEdge(Tuple<String, VisualNode, SimpleDataTreeNode> details, double duration) {
 		if (editableNode.isCollapsed())
 			gvisualiser.expandTreeFrom(editableNode.getSelectedVisualNode(), false, duration);
-		String id = getNewName(details.getFirst(),details.getFirst(), ConfigurationEdgeLabels.labelValueOf(details.getFirst()).defName(),
-				null);
+		String id = getNewName(details.getFirst(), details.getFirst(),
+				ConfigurationEdgeLabels.labelValueOf(details.getFirst()).defName(), null);
 		if (id == null)
 			return;
 		connectTo(id, details, duration);
@@ -595,8 +638,9 @@ public abstract class StructureEditorAdapter
 
 	@Override
 	public void onRenameNode() {
-		String userName = getNewName(editableNode.cClassId()+":"+editableNode.getConfigNode().id(),editableNode.cClassId(),
-				ConfigurationNodeLabels.labelValueOf(editableNode.cClassId()).defName(), baseSpec);
+		String userName = getNewName(editableNode.cClassId() + ":" + editableNode.getConfigNode().id(),
+				editableNode.cClassId(), ConfigurationNodeLabels.labelValueOf(editableNode.cClassId()).defName(),
+				baseSpec);
 		if (userName != null) {
 			renameNode(userName, editableNode.getSelectedVisualNode());
 			gvisualiser.onNodeRenamed(editableNode.getSelectedVisualNode());
@@ -609,7 +653,8 @@ public abstract class StructureEditorAdapter
 	@Override
 	public void onRenameEdge(VisualEdge edge) {
 		String lbl = edge.getConfigEdge().classId();
-		String userName = getNewName(lbl+":"+edge.id(),lbl, ConfigurationEdgeLabels.labelValueOf(lbl).defName(), null);
+		String userName = getNewName(lbl + ":" + edge.id(), lbl, ConfigurationEdgeLabels.labelValueOf(lbl).defName(),
+				null);
 		if (userName != null) {
 			renameEdge(userName, edge);
 			gvisualiser.onEdgeRenamed(edge);
