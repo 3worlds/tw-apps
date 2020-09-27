@@ -130,6 +130,7 @@ public class Dialogs {
 	
 	public static final String vsInteger = "([0-9]*)?";
 	public static final String vsReal = "[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?";
+	public static final String vsReal2 = "^-?\\d+(,\\d+)*(\\.\\d+(e\\d+)?)?$";
 	public static final String vsAlpha = "([a-zA-Z]*)?";
 	public static final String vsAlphaNumeric = "([a-zA-Z0-9]*)?";
 	public static final String vsAlphaAlphaNumericSpace = "([a-zA-Z][a-zA-Z0-9 ]*)?";// Need the " " space to allow for null string
@@ -158,17 +159,21 @@ public class Dialogs {
 		names.add(" Blah");// 15
 		names.add("*Blah");// 16
 		names.add("*Blah*");// 17
-		names.add("*Bl*ah*");// 17
-		names.add("0.0");
-		names.add(".1");
-		names.add("1E10");
+		names.add("*Bl*ah*");// 18
+		names.add("0.0");// 19
+		names.add(".1");// 20
+		names.add("");// 21
+		names.add(".");// 22
+		names.add("0.");// 23
+		
 		
 
 		Pattern pattern = Pattern.compile(regex);
-
-		for (String name : names) {
+		System.out.println(regex);
+		for (int i = 0; i<names.size();i++) {
+			String name = names.get(i);
 			Matcher matcher = pattern.matcher(name);
-			System.out.println((names.indexOf(name) + 1) + ") " + matcher.matches());
+			System.out.println((i+1) + ") "+matcher.matches()+"\t'"+name+"'");
 		}
 	}
 }
