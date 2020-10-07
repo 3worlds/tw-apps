@@ -116,5 +116,7 @@ public interface Specifications {
 			SimpleDataTreeNode subSpec);
 
 //	public List<Duple<String[],String[]>> getEdgeLabelDuples(List<SimpleDataTreeNode> queries);
+	
+	public List<SimpleDataTreeNode>getOptionalProperties(SimpleDataTreeNode baseSpec, SimpleDataTreeNode subSpec);
 
 }

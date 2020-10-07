@@ -46,8 +46,11 @@ import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import au.edu.anu.twcore.archetype.TWA;
 import au.edu.anu.twcore.archetype.TwArchetypeConstants;
 import au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery;
+import au.edu.anu.twcore.archetype.tw.ChildXorPropertyQuery;
+import au.edu.anu.twcore.archetype.tw.EdgeXorPropertyQuery;
 import au.edu.anu.twcore.archetype.tw.IsInValueSetQuery;
 import au.edu.anu.twcore.archetype.tw.NameStartsWithUpperCaseQuery;
+import au.edu.anu.twcore.archetype.tw.PropertyXorQuery;
 import au.edu.anu.twcore.archetype.tw.RequirePropertyQuery;
 import fr.cnrs.iees.OmugiClassLoader;
 import fr.cnrs.iees.graph.DataHolder;
@@ -430,5 +433,61 @@ public class TwSpecifications implements //
 					props.removeProperty(subjectKey);
 		}
 
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<SimpleDataTreeNode> getOptionalProperties(SimpleDataTreeNode baseSpec, SimpleDataTreeNode subSpec) {
+
+		List<SimpleDataTreeNode> props = (List<SimpleDataTreeNode>) get(baseSpec.getChildren(),
+				selectZeroOrMany(hasTheLabel(aaHasProperty)));
+		if (subSpec != null) {
+			List<SimpleDataTreeNode> propsSub = (List<SimpleDataTreeNode>) get(subSpec.getChildren(),
+					selectZeroOrMany(hasTheLabel(aaHasProperty)));
+			props.addAll(propsSub);
+		}
+
+		Set<String> depProps = new HashSet<>();
+		List<SimpleDataTreeNode> reqs = getQueries(baseSpec, RequirePropertyQuery.class);
+		reqs.addAll(getQueries(subSpec, RequirePropertyQuery.class));
+		for (SimpleDataTreeNode req : reqs) {
+			// conditions =
+			// StringTable(([8]"units","dataElementType","Double","Float","Integer","Long","Short","Byte"))
+			StringTable conditions = (StringTable) req.properties().getPropertyValue(twaConditions);
+			depProps.add(conditions.getWithFlatIndex(0));
+			depProps.add(conditions.getWithFlatIndex(1));
+		}
+
+		List<SimpleDataTreeNode> cXORpqs = getQueries(baseSpec, ChildXorPropertyQuery.class);
+		cXORpqs.addAll(getQueries(subSpec, ChildXorPropertyQuery.class));
+		for (SimpleDataTreeNode cXORpq : cXORpqs) {
+			// edge_prop = StringTable(([2]"record","dataElementType"))
+			StringTable conditions = (StringTable) cXORpq.properties().getPropertyValue(twaEdgeProp);
+			depProps.add(conditions.getWithFlatIndex(1));
+		}
+		List<SimpleDataTreeNode> eXORpqs = getQueries(baseSpec, EdgeXorPropertyQuery.class);
+		eXORpqs.addAll(getQueries(subSpec, EdgeXorPropertyQuery.class));
+		for (SimpleDataTreeNode eXORpq : eXORpqs) {
+			// no example not used yet
+		}
+
+		List<SimpleDataTreeNode> pXORps = getQueries(baseSpec, PropertyXorQuery.class);
+		pXORps.addAll(getQueries(subSpec, PropertyXorQuery.class));
+		for (SimpleDataTreeNode pXORp : pXORps) {
+			// proplist = StringTable(([2]file,type))
+			StringTable conditions = (StringTable) pXORp.properties().getPropertyValue(twaPropList);
+			depProps.add(conditions.getWithFlatIndex(0));
+			depProps.add(conditions.getWithFlatIndex(1));
+		}
+
+		List<SimpleDataTreeNode> result = new ArrayList<>();
+		for (SimpleDataTreeNode prop : props) {
+			String name = (String) prop.properties().getPropertyValue(aaHasName);
+			IntegerRange ir = (IntegerRange) prop.properties().getPropertyValue(aaMultiplicity);
+			if (ir.getFirst() == 0 && ir.getLast() == 1 && !depProps.contains(name))
+				result.add(prop);
+		}
+
+		return result;
 	}
 }
