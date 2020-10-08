@@ -63,19 +63,20 @@ public interface Specifications {
 	 * get specification of a given node from the configuration graph. If null, it
 	 * won't be checked.
 	 */
-	public SimpleDataTreeNode getSpecsOf(VisualNodeEditable
-			editNode, TreeNode root, Set<String> discoveredFiles);
+	public SimpleDataTreeNode getSpecsOf(VisualNodeEditable editNode, TreeNode root, Set<String> discoveredFiles);
 
-	/*Returns the sub archetype spec of the given class of this baseSpec. Often will return null*/
+	/*
+	 * Returns the sub archetype spec of the given class of this baseSpec. Often
+	 * will return null
+	 */
 	public SimpleDataTreeNode getSubSpecsOf(SimpleDataTreeNode baseSpecs, Class<? extends TreeNode> subClass);
 
 	/*
 	 * Specifications of all potential children of a parent with this label and
 	 * optional subClass.
 	 */
-	public Iterable<SimpleDataTreeNode> getChildSpecsOf(VisualNodeEditable
-			editNode,SimpleDataTreeNode baseSpec, SimpleDataTreeNode subSpec,
-			TreeNode root);
+	public Iterable<SimpleDataTreeNode> getChildSpecsOf(VisualNodeEditable editNode, SimpleDataTreeNode baseSpec,
+			SimpleDataTreeNode subSpec, TreeNode root);
 
 	/* edge specifications nodes of a node with this label and class */
 	public Iterable<SimpleDataTreeNode> getEdgeSpecsOf(SimpleDataTreeNode baseSpec, SimpleDataTreeNode subSpec);
@@ -89,7 +90,10 @@ public interface Specifications {
 	/* Returns the integerRange class of the spec's multiplicity property */
 	public IntegerRange getMultiplicityOf(SimpleDataTreeNode spec);
 
-	/* True if node name must begin with upper case letter - not sure if should be here?*/
+	/*
+	 * True if node name must begin with upper case letter - not sure if should be
+	 * here?
+	 */
 	public boolean nameStartsWithUpperCase(SimpleDataTreeNode spec);
 
 	public List<Class<? extends TreeNode>> getSubClassesOf(SimpleDataTreeNode spec);
@@ -109,14 +113,18 @@ public interface Specifications {
 			SimpleDataTreeNode baseSpec, SimpleDataTreeNode subSpec, String childId,
 			Class<? extends Query>... queryClasses);
 
-	/*Returns a list of Duple<NodeLabel1,NodeLabel2> optons for the given query list*/
+	/*
+	 * Returns a list of Duple<NodeLabel1,NodeLabel2> optons for the given query
+	 * list
+	 */
 	public List<Duple<String, String>> getNodeLabelDuples(List<SimpleDataTreeNode> queries);
 
-	public void filterRequiredPropertyQuery(VisualNode vnode, SimpleDataTreeNode baseSpec,
-			SimpleDataTreeNode subSpec);
+	public void filterRequiredPropertyQuery(VisualNode vnode, SimpleDataTreeNode baseSpec, SimpleDataTreeNode subSpec);
 
-//	public List<Duple<String[],String[]>> getEdgeLabelDuples(List<SimpleDataTreeNode> queries);
-	
-	public List<SimpleDataTreeNode>getOptionalProperties(SimpleDataTreeNode baseSpec, SimpleDataTreeNode subSpec);
+	/*
+	 * Returns a list of property specifications that are optional and not
+	 * associated with any query
+	 */
+	public List<SimpleDataTreeNode> getOptionalProperties(SimpleDataTreeNode baseSpec, SimpleDataTreeNode subSpec);
 
 }

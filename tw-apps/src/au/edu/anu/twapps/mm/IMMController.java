@@ -29,6 +29,8 @@
 
 package au.edu.anu.twapps.mm;
 
+import java.util.Collection;
+
 import au.edu.anu.twapps.mm.layout.LayoutType;
 import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
@@ -80,6 +82,10 @@ public interface IMMController {
 	public void getPreferences();
 	
 	public void putPreferences();
+	
+	public Collection<String> getUnEditablePropertyKeys(String label);
+	
+	public void onAddRemoveProperty(VisualNode vn);
 
 //	public void redirectOutputToUI(InputStream errorStream);
 

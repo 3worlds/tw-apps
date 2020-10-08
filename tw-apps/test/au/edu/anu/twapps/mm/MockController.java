@@ -30,6 +30,8 @@
 package au.edu.anu.twapps.mm;
 
 import java.io.File;
+import java.util.Collection;
+
 import au.edu.anu.twapps.mm.layout.LayoutType;
 import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
@@ -173,11 +175,18 @@ public class MockController implements IMMController{
 		
 	}
 
-//	@Override
-//	public void redirectOutputToUI(InputStream errorStream) {
-//		// TODO Auto-generated method stub
-//		
-//	}
+	@Override
+	public Collection<String> getUnEditablePropertyKeys(String label) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void onAddRemoveProperty(VisualNode vn) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 
 

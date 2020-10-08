@@ -30,6 +30,7 @@
 package au.edu.anu.twapps.mm;
 
 import java.io.File;
+import java.util.Collection;
 
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
@@ -60,6 +61,8 @@ public interface IMMModel extends Originator{
 	public void doImport();
 
 	public boolean propertyEditable(String label, String key);
+	
+	public Collection<String> unEditablePropertyKeys(String label);
 	
 	public void restore(MMMemento m);
 	

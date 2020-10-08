@@ -34,6 +34,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -432,6 +434,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 
 	}
 
+	
 	@Override
 	public boolean propertyEditable(String classId, String key) {
 		if (!nonEditableMap.containsKey(classId))
@@ -440,6 +443,14 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 			return true;
 		// TODO build this when the archetype is ready
 		return false;
+	}
+	
+	@Override
+	public Collection<String> unEditablePropertyKeys(String classId) {
+		List<String> pKeys = nonEditableMap.get(classId);
+		if (pKeys==null)
+			pKeys = new ArrayList<>();
+		return Collections.unmodifiableCollection(pKeys);		
 	}
 
 	private static int nInstances = 0;
@@ -711,5 +722,6 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		return result;
 
 	}
+
 
 }
