@@ -29,6 +29,7 @@
 
 package au.edu.anu.twapps.mm.visualGraph;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -118,8 +119,8 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 	// helper methods
 	@SuppressWarnings("unchecked")
 	@Override
-	public Iterable<VisualNode> getChildren() {
-		return (Iterable<VisualNode>) super.getChildren();
+	public Collection<VisualNode> getChildren() {
+		return (Collection<VisualNode>) super.getChildren();
 	}
 
 	@Override
