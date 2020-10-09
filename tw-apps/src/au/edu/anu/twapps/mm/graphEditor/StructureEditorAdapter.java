@@ -988,4 +988,58 @@ public abstract class StructureEditorAdapter
 		ConfigGraph.validateGraph();
 	}
 
+	@Override
+	public boolean onOptionalProperties(List<SimpleDataTreeNode> propertySpecs) {
+		List<String> items = new ArrayList<>();
+		List<Boolean> selected = new ArrayList<>();
+		TreeGraphDataNode cn = (TreeGraphDataNode) editableNode.getConfigNode();
+		for (SimpleDataTreeNode p : propertySpecs) {
+			String name = (String) p.properties().getPropertyValue(aaHasName);
+			items.add(name);
+			if (cn.properties().hasProperty(name))
+				selected.add(true);
+			else
+				selected.add(false);
+		}
+		List<String> selectedItems = Dialogs.getCBSelections(editableNode.getSelectedVisualNode().toShortString(),
+				"Optional properties", items, selected);
+		List<String> additions = new ArrayList<>();
+		List<String> deletions = new ArrayList<>();
+
+		Set<String> currentKeys = cn.properties().getKeysAsSet();
+		for (String key : currentKeys)
+			if (items.contains(key))
+				if (!selectedItems.contains(key))
+					deletions.add(key);
+		for (String key : selectedItems)
+			if (!currentKeys.contains(key))
+				additions.add(key);
+
+		ExtendablePropertyList props = (ExtendablePropertyList) cn.properties();
+		for (String key : deletions) {
+			props.removeProperty(key);
+		}
+		for (String key : additions) {
+			// find the spec
+			SimpleDataTreeNode pSpec = getPropertySpec(key, propertySpecs);
+			String type = (String) pSpec.properties().getPropertyValue(aaType);
+			Object defValue = ValidPropertyTypes.getDefaultValue(type);
+			props.addProperty(key, defValue);
+		}
+
+		if (!deletions.isEmpty() || !additions.isEmpty())
+			return true;
+		else
+			return false;
+	}
+
+	private static SimpleDataTreeNode getPropertySpec(String key, List<SimpleDataTreeNode> propertySpecs) {
+		for (SimpleDataTreeNode p : propertySpecs) {
+			String name = (String) p.properties().getPropertyValue(aaHasName);
+			if (name.equals(key))
+				return p;
+		}
+		return null;
+	}
+
 }

@@ -35,22 +35,23 @@ import java.util.List;
 import au.edu.anu.twapps.dialogs.IDialogs;
 import au.edu.anu.twapps.dialogs.YesNoCancel;
 
-public class MockDialogs implements IDialogs{
+public class MockDialogs implements IDialogs {
 
 	@Override
 	public void errorAlert(String title, String header, String content) {
-		System.out.println("errorAlert "+title+" "+header+" "+content);		
+		System.out.println("errorAlert " + title + " " + header + " " + content);
 	}
+
 	@Override
 	public void infoAlert(String title, String header, String content) {
-		System.out.println("infoAlert "+title+" "+header+" "+content);		
-		
+		System.out.println("infoAlert " + title + " " + header + " " + content);
+
 	}
 
 	@Override
 	public void warnAlert(String title, String header, String content) {
-		System.out.println("warnAlert "+title+" "+header+" "+content);		
-		
+		System.out.println("warnAlert " + title + " " + header + " " + content);
+
 	}
 
 	@Override
@@ -66,7 +67,7 @@ public class MockDialogs implements IDialogs{
 	}
 
 	@Override
-	public String getText(String title, String header, String content, String prompt,String validFormat) {
+	public String getText(String title, String header, String content, String prompt, String validFormat) {
 		// TODO Auto-generated method stub
 		return "getText user string";
 	}
@@ -76,7 +77,6 @@ public class MockDialogs implements IDialogs{
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 
 	@Override
 	public boolean confirmation(String title, String header, String content) {
@@ -95,41 +95,53 @@ public class MockDialogs implements IDialogs{
 		// TODO Auto-generated method stub
 		return false;
 	}
+
 	@Override
 	public int getListChoice(String[] list, String title, String header, String content) {
 		// TODO Auto-generated method stub
 		return -1;
 	}
+
 	@Override
 	public List<String> getRadioButtonChoices(String title, String header, String content, List<String[]> entries) {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 	@Override
 	public Object owner() {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 	@Override
 	public File exportFile(String title, String promptDir, String promptFileName) {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 	@Override
 	public int editISFiles(List<File> files, int idx) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
 	@Override
 	public File promptForSaveFile(File directory, String title, String[]... exts) {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 	@Override
 	public File promptForOpenFile(File directory, String title, String[]... exts) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
+	public List<String> getCBSelections(String title, String header, List<String> items, List<Boolean> selected) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

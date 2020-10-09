@@ -78,4 +78,6 @@ public interface IDialogs {
 	public File promptForOpenFile(File directory, String title,String[]... exts);
 	
 	public int editISFiles(List<File> files, int idx);
+	
+	public List<String> getCBSelections(String title, String header,List<String> items, List<Boolean> selected) ;
 }

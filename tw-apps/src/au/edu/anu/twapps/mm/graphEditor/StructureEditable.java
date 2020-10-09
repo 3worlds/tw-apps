@@ -99,5 +99,7 @@ public interface StructureEditable {
 	void onImportTree(SimpleDataTreeNode childSpec,double duration);
 
 	void onDeleteParentLink(VisualNode child);
+	
+	boolean onOptionalProperties(List<SimpleDataTreeNode> propertySpecs);
 
 }

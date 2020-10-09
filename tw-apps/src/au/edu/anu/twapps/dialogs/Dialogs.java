@@ -121,22 +121,28 @@ public class Dialogs {
 	public static int editISFiles(List<File> files, int idx) {
 		return impl.editISFiles(files, idx);
 	}
-	
-	public static boolean isValid(String s,String regex) {
+
+	public static List<String> getCBSelections(String title, String header,List<String> items, List<Boolean> selected) {
+		return impl.getCBSelections(title, header,items, selected);
+	}
+
+	public static boolean isValid(String s, String regex) {
 		Pattern pattern = Pattern.compile(regex);
 		Matcher matcher = pattern.matcher(s);
 		return matcher.matches();
 	}
-	
+
 	public static final String vsInteger = "([0-9]*)?";
 	public static final String vsReal = "[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?";
 	public static final String vsReal2 = "^-?\\d+(,\\d+)*(\\.\\d+(e\\d+)?)?$";
 	public static final String vsAlpha = "([a-zA-Z]*)?";
 	public static final String vsAlphaNumeric = "([a-zA-Z0-9]*)?";
-	public static final String vsAlphaAlphaNumericSpace = "([a-zA-Z][a-zA-Z0-9 ]*)?";// Need the " " space to allow for null string
+	public static final String vsAlphaAlphaNumericSpace = "([a-zA-Z][a-zA-Z0-9 ]*)?";// Need the " " space to allow for
+																						// null string
 	public static final String vsAlphaCapAlphaNumeric = "([A-Z][a-zA-Z0-9]*)?";
 
 	public static final String test = "([*a-zA-Z][a-zA-Z0-9 *]*)?";
+
 	public static void main(String[] args) {
 
 		String regex = vsReal;
@@ -165,15 +171,13 @@ public class Dialogs {
 		names.add("");// 21
 		names.add(".");// 22
 		names.add("0.");// 23
-		
-		
 
 		Pattern pattern = Pattern.compile(regex);
 		System.out.println(regex);
-		for (int i = 0; i<names.size();i++) {
+		for (int i = 0; i < names.size(); i++) {
 			String name = names.get(i);
 			Matcher matcher = pattern.matcher(name);
-			System.out.println((i+1) + ") "+matcher.matches()+"\t'"+name+"'");
+			System.out.println((i + 1) + ") " + matcher.matches() + "\t'" + name + "'");
 		}
 	}
 }
