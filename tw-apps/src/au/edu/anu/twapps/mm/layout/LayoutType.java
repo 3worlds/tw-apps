@@ -5,5 +5,5 @@ public enum LayoutType {
 	RadialTree1,
 	RadialTree2,
 	SpringGraph,
-	LombardiGraph,
+	//LombardiGraph,
 }
