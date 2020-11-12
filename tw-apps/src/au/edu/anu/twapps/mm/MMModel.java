@@ -300,14 +300,15 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		TreeGraph<TreeGraphDataNode, ALEdge> importGraph = (TreeGraph<TreeGraphDataNode, ALEdge>) FileImporter
 				.loadGraphFromFile(file);
 
-		Iterator<TreeGraphDataNode> iter = importGraph.roots().iterator();
-		int nRoots = 0;
-		while (iter.hasNext()) {
-			iter.next();
-			nRoots++;
-		}
-
-		if (nRoots > 1) {
+//		Iterator<TreeGraphDataNode> iter = importGraph.roots().iterator();
+//
+//		int nRoots = 0;
+//		while (iter.hasNext()) {
+//			iter.next();
+//			nRoots++;
+//		}
+//
+		if (importGraph.roots().size() > 1) {
 			Dialogs.errorAlert("Import error", "Tree has more than one root.",
 					"Graphs with multiple roots cannot be imported");
 			return;
