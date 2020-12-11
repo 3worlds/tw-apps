@@ -191,14 +191,44 @@ public abstract class StructureEditorAdapter
 		return true;
 	};
 
-	private List<VisualNode> findNodesLabelled(String label) {
+//	public static void main(String[] args) {
+//		String ref = "a:/b:/c:";
+//		ref = ref.substring(0, ref.length() - 1);
+//		String[] labels = ref.split(":/");
+//		int end = labels.length - 1;
+//		if (end == 0)
+//			System.out.println("found " + ref);
+//		for (int i = end - 1; i >= 0; i--) {
+//			if (i == 0)
+//				System.out.println("found " + ref);
+//		}
+//	}
+
+	private List<VisualNode> findNodesReferenced(String ref) {
+		if (ref.endsWith(":"))
+			ref = ref.substring(0, ref.length() - 1);
+		String[] labels = ref.split(":/");
+		int end = labels.length - 1;
 		List<VisualNode> result = new ArrayList<>();
 		TreeGraph<VisualNode, VisualEdge> vg = gvisualiser.getVisualGraph();
 		for (VisualNode vn : vg.nodes()) {
-			if (vn.cClassId().equals(label))
-				result.add(vn);
+			if (vn.cClassId().equals(labels[end])) {
+				VisualNode parent = vn.getParent();
+				if (hasParent(parent, labels, end - 1))
+					result.add(vn);
+			}
 		}
 		return result;
+	}
+
+	private static boolean hasParent(VisualNode parent, String[] labels, int index) {
+		if (parent == null)
+			return false;
+		if (index < 0)
+			return false;
+		if (index == 0 && parent.cClassId().equals(labels[index]))
+			return true;
+		return hasParent(parent.getParent(), labels, index - 1);
 	}
 
 	@Override
@@ -209,7 +239,7 @@ public abstract class StructureEditorAdapter
 			String toNodeRef = (String) edgeSpec.properties().getPropertyValue(aaToNode);
 			String edgeLabel = (String) edgeSpec.properties().getPropertyValue(aaIsOfClass);
 			log.info(edgeLabel);
-			List<VisualNode> endNodes = findNodesLabelled(toNodeRef.replace(":", ""));
+			List<VisualNode> endNodes = findNodesReferenced(toNodeRef);
 			for (VisualNode endNode : endNodes) {
 				if (!editableNode.getSelectedVisualNode().id().equals(endNode.id())) // no edges to self
 					if (!editableNode.hasOutEdgeTo(endNode, edgeLabel))
