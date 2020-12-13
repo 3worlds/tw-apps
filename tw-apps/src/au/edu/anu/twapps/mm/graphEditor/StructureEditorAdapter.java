@@ -213,9 +213,13 @@ public abstract class StructureEditorAdapter
 		TreeGraph<VisualNode, VisualEdge> vg = gvisualiser.getVisualGraph();
 		for (VisualNode vn : vg.nodes()) {
 			if (vn.cClassId().equals(labels[end])) {
-				VisualNode parent = vn.getParent();
-				if (hasParent(parent, labels, end - 1))
+				if (end == 0)
 					result.add(vn);
+				else {
+					VisualNode parent = vn.getParent();
+					if (hasParent(parent, labels, end - 1))
+						result.add(vn);
+				}
 			}
 		}
 		return result;
