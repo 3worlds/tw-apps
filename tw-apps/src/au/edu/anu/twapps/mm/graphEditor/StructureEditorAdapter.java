@@ -191,19 +191,6 @@ public abstract class StructureEditorAdapter
 		return true;
 	};
 
-//	public static void main(String[] args) {
-//		String ref = "a:/b:/c:";
-//		ref = ref.substring(0, ref.length() - 1);
-//		String[] labels = ref.split(":/");
-//		int end = labels.length - 1;
-//		if (end == 0)
-//			System.out.println("found " + ref);
-//		for (int i = end - 1; i >= 0; i--) {
-//			if (i == 0)
-//				System.out.println("found " + ref);
-//		}
-//	}
-
 	private List<VisualNode> findNodesReferenced(String ref) {
 		if (ref.endsWith(":"))
 			ref = ref.substring(0, ref.length() - 1);
@@ -485,12 +472,21 @@ public abstract class StructureEditorAdapter
 		SimpleDataTreeNode childSubSpec = specifications.getSubSpecsOf(childBaseSpec, subClass);
 		// unfiltered propertySpecs
 
-		Iterable<SimpleDataTreeNode> propertySpecs = specifications.getPropertySpecsOf(childBaseSpec, childSubSpec);
+		List<SimpleDataTreeNode> propertySpecs = (List<SimpleDataTreeNode>) specifications.getPropertySpecsOf(childBaseSpec, childSubSpec);
 		if (!specifications.filterPropertyStringTableOptions(propertySpecs, childBaseSpec, childSubSpec,
 				childClassName + PairIdentity.LABEL_NAME_SEPARATOR + promptId, ChildXorPropertyQuery.class,
 				PropertyXorQuery.class))
 			return;// cancel
 
+		// filter out optional properties
+//		List<String> opNames = new ArrayList<>();
+		List<SimpleDataTreeNode> ops = specifications.getOptionalProperties(childBaseSpec, childSubSpec);
+		for (SimpleDataTreeNode op:ops ) 
+			if (propertySpecs.contains(op))
+				propertySpecs.remove(op);
+				
+//			opNames.add((String) op.properties().getPropertyValue(aaHasName));
+		
 		// make the node
 		newChild = editableNode.newChild(childLabel, promptId);
 		newChild.setCollapse(false);
