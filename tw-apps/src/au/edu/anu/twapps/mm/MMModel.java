@@ -118,7 +118,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 	}
 
 	@Override
-	public void doNewProject(TreeGraph<TreeGraphDataNode, ALEdge> templateConfig) {
+	public void doNewProject(String proposedName,TreeGraph<TreeGraphDataNode, ALEdge> templateConfig) {
 
 		/** Does user want to continue if there is unsaved work */
 		if (!canClose()) {
@@ -127,7 +127,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		// collect all relevant ids into a temporary scope.
 
 		IdentityScope prjScope = getProjectScope(templateConfig);
-		String newId = getNewProjectName(prjScope, "Prj1", "New project", "", "New project name:");
+		String newId = getNewProjectName(prjScope, proposedName, "New project", "", "New project name:");
 		/** Still not to late. User cancelled */
 		if (newId == null)
 			return;

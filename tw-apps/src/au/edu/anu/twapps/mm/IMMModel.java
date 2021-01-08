@@ -48,7 +48,7 @@ import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 public interface IMMModel extends Originator{
 	public boolean canClose();
 
-	public void doNewProject(TreeGraph<TreeGraphDataNode, ALEdge> templateGraph);
+	public void doNewProject(String proposedName, TreeGraph<TreeGraphDataNode, ALEdge> templateGraph);
 
 	public void doOpenProject(File file);
 
