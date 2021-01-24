@@ -472,7 +472,8 @@ public abstract class StructureEditorAdapter
 		SimpleDataTreeNode childSubSpec = specifications.getSubSpecsOf(childBaseSpec, subClass);
 		// unfiltered propertySpecs
 
-		List<SimpleDataTreeNode> propertySpecs = (List<SimpleDataTreeNode>) specifications.getPropertySpecsOf(childBaseSpec, childSubSpec);
+		List<SimpleDataTreeNode> propertySpecs = (List<SimpleDataTreeNode>) specifications
+				.getPropertySpecsOf(childBaseSpec, childSubSpec);
 		if (!specifications.filterPropertyStringTableOptions(propertySpecs, childBaseSpec, childSubSpec,
 				childClassName + PairIdentity.LABEL_NAME_SEPARATOR + promptId, ChildXorPropertyQuery.class,
 				PropertyXorQuery.class))
@@ -481,12 +482,12 @@ public abstract class StructureEditorAdapter
 		// filter out optional properties
 //		List<String> opNames = new ArrayList<>();
 		List<SimpleDataTreeNode> ops = specifications.getOptionalProperties(childBaseSpec, childSubSpec);
-		for (SimpleDataTreeNode op:ops ) 
+		for (SimpleDataTreeNode op : ops)
 			if (propertySpecs.contains(op))
 				propertySpecs.remove(op);
-				
+
 //			opNames.add((String) op.properties().getPropertyValue(aaHasName));
-		
+
 		// make the node
 		newChild = editableNode.newChild(childLabel, promptId);
 		newChild.setCollapse(false);
@@ -565,9 +566,9 @@ public abstract class StructureEditorAdapter
 			points[0] = Point.newPoint(lowerBounds);
 			points[1] = Point.newPoint(upperBounds);
 		}
-		Box bounds = Box.boundingBox(points[0], points[1]);
-		spaceNode.properties().setProperty(P_SPACE_OBSWINDOW.key(), bounds);
-	};
+		if (spaceNode.properties().hasProperty(P_SPACE_OBSWINDOW.key()))
+			spaceNode.properties().setProperty(P_SPACE_OBSWINDOW.key(), Box.boundingBox(points[0], points[1]));
+	}
 
 	protected void processPropertiesMatchDefinition(VisualNode newChild, SimpleDataTreeNode childBaseSpec,
 			SimpleDataTreeNode childSubSpec) {
