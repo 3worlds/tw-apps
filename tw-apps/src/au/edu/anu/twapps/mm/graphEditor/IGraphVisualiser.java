@@ -47,9 +47,9 @@ public interface IGraphVisualiser {
 
 	public void onNewEdge(VisualEdge edge, double duration);
 
-	public void collapseTreeFrom(VisualNode childRoot, boolean record,double duration);
+	public void collapseTreeFrom(VisualNode childRoot, boolean record, double duration);
 
-	public void expandTreeFrom(VisualNode childRoot,boolean record, double duration);
+	public void expandTreeFrom(VisualNode childRoot, boolean record, double duration);
 
 	public TreeGraph<VisualNode, VisualEdge> getVisualGraph();
 
@@ -70,11 +70,15 @@ public interface IGraphVisualiser {
 
 	public void onEdgeRenamed(VisualEdge vEdge);
 
-	public void showLocalGraph(VisualNode root, int depth);
+	public void onHighlightLocalGraph(VisualNode root, int depth);
+
+	public void onHighlightAll();
+	
+	public void onShowLocalGraph(VisualNode root, int depth);
+	
+	public void onShowAll();
 
 	public void collapsePredef();
-
-	public void onSelectAll();
 
 	public void onRollback(TreeGraph<VisualNode, VisualEdge> layoutGraph);
 
