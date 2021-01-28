@@ -1053,9 +1053,26 @@ public abstract class StructureEditorAdapter
 		for (String key : additions) {
 			// find the spec
 			SimpleDataTreeNode pSpec = getPropertySpec(key, propertySpecs);
-			String type = (String) pSpec.properties().getPropertyValue(aaType);
-			Object defValue = ValidPropertyTypes.getDefaultValue(type);
-			props.addProperty(key, defValue);
+			if (key.equals(P_SPACE_OBSWINDOW.key())) {
+				SpaceType st = (SpaceType) cn.properties().getPropertyValue(P_SPACETYPE.key());
+				int nDims = st.dimensions();
+				Point[] points = new Point[2]; // upper/lower or lower/upper bounds
+				double[] lowerBounds = new double[nDims];
+				double[] upperBounds = new double[nDims];
+				Arrays.fill(lowerBounds, 0.0);
+				Arrays.fill(upperBounds, 0.0);// Leave it to queries to indicate a +ve range is needed.
+				Point p1 = Point.newPoint(lowerBounds);
+				for (int i = 0; i < 2; i++) {
+					points[0] = Point.newPoint(lowerBounds);
+					points[1] = Point.newPoint(upperBounds);
+				}
+				props.addProperty(key, Box.boundingBox(points[0], points[1]));
+
+			} else {
+				String type = (String) pSpec.properties().getPropertyValue(aaType);
+				Object defValue = ValidPropertyTypes.getDefaultValue(type);
+				props.addProperty(key, defValue);
+			}
 		}
 
 		if (!deletions.isEmpty() || !additions.isEmpty())
