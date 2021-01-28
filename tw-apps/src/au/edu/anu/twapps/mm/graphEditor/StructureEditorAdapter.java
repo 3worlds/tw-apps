@@ -96,6 +96,7 @@ import fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels;
 import fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels;
 import fr.cnrs.iees.twcore.constants.ConfigurationReservedNodeId;
 import fr.cnrs.iees.twcore.constants.SpaceType;
+import fr.cnrs.iees.twcore.constants.TwFunctionTypes;
 import fr.cnrs.iees.uit.space.Box;
 import fr.cnrs.iees.uit.space.Point;
 
@@ -536,6 +537,27 @@ public abstract class StructureEditorAdapter
 		if (newChild.cClassId().equals(N_SPACE.label()))
 			setDefaultSpaceDims(newChild.getConfigNode());
 
+		if (newChild.cClassId().equals(N_SNIPPET.label())) {
+			VisualNode parent = newChild.getParent();
+			if (parent != null) {
+				String statement = null;
+				TwFunctionTypes ft = (TwFunctionTypes) parent.configGetPropertyValue(P_FUNCTIONTYPE.key());
+				String rt = ft.returnType();
+				if (rt.equals("boolean"))
+					statement = "\t\treturn false;";
+				else if (rt.equals("double"))
+					statement = "\t\treturn 0.0;";
+				else if (rt.equals("String"))
+					statement = "\t\treturn null";
+				if (statement!=null) {
+					String v = "([1]\""+statement+"\")";
+					StringTable snp = StringTable.valueOf(v);
+					newChild.addProperty(P_SNIPPET_JAVACODE.key(), snp);
+				}
+
+			}
+
+		}
 		controller.onNewNode(newChild);
 	}
 
