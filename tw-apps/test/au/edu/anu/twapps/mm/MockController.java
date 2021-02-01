@@ -187,6 +187,18 @@ public class MockController implements IMMController{
 		
 	}
 
+	@Override
+	public VisualNode setLayoutRoot(VisualNode layoutRoot) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public VisualNode getLayoutRoot() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 
 

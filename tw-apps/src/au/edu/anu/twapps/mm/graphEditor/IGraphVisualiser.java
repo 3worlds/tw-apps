@@ -82,4 +82,5 @@ public interface IGraphVisualiser {
 
 	public void onRollback(TreeGraph<VisualNode, VisualEdge> layoutGraph);
 
+	public void setLayoutNode(VisualNode newRoot);
 }

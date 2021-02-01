@@ -86,6 +86,10 @@ public interface IMMController {
 	public Collection<String> getUnEditablePropertyKeys(String label);
 	
 	public void onAddRemoveProperty(VisualNode vn);
+	
+	public VisualNode setLayoutRoot(VisualNode layoutRoot);
+	
+	public VisualNode getLayoutRoot();
 
 //	public void redirectOutputToUI(InputStream errorStream);
 
