@@ -35,6 +35,7 @@ import javax.tools.ToolProvider;
 import au.edu.anu.rscs.aot.errorMessaging.ErrorList;
 import au.edu.anu.rscs.aot.errorMessaging.ErrorMessagable;
 import au.edu.anu.rscs.aot.errorMessaging.impl.SpecificationErrorMsg;
+import au.edu.anu.twapps.exceptions.TwAppsException;
 import au.edu.anu.twcore.archetype.TWA;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrorMsg;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrors;
@@ -67,7 +68,8 @@ public class ConfigGraph {
 	}
 
 	public static void validateGraph() {
-		// clears ui message display and disables ui button and displays 'checking...' label
+		// clears ui message display and disables ui button and displays 'checking...'
+		// label
 		ErrorList.startCheck();
 		/**
 		 * Because of the thread below, execution now leaves this method with buttons
@@ -103,10 +105,12 @@ public class ConfigGraph {
 			}
 
 			if (!ErrorList.haveErrors()) {
+				if (graph == null)
+					throw new TwAppsException("Graph is null in ValidateGraph");
 				ProjectJarGenerator gen = new ProjectJarGenerator();
 				gen.generate(graph);
 			}
-			
+
 			if (!ErrorList.haveErrors()) {
 				File file = new File(TwPaths.TW_ROOT + File.separator + TwPaths.TW_DEP_JAR);
 				if (!file.exists())
@@ -119,7 +123,11 @@ public class ConfigGraph {
 			ErrorList.endCheck();
 
 		};
-		new Thread(checkTask).start();
+		// Dodgy. There seems to be a race condition with projectOnClosed setting graph to
+		// null
+		if (graph != null)
+			new Thread(checkTask).start();
+		
 	}
 
 	public static void onParentChanged() {
