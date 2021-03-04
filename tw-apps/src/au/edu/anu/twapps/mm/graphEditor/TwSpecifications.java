@@ -38,7 +38,7 @@ import java.util.Set;
 
 import au.edu.anu.rscs.aot.archetype.ArchetypeArchetypeConstants;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
-import au.edu.anu.rscs.aot.queries.Query;
+import au.edu.anu.rscs.aot.queries.Queryable;
 import au.edu.anu.rscs.aot.util.IntegerRange;
 import au.edu.anu.twapps.dialogs.Dialogs;
 import au.edu.anu.twapps.mm.visualGraph.ElementDisplayText;
@@ -233,7 +233,7 @@ public class TwSpecifications implements //
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<String[]> getQueryStringTables(SimpleDataTreeNode spec, Class<? extends Query> queryClass) {
+	public List<String[]> getQueryStringTables(SimpleDataTreeNode spec, Class<? extends Queryable> queryClass) {
 		List<String[]> result = new ArrayList<>();
 		if (spec == null)
 			return result;
@@ -263,9 +263,9 @@ public class TwSpecifications implements //
 	@Override
 	public boolean filterPropertyStringTableOptions(Iterable<SimpleDataTreeNode> propertySpecs,
 			SimpleDataTreeNode baseSpec, SimpleDataTreeNode subSpec, String childId,
-			Class<? extends Query>... queryClasses) {
+			Class<? extends Queryable>... queryClasses) {
 		List<String[]> entries = new ArrayList<>();
-		for (Class<? extends Query> qclass : queryClasses) {
+		for (Class<? extends Queryable> qclass : queryClasses) {
 			entries.addAll(getQueryStringTables(baseSpec, qclass));
 			entries.addAll(getQueryStringTables(subSpec, qclass));
 		}
@@ -356,11 +356,11 @@ public class TwSpecifications implements //
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<SimpleDataTreeNode> getQueries(SimpleDataTreeNode spec, Class<? extends Query>... queries) {
+	public List<SimpleDataTreeNode> getQueries(SimpleDataTreeNode spec, Class<? extends Queryable>... queries) {
 		List<SimpleDataTreeNode> result = new ArrayList<>();
 		if (spec == null)
 			return result;
-		for (Class<? extends Query> query : queries) {
+		for (Class<? extends Queryable> query : queries) {
 			result.addAll((List<SimpleDataTreeNode>) get(spec.getChildren(), selectZeroOrMany(
 					andQuery(hasTheLabel(aaMustSatisfyQuery), hasProperty(aaClassName, query.getName())))));
 		}

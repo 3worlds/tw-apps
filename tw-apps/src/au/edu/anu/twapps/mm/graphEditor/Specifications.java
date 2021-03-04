@@ -32,7 +32,8 @@ package au.edu.anu.twapps.mm.graphEditor;
 import java.util.List;
 import java.util.Set;
 
-import au.edu.anu.rscs.aot.queries.Query;
+//import au.edu.anu.rscs.aot.queries.Query;
+import au.edu.anu.rscs.aot.queries.Queryable;
 import au.edu.anu.rscs.aot.util.IntegerRange;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import fr.cnrs.iees.graph.TreeNode;
@@ -102,16 +103,18 @@ public interface Specifications {
 	 * returns all query specs of the given query classes for the given parent spec
 	 */
 	@SuppressWarnings("unchecked")
-	public List<SimpleDataTreeNode> getQueries(SimpleDataTreeNode parentSpec, Class<? extends Query>... queryClass);
+	public List<SimpleDataTreeNode> getQueries(SimpleDataTreeNode parentSpec, Class<? extends Queryable>... queryClass);
+//	public List<SimpleDataTreeNode> getQueries(SimpleDataTreeNode parentSpec, Class<? extends Query>... queryClass);
 
 	/* check the use of this. It should use the above function */
-	public List<String[]> getQueryStringTables(SimpleDataTreeNode spec, Class<? extends Query> queryClass);
+	public List<String[]> getQueryStringTables(SimpleDataTreeNode spec, Class<? extends Queryable> queryClass);
+//	public List<String[]> getQueryStringTables(SimpleDataTreeNode spec, Class<? extends Query> queryClass);
 
 	/* returns false if no option chosen: expects user input */
 	@SuppressWarnings("unchecked")
 	public boolean filterPropertyStringTableOptions(Iterable<SimpleDataTreeNode> propertySpecs,
 			SimpleDataTreeNode baseSpec, SimpleDataTreeNode subSpec, String childId,
-			Class<? extends Query>... queryClasses);
+			Class<? extends Queryable>... queryClasses);
 
 	/*
 	 * Returns a list of Duple<NodeLabel1,NodeLabel2> optons for the given query
