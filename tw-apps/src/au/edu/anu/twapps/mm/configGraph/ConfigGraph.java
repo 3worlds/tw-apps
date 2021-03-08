@@ -84,13 +84,7 @@ public class ConfigGraph {
 				for (ErrorMessagable e : specErrors) {
 					SpecificationErrorMsg se = (SpecificationErrorMsg) e;
 					ModelBuildErrorMsg mbem = new ModelBuildErrorMsg(ModelBuildErrors.SPECIFICATION, se, graph);
-					if (!mbem.ignore())
-						/**
-						 * Here is where context is shifted from whatever the specs say to whatever the
-						 * user can do. Sounds good but not really fully satisfactory. There are still
-						 * many confusing msgs.
-						 */
-						ErrorList.add(mbem);
+					ErrorList.add(mbem);
 				}
 			}
 			if (!ErrorList.haveErrors()) {
@@ -114,8 +108,8 @@ public class ConfigGraph {
 			if (!ErrorList.haveErrors()) {
 				File file = new File(TwPaths.TW_ROOT + File.separator + TwPaths.TW_DEP_JAR);
 				if (!file.exists())
-					ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_RESOURCE_MISSING, file,
-							"Run TwSetup or obtain file from developers."));
+					ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_RESOURCE_MISSING, TwPaths.TW_DEP_JAR,
+							TwPaths.TW_ROOT));
 
 				if (GraphState.changed())
 					ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_PROJECT_UNSAVED));
@@ -123,11 +117,12 @@ public class ConfigGraph {
 			ErrorList.endCheck();
 
 		};
-		// Dodgy. There seems to be a race condition with projectOnClosed setting graph to
+		// Dodgy. There seems to be a race condition with projectOnClosed setting graph
+		// to
 		// null
 		if (graph != null)
 			new Thread(checkTask).start();
-		
+
 	}
 
 	public static void onParentChanged() {

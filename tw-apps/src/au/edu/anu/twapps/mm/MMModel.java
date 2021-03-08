@@ -478,7 +478,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		builder.inheritIO();
 		try {
 			builder.start();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_EXCEPTION, e, commands));
 		}
 		// controller.redirectOutputToUI(proc.getErrorStream());
