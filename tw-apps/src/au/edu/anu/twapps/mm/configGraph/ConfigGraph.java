@@ -54,6 +54,7 @@ import fr.cnrs.iees.twcore.generators.ProjectJarGenerator;
  */
 public class ConfigGraph {
 	private static TreeGraph<TreeGraphDataNode, ALEdge> graph;
+	private static final Object lock = new Object();
 
 	private ConfigGraph() {
 	}
@@ -78,7 +79,7 @@ public class ConfigGraph {
 		 * The last method "SignalState", simple causes a Platform.runLater to restore
 		 * button states
 		 */
-//		Runnable checkTask = () -> {
+		Runnable checkTask = () -> {
 			Iterable<ErrorMessagable> specErrors = TWA.checkSpecifications(graph);
 			if (specErrors != null) {
 				for (ErrorMessagable e : specErrors) {
@@ -93,10 +94,12 @@ public class ConfigGraph {
 					ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.COMPILER_MISSING));
 			}
 
-			if (!ErrorList.haveErrors()) {
-				CodeGenerator gen = new CodeGenerator(graph);
-				gen.generate();
-			}
+//			synchronized (lock) {
+				if (!ErrorList.haveErrors()) {
+					CodeGenerator gen = new CodeGenerator(graph);
+					gen.generate();
+				}
+//			}
 
 			if (!ErrorList.haveErrors()) {
 				if (graph == null)
@@ -116,13 +119,15 @@ public class ConfigGraph {
 			}
 			ErrorList.endCheck();
 
-//		};
+		};
 		// Dodgy. There seems to be a race condition with projectOnClosed setting graph
 		// to
 		// null
-//		if (graph != null)
-//			new Thread(checkTask).start();
-
+//		synchronized(lock) { we need a lock that allows only one of these threads to exist
+		// So... we lock run a tasks and unlock on completion
+		if (graph != null)
+			new Thread(checkTask).start();
+//		}
 	}
 
 	public static void onParentChanged() {
