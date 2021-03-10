@@ -78,7 +78,7 @@ public class ConfigGraph {
 		 * The last method "SignalState", simple causes a Platform.runLater to restore
 		 * button states
 		 */
-		Runnable checkTask = () -> {
+//		Runnable checkTask = () -> {
 			Iterable<ErrorMessagable> specErrors = TWA.checkSpecifications(graph);
 			if (specErrors != null) {
 				for (ErrorMessagable e : specErrors) {
@@ -116,12 +116,12 @@ public class ConfigGraph {
 			}
 			ErrorList.endCheck();
 
-		};
+//		};
 		// Dodgy. There seems to be a race condition with projectOnClosed setting graph
 		// to
 		// null
-		if (graph != null)
-			new Thread(checkTask).start();
+//		if (graph != null)
+//			new Thread(checkTask).start();
 
 	}
 
