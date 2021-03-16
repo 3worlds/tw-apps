@@ -79,7 +79,7 @@ public class ConfigGraph {
 		 * The last method "SignalState", simple causes a Platform.runLater to restore
 		 * button states
 		 */
-		Runnable checkTask = () -> {
+//		Runnable checkTask = () -> {
 			Iterable<ErrorMessagable> specErrors = TWA.checkSpecifications(graph);
 			if (specErrors != null) {
 				for (ErrorMessagable e : specErrors) {
@@ -114,19 +114,21 @@ public class ConfigGraph {
 					ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_RESOURCE_MISSING, TwPaths.TW_DEP_JAR,
 							TwPaths.TW_ROOT));
 
-				if (GraphState.changed())
-					ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_PROJECT_UNSAVED));
 			}
+			if (!ErrorList.haveErrors()&&GraphState.changed())
+				ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_PROJECT_UNSAVED));
+
 			ErrorList.endCheck();
 
-		};
+//		};
+//			TODO: Turn off threading until an executor with  onFinished method is used
 		// Dodgy. There seems to be a race condition with projectOnClosed setting graph
 		// to
 		// null
 //		synchronized(lock) { we need a lock that allows only one of these threads to exist
 		// So... we lock run a tasks and unlock on completion
-		if (graph != null)
-			new Thread(checkTask).start();
+//		if (graph != null)
+//			new Thread(checkTask).start();
 //		}
 	}
 
