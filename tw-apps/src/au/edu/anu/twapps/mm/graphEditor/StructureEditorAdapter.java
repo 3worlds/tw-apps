@@ -545,7 +545,7 @@ public abstract class StructureEditorAdapter
 				String[] dc = ft.defCode();
 				if (dc != null) {
 					String v = "([" + dc.length + "]";
-					for (String e : dc) 
+					for (String e : dc)
 						v += ",\"" + e + "\"";
 					v = v.replaceFirst(",", "");
 					v += ")";
@@ -1052,8 +1052,9 @@ public abstract class StructureEditorAdapter
 			else
 				selected.add(false);
 		}
-		List<String> selectedItems = Dialogs.getCBSelections(editableNode.getSelectedVisualNode().toShortString(),
-				"Optional properties", items, selected);
+		List<String> selectedItems = Dialogs.getCBSelections(
+				editableNode.getSelectedVisualNode().getConfigNode().toShortString(), "Optional properties", items,
+				selected);
 		List<String> additions = new ArrayList<>();
 		List<String> deletions = new ArrayList<>();
 
