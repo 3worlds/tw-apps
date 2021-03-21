@@ -47,7 +47,7 @@ import java.util.logging.Logger;
 import au.edu.anu.omhtk.preferences.Preferences;
 import au.edu.anu.rscs.aot.archetype.ArchetypeArchetypeConstants;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
-import au.edu.anu.rscs.aot.errorMessaging.ErrorList;
+import au.edu.anu.rscs.aot.errorMessaging.ErrorMessageManager;
 import au.edu.anu.twapps.dialogs.Dialogs;
 import au.edu.anu.twapps.exceptions.TwAppsException;
 import au.edu.anu.twapps.mm.visualGraph.VisualGraphFactory;
@@ -364,6 +364,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 
 	private void onProjectClosing() {
 		controller.onProjectClosing();
+		ConfigGraph.terminateChecks();
 		ConfigGraph.setGraph(null);
 		visualGraph = null;
 		Caretaker.finalise();
@@ -461,7 +462,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 
 		ProjectJarGenerator gen = new ProjectJarGenerator();
 		gen.generate(ConfigGraph.getGraph());
-		ErrorList.endCheck();
+		ErrorMessageManager.endCheck();
 
 		List<String> commands = new ArrayList<>();
 		commands.add("java");
@@ -479,50 +480,10 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		try {
 			builder.start();
 		} catch (Exception e) {
-			ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_EXCEPTION, e, commands));
+			ErrorMessageManager.dispatch(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_EXCEPTION, e, commands));
 		}
-		// controller.redirectOutputToUI(proc.getErrorStream());
-		// int ret = proc.waitFor();
-		// (ret != 0)
-		// throw new TwAppsException("ModelRunner quit with return value: " + ret);
-		// } catch (Exception e) {
-//		ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_EXCEPTION, e, commands));
-		// }
-		// };
-		// new Thread(launchTask).start();
 	}
 
-//	private static boolean stripOrphanedNodes(TreeGraph<TreeGraphDataNode, ALEdge> graph) {
-//		int nRoots = 0;
-//		for (TreeGraphDataNode n : graph.roots())
-//			nRoots++;
-//		if (nRoots != 1) {
-//			List<TreeNode> rootList = new ArrayList<>();
-//			TreeGraphDataNode twRoot = findTwRoot(graph);
-//			for (TreeNode node : graph.nodes()) {
-//				if (!node.equals(twRoot) && node.getParent() == null) {
-//					rootList.add(node);
-//				}
-//			}
-//			// TODO: still has concurrentModificationException;
-//
-//			for (TreeNode node : rootList) {
-//				deleteTreeFrom(node);
-//			}
-//			return true;
-//		}
-//		return false;
-//
-//	}
-
-//	private static void deleteTreeFrom(TreeNode parent) {
-//		for (TreeNode child : parent.getChildren()) {
-//			deleteTreeFrom(child);
-//		}
-//		EditableFactory cf = (EditableFactory) parent.factory();
-//		cf.expungeNode(parent);
-//		parent.disconnect();
-//	}
 
 	private List<String> getQueryStringTableEntries(SimpleDataTreeNode constraint) {
 		List<String> result = new ArrayList<>();

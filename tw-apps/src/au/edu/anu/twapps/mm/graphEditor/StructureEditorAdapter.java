@@ -540,7 +540,6 @@ public abstract class StructureEditorAdapter
 		if (newChild.cClassId().equals(N_SNIPPET.label())) {
 			VisualNode parent = newChild.getParent();
 			if (parent != null) {
-				String statement = null;
 				TwFunctionTypes ft = (TwFunctionTypes) parent.configGetPropertyValue(P_FUNCTIONTYPE.key());
 				String[] dc = ft.defCode();
 				if (dc != null) {

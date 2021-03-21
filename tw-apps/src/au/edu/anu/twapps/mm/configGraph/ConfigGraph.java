@@ -30,9 +30,13 @@
 package au.edu.anu.twapps.mm.configGraph;
 
 import java.io.File;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
 import javax.tools.ToolProvider;
 
-import au.edu.anu.rscs.aot.errorMessaging.ErrorList;
+import au.edu.anu.rscs.aot.errorMessaging.ErrorMessageManager;
 import au.edu.anu.rscs.aot.errorMessaging.ErrorMessagable;
 import au.edu.anu.rscs.aot.errorMessaging.impl.SpecificationErrorMsg;
 import au.edu.anu.twapps.exceptions.TwAppsException;
@@ -54,24 +58,26 @@ import fr.cnrs.iees.twcore.generators.ProjectJarGenerator;
  */
 public class ConfigGraph {
 	private static TreeGraph<TreeGraphDataNode, ALEdge> graph;
-	private static final Object lock = new Object();
 
 	private ConfigGraph() {
 	}
 
 	public static void setGraph(TreeGraph<TreeGraphDataNode, ALEdge> graph) {
 		ConfigGraph.graph = graph;
-		// Don't validate here as the graph is not yet built
+		// Don't validate here as the graph may not be built yet
 	}
 
 	public static TreeGraph<TreeGraphDataNode, ALEdge> getGraph() {
 		return graph;
 	}
 
+	private static ExecutorService executor;
+
 	public static void validateGraph() {
-		// clears ui message display and disables ui button and displays 'checking...'
-		// label
-		ErrorList.startCheck();
+		// calls listeners ie. mm controller to set buttons and clear display
+		// ErrorList is poorly named: its not a list but a dispatcher of messages to
+		// listeners. Rename to ErrorMessageManager?
+		ErrorMessageManager.startCheck();
 		/**
 		 * Because of the thread below, execution now leaves this method with buttons
 		 * states as set by clear() above.
@@ -79,57 +85,62 @@ public class ConfigGraph {
 		 * The last method "SignalState", simple causes a Platform.runLater to restore
 		 * button states
 		 */
-//		Runnable checkTask = () -> {
+		Runnable checkTask = () -> {
 			Iterable<ErrorMessagable> specErrors = TWA.checkSpecifications(graph);
 			if (specErrors != null) {
 				for (ErrorMessagable e : specErrors) {
 					SpecificationErrorMsg se = (SpecificationErrorMsg) e;
 					ModelBuildErrorMsg mbem = new ModelBuildErrorMsg(ModelBuildErrors.SPECIFICATION, se, graph);
-					ErrorList.add(mbem);
+					ErrorMessageManager.dispatch(mbem);
 				}
 			}
-			if (!ErrorList.haveErrors()) {
+			if (!ErrorMessageManager.haveErrors()) {
 				boolean haveCompiler = !(ToolProvider.getSystemJavaCompiler() == null);
 				if (!haveCompiler)
-					ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.COMPILER_MISSING));
+					ErrorMessageManager.dispatch(new ModelBuildErrorMsg(ModelBuildErrors.COMPILER_MISSING));
 			}
 
-//			synchronized (lock) {
-				if (!ErrorList.haveErrors()) {
-					CodeGenerator gen = new CodeGenerator(graph);
-					gen.generate();
-				}
-//			}
+			if (!ErrorMessageManager.haveErrors()) {
+				CodeGenerator gen = new CodeGenerator(graph);
+				gen.generate();
+			}
 
-			if (!ErrorList.haveErrors()) {
+			if (!ErrorMessageManager.haveErrors()) {
 				if (graph == null)
 					throw new TwAppsException("Graph is null in ValidateGraph");
 				ProjectJarGenerator gen = new ProjectJarGenerator();
 				gen.generate(graph);
 			}
 
-			if (!ErrorList.haveErrors()) {
+			if (!ErrorMessageManager.haveErrors()) {
 				File file = new File(TwPaths.TW_ROOT + File.separator + TwPaths.TW_DEP_JAR);
 				if (!file.exists())
-					ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_RESOURCE_MISSING, TwPaths.TW_DEP_JAR,
-							TwPaths.TW_ROOT));
+					ErrorMessageManager.dispatch(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_RESOURCE_MISSING,
+							TwPaths.TW_DEP_JAR, TwPaths.TW_ROOT));
 
 			}
-			if (!ErrorList.haveErrors()&&GraphState.changed())
-				ErrorList.add(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_PROJECT_UNSAVED));
+			if (!ErrorMessageManager.haveErrors() && GraphState.changed())
+				ErrorMessageManager.dispatch(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_PROJECT_UNSAVED));
 
-			ErrorList.endCheck();
+			ErrorMessageManager.endCheck();
 
-//		};
-//			TODO: Turn off threading until an executor with  onFinished method is used
-		// Dodgy. There seems to be a race condition with projectOnClosed setting graph
-		// to
-		// null
-//		synchronized(lock) { we need a lock that allows only one of these threads to exist
-		// So... we lock run a tasks and unlock on completion
-//		if (graph != null)
-//			new Thread(checkTask).start();
-//		}
+		};
+
+		if (executor == null)
+			executor = Executors.newSingleThreadExecutor();
+		executor.submit(checkTask);
+
+	}
+
+	public static void terminateChecks() {
+		if (executor != null) {
+			try {
+				executor.awaitTermination(1, TimeUnit.SECONDS);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}	
+		}
 	}
 
 	public static void onParentChanged() {
