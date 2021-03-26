@@ -177,10 +177,10 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		 * Save Config and layout graphs and call config validation. Validation updates
 		 * the ui buttons and message display.
 		 */
-		doSave();
 
 		addState("init");
 
+		doSave();
 	}
 
 	private static IdentityScope getProjectScope(TreeGraph<TreeGraphDataNode, ALEdge> graph) {
@@ -249,9 +249,9 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 
 		onProjectOpened();
 
-		ConfigGraph.validateGraph();
-
 		addState("init");
+	
+		ConfigGraph.validateGraph();
 
 	}
 
@@ -356,10 +356,10 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		/** Re apply layout after collapsing predefined tree. */
 		controller.doLayout(duration);
 
-		doSave();
 
 		addState("init");
 
+		doSave();
 	}
 
 	private void onProjectClosing() {
@@ -391,7 +391,9 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		}
 		new OmugiGraphExporter(Project.makeConfigurationFile()).exportGraph(ConfigGraph.getGraph());
 		new OmugiGraphExporter(Project.makeLayoutFile()).exportGraph(visualGraph);
+		
 		GraphState.clear();
+		
 		ConfigGraph.validateGraph();
 	}
 
@@ -658,8 +660,11 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		String oldId = vRoot.id();
 		vRoot.rename(oldId, newId);
 		vRoot.getConfigNode().rename(oldId, newId);
+		
 		Project.create(newId);
+		
 		doSave();
+		
 		Preferences.initialise(Project.makeProjectPreferencesFile());
 	}
 
