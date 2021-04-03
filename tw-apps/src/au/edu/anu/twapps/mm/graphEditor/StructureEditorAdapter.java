@@ -541,9 +541,16 @@ public abstract class StructureEditorAdapter
 			VisualNode parent = newChild.getParent();
 			if (parent != null) {
 				TwFunctionTypes ft = (TwFunctionTypes) parent.configGetPropertyValue(P_FUNCTIONTYPE.key());
-//				String[] dc = ft.defCode();
-				String[] dc = {"Huh - where is my default code?;","return shit;"};	
-				if (dc != null) {
+				String rt = ft.returnType();
+				String returnStatement = null;
+				if (rt.equals("boolean"))
+					returnStatement = "\t\treturn false;";
+				else if (rt.equals("double"))
+					returnStatement = "\t\treturn 0.0;";
+				else if (rt.equals("String"))
+					returnStatement = "\t\treturn null;";
+				if (returnStatement != null) {
+					String[] dc = {returnStatement};
 					String v = "([" + dc.length + "]";
 					for (String e : dc)
 						v += ",\"" + e + "\"";
