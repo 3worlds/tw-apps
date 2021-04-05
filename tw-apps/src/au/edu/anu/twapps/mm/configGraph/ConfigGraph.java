@@ -86,6 +86,7 @@ public class ConfigGraph {
 		 * button states
 		 */
 		Runnable checkTask = () -> {
+			try {
 			Iterable<ErrorMessagable> specErrors = TWA.checkSpecifications(graph);
 			if (specErrors != null) {
 				for (ErrorMessagable e : specErrors) {
@@ -123,6 +124,10 @@ public class ConfigGraph {
 				ErrorMessageManager.dispatch(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_PROJECT_UNSAVED));
 
 			ErrorMessageManager.endCheck();
+			
+			} catch (Throwable e) {
+				e.printStackTrace();
+			}
 
 		};
 
