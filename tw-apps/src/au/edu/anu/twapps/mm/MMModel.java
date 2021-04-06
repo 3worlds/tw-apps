@@ -435,6 +435,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		addEntry(N_INITFUNCTION,P_FUNCTIONTYPE);
 		addEntry(N_COMPONENTTYPE, P_RELOCATEFUNCTION);
 		addEntry(N_RECORD,P_DYNAMIC);
+		addEntry(N_ROOT,P_MODEL_BUILTBY);
 
 	}
 
