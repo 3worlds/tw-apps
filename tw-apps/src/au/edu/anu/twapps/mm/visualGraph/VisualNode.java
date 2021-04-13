@@ -412,6 +412,8 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 	}
 
 	public static boolean referencedBy(TreeNode node, String ref) {
+		if (ref==null)
+			return false;
 		String[] parts = ref.split("" + SLASH);
 		for (int i = parts.length - 1; i >= 0; i--) {
 			if (node != null) {
