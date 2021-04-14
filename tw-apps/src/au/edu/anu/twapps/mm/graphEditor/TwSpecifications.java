@@ -70,18 +70,29 @@ public class TwSpecifications implements //
 		Specifications, //
 		ArchetypeArchetypeConstants, //
 		TwArchetypeConstants {
-	private static boolean equals(StringTable t1, StringTable t2) {
-		// NB: should assume neither table is null.
-		if (t1.ndim() != t2.ndim())
-			return false;
-		if (t1.size() != t2.size())
-			return false;
-		for (int i = 0; i < t1.size(); i++) {
-			if (!t1.getWithFlatIndex(i).equals(t2.getWithFlatIndex(i)))
-				return false;
-		}
-		return true;
-	}
+// replaced by TableAdapter.equals() method
+//	private static boolean equals(StringTable t1, StringTable t2) {
+//		// NB: should assume neither table is null.
+//		// yes, but table elements may be null...
+//		if (t1.ndim() != t2.ndim())
+//			return false;
+//		if (t1.size() != t2.size())
+//			return false;
+//		for (int i = 0; i < t1.size(); i++) {
+//			if (t1.getWithFlatIndex(i)==null) {
+//				if (t2.getWithFlatIndex(i)!=null)
+//					return false;
+//			}
+//			else {
+//				if (t2.getWithFlatIndex(i)==null)
+//					return false;
+//				else
+//					if (!t1.getWithFlatIndex(i).equals(t2.getWithFlatIndex(i)))
+//						return false;
+//			}
+//		}
+//		return true;
+//	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -94,7 +105,8 @@ public class TwSpecifications implements //
 				// Dodgy: the parentTable is unknown during an import;
 				if (parentsTable == null)
 					return (SimpleDataTreeNode) childSpec;
-				else if (equals(parentsTable, parentsSpecTable)) {
+//				else if (equals(parentsTable, parentsSpecTable)) {
+				else if (parentsTable.equals(parentsSpecTable)) {
 					DataHolder dh = (DataHolder) childSpec;
 					if (dh.properties().hasProperty(aaHasId)) {
 						String hasId = (String) dh.properties().getPropertyValue(aaHasId);
@@ -467,9 +479,9 @@ public class TwSpecifications implements //
 		}
 		List<SimpleDataTreeNode> eXORpqs = getQueries(baseSpec, EdgeXorPropertyQuery.class);
 		eXORpqs.addAll(getQueries(subSpec, EdgeXorPropertyQuery.class));
-		for (SimpleDataTreeNode eXORpq : eXORpqs) {
-			// no example not used yet
-		}
+//		for (SimpleDataTreeNode eXORpq : eXORpqs) {
+//			// no example not used yet
+//		}
 
 		List<SimpleDataTreeNode> pXORps = getQueries(baseSpec, PropertyXorQuery.class);
 		pXORps.addAll(getQueries(subSpec, PropertyXorQuery.class));
