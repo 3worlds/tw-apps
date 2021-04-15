@@ -35,6 +35,8 @@ import java.util.Collection;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
+import fr.cnrs.iees.twmodels.LibraryTable;
+//import fr.cnrs.iees.twmodels.*;
 
 /**
  * Author Ian Davies
@@ -65,6 +67,8 @@ public interface IMMModel extends Originator{
 	public Collection<String> unEditablePropertyKeys(String label);
 	
 	public void restore(MMMemento m);
+	
+	public LibraryTable[] getLibrary();
 	
 
 }

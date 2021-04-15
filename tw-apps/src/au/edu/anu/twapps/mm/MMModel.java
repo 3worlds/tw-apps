@@ -77,6 +77,7 @@ import fr.cnrs.iees.io.FileImporter;
 import fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels;
 import fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames;
 import fr.cnrs.iees.twcore.generators.ProjectJarGenerator;
+import fr.cnrs.iees.twmodels.LibraryTable;
 import fr.ens.biologie.generic.utils.Duple;
 import fr.ens.biologie.generic.utils.Logging;
 import fr.ens.biologie.generic.utils.NameUtils;
@@ -689,6 +690,11 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		}
 		return result;
 
+	}
+
+	@Override
+	public LibraryTable[] getLibrary() {
+		return LibraryTable.values();
 	}
 
 

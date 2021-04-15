@@ -1,10 +1,10 @@
 <!--===================================================================================
- ant and ivy scripts for project <tw-apps> version 0.2.3 (Thu Apr 15 06:14:06 AEST 2021)
+ ant and ivy scripts for project <tw-apps> version 0.2.2 (Wed May 27 11:01:39 CEST 2020)
  author: Jacques Gignoux <jacques.gignoux@upmc.fr>
 
  CAUTION: this file is generated - DO NOT EDIT!
  If you need to change this file, edit ../version/Setup.java appropriately and run it.
- This will re-generate this file and manage version numbers properly. 
+ This will re-generate this file and manage version numbers properly.
 ===================================================================================-->
 <ivy-module version="2.0"
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -13,7 +13,7 @@
 
 	<info	organisation="au.edu.anu.tw-apps"
 			module="tw-apps"
-			revision="0.2.3"
+			revision="0.2.2"
 			status="integration">
 		<license name="gpl3" url="https://www.gnu.org/licenses/gpl-3.0.txt"/>
 		<description>This module contains UI-independent code for ModelMaker and ModelRunner.</description>
@@ -36,7 +36,6 @@
 		<dependency org="au.edu.anu.rscs.aot" name="aot" rev="[0.1.8,)"/>
 		<dependency org="fr.cnrs.iees.tw-core" name="tw-core" rev="[0.4.0,)"/>
 		<dependency org="org.apache.commons" name="commons-text" rev="[1,)"/>
-		<dependency org="fr.cnrs.iees.tw-models" name="tw-models" rev="[0.0.2,)"/>
 	</dependencies>
 
 </ivy-module>
