@@ -60,7 +60,7 @@ public class VersionSettings {
 			{"au.edu.anu.rscs.aot", "aot", "[0.1.8,)", null},
 			{"fr.cnrs.iees.tw-core", "tw-core", "[0.4.0,)", null},
 			{"org.apache.commons", "commons-text", "[1,)", null},
-			{"fr.cnrs.iees.tw-models", "tw-models", "[0.0.2,)", null},
+			{"fr.cnrs.iees.tw-models", "tw-models", "[0.0.3,)", null},
 	};
 
 	/** The name of the main class to put in the jar manifest, if any. This enables users to
