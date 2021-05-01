@@ -550,7 +550,7 @@ public abstract class StructureEditorAdapter
 				else if (rt.equals("String"))
 					returnStatement = "\t\treturn null;";
 				if (returnStatement != null) {
-					String[] dc = {returnStatement};
+					String[] dc = { returnStatement };
 					String v = "([" + dc.length + "]";
 					for (String e : dc)
 						v += ",\"" + e + "\"";
@@ -588,7 +588,7 @@ public abstract class StructureEditorAdapter
 		double[] upperBounds = new double[nDims];
 		Arrays.fill(lowerBounds, 0.0);
 		Arrays.fill(upperBounds, 0.0);// Leave it to queries to indicate a +ve range is needed.
-		Point p1 = Point.newPoint(lowerBounds);
+		// Point p1 = Point.newPoint(lowerBounds);
 		for (int i = 0; i < 2; i++) {
 			points[0] = Point.newPoint(lowerBounds);
 			points[1] = Point.newPoint(upperBounds);
@@ -656,18 +656,33 @@ public abstract class StructureEditorAdapter
 		GraphState.setChanged();
 	}
 
-	private void connectTo(String id, Tuple<String, VisualNode, SimpleDataTreeNode> p, double duration) {
-		VisualEdge vEdge = editableNode.newEdge(id, p.getFirst(), p.getSecond());
+	@SuppressWarnings("unchecked")
+	private void connectTo(String edgeId, Tuple<String, VisualNode, SimpleDataTreeNode> p, double duration) {
+		String edgeLabel = p.getFirst();
+		VisualNode target = p.getSecond();
+		SimpleDataTreeNode edgeSpec = p.getThird();
+		VisualEdge vEdge = editableNode.newEdge(edgeId, edgeLabel, target);
 		if (vEdge.getConfigEdge() instanceof ALDataEdge) {
 			ALDataEdge edge = (ALDataEdge) vEdge.getConfigEdge();
 			ExtendablePropertyList props = (ExtendablePropertyList) edge.properties();
-			Iterable<SimpleDataTreeNode> propertySpecs = specifications.getPropertySpecsOf(p.getThird(), null);
+			List<SimpleDataTreeNode> propertySpecs = (List<SimpleDataTreeNode>) specifications
+					.getPropertySpecsOf(edgeSpec, null);
+			if (!specifications.filterPropertyStringTableOptions(propertySpecs, edgeSpec, null,
+					edgeLabel + PairIdentity.LABEL_NAME_SEPARATOR + edgeId, PropertyXorQuery.class))
+				return;// cancel
+
+			// filter out optional properties
+//			List<String> opNames = new ArrayList<>();
+			List<SimpleDataTreeNode> ops = specifications.getOptionalProperties(edgeSpec, null);
+			for (SimpleDataTreeNode op : ops)
+				if (propertySpecs.contains(op))
+					propertySpecs.remove(op);
+
 			for (SimpleDataTreeNode propertySpec : propertySpecs) {
 				String key = (String) propertySpec.properties().getPropertyValue(aaHasName);
 				String type = (String) propertySpec.properties().getPropertyValue(aaType);
 				Object defValue = ValidPropertyTypes.getDefaultValue(type);
 				log.info("Add property: " + key);
-				// TODO No processing of edge queries yet!
 				props.addProperty(key, defValue);
 			}
 			controller.onNewEdge(vEdge);
@@ -1089,7 +1104,7 @@ public abstract class StructureEditorAdapter
 				double[] upperBounds = new double[nDims];
 				Arrays.fill(lowerBounds, 0.0);
 				Arrays.fill(upperBounds, 0.0);// Leave it to queries to indicate a +ve range is needed.
-				Point p1 = Point.newPoint(lowerBounds);
+//				Point p1 = Point.newPoint(lowerBounds);
 				for (int i = 0; i < 2; i++) {
 					points[0] = Point.newPoint(lowerBounds);
 					points[1] = Point.newPoint(upperBounds);
