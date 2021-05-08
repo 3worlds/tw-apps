@@ -668,6 +668,9 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		doSave();
 		
 		Preferences.initialise(Project.makeProjectPreferencesFile());
+		
+		// force a rebuild of the property editors
+		controller.onRootNameChange();
 	}
 
 	private String getNewProjectName(IdentityScope scope, String proposedId, String title, String header,

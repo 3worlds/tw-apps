@@ -90,7 +90,6 @@ public interface IMMController {
 	public VisualNode setLayoutRoot(VisualNode layoutRoot);
 	
 	public VisualNode getLayoutRoot();
-
-//	public void redirectOutputToUI(InputStream errorStream);
-
+	
+	public void onRootNameChange();
 }

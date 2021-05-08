@@ -199,6 +199,12 @@ public class MockController implements IMMController{
 		return null;
 	}
 
+	@Override
+	public void onRootNameChange() {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 
 
