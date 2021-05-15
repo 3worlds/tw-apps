@@ -62,6 +62,7 @@ import au.edu.anu.twcore.archetype.tw.ChildXorPropertyQuery;
 import au.edu.anu.twcore.archetype.tw.EndNodeHasPropertyQuery;
 import au.edu.anu.twcore.archetype.tw.ExclusiveCategoryQuery;
 import au.edu.anu.twcore.archetype.tw.IsInValueSetQuery;
+import au.edu.anu.twcore.archetype.tw.OutEdgeXNorQuery;
 import au.edu.anu.twcore.archetype.tw.OutEdgeXorQuery;
 import au.edu.anu.twcore.archetype.tw.OutNodeXorQuery;
 import au.edu.anu.twcore.archetype.tw.PropertiesMatchDefinitionQuery;
@@ -239,9 +240,10 @@ public abstract class StructureEditorAdapter
 							if (satisfyExclusiveCategoryQuery(edgeSpec, endNode, edgeLabel))
 								if (satisfyOutNodeXorQuery(edgeSpec, endNode, edgeLabel))
 									if (satisfyOutEdgeXorQuery(edgeSpec, endNode, edgeLabel))
-										if (satisfyEndNodeHasPropertyQuery(edgeSpec, endNode, edgeLabel))
-											result.add(new Tuple<String, VisualNode, SimpleDataTreeNode>(edgeLabel,
-													endNode, edgeSpec));
+//										if (satisfyOutEdgeNXorQuery(edgeSpec, endNode, edgeLabel))
+											if (satisfyEndNodeHasPropertyQuery(edgeSpec, endNode, edgeLabel))
+												result.add(new Tuple<String, VisualNode, SimpleDataTreeNode>(edgeLabel,
+														endNode, edgeSpec));
 			}
 		}
 		Collections.sort(result, new Comparator<Tuple<String, VisualNode, SimpleDataTreeNode>>() {
@@ -283,13 +285,25 @@ public abstract class StructureEditorAdapter
 		return true;
 	}
 
+//	@SuppressWarnings("unchecked")
+//	private boolean satisfyOutEdgeNXorQuery(SimpleDataTreeNode edgeSpec, VisualNode endNode, String proposedEdgeLabel) {
+//		List<SimpleDataTreeNode> queries = specifications.getQueries((SimpleDataTreeNode) edgeSpec.getParent(),
+//				OutEdgeXNorQuery.class);
+//		for (SimpleDataTreeNode query : queries) {
+//			if (queryReferencesLabel(proposedEdgeLabel, query, twaEdgeLabel1, twaEdgeLabel2)) {
+//				
+//			}
+//
+//		}
+//		return false;
+//	}
+
 	@SuppressWarnings("unchecked")
 	private boolean satisfyOutEdgeXorQuery(SimpleDataTreeNode edgeSpec, VisualNode endNode, String proposedEdgeLabel) {
 		List<SimpleDataTreeNode> queries = specifications.getQueries((SimpleDataTreeNode) edgeSpec.getParent(),
 				OutEdgeXorQuery.class);
 		for (SimpleDataTreeNode query : queries) {
 			if (queryReferencesLabel(proposedEdgeLabel, query, twaEdgeLabel1, twaEdgeLabel2)) {
-				// TODO OutEdgeXorQuery.propose(editableNode.getConfig(),edgeList1,edgeList2);
 				Set<String> qp1 = new HashSet<>();
 				Set<String> qp2 = new HashSet<>();
 				qp1.addAll(getEdgeLabelRefs(query.properties(), twaEdgeLabel1));
@@ -308,7 +322,7 @@ public abstract class StructureEditorAdapter
 				 * 4) es1==0 & es2>0 (only edge of es2 type allowed);
 				 *
 				 */
-				if (!es1.isEmpty() && !es2.isEmpty()) // 1 error only possible from handmade config
+				if (!es1.isEmpty() && !es2.isEmpty()) // 1 - error only possible from handmade config
 					return false;
 				else if (es1.isEmpty() && es2.isEmpty()) // 2
 					return true;
