@@ -97,12 +97,16 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 	private TreeGraph<VisualNode, VisualEdge> visualGraph;
 	private IMMController controller;
 	public static String[] mmArgs;
+	private final Map<String, List<StringTable>> classParentTableMapping;
 
 	private static Logger log = Logging.getLogger(MMModel.class);
 
 	public MMModel(IMMController controller) {
 		this.controller = controller;
 		buildNonEditableList();
+		classParentTableMapping = new HashMap<>();
+		Set<String> discoveredFiles = new HashSet<>();
+		//fillClassParentMap(classParentTableMapping, TWA.getRoot(), discoveredFiles);
 	}
 
 	@Override
@@ -506,10 +510,9 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 	// This uses the twa archetype. If the archetype changes this function may
 	// crash;
 	private void setupParentReferences(VisualNode vn) {
-		Map<String, List<StringTable>> classParentMap = new HashMap<>();
 		Set<String> discoveredFiles = new HashSet<>();
-		fillClassParentMap(classParentMap, TWA.getRoot(), discoveredFiles);
-		vn.setupParentReference(classParentMap);
+		fillClassParentMap(classParentTableMapping, TWA.getRoot(), discoveredFiles);
+		vn.setupParentReference(classParentTableMapping);
 	}
 
 	private void fillClassParentMap(Map<String, List<StringTable>> classParentMap, TreeNode root,
