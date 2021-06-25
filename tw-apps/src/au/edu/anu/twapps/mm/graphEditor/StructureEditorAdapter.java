@@ -1018,6 +1018,8 @@ public abstract class StructureEditorAdapter
 		// this depends on the parent table been present so its circular
 		// This will break eventually when finding the spec without knowing the precise
 		// parent when there can be more than one.
+		//StringTable parentTable = controller.findParentTable(newVNode);
+
 		SimpleDataTreeNode specs = specifications.getSpecsOf(vne, TWA.getRoot(), discoveredFile);
 		StringTable parents = (StringTable) specs.properties().getPropertyValue(aaHasParent);
 		newVNode.setParentRef(parents);

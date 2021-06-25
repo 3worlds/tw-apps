@@ -104,9 +104,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 	public MMModel(IMMController controller) {
 		this.controller = controller;
 		buildNonEditableList();
-		classParentTableMapping = new HashMap<>();
-		Set<String> discoveredFiles = new HashSet<>();
-		//fillClassParentMap(classParentTableMapping, TWA.getRoot(), discoveredFiles);
+		classParentTableMapping = getLabelParentTableMapping();
 	}
 
 	@Override
@@ -123,7 +121,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 	}
 
 	@Override
-	public void doNewProject(String proposedName,TreeGraph<TreeGraphDataNode, ALEdge> templateConfig) {
+	public void doNewProject(String proposedName, TreeGraph<TreeGraphDataNode, ALEdge> templateConfig) {
 
 		/** Does user want to continue if there is unsaved work */
 		if (!canClose()) {
@@ -255,7 +253,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		onProjectOpened();
 
 		addState("init");
-	
+
 		ConfigGraph.validateGraph();
 
 	}
@@ -361,7 +359,6 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		/** Re apply layout after collapsing predefined tree. */
 		controller.doLayout(duration);
 
-
 		addState("init");
 
 		doSave();
@@ -396,9 +393,9 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		}
 		new OmugiGraphExporter(Project.makeConfigurationFile()).exportGraph(ConfigGraph.getGraph());
 		new OmugiGraphExporter(Project.makeLayoutFile()).exportGraph(visualGraph);
-		
+
 		GraphState.clear();
-		
+
 		ConfigGraph.validateGraph();
 	}
 
@@ -437,14 +434,13 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		addEntry(N_SYSTEM, P_PARAMETERCLASS);
 		addEntry(N_FUNCTION, P_FUNCTIONCLASS);
 		addEntry(N_FUNCTION, P_FUNCTIONTYPE);
-		addEntry(N_INITFUNCTION,P_FUNCTIONTYPE);
+		addEntry(N_INITFUNCTION, P_FUNCTIONTYPE);
 		addEntry(N_COMPONENTTYPE, P_RELOCATEFUNCTION);
-		addEntry(N_RECORD,P_DYNAMIC);
-		addEntry(N_ROOT,P_MODEL_BUILTBY);
+		addEntry(N_RECORD, P_DYNAMIC);
+		addEntry(N_ROOT, P_MODEL_BUILTBY);
 
 	}
 
-	
 	@Override
 	public boolean propertyEditable(String classId, String key) {
 		if (!nonEditableMap.containsKey(classId))
@@ -454,13 +450,13 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		// TODO build this when the archetype is ready
 		return false;
 	}
-	
+
 	@Override
 	public Collection<String> unEditablePropertyKeys(String classId) {
 		List<String> pKeys = nonEditableMap.get(classId);
-		if (pKeys==null)
+		if (pKeys == null)
 			pKeys = new ArrayList<>();
-		return Collections.unmodifiableCollection(pKeys);		
+		return Collections.unmodifiableCollection(pKeys);
 	}
 
 	private static int nInstances = 0;
@@ -492,7 +488,6 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		}
 	}
 
-
 	private List<String> getQueryStringTableEntries(SimpleDataTreeNode constraint) {
 		List<String> result = new ArrayList<>();
 		if (constraint == null)
@@ -510,9 +505,26 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 	// This uses the twa archetype. If the archetype changes this function may
 	// crash;
 	private void setupParentReferences(VisualNode vn) {
-		Set<String> discoveredFiles = new HashSet<>();
-		fillClassParentMap(classParentTableMapping, TWA.getRoot(), discoveredFiles);
 		vn.setupParentReference(classParentTableMapping);
+	}
+
+	private Map<String, List<StringTable>> getLabelParentTableMapping() {
+		Set<String> discoveredFiles = new HashSet<>();
+		Map<String, List<StringTable>> map = new HashMap<>();
+		fillClassParentMap(map, TWA.getRoot(), discoveredFiles);
+		return map;
+	}
+	
+	
+	//TODO expose with MMMI interface
+	public StringTable findParentTable (VisualNode vn) {
+		List<StringTable> parentList = classParentTableMapping.get(vn.cClassId());
+		for (StringTable table : parentList) {
+			if (vn.treeMatchesTable(table))
+				return table;
+		}
+		// must be root
+		return parentList.get(0);	
 	}
 
 	private void fillClassParentMap(Map<String, List<StringTable>> classParentMap, TreeNode root,
@@ -665,13 +677,13 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		String oldId = vRoot.id();
 		vRoot.rename(oldId, newId);
 		vRoot.getConfigNode().rename(oldId, newId);
-		
+
 		Project.create(newId);
-		
+
 		doSave();
-		
+
 		Preferences.initialise(Project.makeProjectPreferencesFile());
-		
+
 		// force a rebuild of the property editors
 		controller.onRootNameChange();
 	}
@@ -702,6 +714,5 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 	public LibraryTable[] getLibrary() {
 		return LibraryTable.values();
 	}
-
 
 }

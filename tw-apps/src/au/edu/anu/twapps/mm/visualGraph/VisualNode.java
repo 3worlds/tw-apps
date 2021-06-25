@@ -402,7 +402,7 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 
 	}
 
-	private boolean treeMatchesTable(StringTable parents) {
+	public boolean treeMatchesTable(StringTable parents) {
 		TreeNode node = getConfigNode().getParent();
 		for (int i = 0; i < parents.size(); i++) {
 			if (referencedBy(node, parents.getWithFlatIndex(i)))
