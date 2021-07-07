@@ -30,6 +30,8 @@
 package au.edu.anu.twapps.mm.graphEditor;
 
 import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -45,9 +47,12 @@ import java.util.logging.Logger;
 
 import org.apache.commons.text.WordUtils;
 
+import com.hp.hpl.jena.util.FileUtils;
+
 import au.edu.anu.rscs.aot.archetype.ArchetypeArchetypeConstants;
 import au.edu.anu.rscs.aot.collections.tables.Dimensioner;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
+import au.edu.anu.rscs.aot.util.FileUtilities;
 import au.edu.anu.rscs.aot.util.IntegerRange;
 import au.edu.anu.twapps.dialogs.Dialogs;
 import au.edu.anu.twapps.mm.IMMController;
@@ -68,6 +73,8 @@ import au.edu.anu.twcore.archetype.tw.OutNodeXorQuery;
 import au.edu.anu.twcore.archetype.tw.PropertiesMatchDefinitionQuery;
 import au.edu.anu.twcore.archetype.tw.PropertyXorQuery;
 import au.edu.anu.twcore.graphState.GraphState;
+import au.edu.anu.twcore.project.Project;
+import au.edu.anu.twcore.project.ProjectPaths;
 import au.edu.anu.twcore.project.TwPaths;
 import au.edu.anu.twcore.root.EditableFactory;
 import au.edu.anu.twcore.root.TwConfigFactory;
@@ -103,6 +110,8 @@ import fr.cnrs.iees.uit.space.Point;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
+
+import fr.ens.biologie.codeGeneration.JavaUtilities;
 import fr.ens.biologie.generic.utils.Duple;
 import fr.ens.biologie.generic.utils.Logging;
 import fr.ens.biologie.generic.utils.Tuple;
@@ -241,9 +250,9 @@ public abstract class StructureEditorAdapter
 								if (satisfyOutNodeXorQuery(edgeSpec, endNode, edgeLabel))
 									if (satisfyOutEdgeXorQuery(edgeSpec, endNode, edgeLabel))
 //										if (satisfyOutEdgeNXorQuery(edgeSpec, endNode, edgeLabel))
-											if (satisfyEndNodeHasPropertyQuery(edgeSpec, endNode, edgeLabel))
-												result.add(new Tuple<String, VisualNode, SimpleDataTreeNode>(edgeLabel,
-														endNode, edgeSpec));
+										if (satisfyEndNodeHasPropertyQuery(edgeSpec, endNode, edgeLabel))
+											result.add(new Tuple<String, VisualNode, SimpleDataTreeNode>(edgeLabel,
+													endNode, edgeSpec));
 			}
 		}
 		Collections.sort(result, new Comparator<Tuple<String, VisualNode, SimpleDataTreeNode>>() {
@@ -759,6 +768,28 @@ public abstract class StructureEditorAdapter
 
 	private void renameNode(String uniqueId, VisualNode vNode) {
 		TreeGraphDataNode cNode = vNode.getConfigNode();
+		if (cNode.classId().equals(N_SYSTEM.label())) {
+			File javaDir = Project.makeFile(ProjectPaths.LOCALJAVA, ProjectPaths.CODE, vNode.id());
+			File[] deps = javaDir.listFiles(new FilenameFilter() {
+				@Override
+				public boolean accept(File dir, String name) {
+					return ((name.contains(".java") && !name.contains(vNode.getParent().id())));
+				}
+			});
+	
+			for (File f : deps) {
+				File newFilef = new File( new File(f.getParent()).getParent() + File.separator + uniqueId + File.separator + f.getName());
+				// update package name! What about deps in other packages
+				FileUtilities.copyFileReplace(f, newFilef);
+				try {
+					JavaUtilities.updatePackgeEntry(newFilef, vNode.id(), uniqueId);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+		}
 		// warn of linked project directory name change
 		if (UserProjectLink.haveUserProject()) {
 			if (cNode.classId().equals(N_SYSTEM.label())) {
@@ -772,6 +803,7 @@ public abstract class StructureEditorAdapter
 			}
 			// JG 11/5/2020: Initialiser is now deprecated
 //			if (cNode.classId().equals(N_RECORD.label()) || cNode.classId().equals(N_INITIALISER.label())) {
+			// TODO: Check if this is still necessary
 			if (cNode.classId().equals(N_RECORD.label())) {
 				String remoteProject = UserProjectLink.projectRoot().getName();
 				Dialogs.warnAlert("Linked project '" + remoteProject + "'",
@@ -1018,7 +1050,7 @@ public abstract class StructureEditorAdapter
 		// this depends on the parent table been present so its circular
 		// This will break eventually when finding the spec without knowing the precise
 		// parent when there can be more than one.
-		//StringTable parentTable = controller.findParentTable(newVNode);
+		// StringTable parentTable = controller.findParentTable(newVNode);
 
 		SimpleDataTreeNode specs = specifications.getSpecsOf(vne, TWA.getRoot(), discoveredFile);
 		StringTable parents = (StringTable) specs.properties().getPropertyValue(aaHasParent);
