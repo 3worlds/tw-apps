@@ -31,6 +31,7 @@ package au.edu.anu.twapps.mm;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
@@ -121,7 +122,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 	}
 
 	@Override
-	public void doNewProject(String proposedName, TreeGraph<TreeGraphDataNode, ALEdge> templateConfig) {
+	public void doNewProject(String proposedName, TreeGraph<TreeGraphDataNode, ALEdge> templateConfig, InputStream archiveStream) {
 
 		/** Does user want to continue if there is unsaved work */
 		if (!canClose()) {
@@ -182,6 +183,18 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		 */
 
 		addState("init");
+		
+		if (archiveStream!=null) {
+			// extract to project root. NB something must be done if importing.
+			String destDirectory = Project.getProjectDirectory();
+			UnzipUtility unzipper = new UnzipUtility();
+			try {
+				unzipper.unzip(archiveStream, destDirectory);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			
+		}
 
 		doSave();
 	}

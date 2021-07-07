@@ -30,6 +30,7 @@
 package au.edu.anu.twapps.mm;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.Collection;
 
 import fr.cnrs.iees.graph.impl.ALEdge;
@@ -50,7 +51,7 @@ import fr.cnrs.iees.twmodels.LibraryTable;
 public interface IMMModel extends Originator{
 	public boolean canClose();
 
-	public void doNewProject(String proposedName, TreeGraph<TreeGraphDataNode, ALEdge> templateGraph);
+	public void doNewProject(String proposedName, TreeGraph<TreeGraphDataNode, ALEdge> templateGraph, InputStream archiveStream);
 
 	public void doOpenProject(File file);
 
