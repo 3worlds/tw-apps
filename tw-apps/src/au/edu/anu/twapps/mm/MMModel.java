@@ -82,6 +82,7 @@ import fr.cnrs.iees.twmodels.LibraryTable;
 import fr.ens.biologie.generic.utils.Duple;
 import fr.ens.biologie.generic.utils.Logging;
 import fr.ens.biologie.generic.utils.NameUtils;
+import fr.ens.biologie.generic.utils.UnzipUtility;
 
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.get;
