@@ -294,19 +294,6 @@ public abstract class StructureEditorAdapter
 		return true;
 	}
 
-//	@SuppressWarnings("unchecked")
-//	private boolean satisfyOutEdgeNXorQuery(SimpleDataTreeNode edgeSpec, VisualNode endNode, String proposedEdgeLabel) {
-//		List<SimpleDataTreeNode> queries = specifications.getQueries((SimpleDataTreeNode) edgeSpec.getParent(),
-//				OutEdgeXNorQuery.class);
-//		for (SimpleDataTreeNode query : queries) {
-//			if (queryReferencesLabel(proposedEdgeLabel, query, twaEdgeLabel1, twaEdgeLabel2)) {
-//				
-//			}
-//
-//		}
-//		return false;
-//	}
-
 	@SuppressWarnings("unchecked")
 	private boolean satisfyOutEdgeXorQuery(SimpleDataTreeNode edgeSpec, VisualNode endNode, String proposedEdgeLabel) {
 		List<SimpleDataTreeNode> queries = specifications.getQueries((SimpleDataTreeNode) edgeSpec.getParent(),
@@ -770,49 +757,64 @@ public abstract class StructureEditorAdapter
 		TreeGraphDataNode cNode = vNode.getConfigNode();
 		if (cNode.classId().equals(N_SYSTEM.label())) {
 			File javaDir = Project.makeFile(ProjectPaths.LOCALJAVA, ProjectPaths.CODE, vNode.id());
-			File[] deps = javaDir.listFiles(new FilenameFilter() {
-				@Override
-				public boolean accept(File dir, String name) {
-					return ((name.contains(".java") && !name.contains(vNode.getParent().id())));
+			if (javaDir.exists()) {
+				File[] deps = javaDir.listFiles(new FilenameFilter() {
+					@Override
+					public boolean accept(File dir, String name) {
+						return ((name.contains(".java") && !name.contains(vNode.getParent().id())));
+					}
+				});
+
+				for (File f : deps) {
+					File newFilef = new File(new File(f.getParent()).getParent() + File.separator + uniqueId
+							+ File.separator + f.getName());
+					// update package name! What about deps in other packages
+					FileUtilities.copyFileReplace(f, newFilef);
+					try {
+						JavaUtilities.updatePackgeEntry(newFilef, vNode.id(), uniqueId);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
-			});
-	
-			for (File f : deps) {
-				File newFilef = new File( new File(f.getParent()).getParent() + File.separator + uniqueId + File.separator + f.getName());
-				// update package name! What about deps in other packages
-				FileUtilities.copyFileReplace(f, newFilef);
 				try {
-					JavaUtilities.updatePackgeEntry(newFilef, vNode.id(), uniqueId);
+					// delete the old tree
+					FileUtilities.deleteFileTree(javaDir);
+					if (UserProjectLink.haveUserProject()) {
+						// delete old tree in user project
+						File remoteDir= new File(UserProjectLink.srcRoot().getAbsolutePath()+File.separator+ProjectPaths.CODE+File.separator+vNode.id());
+						if (remoteDir.exists())
+							FileUtilities.deleteFileTree(remoteDir);		
+					}
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
-
 		}
 		// warn of linked project directory name change
-		if (UserProjectLink.haveUserProject()) {
-			if (cNode.classId().equals(N_SYSTEM.label())) {
-				String remoteProject = UserProjectLink.projectRoot().getName();
-				Dialogs.warnAlert("Linked project '" + remoteProject + "'",
-						"Renaming directory '" + cNode.id() + "' to '" + uniqueId + "' in project '" + remoteProject
-								+ "'",
-						"Update relevant source code in\n'" + uniqueId + "' with code from '" + cNode.id()
-								+ "'\nbefore attempting to rename this node again.\n");
-
-			}
+//		if (UserProjectLink.haveUserProject()) {
+//			if (cNode.classId().equals(N_SYSTEM.label())) {
+//				String remoteProject = UserProjectLink.projectRoot().getName();
+//				Dialogs.warnAlert("Linked project '" + remoteProject + "'",
+//						"Renaming directory '" + cNode.id() + "' to '" + uniqueId + "' in project '" + remoteProject
+//								+ "'",
+//						"Update relevant source code in\n'" + uniqueId + "' with code from '" + cNode.id()
+//								+ "'\nbefore attempting to rename this node again.\n");
+//
+//			}
 			// JG 11/5/2020: Initialiser is now deprecated
 //			if (cNode.classId().equals(N_RECORD.label()) || cNode.classId().equals(N_INITIALISER.label())) {
 			// TODO: Check if this is still necessary
-			if (cNode.classId().equals(N_RECORD.label())) {
-				String remoteProject = UserProjectLink.projectRoot().getName();
-				Dialogs.warnAlert("Linked project '" + remoteProject + "'",
-						"Renaming code file from  '" + cNode.id() + "' to '" + uniqueId + "' in project '"
-								+ UserProjectLink.projectRoot().getName() + "'",
-						"'" + cNode.id() + "' is now redundant and can be removed from project '" + remoteProject
-								+ "'.");
-			}
-		}
+//			if (cNode.classId().equals(N_RECORD.label())) {
+//				String remoteProject = UserProjectLink.projectRoot().getName();
+//				Dialogs.warnAlert("Linked project '" + remoteProject + "'",
+//						"Renaming code file from  '" + cNode.id() + "' to '" + uniqueId + "' in project '"
+//								+ UserProjectLink.projectRoot().getName() + "'",
+//						"'" + cNode.id() + "' is now redundant and can be removed from project '" + remoteProject
+//								+ "'.");
+//			}
+//		}
 		cNode.rename(cNode.id(), uniqueId);
 		vNode.rename(vNode.id(), uniqueId);
 	}
