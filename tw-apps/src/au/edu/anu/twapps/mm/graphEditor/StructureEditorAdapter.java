@@ -551,25 +551,11 @@ public abstract class StructureEditorAdapter
 			VisualNode parent = newChild.getParent();
 			if (parent != null) {
 				TwFunctionTypes ft = (TwFunctionTypes) parent.configGetPropertyValue(P_FUNCTIONTYPE.key());
-				String rt = ft.returnType();
-				String returnStatement = null;
-				if (rt.equals("boolean"))
-					returnStatement = "\t\treturn false;";
-				else if (rt.equals("double"))
-					returnStatement = "\t\treturn 0.0;";
-				else if (rt.equals("String"))
-					returnStatement = "\t\treturn null;";
-				if (returnStatement != null) {
-					String[] dc = { returnStatement };
-					String v = "([" + dc.length + "]";
-					for (String e : dc)
-						v += ",\"" + e + "\"";
-					v = v.replaceFirst(",", "");
-					v += ")";
-					StringTable snp = StringTable.valueOf(v);
-					newChild.addProperty(P_SNIPPET_JAVACODE.key(), snp);
+				if (!ft.returnStatement().isBlank()) {
+					StringTable defValue = new StringTable(new Dimensioner[1]);
+					defValue.fillWith("\t" + ft.returnStatement()+";");
+					newChild.addProperty(P_SNIPPET_JAVACODE.key(), defValue);
 				}
-
 			}
 
 		}
@@ -782,9 +768,10 @@ public abstract class StructureEditorAdapter
 					FileUtilities.deleteFileTree(javaDir);
 					if (UserProjectLink.haveUserProject()) {
 						// delete old tree in user project
-						File remoteDir= new File(UserProjectLink.srcRoot().getAbsolutePath()+File.separator+ProjectPaths.CODE+File.separator+vNode.id());
+						File remoteDir = new File(UserProjectLink.srcRoot().getAbsolutePath() + File.separator
+								+ ProjectPaths.CODE + File.separator + vNode.id());
 						if (remoteDir.exists())
-							FileUtilities.deleteFileTree(remoteDir);		
+							FileUtilities.deleteFileTree(remoteDir);
 					}
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -803,9 +790,9 @@ public abstract class StructureEditorAdapter
 //								+ "'\nbefore attempting to rename this node again.\n");
 //
 //			}
-			// JG 11/5/2020: Initialiser is now deprecated
+		// JG 11/5/2020: Initialiser is now deprecated
 //			if (cNode.classId().equals(N_RECORD.label()) || cNode.classId().equals(N_INITIALISER.label())) {
-			// TODO: Check if this is still necessary
+		// TODO: Check if this is still necessary
 //			if (cNode.classId().equals(N_RECORD.label())) {
 //				String remoteProject = UserProjectLink.projectRoot().getName();
 //				Dialogs.warnAlert("Linked project '" + remoteProject + "'",
