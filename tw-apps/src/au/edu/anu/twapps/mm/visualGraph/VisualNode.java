@@ -381,7 +381,7 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 			throw new TwAppsException("Map is null when processing parent " + parent.getDisplayText(ElementDisplayText.RoleName));
 		List<StringTable> parentList = map.get(parent.cClassId());
 		if (parentList == null)
-			throw new TwAppsException("ParentList is null for parent " + parent.getDisplayText(ElementDisplayText.RoleName));
+			throw new TwAppsException("Archetype error: ParentList is null for parent " + parent.getDisplayText(ElementDisplayText.RoleName));
 
 		/**
 		 * Check each table and take the first that corresponds to the current set of

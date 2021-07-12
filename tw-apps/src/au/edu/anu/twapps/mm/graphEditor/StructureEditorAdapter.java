@@ -547,17 +547,14 @@ public abstract class StructureEditorAdapter
 		if (newChild.cClassId().equals(N_SPACE.label()))
 			setDefaultSpaceDims(newChild.getConfigNode());
 
-		if (newChild.cClassId().equals(N_SNIPPET.label())) {
-			VisualNode parent = newChild.getParent();
-			if (parent != null) {
-				TwFunctionTypes ft = (TwFunctionTypes) parent.configGetPropertyValue(P_FUNCTIONTYPE.key());
-				if (!ft.returnStatement().isBlank()) {
-					StringTable defValue = new StringTable(new Dimensioner[1]);
-					defValue.fillWith("\t" + ft.returnStatement()+";");
-					newChild.addProperty(P_SNIPPET_JAVACODE.key(), defValue);
-				}
+		if (newChild.cClassId().equals(N_FUNCTION.label())) {
+			TwFunctionTypes ft = (TwFunctionTypes) newChild.configGetPropertyValue(P_FUNCTIONTYPE.key());
+			if (!ft.returnStatement().isBlank()) {
+				StringTable defValue = new StringTable(new Dimensioner[1]);
+				defValue.setByInt("\t" + ft.returnStatement()+";", 0);
+				//defValue.fillWith("\t" + ft.returnStatement()+";");
+				newChild.addProperty(P_FUNCTIONSNIPPET.key(), defValue);
 			}
-
 		}
 		controller.onNewNode(newChild);
 	}
