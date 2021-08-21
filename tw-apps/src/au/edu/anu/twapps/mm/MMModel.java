@@ -63,6 +63,7 @@ import au.edu.anu.twcore.errorMessaging.ModelBuildErrorMsg;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrors;
 import au.edu.anu.twcore.graphState.GraphState;
 import au.edu.anu.twcore.project.Project;
+import au.edu.anu.twcore.userProject.UserProjectLink;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.Tree;
@@ -123,7 +124,8 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 	}
 
 	@Override
-	public void doNewProject(String proposedName, TreeGraph<TreeGraphDataNode, ALEdge> templateConfig, InputStream archiveStream) {
+	public void doNewProject(String proposedName, TreeGraph<TreeGraphDataNode, ALEdge> templateConfig,
+			InputStream archiveStream) {
 
 		/** Does user want to continue if there is unsaved work */
 		if (!canClose()) {
@@ -184,8 +186,8 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		 */
 
 		addState("init");
-		
-		if (archiveStream!=null) {
+
+		if (archiveStream != null) {
 			// extract to project root. NB something must be done if importing.
 			String destDirectory = Project.getProjectDirectory();
 			UnzipUtility unzipper = new UnzipUtility();
@@ -194,7 +196,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
-			
+
 		}
 
 		doSave();
@@ -528,17 +530,16 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		fillClassParentMap(map, TWA.getRoot(), discoveredFiles);
 		return map;
 	}
-	
-	
-	//TODO expose with MMMI interface
-	public StringTable findParentTable (VisualNode vn) {
+
+	// TODO expose with MMMI interface
+	public StringTable findParentTable(VisualNode vn) {
 		List<StringTable> parentList = classParentTableMapping.get(vn.cClassId());
 		for (StringTable table : parentList) {
 			if (vn.treeMatchesTable(table))
 				return table;
 		}
 		// must be root
-		return parentList.get(0);	
+		return parentList.get(0);
 	}
 
 	private void fillClassParentMap(Map<String, List<StringTable>> classParentMap, TreeNode root,
@@ -676,6 +677,14 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 
 	@Override
 	public void doSaveAs() {
+		if (UserProjectLink.haveUserProject()) {
+			String title = "Save as";
+			String header = "Cannot save projects linked to an IDE under a new name.";
+			String content = "Disconnect '" + Project.getDisplayName() + "' from '"
+					+ UserProjectLink.projectRoot().getName() + "' before saving under a new name.";
+			Dialogs.errorAlert(title, header, content);
+			return;
+		}
 		TreeGraphDataNode cRoot = findTwRoot(ConfigGraph.getGraph());
 		VisualNode vRoot = null;
 		for (VisualNode root : visualGraph.roots())
