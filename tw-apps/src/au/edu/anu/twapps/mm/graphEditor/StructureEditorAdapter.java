@@ -44,6 +44,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.text.WordUtils;
 
@@ -551,8 +553,8 @@ public abstract class StructureEditorAdapter
 			TwFunctionTypes ft = (TwFunctionTypes) newChild.configGetPropertyValue(P_FUNCTIONTYPE.key());
 			if (!ft.returnStatement().isBlank()) {
 				StringTable defValue = new StringTable(new Dimensioner[1]);
-				defValue.setByInt("\t" + ft.returnStatement()+";", 0);
-				//defValue.fillWith("\t" + ft.returnStatement()+";");
+				defValue.setByInt("\t" + ft.returnStatement() + ";", 0);
+				// defValue.fillWith("\t" + ft.returnStatement()+";");
 				newChild.addProperty(P_FUNCTIONSNIPPET.key(), defValue);
 			}
 		}
@@ -776,31 +778,86 @@ public abstract class StructureEditorAdapter
 				}
 			}
 		}
-		// warn of linked project directory name change
-//		if (UserProjectLink.haveUserProject()) {
-//			if (cNode.classId().equals(N_SYSTEM.label())) {
-//				String remoteProject = UserProjectLink.projectRoot().getName();
-//				Dialogs.warnAlert("Linked project '" + remoteProject + "'",
-//						"Renaming directory '" + cNode.id() + "' to '" + uniqueId + "' in project '" + remoteProject
-//								+ "'",
-//						"Update relevant source code in\n'" + uniqueId + "' with code from '" + cNode.id()
-//								+ "'\nbefore attempting to rename this node again.\n");
-//
-//			}
-		// JG 11/5/2020: Initialiser is now deprecated
-//			if (cNode.classId().equals(N_RECORD.label()) || cNode.classId().equals(N_INITIALISER.label())) {
-		// TODO: Check if this is still necessary
-//			if (cNode.classId().equals(N_RECORD.label())) {
-//				String remoteProject = UserProjectLink.projectRoot().getName();
-//				Dialogs.warnAlert("Linked project '" + remoteProject + "'",
-//						"Renaming code file from  '" + cNode.id() + "' to '" + uniqueId + "' in project '"
-//								+ UserProjectLink.projectRoot().getName() + "'",
-//						"'" + cNode.id() + "' is now redundant and can be removed from project '" + remoteProject
-//								+ "'.");
-//			}
-//		}
+
+		if (cNode.classId().equals(N_RECORD.label()) || cNode.classId().equals(N_TABLE.label())
+				|| cNode.classId().equals(N_FIELD.label())) {
+			snippetCodeRefactor(cNode.classId(), cNode.id(), uniqueId);
+		}
+
 		cNode.rename(cNode.id(), uniqueId);
 		vNode.rename(vNode.id(), uniqueId);
+	}
+
+	private static String findReplace(String regex, String from, String to, String text) {
+		// pattern matching words as defined by the regex
+		Pattern pattern = Pattern.compile(regex);
+		Map<String, String> replacements = new HashMap<>();
+		replacements.put(from, to);
+		StringBuilder sb = new StringBuilder();
+		Matcher matcher = pattern.matcher(text);
+		int lastEnd = 0;
+		while (matcher.find()) {
+			int startIndex = matcher.start();
+			if (startIndex > lastEnd) {
+				// add missing chars
+				sb.append(text.substring(lastEnd, startIndex));
+			}
+			// replace text, if necessary
+			String group = matcher.group();
+			String result = replacements.get(group);
+			sb.append(result == null ? group : result);
+			lastEnd = matcher.end();
+		}
+		sb.append(text.substring(lastEnd));
+		return sb.toString();
+	}
+
+	private static void snippetCodeRefactor(String label, String from, String to) {
+		List<StringTable> snippets = new ArrayList<>();
+		List<String> functionNames = new ArrayList<>();
+		for (Node n : ConfigGraph.getGraph().nodes()) {
+			if (n.classId().equals(N_FUNCTION.label()) || n.classId().equals(N_INITFUNCTION.label())) {
+				TreeGraphDataNode f = (TreeGraphDataNode) n;
+				snippets.add((StringTable) f.properties().getPropertyValue(P_FUNCTIONSNIPPET.key()));
+				functionNames.add(n.toShortString());
+			}
+		}
+
+		for (StringTable t : snippets) {
+			String fname = functionNames.get(snippets.indexOf(t));
+			String text = "";
+			boolean candidate = false;
+			for (int i = 0; i < t.size(); i++) {
+				String l = t.getByInt(i);
+				text += l + "\n";
+				if (l.contains(from))
+					candidate = true;
+			}
+			if (candidate) {
+				text = findReplace(Dialogs.vsAlphaNumeric, from, to, text);
+				String[] lines = text.split("\\n");
+				if (lines.length < t.size()) {
+					for (int j = lines.length; j < t.size(); j++)
+						if (!t.getByInt(j).trim().isBlank())
+//							log.info("'"+fname+"': Table line not updated [" + (j + 1) + "] '" + t.getByInt(j) + "'");
+							System.out.println("'" + fname + "': Table line not updated [" + (j + 1) + "] '"
+									+ t.getByInt(j) + "'");
+				} else if (lines.length > t.size()) {
+					for (int j = t.size(); j < lines.length; j++) {
+						if (!lines[j].trim().isBlank())
+//							log.info("'" + fname + "': Replacement line missed [" + (j + 1) + "] '" + lines[j] + "'");
+							System.out.println(
+									"'" + fname + "': Replacement line missed [" + (j + 1) + "] '" + lines[j] + "'");
+					}
+				}
+				for (int i = 0; i < t.size(); i++) {
+					if (i < lines.length) {
+						t.setByInt(lines[i], i);
+					}
+				}
+			}
+		}
+
 	}
 
 	@Override
