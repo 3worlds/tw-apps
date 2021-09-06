@@ -706,8 +706,11 @@ public abstract class StructureEditorAdapter
 
 	@Override
 	public void onRenameNode() {
+//		String userName = getNewName(editableNode.cClassId() + ":" + editableNode.getConfigNode().id(),
+//				editableNode.cClassId(), ConfigurationNodeLabels.labelValueOf(editableNode.cClassId()).defName(),
+//				baseSpec);
 		String userName = getNewName(editableNode.cClassId() + ":" + editableNode.getConfigNode().id(),
-				editableNode.cClassId(), ConfigurationNodeLabels.labelValueOf(editableNode.cClassId()).defName(),
+				editableNode.cClassId(), editableNode.getConfigNode().id(),
 				baseSpec);
 		if (userName != null) {
 			renameNode(userName, editableNode.getSelectedVisualNode());
