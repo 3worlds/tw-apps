@@ -49,8 +49,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.text.WordUtils;
 
-import com.hp.hpl.jena.util.FileUtils;
-
 import au.edu.anu.rscs.aot.archetype.ArchetypeArchetypeConstants;
 import au.edu.anu.rscs.aot.collections.tables.Dimensioner;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
@@ -69,7 +67,6 @@ import au.edu.anu.twcore.archetype.tw.ChildXorPropertyQuery;
 import au.edu.anu.twcore.archetype.tw.EndNodeHasPropertyQuery;
 import au.edu.anu.twcore.archetype.tw.ExclusiveCategoryQuery;
 import au.edu.anu.twcore.archetype.tw.IsInValueSetQuery;
-import au.edu.anu.twcore.archetype.tw.OutEdgeXNorQuery;
 import au.edu.anu.twcore.archetype.tw.OutEdgeXorQuery;
 import au.edu.anu.twcore.archetype.tw.OutNodeXorQuery;
 import au.edu.anu.twcore.archetype.tw.PropertiesMatchDefinitionQuery;
