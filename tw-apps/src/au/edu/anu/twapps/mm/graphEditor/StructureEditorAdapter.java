@@ -549,9 +549,8 @@ public abstract class StructureEditorAdapter
 		if (newChild.cClassId().equals(N_FUNCTION.label())) {
 			TwFunctionTypes ft = (TwFunctionTypes) newChild.configGetPropertyValue(P_FUNCTIONTYPE.key());
 			if (!ft.returnStatement().isBlank()) {
-				StringTable defValue = new StringTable(new Dimensioner[1]);
+				StringTable defValue = new StringTable(new Dimensioner(1));
 				defValue.setByInt("\t" + ft.returnStatement() + ";", 0);
-				// defValue.fillWith("\t" + ft.returnStatement()+";");
 				newChild.addProperty(P_FUNCTIONSNIPPET.key(), defValue);
 			}
 		}
