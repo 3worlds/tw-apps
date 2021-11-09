@@ -625,7 +625,7 @@ public abstract class StructureEditorAdapter
 				List<Node> dims = (List<Node>) get(def.edges(Direction.OUT), edgeListEndNodes(),
 						selectZeroOrMany(hasTheLabel(N_DIMENSIONER.label())));
 				if (!dims.isEmpty())
-					newProps.addProperty(def.id(), ((TableNode) def).newInstance());
+					newProps.addProperty(def.id(), ((TableNode) def).templateInstance());
 				else
 					Dialogs.errorAlert("Node construction error", newChild.getDisplayText(ElementDisplayText.RoleName),
 							"Cannot add '" + def.classId() + ":" + def.id() + "' because it has no dimensions");
