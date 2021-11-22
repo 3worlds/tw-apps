@@ -269,19 +269,22 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 
 		addState("init");
 
-		ConfigGraph.validateGraph();
+		ConfigGraph.verifyGraph();
 
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public void restore(MMMemento m) {
+		// get the prev config graph
 		TreeGraph<TreeGraphDataNode, ALEdge> a = (TreeGraph<TreeGraphDataNode, ALEdge>) FileImporter
 				.loadGraphFromFile(m.getState().getFirst());
 
+		// get the prev layout graph
 		TreeGraph<VisualNode, VisualEdge> b = (TreeGraph<VisualNode, VisualEdge>) FileImporter
 				.loadGraphFromFile(m.getState().getSecond());
 
+		// get the prev preferences data
 		try {
 			Files.copy(m.getState().getThird().toPath(), Project.makeProjectPreferencesFile().toPath(),
 					StandardCopyOption.REPLACE_EXISTING);
@@ -289,16 +292,23 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 			e.printStackTrace();
 		}
 
+		// set prev config graph
+		ConfigGraph.setGraph(a);
+		
+		// set prev layout graph
+		visualGraph = b;
+		
+		// load prev preferences
 		controller.getPreferences();
 
-		ConfigGraph.setGraph(a);
-		visualGraph = b;
-
+		// link both graphs
 		shadowGraph();
 
+		// update the ui
 		controller.onRollback(visualGraph);
 
-		ConfigGraph.validateGraph();
+		// verify
+		ConfigGraph.verifyGraph();
 
 	}
 
@@ -411,7 +421,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 
 		GraphState.clear();
 
-		ConfigGraph.validateGraph();
+		ConfigGraph.verifyGraph();
 	}
 
 	private Map<String, List<String>> nonEditableMap = new HashMap<>();

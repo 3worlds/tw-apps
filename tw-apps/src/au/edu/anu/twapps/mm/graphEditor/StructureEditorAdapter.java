@@ -643,7 +643,7 @@ public abstract class StructureEditorAdapter
 			return;
 		connectTo(id, details, duration);
 
-		ConfigGraph.validateGraph();
+		ConfigGraph.verifyGraph();
 		GraphState.setChanged();
 	}
 
@@ -697,7 +697,7 @@ public abstract class StructureEditorAdapter
 		deleteNode(editableNode.getSelectedVisualNode(), duration);
 		controller.onNodeDeleted();
 		GraphState.setChanged();
-		ConfigGraph.validateGraph();
+		ConfigGraph.verifyGraph();
 	}
 
 	@Override
@@ -713,7 +713,7 @@ public abstract class StructureEditorAdapter
 			gvisualiser.onNodeRenamed(editableNode.getSelectedVisualNode());
 			controller.onElementRenamed();
 			GraphState.setChanged();
-			ConfigGraph.validateGraph();
+			ConfigGraph.verifyGraph();
 		}
 	}
 
@@ -727,7 +727,7 @@ public abstract class StructureEditorAdapter
 			gvisualiser.onEdgeRenamed(edge);
 			controller.onElementRenamed();
 			GraphState.setChanged();
-			ConfigGraph.validateGraph();
+			ConfigGraph.verifyGraph();
 		}
 	}
 
@@ -897,7 +897,7 @@ public abstract class StructureEditorAdapter
 	public void onReconnectChild(VisualNode vnChild) {
 		editableNode.reconnectChild(vnChild);
 		gvisualiser.onNewParent(vnChild);
-		ConfigGraph.validateGraph();
+		ConfigGraph.verifyGraph();
 		GraphState.setChanged();
 	}
 
@@ -917,7 +917,7 @@ public abstract class StructureEditorAdapter
 		deleteTree(root, duration);
 		controller.onNodeDeleted();
 		GraphState.setChanged();
-		ConfigGraph.validateGraph();
+		ConfigGraph.verifyGraph();
 	}
 
 	private void deleteEdge(VisualEdge vEdge) {
@@ -942,7 +942,7 @@ public abstract class StructureEditorAdapter
 		if (mayHaveProperties)
 			controller.onEdgeDeleted();
 		GraphState.setChanged();
-		ConfigGraph.validateGraph();
+		ConfigGraph.verifyGraph();
 	}
 
 	@Override
@@ -1017,7 +1017,7 @@ public abstract class StructureEditorAdapter
 			importGraph(importGraph, editableNode.getSelectedVisualNode(), duration);
 			controller.doLayout(duration);
 			GraphState.setChanged();
-			ConfigGraph.validateGraph();
+			ConfigGraph.verifyGraph();
 		}
 	}
 
@@ -1148,7 +1148,7 @@ public abstract class StructureEditorAdapter
 		gvisualiser.getVisualGraph().onParentChanged();
 		ConfigGraph.onParentChanged();
 		GraphState.setChanged();
-		ConfigGraph.validateGraph();
+		ConfigGraph.verifyGraph();
 	}
 
 	@Override

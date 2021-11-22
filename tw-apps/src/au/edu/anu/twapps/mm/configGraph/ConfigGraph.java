@@ -73,7 +73,7 @@ public class ConfigGraph {
 
 	private static ExecutorService executor;
 
-	public static void validateGraph() {
+	public static void verifyGraph() {
 		// calls listeners ie. mm controller to set buttons and clear display
 		// ErrorList is poorly named: its not a list but a dispatcher of messages to
 		// listeners. Rename to ErrorMessageManager?
