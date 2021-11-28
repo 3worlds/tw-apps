@@ -30,6 +30,9 @@
 package au.edu.anu.twapps.mm.configGraph;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -40,6 +43,7 @@ import au.edu.anu.rscs.aot.errorMessaging.ErrorMessageManager;
 import au.edu.anu.rscs.aot.errorMessaging.ErrorMessagable;
 import au.edu.anu.rscs.aot.errorMessaging.impl.SpecificationErrorMsg;
 import au.edu.anu.twapps.exceptions.TwAppsException;
+import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.archetype.TWA;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrorMsg;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrors;
@@ -122,6 +126,21 @@ public class ConfigGraph {
 			}
 			if (!ErrorMessageManager.haveErrors() && GraphState.changed())
 				ErrorMessageManager.dispatch(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_PROJECT_UNSAVED));
+			
+			if (!ErrorMessageManager.haveErrors()) {
+				List<String> commands = new ArrayList<>();
+				commands.add("Rscript");
+				commands.add("--version");
+				ProcessBuilder b = new ProcessBuilder(commands);
+				b.inheritIO();
+				try {
+					b.start();
+				} catch (IOException e) {
+					ErrorMessageManager.dispatch(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_RSCRIPT_MISSING));		
+				}
+
+				
+			}
 
 			ErrorMessageManager.endCheck();
 			
