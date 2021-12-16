@@ -69,7 +69,7 @@ import au.edu.anu.twcore.archetype.tw.ExclusiveCategoryQuery;
 import au.edu.anu.twcore.archetype.tw.IsInValueSetQuery;
 import au.edu.anu.twcore.archetype.tw.OutEdgeXorQuery;
 import au.edu.anu.twcore.archetype.tw.OutNodeXorQuery;
-import au.edu.anu.twcore.archetype.tw.PropertiesMatchDefinitionQuery;
+//import au.edu.anu.twcore.archetype.tw.PropertiesMatchDefinitionQuery;
 import au.edu.anu.twcore.archetype.tw.PropertyXorQuery;
 import au.edu.anu.twcore.graphState.GraphState;
 import au.edu.anu.twcore.project.Project;
@@ -590,47 +590,47 @@ public abstract class StructureEditorAdapter
 
 	protected void processPropertiesMatchDefinition(VisualNode newChild, SimpleDataTreeNode childBaseSpec,
 			SimpleDataTreeNode childSubSpec) {
-		@SuppressWarnings("unchecked")
-		List<SimpleDataTreeNode> queries = specifications.getQueries(childBaseSpec,
-				PropertiesMatchDefinitionQuery.class);
-		if (queries.isEmpty())
-			return;
-		SimpleDataTreeNode query = queries.get(0);
-
-		StringTable values = (StringTable) query.properties().getPropertyValue("values");
-		String dataCategory = values.getWithFlatIndex(0);
-
-		Duple<Boolean, Collection<TreeGraphDataNode>> defData = PropertiesMatchDefinitionQuery
-				.getDataDefs(newChild.getConfigNode(), dataCategory);
-		if (defData == null)
-			return;
-
-		Collection<TreeGraphDataNode> defs = defData.getSecond();
-		Boolean useAutoVar = defData.getFirst();
-		if (defs == null) {
-			return;
-		}
-
-		ExtendablePropertyList newProps = (ExtendablePropertyList) newChild.getConfigNode().properties();
-		if (useAutoVar) {
-			newProps.addProperty("age", 0);
-			newProps.addProperty("birthDate", 0);
-			// newProps.addProperty("name","Skippy");
-		}
-		for (TreeGraphDataNode def : defs) {
-			if (def.classId().equals(N_FIELD.label()))
-				newProps.addProperty(def.id(), ((FieldNode) def).newInstance());
-			else {
-				@SuppressWarnings("unchecked")
-				List<Node> dims = (List<Node>) get(def.edges(Direction.OUT), edgeListEndNodes(),
-						selectZeroOrMany(hasTheLabel(N_DIMENSIONER.label())));
-				if (!dims.isEmpty())
-					newProps.addProperty(def.id(), ((TableNode) def).templateInstance());
-				else
-					Dialogs.errorAlert("Node construction error", newChild.getDisplayText(ElementDisplayText.RoleName),
-							"Cannot add '" + def.classId() + ":" + def.id() + "' because it has no dimensions");
-			}
-		}
+//		@SuppressWarnings("unchecked")
+//		List<SimpleDataTreeNode> queries = specifications.getQueries(childBaseSpec,
+//				PropertiesMatchDefinitionQuery.class);
+//		if (queries.isEmpty())
+//			return;
+//		SimpleDataTreeNode query = queries.get(0);
+//
+//		StringTable values = (StringTable) query.properties().getPropertyValue("values");
+//		String dataCategory = values.getWithFlatIndex(0);
+//
+//		Duple<Boolean, Collection<TreeGraphDataNode>> defData = PropertiesMatchDefinitionQuery
+//				.getDataDefs(newChild.getConfigNode(), dataCategory);
+//		if (defData == null)
+//			return;
+//
+//		Collection<TreeGraphDataNode> defs = defData.getSecond();
+//		Boolean useAutoVar = defData.getFirst();
+//		if (defs == null) {
+//			return;
+//		}
+//
+//		ExtendablePropertyList newProps = (ExtendablePropertyList) newChild.getConfigNode().properties();
+//		if (useAutoVar) {
+//			newProps.addProperty("age", 0);
+//			newProps.addProperty("birthDate", 0);
+//			// newProps.addProperty("name","Skippy");
+//		}
+//		for (TreeGraphDataNode def : defs) {
+//			if (def.classId().equals(N_FIELD.label()))
+//				newProps.addProperty(def.id(), ((FieldNode) def).newInstance());
+//			else {
+//				@SuppressWarnings("unchecked")
+//				List<Node> dims = (List<Node>) get(def.edges(Direction.OUT), edgeListEndNodes(),
+//						selectZeroOrMany(hasTheLabel(N_DIMENSIONER.label())));
+//				if (!dims.isEmpty())
+//					newProps.addProperty(def.id(), ((TableNode) def).templateInstance());
+//				else
+//					Dialogs.errorAlert("Node construction error", newChild.getDisplayText(ElementDisplayText.RoleName),
+//							"Cannot add '" + def.classId() + ":" + def.id() + "' because it has no dimensions");
+//			}
+//		}
 	}
 
 	@Override

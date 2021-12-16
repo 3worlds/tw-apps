@@ -47,9 +47,9 @@ import au.edu.anu.twcore.archetype.TWA;
 import au.edu.anu.twcore.archetype.TwArchetypeConstants;
 import au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery;
 import au.edu.anu.twcore.archetype.tw.ChildXorPropertyQuery;
-import au.edu.anu.twcore.archetype.tw.EdgeXorPropertyQuery;
 import au.edu.anu.twcore.archetype.tw.IsInValueSetQuery;
 import au.edu.anu.twcore.archetype.tw.NameStartsWithUpperCaseQuery;
+import au.edu.anu.twcore.archetype.tw.OutEdgeXorPropertyQuery;
 import au.edu.anu.twcore.archetype.tw.PropertyXorQuery;
 import au.edu.anu.twcore.archetype.tw.RequirePropertyQuery;
 import fr.cnrs.iees.OmugiClassLoader;
@@ -477,8 +477,10 @@ public class TwSpecifications implements //
 			StringTable conditions = (StringTable) cXORpq.properties().getPropertyValue(twaEdgeProp);
 			depProps.add(conditions.getWithFlatIndex(1));
 		}
-		List<SimpleDataTreeNode> eXORpqs = getQueries(baseSpec, EdgeXorPropertyQuery.class);
-		eXORpqs.addAll(getQueries(subSpec, EdgeXorPropertyQuery.class));
+		// CAUTION: this query has changed and now uses EDGE labels instead of NODE labels
+		// I dont know the consequences - JG 16/12/2021
+		List<SimpleDataTreeNode> eXORpqs = getQueries(baseSpec, OutEdgeXorPropertyQuery.class);
+		eXORpqs.addAll(getQueries(subSpec, OutEdgeXorPropertyQuery.class));
 //		for (SimpleDataTreeNode eXORpq : eXORpqs) {
 //			// no example not used yet
 //		}
