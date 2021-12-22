@@ -442,10 +442,10 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 			List<String> keys = new ArrayList<>();
 			// default - subclass is never editable
 			keys.add(TwArchetypeConstants.twaSubclass);
-			keys.add("generatedClassName");
+			keys.add(P_TWDATACLASS.key());
 			keys.add(P_FUNCTIONCLASS.key());
 			keys.add(P_DRIVERCLASS.key());
-			keys.add(P_PARAMETERCLASS.key());
+//			keys.add(P_PARAMETERCLASS.key());
 			keys.add(P_DECORATORCLASS.key());
 			keys.add(P_DATAELEMENTTYPE.key());
 			keys.add(P_CONSTANTCLASS.key());
@@ -455,8 +455,8 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		addEntry(N_SPACE, P_SPACETYPE);
 		addEntry(N_FIELD, P_FIELD_TYPE);
 		addEntry(N_TABLE, P_FIELD_TYPE);// done by P_DATAELEMENTTYPE above
-		addEntry(N_COMPONENT, P_PARAMETERCLASS);
-		addEntry(N_SYSTEM, P_PARAMETERCLASS);
+//		addEntry(N_COMPONENT, P_PARAMETERCLASS);
+//		addEntry(N_SYSTEM, P_PARAMETERCLASS);
 		addEntry(N_FUNCTION, P_FUNCTIONCLASS);
 		addEntry(N_FUNCTION, P_FUNCTIONTYPE);
 		addEntry(N_INITFUNCTION, P_FUNCTIONTYPE);
