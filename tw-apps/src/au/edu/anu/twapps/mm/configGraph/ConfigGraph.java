@@ -127,20 +127,6 @@ public class ConfigGraph {
 			if (!ErrorMessageManager.haveErrors() && GraphState.changed())
 				ErrorMessageManager.dispatch(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_PROJECT_UNSAVED));
 			
-			if (!ErrorMessageManager.haveErrors()) {
-				List<String> commands = new ArrayList<>();
-				commands.add("Rscript");
-				commands.add("--version");
-				ProcessBuilder b = new ProcessBuilder(commands);
-				b.inheritIO();
-				try {
-					b.start();
-				} catch (IOException e) {
-					ErrorMessageManager.dispatch(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_RSCRIPT_MISSING));		
-				}
-
-				
-			}
 
 			ErrorMessageManager.endCheck();
 			
