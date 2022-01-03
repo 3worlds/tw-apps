@@ -239,12 +239,17 @@ public abstract class StructureEditorAdapter
 //			log.info(edgeSpec.toShortString());
 			String toNodeRef = (String) edgeSpec.properties().getPropertyValue(aaToNode);
 			String edgeLabel = (String) edgeSpec.properties().getPropertyValue(aaIsOfClass);
+			if (toNodeRef.endsWith(":"))
+				toNodeRef = toNodeRef.substring(0, toNodeRef.length() - 1);
+			String[] labels = toNodeRef.split(":/");
+			String toNodeLabel = labels[labels.length - 1];
+
 			log.info(edgeLabel);
 			List<VisualNode> endNodes = findNodesReferenced(toNodeRef);
 			for (VisualNode endNode : endNodes) {
 				if (!editableNode.getSelectedVisualNode().id().equals(endNode.id())) // no edges to self
 					if (!editableNode.hasOutEdgeTo(endNode, edgeLabel))
-						if (satisfiesEdgeMultiplicity(edgeSpec, edgeLabel))
+						if (satisfiesEdgeMultiplicity(edgeSpec, toNodeLabel, edgeLabel))
 							if (satisfyExclusiveCategoryQuery(edgeSpec, endNode, edgeLabel))
 								if (satisfyOutNodeXorQuery(edgeSpec, endNode, edgeLabel))
 									if (satisfyOutEdgeXorQuery(edgeSpec, endNode, edgeLabel))
@@ -266,12 +271,13 @@ public abstract class StructureEditorAdapter
 		return result;
 	}
 
-	private boolean satisfiesEdgeMultiplicity(SimpleDataTreeNode edgeSpec, String edgeLabel) {
+	private boolean satisfiesEdgeMultiplicity(SimpleDataTreeNode edgeSpec, String toNodeLabel, String edgeLabel) {
 		IntegerRange range = specifications.getMultiplicityOf(edgeSpec);
 		@SuppressWarnings("unchecked")
-		List<Edge> edges = (List<Edge>) get(editableNode.getConfigNode().edges(Direction.OUT),
-				selectZeroOrMany(hasTheLabel(edgeLabel)));
-		if (edges.size() >= range.getLast())
+		List<Node> nodes = (List<Node>) get(editableNode.getConfigNode().edges(Direction.OUT),
+				selectZeroOrMany(hasTheLabel(edgeLabel)), edgeListStartNodes(),
+				selectZeroOrMany(hasTheLabel(toNodeLabel)));
+		if (nodes.size() >= range.getLast())
 			return false;
 		else
 			return true;
