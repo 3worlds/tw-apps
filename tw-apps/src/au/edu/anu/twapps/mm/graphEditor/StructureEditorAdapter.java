@@ -737,6 +737,9 @@ public abstract class StructureEditorAdapter
 	}
 
 	private void renameEdge(String uniqueId, VisualEdge vEdge) {
+		// Can't do this! I presume either or both start and end nodes have a Map of
+		// edges and the key will be unchanged.
+
 		ALEdge cEdge = vEdge.getConfigEdge();
 		cEdge.rename(cEdge.id(), uniqueId);
 		vEdge.rename(vEdge.id(), uniqueId);
@@ -788,6 +791,9 @@ public abstract class StructureEditorAdapter
 			snippetCodeRefactor(cNode.classId(), cNode.id(), uniqueId);
 		}
 
+		TreeGraph<TreeGraphDataNode, ALEdge> g = ConfigGraph.getGraph();
+		// cannot do this because the Map of nodes in the graph has the old id as key!!!
+		// We have no access to this Map
 		cNode.rename(cNode.id(), uniqueId);
 		vNode.rename(vNode.id(), uniqueId);
 	}
