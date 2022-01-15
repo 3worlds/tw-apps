@@ -70,9 +70,9 @@ public interface StructureEditable {
 	/* delete this node */
 	public void onDeleteNode(double duration);
 
-	public void onRenameNode();
+	public boolean onRenameNode();
 
-	public void onRenameEdge(VisualEdge edge);
+	public boolean onRenameEdge(VisualEdge edge);
 
 	public void onDeleteTree(VisualNode root,double duration);
 

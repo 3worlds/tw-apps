@@ -92,4 +92,6 @@ public interface IMMController {
 	public VisualNode getLayoutRoot();
 	
 	public void onRootNameChange();
+	
+	public IMMModel model();
 }

@@ -205,6 +205,12 @@ public class MockController implements IMMController{
 		
 	}
 
+	@Override
+	public IMMModel model() {
+		// TODO Auto-generated method stub
+		return model;
+	}
+
 
 
 

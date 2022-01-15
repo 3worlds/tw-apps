@@ -707,23 +707,20 @@ public abstract class StructureEditorAdapter
 	}
 
 	@Override
-	public void onRenameNode() {
-//		String userName = getNewName(editableNode.cClassId() + ":" + editableNode.getConfigNode().id(),
-//				editableNode.cClassId(), ConfigurationNodeLabels.labelValueOf(editableNode.cClassId()).defName(),
-//				baseSpec);
+	public boolean onRenameNode() {
 		String userName = getNewName(editableNode.cClassId() + ":" + editableNode.getConfigNode().id(),
 				editableNode.cClassId(), editableNode.getConfigNode().id(), baseSpec);
 		if (userName != null) {
 			renameNode(userName, editableNode.getSelectedVisualNode());
 			gvisualiser.onNodeRenamed(editableNode.getSelectedVisualNode());
 			controller.onElementRenamed();
-			GraphState.setChanged();
-			ConfigGraph.verifyGraph();
+			return true;
 		}
+		return false;
 	}
 
 	@Override
-	public void onRenameEdge(VisualEdge edge) {
+	public boolean onRenameEdge(VisualEdge edge) {
 		String lbl = edge.getConfigEdge().classId();
 		String userName = getNewName(lbl + ":" + edge.id(), lbl, ConfigurationEdgeLabels.labelValueOf(lbl).defName(),
 				null);
@@ -731,15 +728,14 @@ public abstract class StructureEditorAdapter
 			renameEdge(userName, edge);
 			gvisualiser.onEdgeRenamed(edge);
 			controller.onElementRenamed();
-			GraphState.setChanged();
-			ConfigGraph.verifyGraph();
+			return true;
 		}
+		return false;
 	}
 
 	private void renameEdge(String uniqueId, VisualEdge vEdge) {
-		// Can't do this! I presume either or both start and end nodes have a Map of
-		// edges and the key will be unchanged.
-
+		// NB: graphs must be saved and reloaded after this op because Map<> of node
+		// edges will have old KEYS
 		ALEdge cEdge = vEdge.getConfigEdge();
 		cEdge.rename(cEdge.id(), uniqueId);
 		vEdge.rename(vEdge.id(), uniqueId);
@@ -791,9 +787,9 @@ public abstract class StructureEditorAdapter
 			snippetCodeRefactor(cNode.classId(), cNode.id(), uniqueId);
 		}
 
+		// NB: graphs must be saved and reloaded after this op because Map<> of nodes
+		// will have old KEYS
 		TreeGraph<TreeGraphDataNode, ALEdge> g = ConfigGraph.getGraph();
-		// cannot do this because the Map of nodes in the graph has the old id as key!!!
-		// We have no access to this Map
 		cNode.rename(cNode.id(), uniqueId);
 		vNode.rename(vNode.id(), uniqueId);
 	}

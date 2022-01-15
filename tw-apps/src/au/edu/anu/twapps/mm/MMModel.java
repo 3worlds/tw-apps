@@ -311,6 +311,31 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		ConfigGraph.verifyGraph();
 
 	}
+	@Override
+	public void saveAndReload() {
+		String tmpdir = System.getProperty("java.io.tmpdir");
+		File f;
+		f = new File(tmpdir+File.separator+"tmp.utg");
+		new OmugiGraphExporter(f).exportGraph(ConfigGraph.getGraph());
+		
+		TreeGraph<TreeGraphDataNode, ALEdge> a = (TreeGraph<TreeGraphDataNode, ALEdge>) FileImporter
+				.loadGraphFromFile(f);
+		
+		new OmugiGraphExporter(f).exportGraph(visualGraph);
+		
+		TreeGraph<VisualNode, VisualEdge> b = (TreeGraph<VisualNode, VisualEdge>) FileImporter
+				.loadGraphFromFile(f);
+
+		ConfigGraph.setGraph(a);
+		
+		// set prev layout graph
+		visualGraph = b;
+	
+		shadowGraph();
+
+		// update the ui
+		controller.onRollback(visualGraph);
+}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -746,5 +771,6 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 	public LibraryTable[] getLibrary() {
 		return LibraryTable.values();
 	}
+
 
 }

@@ -71,5 +71,7 @@ public interface IMMModel extends Originator{
 	
 	public LibraryTable[] getLibrary();
 	
+	public void saveAndReload();
+	
 
 }
