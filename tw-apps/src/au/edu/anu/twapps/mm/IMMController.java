@@ -45,6 +45,7 @@ import fr.cnrs.iees.graph.impl.TreeGraph;
 // ModelMaker HAS one of these
 // Controller IS one of these: Controller implements
 public interface IMMController {
+	
 	public void onProjectClosing();
 
 	public void onProjectOpened(TreeGraph<VisualNode,VisualEdge> layoutGraph);
