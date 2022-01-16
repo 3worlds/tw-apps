@@ -32,6 +32,7 @@ package au.edu.anu.twapps.mm;
 import java.io.File;
 import java.util.Collection;
 
+import au.edu.anu.twapps.mm.graphEditor.IGraphVisualiser;
 import au.edu.anu.twapps.mm.layout.LayoutType;
 import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
@@ -132,11 +133,11 @@ public class MockController implements IMMController{
 		System.out.println("TITLE SET TO DEFAULT");		
 	}
 
-	@Override
-	public void collapsePredef() {
-		// TODO Auto-generated method stub
-		
-	}
+//	@Override
+//	public void collapsePredef() {
+//		// TODO Auto-generated method stub
+//		
+//	}
 
 
 	@Override
@@ -209,6 +210,12 @@ public class MockController implements IMMController{
 	public IMMModel model() {
 		// TODO Auto-generated method stub
 		return model;
+	}
+
+	@Override
+	public IGraphVisualiser visualiser() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 

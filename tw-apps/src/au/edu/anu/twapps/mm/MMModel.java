@@ -174,7 +174,8 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		controller.doLayout(duration);
 
 		/** hide the predefined nodes for new models */
-		controller.collapsePredef();
+//		controller.collapsePredef();
+		controller.visualiser().collapsePredef();
 
 		/** Re apply layout after collapsing predefined tree. */
 		controller.doLayout(duration);
@@ -404,7 +405,8 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		controller.doLayout(duration);
 
 		/** hide the predefined nodes for imported graphs */
-		controller.collapsePredef();
+//		controller.collapsePredef();
+		controller.visualiser().collapsePredef();
 
 		/** Re apply layout after collapsing predefined tree. */
 		controller.doLayout(duration);

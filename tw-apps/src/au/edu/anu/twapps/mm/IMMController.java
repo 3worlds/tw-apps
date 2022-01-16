@@ -31,6 +31,7 @@ package au.edu.anu.twapps.mm;
 
 import java.util.Collection;
 
+import au.edu.anu.twapps.mm.graphEditor.IGraphVisualiser;
 import au.edu.anu.twapps.mm.layout.LayoutType;
 import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
@@ -45,6 +46,8 @@ import fr.cnrs.iees.graph.impl.TreeGraph;
 // ModelMaker HAS one of these
 // Controller IS one of these: Controller implements
 public interface IMMController {
+	
+	public IGraphVisualiser visualiser();
 	
 	public void onProjectClosing();
 
@@ -74,7 +77,7 @@ public interface IMMController {
 	
 	public void setDefaultTitle();
 	
-	public void collapsePredef();
+	//public void collapsePredef();
 	
 	public LayoutType getCurrentLayout();
 	
