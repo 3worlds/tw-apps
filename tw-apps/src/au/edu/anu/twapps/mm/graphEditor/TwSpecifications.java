@@ -98,10 +98,10 @@ public class TwSpecifications implements //
 	@Override
 	public SimpleDataTreeNode getSpecsOf(VisualNodeEditable editNode, TreeNode root, Set<String> discoveredFiles) {
 		for (TreeNode childSpec : root.getChildren()) {
-			if (isOfClass((SimpleDataTreeNode) childSpec, editNode.cClassId())) {
+			if (isOfClass((SimpleDataTreeNode) childSpec, editNode.visualNode().configNode().classId())) {
 				StringTable parentsSpecTable = (StringTable) ((SimpleDataTreeNode) childSpec).properties()
 						.getPropertyValue(aaHasParent);
-				StringTable parentsTable = editNode.getParentTable();
+				StringTable parentsTable = editNode.visualNode().parentTable();
 				// Dodgy: the parentTable is unknown during an import;
 				if (parentsTable == null)
 					return (SimpleDataTreeNode) childSpec;
@@ -110,7 +110,7 @@ public class TwSpecifications implements //
 					DataHolder dh = (DataHolder) childSpec;
 					if (dh.properties().hasProperty(aaHasId)) {
 						String hasId = (String) dh.properties().getPropertyValue(aaHasId);
-						if (editNode.getConfigNode().id().equals(hasId))
+						if (editNode.visualNode().configNode().id().equals(hasId))
 							return (SimpleDataTreeNode) childSpec;
 					} else
 						return (SimpleDataTreeNode) childSpec;
@@ -418,7 +418,7 @@ public class TwSpecifications implements //
 							obj.getClass().getSimpleName());
 					if (choice >= 0) {
 						Enum<?> value = ValidPropertyTypes.valueOf(names[choice], e);
-						vnode.getConfigNode().properties().setProperty(key, value);
+						vnode.configNode().properties().setProperty(key, value);
 					}
 				}
 			}

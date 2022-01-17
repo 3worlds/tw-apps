@@ -87,7 +87,7 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 		this.configNode = configNode;
 	}
 
-	public TreeGraphDataNode getConfigNode() {
+	public TreeGraphDataNode configNode() {
 		return configNode;
 	}
 
@@ -269,7 +269,7 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 		return false;
 	}
 
-	public StringTable getParentTable() {
+	public StringTable parentTable() {
 		return (StringTable) properties().getPropertyValue(vnParentRef);
 	}
 
@@ -277,7 +277,7 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 		properties().setProperty(vnParentRef, table);
 	}
 
-	private ExtendablePropertyList getExtendablePropertyList() {
+	private ExtendablePropertyList configProperties() {
 		return (ExtendablePropertyList) configNode.properties();
 	}
 
@@ -286,11 +286,11 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 	}
 
 	public void addProperty(String key, Object value) {
-		getExtendablePropertyList().addProperty(key, value);
+		configProperties().addProperty(key, value);
 	}
 
 	public void addProperty(String key) {
-		getExtendablePropertyList().addProperty(key);
+		configProperties().addProperty(key);
 	}
 
 	public boolean configHasProperty(String key) {
@@ -313,10 +313,6 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 
 			}
 		}
-	}
-
-	public String cClassId() {
-		return configNode.classId();
 	}
 
 	public void remove() {
@@ -367,7 +363,7 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 	}
 
 	public boolean isRoot() {
-		return cClassId().equals(N_ROOT.label());
+		return configNode.classId().equals(N_ROOT.label());
 	}
 
 	public void setupParentReference(Map<String, List<StringTable>> map) {
@@ -378,10 +374,12 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 		if (parent == null)
 			throw new TwAppsException("Parent is null.");
 		if (map == null)
-			throw new TwAppsException("Map is null when processing parent " + parent.getDisplayText(ElementDisplayText.RoleName));
-		List<StringTable> parentList = map.get(parent.cClassId());
+			throw new TwAppsException(
+					"Map is null when processing parent " + parent.getDisplayText(ElementDisplayText.RoleName));
+		List<StringTable> parentList = map.get(parent.configNode.classId());
 		if (parentList == null)
-			throw new TwAppsException("Archetype error: ParentList is null for parent " + parent.getDisplayText(ElementDisplayText.RoleName));
+			throw new TwAppsException("Archetype error: ParentList is null for parent "
+					+ parent.getDisplayText(ElementDisplayText.RoleName));
 
 		/**
 		 * Check each table and take the first that corresponds to the current set of
@@ -395,7 +393,7 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 			}
 		}
 		// This is the empty parent table for the root!
-		if (parent.getParentTable() == null)
+		if (parent.parentTable() == null)
 			parent.setParentRef(parentList.get(0));
 		for (VisualNode child : parent.getChildren())
 			setupParentReference(child, map);
@@ -403,7 +401,7 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 	}
 
 	public boolean treeMatchesTable(StringTable parents) {
-		TreeNode node = getConfigNode().getParent();
+		TreeNode node = configNode().getParent();
 		for (int i = 0; i < parents.size(); i++) {
 			if (referencedBy(node, parents.getWithFlatIndex(i)))
 				return true;
@@ -412,7 +410,7 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 	}
 
 	public static boolean referencedBy(TreeNode node, String ref) {
-		if (ref==null)
+		if (ref == null)
 			return false;
 		String[] parts = ref.split("" + SLASH);
 		for (int i = parts.length - 1; i >= 0; i--) {

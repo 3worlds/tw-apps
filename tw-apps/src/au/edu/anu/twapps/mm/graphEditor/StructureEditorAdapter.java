@@ -78,8 +78,6 @@ import au.edu.anu.twcore.project.TwPaths;
 import au.edu.anu.twcore.root.EditableFactory;
 import au.edu.anu.twcore.root.TwConfigFactory;
 import au.edu.anu.twcore.userProject.UserProjectLink;
-import au.edu.anu.twcore.data.FieldNode;
-import au.edu.anu.twcore.data.TableNode;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Node;
@@ -191,7 +189,7 @@ public abstract class StructureEditorAdapter
 	}
 
 	private boolean allowedChild(String childLabel, List<String[]> tables) {
-		VisualNode vn = editableNode.getSelectedVisualNode();
+		VisualNode vn = editableNode.visualNode();
 		for (String[] ss : tables) {
 			if (ss[0].equals(childLabel)) {
 				if (vn.configHasProperty(ss[1]))
@@ -209,7 +207,7 @@ public abstract class StructureEditorAdapter
 		List<VisualNode> result = new ArrayList<>();
 		TreeGraph<VisualNode, VisualEdge> vg = gvisualiser.getVisualGraph();
 		for (VisualNode vn : vg.nodes()) {
-			if (vn.cClassId().equals(labels[end])) {
+			if (vn.configNode().classId().equals(labels[end])) {
 				if (end == 0)
 					result.add(vn);
 				else {
@@ -227,7 +225,7 @@ public abstract class StructureEditorAdapter
 			return false;
 		if (index < 0)
 			return false;
-		if (index == 0 && parent.cClassId().equals(labels[index]))
+		if (index == 0 && parent.configNode().classId().equals(labels[index]))
 			return true;
 		return hasParent(parent.getParent(), labels, index - 1);
 	}
@@ -247,7 +245,7 @@ public abstract class StructureEditorAdapter
 			log.info(edgeLabel);
 			List<VisualNode> endNodes = findNodesReferenced(toNodeRef);
 			for (VisualNode endNode : endNodes) {
-				if (!editableNode.getSelectedVisualNode().id().equals(endNode.id())) // no edges to self
+				if (!editableNode.visualNode().id().equals(endNode.id())) // no edges to self
 					if (!editableNode.hasOutEdgeTo(endNode, edgeLabel))
 						if (satisfiesEdgeMultiplicity(edgeSpec, toNodeLabel, edgeLabel))
 							if (satisfyExclusiveCategoryQuery(edgeSpec, endNode, edgeLabel))
@@ -274,7 +272,7 @@ public abstract class StructureEditorAdapter
 	private boolean satisfiesEdgeMultiplicity(SimpleDataTreeNode edgeSpec, String toNodeLabel, String edgeLabel) {
 		IntegerRange range = specifications.getMultiplicityOf(edgeSpec);
 		@SuppressWarnings("unchecked")
-		List<Node> nodes = (List<Node>) get(editableNode.getConfigNode().edges(Direction.OUT),
+		List<Node> nodes = (List<Node>) get(editableNode.visualNode().configNode().edges(Direction.OUT),
 				selectZeroOrMany(hasTheLabel(edgeLabel)), edgeListStartNodes(),
 				selectZeroOrMany(hasTheLabel(toNodeLabel)));
 		if (nodes.size() >= range.getLast())
@@ -311,7 +309,7 @@ public abstract class StructureEditorAdapter
 				qp2.addAll(getEdgeLabelRefs(query.properties(), twaEdgeLabel2));
 				Set<String> es1 = new HashSet<>();
 				Set<String> es2 = new HashSet<>();
-				for (Edge e : editableNode.getConfigNode().edges(Direction.OUT))
+				for (Edge e : editableNode.visualNode().configNode().edges(Direction.OUT))
 					if (qp1.contains(e.classId()))
 						es1.add(e.classId());
 					else if (qp2.contains(e.classId()))
@@ -378,7 +376,7 @@ public abstract class StructureEditorAdapter
 
 		boolean result = false;
 		for (Duple<String, String> entry : entries) {
-			result = result || OutNodeXorQuery.propose(editableNode.getConfigNode(), proposedEndNode.getConfigNode(),
+			result = result || OutNodeXorQuery.propose(editableNode.visualNode().configNode(), proposedEndNode.configNode(),
 					entry.getFirst(), entry.getSecond());
 		}
 		return result;
@@ -391,13 +389,13 @@ public abstract class StructureEditorAdapter
 		if (specifications.getQueries((SimpleDataTreeNode) edgeSpec.getParent(), ExclusiveCategoryQuery.class)
 				.isEmpty())
 			return true;
-		return ExclusiveCategoryQuery.propose(editableNode.getConfigNode(), proposedCat.getConfigNode());
+		return ExclusiveCategoryQuery.propose(editableNode.visualNode().configNode(), proposedCat.configNode());
 	}
 
 	public List<VisualNode> orphanedChildList(Iterable<SimpleDataTreeNode> childSpecs) {
 		List<VisualNode> result = new ArrayList<>();
-		for (VisualNode root : editableNode.graphRoots()) {
-			String rootLabel = root.cClassId();
+		for (VisualNode root : editableNode.visualGraph().roots()) {
+			String rootLabel = root.configNode().classId();
 			for (SimpleDataTreeNode childSpec : childSpecs) {
 				String specLabel = (String) childSpec.properties().getPropertyValue(aaIsOfClass);
 				if (rootLabel.equals(specLabel))
@@ -505,7 +503,7 @@ public abstract class StructureEditorAdapter
 //			opNames.add((String) op.properties().getPropertyValue(aaHasName));
 
 		// make the node
-		newChild = editableNode.newChild(childLabel, promptId);
+		newChild = editableNode.visualNode().newChild(childLabel, promptId);
 		newChild.setCollapse(false);
 		newChild.setVisible(true);
 		newChild.setCategory();
@@ -549,10 +547,10 @@ public abstract class StructureEditorAdapter
 
 		processPropertiesMatchDefinition(newChild, childBaseSpec, childSubSpec);
 
-		if (newChild.cClassId().equals(N_SPACE.label()))
-			setDefaultSpaceDims(newChild.getConfigNode());
+		if (newChild.configNode().classId().equals(N_SPACE.label()))
+			setDefaultSpaceDims(newChild.configNode());
 
-		if (newChild.cClassId().equals(N_FUNCTION.label())) {
+		if (newChild.configNode().classId().equals(N_FUNCTION.label())) {
 			TwFunctionTypes ft = (TwFunctionTypes) newChild.configGetPropertyValue(P_FUNCTIONTYPE.key());
 			if (!ft.returnStatement().isBlank()) {
 				StringTable defValue = new StringTable(new Dimensioner(1));
@@ -641,8 +639,8 @@ public abstract class StructureEditorAdapter
 
 	@Override
 	public void onNewEdge(Tuple<String, VisualNode, SimpleDataTreeNode> details, double duration) {
-		if (editableNode.isCollapsed())
-			gvisualiser.expandTreeFrom(editableNode.getSelectedVisualNode(), duration);
+		if (editableNode.visualNode().isCollapsed())
+			gvisualiser.expandTreeFrom(editableNode.visualNode(), duration);
 		String id = getNewName(details.getFirst(), details.getFirst(),
 				ConfigurationEdgeLabels.labelValueOf(details.getFirst()).defName(), null);
 		if (id == null)
@@ -658,7 +656,7 @@ public abstract class StructureEditorAdapter
 		String edgeLabel = p.getFirst();
 		VisualNode target = p.getSecond();
 		SimpleDataTreeNode edgeSpec = p.getThird();
-		VisualEdge vEdge = editableNode.newEdge(edgeId, edgeLabel, target);
+		VisualEdge vEdge = editableNode.visualNode().newEdge(edgeId, edgeLabel, target);
 		if (vEdge.getConfigEdge() instanceof ALDataEdge) {
 			ALDataEdge edge = (ALDataEdge) vEdge.getConfigEdge();
 			ExtendablePropertyList props = (ExtendablePropertyList) edge.properties();
@@ -700,7 +698,7 @@ public abstract class StructureEditorAdapter
 
 	@Override
 	public void onDeleteNode(double duration) {
-		deleteNode(editableNode.getSelectedVisualNode(), duration);
+		deleteNode(editableNode.visualNode(), duration);
 		controller.onNodeDeleted();
 		GraphState.setChanged();
 		ConfigGraph.verifyGraph();
@@ -708,11 +706,11 @@ public abstract class StructureEditorAdapter
 
 	@Override
 	public boolean onRenameNode() {
-		String userName = getNewName(editableNode.cClassId() + ":" + editableNode.getConfigNode().id(),
-				editableNode.cClassId(), editableNode.getConfigNode().id(), baseSpec);
+		String userName = getNewName(editableNode.visualNode().configNode() + ":" + editableNode.visualNode().configNode().id(),
+				editableNode.visualNode().configNode().classId(), editableNode.visualNode().configNode().id(), baseSpec);
 		if (userName != null) {
-			renameNode(userName, editableNode.getSelectedVisualNode());
-			gvisualiser.onNodeRenamed(editableNode.getSelectedVisualNode());
+			renameNode(userName, editableNode.visualNode());
+			gvisualiser.onNodeRenamed(editableNode.visualNode());
 			controller.onElementRenamed();
 			return true;
 		}
@@ -742,7 +740,7 @@ public abstract class StructureEditorAdapter
 	}
 
 	private void renameNode(String uniqueId, VisualNode vNode) {
-		TreeGraphDataNode cNode = vNode.getConfigNode();
+		TreeGraphDataNode cNode = vNode.configNode();
 		if (cNode.classId().equals(N_SYSTEM.label())) {
 			File javaDir = Project.makeFile(ProjectPaths.LOCALJAVA, ProjectPaths.CODE, vNode.id());
 			if (javaDir.exists()) {
@@ -789,7 +787,6 @@ public abstract class StructureEditorAdapter
 
 		// NB: graphs must be saved and reloaded after this op because Map<> of nodes
 		// will have old KEYS
-		TreeGraph<TreeGraphDataNode, ALEdge> g = ConfigGraph.getGraph();
 		cNode.rename(cNode.id(), uniqueId);
 		vNode.rename(vNode.id(), uniqueId);
 	}
@@ -876,8 +873,7 @@ public abstract class StructureEditorAdapter
 
 	@Override
 	public void onCollapseTrees(double duration) {
-		boolean result = false;
-		for (VisualNode child : editableNode.getSelectedVisualNode().getChildren()) {
+		for (VisualNode child : editableNode.visualNode().getChildren()) {
 			if (!child.isCollapsed())
 				gvisualiser.collapseTreeFrom(child, duration);
 		}
@@ -894,7 +890,7 @@ public abstract class StructureEditorAdapter
 
 	@Override
 	public void onExpandTrees(double duration) {
-		for (VisualNode child : editableNode.getSelectedVisualNode().getChildren()) {
+		for (VisualNode child : editableNode.visualNode().getChildren()) {
 			if (child.isCollapsed())
 				gvisualiser.expandTreeFrom(child, duration);
 		}
@@ -904,7 +900,7 @@ public abstract class StructureEditorAdapter
 
 	@Override
 	public void onReconnectChild(VisualNode vnChild) {
-		editableNode.reconnectChild(vnChild);
+		editableNode.visualNode().reconnectChild(vnChild);
 		gvisualiser.onNewParent(vnChild);
 		ConfigGraph.verifyGraph();
 		GraphState.setChanged();
@@ -963,7 +959,7 @@ public abstract class StructureEditorAdapter
 		if (file.getAbsolutePath().contains(".3w/"))
 			Dialogs.infoAlert("Export", "Cannot export to a project directory", file.getAbsolutePath());
 		else {
-			exportTree(file, root.getConfigNode());
+			exportTree(file, root.configNode());
 		}
 	}
 
@@ -1023,7 +1019,7 @@ public abstract class StructureEditorAdapter
 	public void onImportTree(SimpleDataTreeNode childSpec, double duration) {
 		TreeGraph<TreeGraphDataNode, ALEdge> importGraph = getImportGraph(childSpec);
 		if (importGraph != null) {
-			importGraph(importGraph, editableNode.getSelectedVisualNode(), duration);
+			importGraph(importGraph, editableNode.visualNode(), duration);
 			controller.doLayout(duration);
 			GraphState.setChanged();
 			ConfigGraph.verifyGraph();
@@ -1038,7 +1034,7 @@ public abstract class StructureEditorAdapter
 		Map<ALEdge, VisualNode> outEdgeMap = new HashMap<>();
 		Map<ALEdge, VisualNode> inEdgeMap = new HashMap<>();
 
-		TreeGraphDataNode cParent = vParent.getConfigNode();
+		TreeGraphDataNode cParent = vParent.configNode();
 		TwConfigFactory cFactory = (TwConfigFactory) cParent.factory();
 		VisualGraphFactory vFactory = (VisualGraphFactory) vParent.factory();
 		TreeGraphDataNode importNode = configSubGraph.root();
@@ -1050,8 +1046,8 @@ public abstract class StructureEditorAdapter
 			ALEdge importEdge = entry.getKey();
 			VisualNode vStart = entry.getValue();
 			VisualNode vEnd = inEdgeMap.get(importEdge);
-			TreeGraphDataNode cStart = vStart.getConfigNode();
-			TreeGraphDataNode cEnd = vEnd.getConfigNode();
+			TreeGraphDataNode cStart = vStart.configNode();
+			TreeGraphDataNode cEnd = vEnd.configNode();
 			// make edges
 			ALEdge newCEdge = (ALEdge) cFactory.makeEdge(cFactory.edgeClass(importEdge.classId()), cStart, cEnd,
 					importEdge.id());
@@ -1097,7 +1093,7 @@ public abstract class StructureEditorAdapter
 		newVNode.connectParent(vParent);
 		newVNode.setConfigNode(newCNode);
 		Set<String> discoveredFile = new HashSet<>();
-		VisualNodeEditable vne = new VisualNodeEditor(newVNode, editableNode.getGraph());
+		VisualNodeEditable vne = new VisualNodeEditor(newVNode, editableNode.visualGraph());
 		// this depends on the parent table been present so its circular
 		// This will break eventually when finding the spec without knowing the precise
 		// parent when there can be more than one.
@@ -1148,9 +1144,9 @@ public abstract class StructureEditorAdapter
 	@Override
 	public void onDeleteParentLink(VisualNode vChild) {
 		// messy: onParentChanged never expect edge deletion
-		VisualNode vParent = editableNode.getSelectedVisualNode();
-		TreeGraphNode cChild = vChild.getConfigNode();
-		TreeGraphNode cParent = editableNode.getConfigNode();
+		VisualNode vParent = editableNode.visualNode();
+		TreeGraphNode cChild = vChild.configNode();
+		TreeGraphNode cParent = editableNode.visualNode().configNode();
 		gvisualiser.onRemoveParentLink(vChild);
 		vParent.disconnectFrom(vChild);
 		cParent.disconnectFrom(cChild);
@@ -1164,7 +1160,7 @@ public abstract class StructureEditorAdapter
 	public boolean onOptionalProperties(List<SimpleDataTreeNode> propertySpecs) {
 		List<String> items = new ArrayList<>();
 		List<Boolean> selected = new ArrayList<>();
-		TreeGraphDataNode cn = (TreeGraphDataNode) editableNode.getConfigNode();
+		TreeGraphDataNode cn = (TreeGraphDataNode) editableNode.visualNode().configNode();
 		for (SimpleDataTreeNode p : propertySpecs) {
 			String name = (String) p.properties().getPropertyValue(aaHasName);
 			items.add(name);
@@ -1174,7 +1170,7 @@ public abstract class StructureEditorAdapter
 				selected.add(false);
 		}
 		List<String> selectedItems = Dialogs.getCBSelections(
-				editableNode.getSelectedVisualNode().getConfigNode().toShortString(), "Optional properties", items,
+				editableNode.visualNode().configNode().toShortString(), "Optional properties", items,
 				selected);
 		List<String> additions = new ArrayList<>();
 		List<String> deletions = new ArrayList<>();

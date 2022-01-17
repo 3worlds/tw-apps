@@ -63,38 +63,21 @@ public class VisualNodeEditor implements //
 		this.visualNode = visualNode;
 		this.visualGraph = visualGraph;
 	}
-
 	@Override
-	public boolean hasChildren() {
-		return visualNode.hasChildren();
+	public VisualNode visualNode() {
+		return visualNode;
 	}
 
 	@Override
-	public String getClassValue() {
-		// TODO Auto-generated method stub ???
-		return null;
+	public TreeGraph<VisualNode, VisualEdge> visualGraph() {
+		return visualGraph;
 	}
-
-	@Override
-	public TreeGraphNode getConfigNode() {
-		return visualNode.getConfigNode();
-	}
-
-	@Override
-	public boolean isPredefined() {
-		return visualNode.isPredefined();
-	}
-
-	@Override
-	public boolean isRoot() {
-		return visualNode.cClassId().equals(N_ROOT.label());
-	}
-
+	
 	@Override
 	public boolean moreChildrenAllowed(IntegerRange range, String childLabel) {
 		List<VisualNode> lst = new ArrayList<>();
 		for (VisualNode child : visualNode.getChildren()) {
-			String label = child.cClassId();
+			String label = child.configNode().classId();
 			if (label.equals(childLabel))
 				lst.add(child);
 		}
@@ -102,47 +85,14 @@ public class VisualNodeEditor implements //
 	}
 
 	@Override
-	public Iterable<VisualNode> graphRoots() {
-		return visualGraph.roots();
-	}
-
-	@Override
 	public boolean hasOutEdges() {
-		// !isLeaf
 		return visualNode.edges(Direction.OUT).iterator().hasNext();
-	}
-
-	@Override
-	public boolean isLeaf() {
-		// no out edges OR children
-		return visualNode.isLeaf();
-	}
-
-	@Override
-	public boolean isCollapsed() {
-		return visualNode.isCollapsed();
-	}
-
-	@Override
-	public VisualNode newChild(String label, String proposedId) {
-		return visualNode.newChild(label, proposedId);
 	}
 
 	@Override
 	public String proposeAnId(String proposedName) {
 		Identity id = visualNode.scope().newId(false, proposedName);
 		return id.id();
-	}
-
-	@Override
-	public StringTable getParentTable() {
-		return visualNode.getParentTable();
-	}
-
-	@Override
-	public VisualNode getSelectedVisualNode() {
-		return visualNode;
-
 	}
 
 	@SuppressWarnings("unchecked")
@@ -154,8 +104,7 @@ public class VisualNodeEditor implements //
 			try {
 				return (Class<? extends TreeGraphNode>) Class.forName(result, true, classLoader);
 			} catch (ClassNotFoundException e) {
-				throw new TwAppsException("Subclass not found in the system: " + result + visualNode.getConfigNode());
-
+				throw new TwAppsException("Subclass not found in the system: " + result + visualNode.configNode());
 			}
 		} else {
 		}
@@ -178,8 +127,8 @@ public class VisualNodeEditor implements //
 	@Override
 	public boolean hasOutEdgeTo(VisualNode vEnd, String edgeLabel) {
 
-		TreeGraphNode cStart = visualNode.getConfigNode();
-		TreeGraphNode cEnd = vEnd.getConfigNode();
+		TreeGraphNode cStart = visualNode.configNode();
+		TreeGraphNode cEnd = vEnd.configNode();
 		if (ignoreDuplicateEdgesBetween(cStart, cEnd, edgeLabel))
 			return false;
 		for (ALEdge cEdge : cStart.edges(Direction.OUT)) {
@@ -198,42 +147,24 @@ public class VisualNodeEditor implements //
 	}
 
 	@Override
-	public String cClassId() {
-		return visualNode.cClassId();
-	}
-
-	@Override
-	public VisualEdge newEdge(String id, String label, VisualNode vEnd) {
-		return visualNode.newEdge(id, label, vEnd);
-	}
-
-	@Override
-	public void reconnectChild(VisualNode vnChild) {
-		visualNode.reconnectChild(vnChild);
-	}
-
-	@Override
 	public boolean references(StringTable parents) {
-		TreeNode node = visualNode.getConfigNode();
+		TreeNode node = visualNode.configNode();
 		for (int i = 0; i < parents.size(); i++)
 			if (VisualNode.referencedBy(node, parents.getWithFlatIndex(i)))
 				return true;
 		return false;
 	}
 
-	@Override
-	public TreeGraph<VisualNode, VisualEdge> getGraph() {
-		return visualGraph;
-	}
 
 	@Override
 	public String extractParentReference(StringTable parents) {
-		TreeNode node = visualNode.getConfigNode();
+		TreeNode node = visualNode.configNode();
 		for (int i = 0; i < parents.size(); i++)
 			if (VisualNode.referencedBy(node, parents.getWithFlatIndex(i)))
 				return parents.getWithFlatIndex(i);
 
 		return null;
 	}
+
 
 }

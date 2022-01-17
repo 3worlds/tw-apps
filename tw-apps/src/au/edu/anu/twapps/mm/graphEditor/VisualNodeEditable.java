@@ -40,56 +40,29 @@ import fr.cnrs.iees.graph.impl.TreeGraphNode;
 
 // impl will have a VisualNode which hosts the configuration node
 public interface VisualNodeEditable {
-	public boolean hasChildren();
-
-	/* return the class value or null from the hosted config node */
-	public String getClassValue();
-
-	/* get the configuration node under-pinning this */
-	public TreeGraphNode getConfigNode();
-
-
-	public boolean isPredefined();
 	
-	public boolean isRoot();
+	public VisualNode visualNode();
+	
 	/* true if the this node can have more children of this label */
 	public boolean moreChildrenAllowed(IntegerRange range, String childLabel);
-
-	public Iterable<VisualNode> graphRoots();
 
 	public boolean hasOutEdges();
 	
 	public Iterable<VisualEdge> getOutEdges();
 
-	public boolean isLeaf();
-
-	public boolean isCollapsed();
-
-	public VisualNode newChild(String label, String name);
-
 	public String proposeAnId(String proposedName);
 	
-	public VisualNode getSelectedVisualNode();
-
 	public Class<? extends TreeGraphNode> getSubClass();
 
 	public boolean hasOutEdgeTo(VisualNode endNode, String edgeLabel);
 
 	public Iterable<VisualNode> getOutNodes();
-
-	public String cClassId();
-	
-	public VisualEdge newEdge(String id, String label,VisualNode vEnd);
-
-	public void reconnectChild(VisualNode vnChild);
 	
 	public boolean references (StringTable parents);
 	
-	public TreeGraph<VisualNode, VisualEdge> getGraph();
+	public TreeGraph<VisualNode, VisualEdge> visualGraph();
 
 	public String extractParentReference(StringTable parents);
-
-	public StringTable getParentTable();
 
 	
 	//public void addProperty(String key, Object defaultValue);

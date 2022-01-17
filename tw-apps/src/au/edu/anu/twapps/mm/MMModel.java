@@ -569,7 +569,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 
 	// TODO expose with MMMI interface
 	public StringTable findParentTable(VisualNode vn) {
-		List<StringTable> parentList = classParentTableMapping.get(vn.cClassId());
+		List<StringTable> parentList = classParentTableMapping.get(vn.configNode().classId());
 		for (StringTable table : parentList) {
 			if (vn.treeMatchesTable(table))
 				return table;
@@ -735,7 +735,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		}
 		String oldId = vRoot.id();
 		vRoot.rename(oldId, newId);
-		vRoot.getConfigNode().rename(oldId, newId);
+		vRoot.configNode().rename(oldId, newId);
 
 		Project.create(newId);
 
