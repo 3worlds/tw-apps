@@ -43,6 +43,8 @@ public interface VisualNodeEditable {
 	
 	public VisualNode visualNode();
 	
+	public TreeGraph<VisualNode, VisualEdge> visualGraph();
+	
 	/* true if the this node can have more children of this label */
 	public boolean moreChildrenAllowed(IntegerRange range, String childLabel);
 
@@ -59,8 +61,6 @@ public interface VisualNodeEditable {
 	public Iterable<VisualNode> getOutNodes();
 	
 	public boolean references (StringTable parents);
-	
-	public TreeGraph<VisualNode, VisualEdge> visualGraph();
 
 	public String extractParentReference(StringTable parents);
 
