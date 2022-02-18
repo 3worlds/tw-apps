@@ -34,6 +34,7 @@ import java.util.List;
 import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import fr.cnrs.iees.graph.impl.SimpleDataTreeNode;
+import fr.ens.biologie.generic.utils.Duple;
 import fr.ens.biologie.generic.utils.Tuple;
 
 /**
@@ -100,6 +101,6 @@ public interface StructureEditable {
 
 	void onDeleteParentLink(VisualNode child);
 	
-	boolean onOptionalProperties(List<SimpleDataTreeNode> propertySpecs);
+	boolean onOptionalProperties(List<SimpleDataTreeNode> propertySpecs,List<Duple<VisualEdge, SimpleDataTreeNode>> optionalEdgePropertySpecs);
 
 }

@@ -39,6 +39,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -94,6 +95,7 @@ import fr.cnrs.iees.identity.impl.PairIdentity;
 import fr.cnrs.iees.io.FileImporter;
 import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
 import fr.cnrs.iees.properties.ExtendablePropertyList;
+//import fr.cnrs.iees.properties.ExtendablePropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SimplePropertyListImpl;
 import fr.cnrs.iees.twcore.constants.BorderListType;
@@ -376,8 +378,8 @@ public abstract class StructureEditorAdapter
 
 		boolean result = false;
 		for (Duple<String, String> entry : entries) {
-			result = result || OutNodeXorQuery.propose(editableNode.visualNode().configNode(), proposedEndNode.configNode(),
-					entry.getFirst(), entry.getSecond());
+			result = result || OutNodeXorQuery.propose(editableNode.visualNode().configNode(),
+					proposedEndNode.configNode(), entry.getFirst(), entry.getSecond());
 		}
 		return result;
 
@@ -706,8 +708,10 @@ public abstract class StructureEditorAdapter
 
 	@Override
 	public boolean onRenameNode() {
-		String userName = getNewName(editableNode.visualNode().configNode() + ":" + editableNode.visualNode().configNode().id(),
-				editableNode.visualNode().configNode().classId(), editableNode.visualNode().configNode().id(), baseSpec);
+		String userName = getNewName(
+				editableNode.visualNode().configNode() + ":" + editableNode.visualNode().configNode().id(),
+				editableNode.visualNode().configNode().classId(), editableNode.visualNode().configNode().id(),
+				baseSpec);
 		if (userName != null) {
 			renameNode(userName, editableNode.visualNode());
 			gvisualiser.onNodeRenamed(editableNode.visualNode());
@@ -1157,40 +1161,67 @@ public abstract class StructureEditorAdapter
 	}
 
 	@Override
-	public boolean onOptionalProperties(List<SimpleDataTreeNode> propertySpecs) {
-		List<String> items = new ArrayList<>();
+	public boolean onOptionalProperties(List<SimpleDataTreeNode> optionalNodePropertySpecs,
+			List<Duple<VisualEdge, SimpleDataTreeNode>> optionalEdgePropertySpecs) {
+		List<String> displayNames = new ArrayList<>();
 		List<Boolean> selected = new ArrayList<>();
+		// DisplayName, Spec, propertyList
+		Map<String, Tuple<String, SimpleDataTreeNode, ExtendablePropertyList>> propertyDetailsMap = new LinkedHashMap<>();
 		TreeGraphDataNode cn = (TreeGraphDataNode) editableNode.visualNode().configNode();
-		for (SimpleDataTreeNode p : propertySpecs) {
+		for (SimpleDataTreeNode p : optionalNodePropertySpecs) {
 			String name = (String) p.properties().getPropertyValue(aaHasName);
-			items.add(name);
+			String displayName = cn.toShortString() + "#" + name;
+			displayNames.add(displayName);
+			propertyDetailsMap.put(displayName, new Tuple<String, SimpleDataTreeNode, ExtendablePropertyList>(name, p,
+					(ExtendablePropertyList) cn.properties()));
 			if (cn.properties().hasProperty(name))
 				selected.add(true);
 			else
 				selected.add(false);
 		}
-		List<String> selectedItems = Dialogs.getCBSelections(
-				editableNode.visualNode().configNode().toShortString(), "Optional properties", items,
-				selected);
-		List<String> additions = new ArrayList<>();
-		List<String> deletions = new ArrayList<>();
+		for (Duple<VisualEdge, SimpleDataTreeNode> ep : optionalEdgePropertySpecs) {
+			ALDataEdge edge = (ALDataEdge) ep.getFirst().getConfigEdge();
+			SimpleDataTreeNode ps = ep.getSecond();
+			String name = (String) ps.properties().getPropertyValue(aaHasName);
+			String displayName = edge.toShortString() + "#" + name;
+			displayNames.add(displayName);
+			propertyDetailsMap.put(displayName, new Tuple<String, SimpleDataTreeNode, ExtendablePropertyList>(name, ps,
+					(ExtendablePropertyList) edge.properties()));
+			if (edge.properties().hasProperty(name))
+				selected.add(true);
+			else
+				selected.add(false);
 
-		Set<String> currentKeys = cn.properties().getKeysAsSet();
-		for (String key : currentKeys)
-			if (items.contains(key))
-				if (!selectedItems.contains(key))
-					deletions.add(key);
-		for (String key : selectedItems)
-			if (!currentKeys.contains(key))
-				additions.add(key);
-
-		ExtendablePropertyList props = (ExtendablePropertyList) cn.properties();
-		for (String key : deletions) {
-			props.removeProperty(key);
 		}
-		for (String key : additions) {
-			// find the spec
-			SimpleDataTreeNode pSpec = getPropertySpec(key, propertySpecs);
+		List<Tuple<String, SimpleDataTreeNode, ExtendablePropertyList>> additions = new ArrayList<>();
+		List<Tuple<String, SimpleDataTreeNode, ExtendablePropertyList>> deletions = new ArrayList<>();
+		// If cancel is pressed the original list of selected items is return and
+		// therefore no change should result.
+		List<String> selectedItems = Dialogs.getCBSelections(editableNode.visualNode().configNode().toShortString(),
+				"Optional properties", displayNames, selected);
+		// addition iff selected and not currently present
+		// deletion iff not selected and present
+		for (String displayName : displayNames) {
+			boolean isSelected = selected.get(displayNames.indexOf(displayName));
+			if (!isSelected && selectedItems.contains(displayName))
+				additions.add(propertyDetailsMap.get(displayName));
+			else if (isSelected && !selectedItems.contains(displayName))
+				deletions.add(propertyDetailsMap.get(displayName));
+		}
+
+		// Deletions
+		for (Tuple<String, SimpleDataTreeNode, ExtendablePropertyList> details : deletions) {
+			String key = details.getFirst();
+			ExtendablePropertyList p = details.getThird();
+			p.removeProperty(key);
+		}
+		// Additions
+		for (Tuple<String, SimpleDataTreeNode, ExtendablePropertyList> details : additions) {
+			String key = details.getFirst();
+			SimpleDataTreeNode spec = details.getSecond();
+			ExtendablePropertyList p  = details.getThird();
+			Object defValue;
+
 			if (key.equals(P_SPACE_OBSWINDOW.key())) {
 				SpaceType st = (SpaceType) cn.properties().getPropertyValue(P_SPACETYPE.key());
 				int nDims = st.dimensions();
@@ -1199,18 +1230,16 @@ public abstract class StructureEditorAdapter
 				double[] upperBounds = new double[nDims];
 				Arrays.fill(lowerBounds, 0.0);
 				Arrays.fill(upperBounds, 0.0);// Leave it to queries to indicate a +ve range is needed.
-//				Point p1 = Point.newPoint(lowerBounds);
 				for (int i = 0; i < 2; i++) {
 					points[0] = Point.newPoint(lowerBounds);
 					points[1] = Point.newPoint(upperBounds);
 				}
-				props.addProperty(key, Box.boundingBox(points[0], points[1]));
-
+				defValue =  Box.boundingBox(points[0], points[1]);
 			} else {
-				String type = (String) pSpec.properties().getPropertyValue(aaType);
-				Object defValue = ValidPropertyTypes.getDefaultValue(type);
-				props.addProperty(key, defValue);
+				String type = (String) spec.properties().getPropertyValue(aaType);
+				defValue = ValidPropertyTypes.getDefaultValue(type);
 			}
+			p.addProperty(key,defValue);
 		}
 
 		if (!deletions.isEmpty() || !additions.isEmpty())
@@ -1219,13 +1248,22 @@ public abstract class StructureEditorAdapter
 			return false;
 	}
 
-	private static SimpleDataTreeNode getPropertySpec(String key, List<SimpleDataTreeNode> propertySpecs) {
-		for (SimpleDataTreeNode p : propertySpecs) {
-			String name = (String) p.properties().getPropertyValue(aaHasName);
-			if (name.equals(key))
-				return p;
-		}
-		return null;
-	}
+//	private static SimpleDataTreeNode getPropertySpec(String key, List<SimpleDataTreeNode> propertySpecs,
+//			List<Duple<VisualEdge, SimpleDataTreeNode>> optionalEdgePropertySpecs) {
+//		// look in node
+//		for (SimpleDataTreeNode p : propertySpecs) {
+//			String name = (String) p.properties().getPropertyValue(aaHasName);
+//			if (name.equals(key))
+//				return p;
+//		}
+//		for (Duple<VisualEdge, SimpleDataTreeNode> d : optionalEdgePropertySpecs) {
+////			ALDataEdge e = (ALDataEdge) d.getFirst().getConfigEdge();
+//			SimpleDataTreeNode p = d.getSecond();
+//			String name = (String) p.properties().getPropertyValue(aaHasName);
+//			if (name.equals(key))
+//				return p;
+//		}
+//		return null;
+//	}
 
 }
