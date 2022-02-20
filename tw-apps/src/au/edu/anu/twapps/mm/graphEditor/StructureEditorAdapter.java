@@ -1195,16 +1195,16 @@ public abstract class StructureEditorAdapter
 		}
 		List<Tuple<String, SimpleDataTreeNode, ExtendablePropertyList>> additions = new ArrayList<>();
 		List<Tuple<String, SimpleDataTreeNode, ExtendablePropertyList>> deletions = new ArrayList<>();
-		// If cancel is pressed the original list of selected items is return and
+		// If cancel is pressed the original list of selected items is returned and
 		// therefore no change should result.
 		List<String> selectedItems = Dialogs.getCBSelections(editableNode.visualNode().configNode().toShortString(),
 				"Optional properties", displayNames, selected);
-		// addition iff selected and not currently present
-		// deletion iff not selected and present
 		for (String displayName : displayNames) {
 			boolean isSelected = selected.get(displayNames.indexOf(displayName));
+			// addition iff selected and not currently present
 			if (!isSelected && selectedItems.contains(displayName))
 				additions.add(propertyDetailsMap.get(displayName));
+			// deletion iff not selected and present
 			else if (isSelected && !selectedItems.contains(displayName))
 				deletions.add(propertyDetailsMap.get(displayName));
 		}
@@ -1219,7 +1219,7 @@ public abstract class StructureEditorAdapter
 		for (Tuple<String, SimpleDataTreeNode, ExtendablePropertyList> details : additions) {
 			String key = details.getFirst();
 			SimpleDataTreeNode spec = details.getSecond();
-			ExtendablePropertyList p  = details.getThird();
+			ExtendablePropertyList p = details.getThird();
 			Object defValue;
 
 			if (key.equals(P_SPACE_OBSWINDOW.key())) {
@@ -1234,12 +1234,12 @@ public abstract class StructureEditorAdapter
 					points[0] = Point.newPoint(lowerBounds);
 					points[1] = Point.newPoint(upperBounds);
 				}
-				defValue =  Box.boundingBox(points[0], points[1]);
+				defValue = Box.boundingBox(points[0], points[1]);
 			} else {
 				String type = (String) spec.properties().getPropertyValue(aaType);
 				defValue = ValidPropertyTypes.getDefaultValue(type);
 			}
-			p.addProperty(key,defValue);
+			p.addProperty(key, defValue);
 		}
 
 		if (!deletions.isEmpty() || !additions.isEmpty())
@@ -1247,23 +1247,4 @@ public abstract class StructureEditorAdapter
 		else
 			return false;
 	}
-
-//	private static SimpleDataTreeNode getPropertySpec(String key, List<SimpleDataTreeNode> propertySpecs,
-//			List<Duple<VisualEdge, SimpleDataTreeNode>> optionalEdgePropertySpecs) {
-//		// look in node
-//		for (SimpleDataTreeNode p : propertySpecs) {
-//			String name = (String) p.properties().getPropertyValue(aaHasName);
-//			if (name.equals(key))
-//				return p;
-//		}
-//		for (Duple<VisualEdge, SimpleDataTreeNode> d : optionalEdgePropertySpecs) {
-////			ALDataEdge e = (ALDataEdge) d.getFirst().getConfigEdge();
-//			SimpleDataTreeNode p = d.getSecond();
-//			String name = (String) p.properties().getPropertyValue(aaHasName);
-//			if (name.equals(key))
-//				return p;
-//		}
-//		return null;
-//	}
-
 }
