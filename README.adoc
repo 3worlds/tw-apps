@@ -1,0 +1,12 @@
+= The TW-APPS library
+
+*tw-apps* contains the two applications needed to run 3Worlds, the _ModelMaker_ and the _ModelRunner_.
+
+See the https://3worlds.github.io/tw-apps/tw-apps/javadoc/index.html[javadoc]
+
+Depends on: https://github.com/3worlds/omhtk[omhtk], 
+https://github.com/3worlds/omugi[omugi], 
+https://github.com/3worlds/rvgrid[rvgrid], 
+https://github.com/3worlds/uit[uit], 
+https://github.com/3worlds/qgraph[qgraph], 
+https://github.com/3worlds/aot[aot]
