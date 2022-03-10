@@ -9,4 +9,5 @@ https://github.com/3worlds/omugi[omugi],
 https://github.com/3worlds/rvgrid[rvgrid], 
 https://github.com/3worlds/uit[uit], 
 https://github.com/3worlds/qgraph[qgraph], 
-https://github.com/3worlds/aot[aot]
+https://github.com/3worlds/aot[aot], 
+https://github.com/3worlds/tw-core[tw-core]
