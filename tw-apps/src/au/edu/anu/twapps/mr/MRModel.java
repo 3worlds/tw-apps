@@ -40,9 +40,7 @@ import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 
 /**
- * @author Ian Davies
- *
- * @date 31 Dec 2019
+ * @author Ian Davies date 31 Dec 2019
  */
 public class MRModel implements IMRModel {
 	private TreeGraph<TreeGraphDataNode, ALEdge> graph;

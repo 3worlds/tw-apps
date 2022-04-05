@@ -34,9 +34,7 @@ import java.util.List;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 
 /**
- * @author Ian Davies
- *
- * @date 26 Apr 2020
+ * @author Ian Davies 26 Apr 2020
  */
 public class RT2Vertex extends TreeVertexAdapter {
 

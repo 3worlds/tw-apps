@@ -52,6 +52,8 @@ import au.edu.anu.twapps.dialogs.Dialogs;
 import au.edu.anu.twapps.exceptions.TwAppsException;
 import au.edu.anu.twapps.mm.visualGraph.VisualGraphFactory;
 import au.edu.anu.twapps.mm.configGraph.ConfigGraph;
+import au.edu.anu.twapps.mm.undo.Caretaker;
+import au.edu.anu.twapps.mm.undo.MMMemento;
 import au.edu.anu.twapps.mm.visualGraph.ElementDisplayText;
 import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
@@ -110,7 +112,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 	}
 
 	@Override
-	public void addState(String desc) {
+	public final void addState(String desc) {
 		if (!Project.getProjectFile().exists()) {
 			doSave();
 		}
@@ -276,7 +278,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public void restore(MMMemento m) {
+	public final void restore(MMMemento m) {
 		// get the prev config graph
 		TreeGraph<TreeGraphDataNode, ALEdge> a = (TreeGraph<TreeGraphDataNode, ALEdge>) FileImporter
 				.loadGraphFromFile(m.getState().getFirst());

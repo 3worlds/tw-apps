@@ -32,9 +32,7 @@ package au.edu.anu.twapps.mm.layout;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 
 /**
- * @author Ian Davies
- *
- * @date 24 Apr 2020
+ * @author Ian Davies 24 Apr 2020
  */
 public class OTVertex extends TreeVertexAdapter {
 

@@ -34,9 +34,7 @@ import fr.cnrs.iees.uit.space.Distance;
 import fr.ens.biologie.generic.utils.Duple;
 
 /**
- * @author Ian Davies
- *
- * @date 30 Mar 2020
+ * @author Ian Davies 30 Mar 2020
  */
 public class RT1Vertex extends TreeVertexAdapter {
 	private double radius;// distance to all children

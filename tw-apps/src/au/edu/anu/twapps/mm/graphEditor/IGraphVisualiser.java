@@ -36,9 +36,7 @@ import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 
 /**
- * @author Ian Davies
- *
- * @date 9 Aug 2019
+ * @author Ian Davies 9 Aug 2019
  */
 public interface IGraphVisualiser {
 	public void initialiseView(double duration);

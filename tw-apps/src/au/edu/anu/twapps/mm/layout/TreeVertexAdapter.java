@@ -41,9 +41,7 @@ import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import fr.cnrs.iees.graph.Edge;
 
 /**
- * @author Ian Davies
- *
- * @date 30 Apr 2020
+ * @author Ian Davies 30 Apr 2020
  */
 public abstract class TreeVertexAdapter extends VertexAdapter implements ITreeVertex<TreeVertexAdapter> {
 	private List<TreeVertexAdapter> _children;

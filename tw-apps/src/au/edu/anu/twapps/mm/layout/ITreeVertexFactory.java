@@ -32,9 +32,7 @@ package au.edu.anu.twapps.mm.layout;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 
 /**
- * @author Ian Davies
- *
- * @date 1 May 2020
+ * @author Ian Davies 1 May 2020
  */
 public interface ITreeVertexFactory {
 	public TreeVertexAdapter makeVertex(TreeVertexAdapter parent, VisualNode node);

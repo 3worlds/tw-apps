@@ -31,9 +31,7 @@ package au.edu.anu.twapps.mr;
 
 
 /**
- * @author Ian Davies
- *
- * @date 31 Dec 2019
+ * @author Ian Davies 31 Dec 2019
  */
 public interface IMRController {
 

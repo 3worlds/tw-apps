@@ -30,15 +30,14 @@
 package au.edu.anu.twapps.mm.userProjectFactory;
 
 /**
- * @author Ian Davies
- *
- * @date 23 Aug 2019
+ * @author Ian Davies 23 Aug 2019
  */
 
-// These enums define the IDE support env for user projects. Where the java, class and library files are located.
+/**
+ * These enums define the IDE support env for user projects: location of java,
+ * class and library files.
+ */
 public enum IDETypes {
-	eclipse,
-	IntelliJ,
-	NetBeans;
+	eclipse, IntelliJ, NetBeans;
 
 }

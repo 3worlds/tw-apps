@@ -32,11 +32,9 @@ package au.edu.anu.twapps.mm.layout;
 import java.util.List;
 
 /**
- * @author Ian Davies
- *
- * @date 30 Apr 2020
+ * @author Ian Davies 30 Apr 2020
  */
-// if this extends IVertex then we can probaly remove refs to the relevant adapter
+// if this extends IVertex then we can probably remove refs to the relevant adapter
 public interface ITreeVertex<V> /* extends IVertex */ {
 	
 	public boolean isChildless();

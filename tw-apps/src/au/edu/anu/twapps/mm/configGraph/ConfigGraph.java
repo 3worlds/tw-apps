@@ -56,9 +56,7 @@ import fr.cnrs.iees.twcore.generators.CodeGenerator;
 import fr.cnrs.iees.twcore.generators.ProjectJarGenerator;
 
 /**
- * @author Ian Davies
- *
- * @Date 13 Aug 2019
+ * @author Ian Davies 13 Aug 2019
  */
 public class ConfigGraph {
 	private static TreeGraph<TreeGraphDataNode, ALEdge> graph;

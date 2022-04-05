@@ -29,9 +29,7 @@
 package au.edu.anu.twapps.mm.visualGraph;
 
 /**
- * @author Ian Davies
- *
- * @date 1 Jul 2020
+ * @author Ian Davies 1 Jul 2020
  */
 public enum ElementDisplayText {
 	RoleName,

@@ -38,9 +38,7 @@ import au.edu.anu.omhtk.rng.Pcg32;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 
 /**
- * @author Ian Davies
- *
- * @date 1 May 2020
+ * @author Ian Davies 1 May 2020
  */
 public class RT2Layout implements ILayout {
 	private class Factory implements ITreeVertexFactory {

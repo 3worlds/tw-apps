@@ -40,9 +40,7 @@ import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 //The controller HAS one of these
 //ModelRunner IS on of these: ModelRunner implements
 /**
- * @author Ian Davies
- *
- * @date 31 Dec 2019
+ * @author Ian Davies 31 Dec 2019
  */
 public interface IMRModel {
 	public void doISGenerate();

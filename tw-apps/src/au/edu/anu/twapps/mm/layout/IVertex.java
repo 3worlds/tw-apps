@@ -36,9 +36,7 @@ import java.util.Random;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 
 /**
- * @author Ian Davies
- *
- * @date 30 Apr 2020
+ * @author Ian Davies 30 Apr 2020
  */
 public interface IVertex {
 	

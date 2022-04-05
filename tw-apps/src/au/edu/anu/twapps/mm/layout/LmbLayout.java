@@ -44,9 +44,7 @@ import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 
 /**
- * @author Ian Davies
- *
- * @date 25 May 2020
+ * @author Ian Davies 25 May 2020
  */
 
 // NOTE : WIP

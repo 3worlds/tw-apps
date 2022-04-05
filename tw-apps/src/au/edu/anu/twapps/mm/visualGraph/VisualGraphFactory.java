@@ -46,9 +46,7 @@ import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
 
 /**
- * @author Ian Davies
- *
- * @Date 11 Jul 2019
+ * @author Ian Davies 11 Jul 2019
  */
 public class VisualGraphFactory extends TreeGraphFactory implements EditableFactory, VisualKeys {
 

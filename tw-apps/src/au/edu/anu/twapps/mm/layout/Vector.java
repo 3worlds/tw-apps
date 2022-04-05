@@ -3,9 +3,7 @@ package au.edu.anu.twapps.mm.layout;
 import fr.cnrs.iees.uit.space.Distance;
 
 /**
- * @author Ian Davies
- *
- * @date 2 May 2020
+ * @author Ian Davies 2 May 2020
  */
 public class Vector {
 	private double x;

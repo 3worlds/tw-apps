@@ -33,6 +33,8 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.Collection;
 
+import au.edu.anu.twapps.mm.undo.MMMemento;
+import au.edu.anu.twapps.mm.undo.Originator;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
