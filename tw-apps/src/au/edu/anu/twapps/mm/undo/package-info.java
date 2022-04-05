@@ -11,9 +11,16 @@
  * </p>
  * <p>
  * All files are deleted when a project is closed.
+ * 
+ * <p>
+ * Modified from: Gamma, E., Helm, R., Johnson, R., Johnson, R.E. and Vlissides,
+ * J., 1995. Design patterns: elements of reusable object-oriented software.
+ * Pearson Deutschland GmbH.
  * </p>
- * <img src="{@docRoot}/../doc/images/memento.svg" width="500"
- * alt="Memento pattern"/>
+ * <p>
+ * <img src="{@docRoot}/../doc/images/memento.svg" width="500" alt="Memento
+ * pattern"/>
+ * 
  *
  * 
  * @author Ian Davies - 05 Apl 2022
