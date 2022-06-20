@@ -64,6 +64,7 @@ import au.edu.anu.twapps.mm.visualGraph.VisualGraphFactory;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import au.edu.anu.twcore.archetype.TWA;
 import au.edu.anu.twcore.archetype.TwArchetypeConstants;
+import au.edu.anu.twcore.archetype.tw.CheckConstantTrackingQuery;
 import au.edu.anu.twcore.archetype.tw.ChildXorPropertyQuery;
 import au.edu.anu.twcore.archetype.tw.EndNodeHasPropertyQuery;
 import au.edu.anu.twcore.archetype.tw.ExclusiveCategoryQuery;
@@ -109,6 +110,7 @@ import fr.cnrs.iees.uit.space.Point;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
+import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 
 import fr.ens.biologie.codeGeneration.JavaUtilities;
 import fr.ens.biologie.generic.utils.Duple;
@@ -255,8 +257,9 @@ public abstract class StructureEditorAdapter
 									if (satisfyOutEdgeXorQuery(edgeSpec, endNode, edgeLabel))
 //										if (satisfyOutEdgeNXorQuery(edgeSpec, endNode, edgeLabel))
 										if (satisfyEndNodeHasPropertyQuery(edgeSpec, endNode, edgeLabel))
-											result.add(new Tuple<String, VisualNode, SimpleDataTreeNode>(edgeLabel,
-													endNode, edgeSpec));
+											if (satisfyCheckConstantTrackingQuery(edgeSpec, endNode, edgeLabel))
+												result.add(new Tuple<String, VisualNode, SimpleDataTreeNode>(edgeLabel,
+														endNode, edgeSpec));
 			}
 		}
 		Collections.sort(result, new Comparator<Tuple<String, VisualNode, SimpleDataTreeNode>>() {
@@ -297,6 +300,25 @@ public abstract class StructureEditorAdapter
 				return false;
 		}
 		return true;
+	}
+
+	/**
+	 * @param edgeSpec  specifications of the proposed edge
+	 * @param endNode   proposed end node
+	 * @param edgeLabel the edge classId
+	 * @return true if condition is satisfied including if condition is unable to be determined because config is incomplete.
+	 */
+	private boolean satisfyCheckConstantTrackingQuery(SimpleDataTreeNode edgeSpec, VisualNode vnEndNode,
+			String edgeLabel) {
+		// if not a track field or table then don't care
+		if (!(edgeLabel.equals(E_TRACKFIELD.label()) || edgeLabel.equals(E_TRACKTABLE.label())))
+			return true;
+		TreeNode endNode = vnEndNode.configNode();
+		String endNodeLabel = endNode.classId();
+		// not my problem - probably can't happen
+		if (!(endNodeLabel.equals(N_FIELD.label()) || endNodeLabel.equals(N_TABLE.label())))
+			return true;
+		return CheckConstantTrackingQuery.propose(endNode);
 	}
 
 	@SuppressWarnings("unchecked")
