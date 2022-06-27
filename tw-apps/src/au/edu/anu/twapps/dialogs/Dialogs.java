@@ -29,10 +29,7 @@
 package au.edu.anu.twapps.dialogs;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Author Ian Davies
@@ -57,14 +54,14 @@ public class Dialogs {
 	 * Sets the current implementation of the dialogs to be used. This must be done
 	 * when application first starts.
 	 * 
-	 * @param impl The implementation of {@line IDialogs}.
+	 * @param impl The implementation of {@link IDialogs}.
 	 */
 	public static void setImplementation(IDialogs impl) {
 		Dialogs.impl = impl;
 	}
 
 	/**
-	 * Present dialog to inform user of some error.
+	 * Present dialog to inform user of an error condition.
 	 * 
 	 * @param title   Dialog title
 	 * @param header  Dialog header (can be null)
@@ -75,7 +72,7 @@ public class Dialogs {
 	}
 
 	/**
-	 * Present dialog to supply some information to the user.
+	 * Present dialog to supply information to the user.
 	 * 
 	 * @param title   Dialog title
 	 * @param header  Dialog header (can be null)
@@ -110,7 +107,7 @@ public class Dialogs {
 	/**
 	 * Dialog to export a file.
 	 * 
-	 * @param title
+	 * @param title          Dialog title
 	 * @param promptDir      Initial directory.
 	 * @param promptFileName Suggested file name.
 	 * @return File or null if cancelled.
@@ -148,7 +145,7 @@ public class Dialogs {
 	}
 
 	/**
-	 * Dialog to prompt for a file which will be imported into a project.
+	 * Dialog to prompt for a file to import into a project.
 	 * 
 	 * @return File or null if cancelled.
 	 */
@@ -209,43 +206,83 @@ public class Dialogs {
 	}
 
 	/**
-	 * @param title
-	 * @param header
-	 * @param content
-	 * @param entries
-	 * @return
+	 * Presents the user with any number of groups of toggles allowing selection of
+	 * one from each group.
+	 * 
+	 * @param title   Dialog title
+	 * @param header  Dialog header (can be null)
+	 * @param content Dialog content (can be null)
+	 * @param entries Group entries with associated options.
+	 * @return The list of groups with the single selected toggle.
 	 */
 	public static List<String> getRadioButtonChoices(String title, String header, String content,
 			List<String[]> entries) {
 		return impl.getRadioButtonChoices(title, header, content, entries);
 	}
 
+	/**
+	 * Show a file save dialog.
+	 * 
+	 * @param directory Initial directory
+	 * @param title     Dialog title
+	 * @param exts      List of valid file extensions
+	 * @return The file or null if cancelled.
+	 */
 	public static File promptForSaveFile(File directory, String title, String[]... exts) {
 		return impl.promptForSaveFile(directory, title, exts);
 	};
 
+	/**
+	 * Show a file open dialog.
+	 * 
+	 * @param directory Initial directory
+	 * @param title     Dialog title
+	 * @param exts      List of valid file extensions
+	 * @return The file or null if cancelled.
+	 */
 	public static File promptForOpenFile(File directory, String title, String[]... exts) {
 		return impl.promptForOpenFile(directory, title, exts);
 	}
 
+	/**
+	 * Get the owning window of the dialog implementation.
+	 * 
+	 * @return Owning object.
+	 */
 	public static Object owner() {
 		return impl.owner();
 	}
 
-	public static int editISFiles(List<File> files, int idx) {
-		return impl.editISFiles(files, idx);
+	/**
+	 * Select one file from a list of files.
+	 * 
+	 * @param files         The file list
+	 * @param initSelection zero-based index of initial selection.
+	 * @return index of new selection.
+	 */
+	public static int selectFile(List<File> files, int initSelection) {
+		return impl.selectFile(files, initSelection);
 	}
 
+	/**
+	 * Select any number of entries from a list of strings.
+	 * 
+	 * @param title    Dialog title
+	 * @param header   Dialog header (may be null).
+	 * @param items    Items from which to select.
+	 * @param selected Selection status of items.
+	 * @return The new selection status (may be unchanged)
+	 */
 	public static List<String> getCBSelections(String title, String header, List<String> items,
 			List<Boolean> selected) {
 		return impl.getCBSelections(title, header, items, selected);
 	}
 
-	public static boolean isValid(String s, String regex) {
-		Pattern pattern = Pattern.compile(regex);
-		Matcher matcher = pattern.matcher(s);
-		return matcher.matches();
-	}
+//	public static boolean isValid(String s, String regex) {
+//		Pattern pattern = Pattern.compile(regex);
+//		Matcher matcher = pattern.matcher(s);
+//		return matcher.matches();
+//	}
 
 //	public static final String vsInteger = "([0-9]*)?";
 	/**

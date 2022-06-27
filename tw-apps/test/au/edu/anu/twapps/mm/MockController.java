@@ -32,7 +32,6 @@ package au.edu.anu.twapps.mm;
 import java.io.File;
 import java.util.Collection;
 
-import au.edu.anu.twapps.mm.graphEditor.IGraphVisualiser;
 import au.edu.anu.twapps.mm.layout.LayoutType;
 import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;

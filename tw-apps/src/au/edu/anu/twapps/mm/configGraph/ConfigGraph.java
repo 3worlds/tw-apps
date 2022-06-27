@@ -30,9 +30,6 @@
 package au.edu.anu.twapps.mm.configGraph;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -43,7 +40,6 @@ import au.edu.anu.rscs.aot.errorMessaging.ErrorMessageManager;
 import au.edu.anu.rscs.aot.errorMessaging.ErrorMessagable;
 import au.edu.anu.rscs.aot.errorMessaging.impl.SpecificationErrorMsg;
 import au.edu.anu.twapps.exceptions.TwAppsException;
-import au.edu.anu.twcore.TextTranslations;
 import au.edu.anu.twcore.archetype.TWA;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrorMsg;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrors;
@@ -54,27 +50,51 @@ import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.twcore.generators.CodeGenerator;
 import fr.cnrs.iees.twcore.generators.ProjectJarGenerator;
+import au.edu.anu.twcore.project.Project;
 
 /**
- * @author Ian Davies 13 Aug 2019
+ * @author Ian Davies - 13 Aug 2019
+ *         <p>
+ *         A static global class to manage the configuration graph
  */
 public class ConfigGraph {
+	/**
+	 * The configuration graph.
+	 */
 	private static TreeGraph<TreeGraphDataNode, ALEdge> graph;
 
+	/**
+	 * Private constructor to prevent instantiation.
+	 */
 	private ConfigGraph() {
 	}
 
+	/**
+	 * Set the graph. The graph construction may not be complete at this stage.
+	 * 
+	 * @param graph The configuration graph.
+	 */
 	public static void setGraph(TreeGraph<TreeGraphDataNode, ALEdge> graph) {
 		ConfigGraph.graph = graph;
-		// Don't validate here as the graph may not be built yet
 	}
 
+	/**
+	 * Get the configuration graph. The graph verification is not guaranteed here.
+	 * 
+	 * @return The configuration graph.
+	 */
 	public static TreeGraph<TreeGraphDataNode, ALEdge> getGraph() {
 		return graph;
 	}
 
+	/**
+	 * The executor for running the graph verification thread.
+	 */
 	private static ExecutorService executor;
 
+	/**
+	 * Execute graph verification.
+	 */
 	public static void verifyGraph() {
 		// calls listeners ie. mm controller to set buttons and clear display
 		// ErrorList is poorly named: its not a list but a dispatcher of messages to
@@ -89,45 +109,44 @@ public class ConfigGraph {
 		 */
 		Runnable checkTask = () -> {
 			try {
-			Iterable<ErrorMessagable> specErrors = TWA.checkSpecifications(graph);
-			if (specErrors != null) {
-				for (ErrorMessagable e : specErrors) {
-					SpecificationErrorMsg se = (SpecificationErrorMsg) e;
-					ModelBuildErrorMsg mbem = new ModelBuildErrorMsg(ModelBuildErrors.SPECIFICATION, se, graph);
-					ErrorMessageManager.dispatch(mbem);
+				Iterable<ErrorMessagable> specErrors = TWA.checkSpecifications(graph);
+				if (specErrors != null) {
+					for (ErrorMessagable e : specErrors) {
+						SpecificationErrorMsg se = (SpecificationErrorMsg) e;
+						ModelBuildErrorMsg mbem = new ModelBuildErrorMsg(ModelBuildErrors.SPECIFICATION, se, graph);
+						ErrorMessageManager.dispatch(mbem);
+					}
 				}
-			}
-			if (!ErrorMessageManager.haveErrors()) {
-				boolean haveCompiler = !(ToolProvider.getSystemJavaCompiler() == null);
-				if (!haveCompiler)
-					ErrorMessageManager.dispatch(new ModelBuildErrorMsg(ModelBuildErrors.COMPILER_MISSING));
-			}
+				if (!ErrorMessageManager.haveErrors()) {
+					boolean haveCompiler = !(ToolProvider.getSystemJavaCompiler() == null);
+					if (!haveCompiler)
+						ErrorMessageManager.dispatch(new ModelBuildErrorMsg(ModelBuildErrors.COMPILER_MISSING));
+				}
 
-			if (!ErrorMessageManager.haveErrors()) {
-				CodeGenerator gen = new CodeGenerator(graph);
-				gen.generate();
-			}
+				if (!ErrorMessageManager.haveErrors()) {
+					CodeGenerator gen = new CodeGenerator(graph);
+					gen.generate();
+				}
 
-			if (!ErrorMessageManager.haveErrors()) {
-				if (graph == null)
-					throw new TwAppsException("Graph is null in ValidateGraph");
-				ProjectJarGenerator gen = new ProjectJarGenerator();
-				gen.generate(graph);
-			}
+				if (!ErrorMessageManager.haveErrors()) {
+					if (graph == null)
+						throw new TwAppsException("Graph is null in ValidateGraph");
+					ProjectJarGenerator gen = new ProjectJarGenerator();
+					gen.generate(graph);
+				}
 
-			if (!ErrorMessageManager.haveErrors()) {
-				File file = new File(TwPaths.TW_ROOT + File.separator + TwPaths.TW_DEP_JAR);
-				if (!file.exists())
-					ErrorMessageManager.dispatch(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_RESOURCE_MISSING,
-							TwPaths.TW_DEP_JAR, TwPaths.TW_ROOT));
+				if (!ErrorMessageManager.haveErrors()) {
+					File file = new File(TwPaths.TW_ROOT + File.separator + TwPaths.TW_DEP_JAR);
+					if (!file.exists())
+						ErrorMessageManager.dispatch(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_RESOURCE_MISSING,
+								TwPaths.TW_DEP_JAR, TwPaths.TW_ROOT));
 
-			}
-			if (!ErrorMessageManager.haveErrors() && GraphState.changed())
-				ErrorMessageManager.dispatch(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_PROJECT_UNSAVED));
-			
+				}
+				if (!ErrorMessageManager.haveErrors() && GraphState.changed())
+					ErrorMessageManager.dispatch(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_PROJECT_UNSAVED));
 
-			ErrorMessageManager.endCheck();
-			
+				ErrorMessageManager.endCheck();
+
 			} catch (Throwable e) {
 				e.printStackTrace();
 			}
@@ -140,6 +159,10 @@ public class ConfigGraph {
 
 	}
 
+	/**
+	 * Terminate all threads currently performing verification. This is needed when
+	 * closing the {@link Project}.
+	 */
 	public static void terminateChecks() {
 		if (executor != null) {
 			try {
@@ -147,10 +170,14 @@ public class ConfigGraph {
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}	
+			}
 		}
 	}
 
+	/**
+	 * Called from graph visualization interface when a parent child relationship
+	 * has been changed or deleted.
+	 */
 	public static void onParentChanged() {
 		graph.onParentChanged();
 	}

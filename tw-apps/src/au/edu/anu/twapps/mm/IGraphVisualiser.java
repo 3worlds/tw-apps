@@ -27,7 +27,7 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
   **************************************************************************/
 
-package au.edu.anu.twapps.mm.graphEditor;
+package au.edu.anu.twapps.mm;
 
 import au.edu.anu.twapps.mm.layout.LayoutType;
 import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
@@ -36,27 +36,84 @@ import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 
 /**
- * @author Ian Davies 9 Aug 2019
+ * Author Ian Davies - 9 Aug 2019
+ * 
+ * Interface for the "view" of <a href=
+ * "https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller">Model-View-Controller</a>
  */
 public interface IGraphVisualiser {
+	/**
+	 * Actions required to build the initial view from the graph.
+	 * 
+	 * @param duration Duration in ms of animations.
+	 */
 	public void initialiseView(double duration);
 
+	/**
+	 * Actions required to add visualisation elements for a node newly added to the
+	 * graph.
+	 * 
+	 * @param node The node to add to the view.
+	 */
 	public void onNewNode(VisualNode node);
 
+	/**
+	 * Actions required to add visualisation elements for an edge newly added to the
+	 * graph.
+	 * 
+	 * @param edge
+	 * @param duration
+	 */
 	public void onNewEdge(VisualEdge edge, double duration);
 
-	public void collapseTreeFrom(VisualNode childRoot, double duration);
+	/**
+	 * Actions required to collapse a sub-tree to the given root.
+	 * 
+	 * @param root     Root of the sub-tree to be hidden.
+	 * @param duration Duration in ms of animation.
+	 */
+	public void collapseTreeFrom(VisualNode root, double duration);
 
-	public void expandTreeFrom(VisualNode childRoot, double duration);
+	/**
+	 * Actions required to expand a sub-tree from the given root.
+	 * 
+	 * @param root     Root of the sub-tree to be expanded.
+	 * @param duration Duration in ms of animation.
+	 */
+	public void expandTreeFrom(VisualNode root, double duration);
 
+	/**
+	 * Get the underlying graph (the layout graph) of the visualisation.
+	 * 
+	 * @return layout graph.
+	 */
 	public TreeGraph<VisualNode, VisualEdge> getVisualGraph();
 
+	/**
+	 * Clear all elements of the view.
+	 */
 	public void close();
 
+	/**
+	 * Actions required to remove all visual elements of a node.
+	 * 
+	 * @param node The node to remove.
+	 */
 	public void removeView(VisualNode node);
 
+	/**
+	 * Actions required to remove all visual elements of an edge.
+	 * 
+	 * @param edge The edge to remove
+	 */
 	public void removeView(VisualEdge edge);
 
+	/**
+	 * Actions required to create visual elements depicting a new parent-child
+	 * relationship.
+	 * 
+	 * @param child The child node of the relationship.
+	 */
 	public void onNewParent(VisualNode child);
 
 	public void doLayout(VisualNode root, double jitterFaction, LayoutType layoutType, boolean pcShowing,
@@ -71,9 +128,9 @@ public interface IGraphVisualiser {
 	public void onHighlightLocalGraph(VisualNode root, int depth);
 
 	public void onHighlightAll();
-	
+
 	public void onShowLocalGraph(VisualNode root, int depth);
-	
+
 	public void onShowAll();
 
 	public void collapsePredef();

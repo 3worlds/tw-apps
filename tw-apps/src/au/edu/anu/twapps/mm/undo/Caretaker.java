@@ -40,9 +40,14 @@ public class Caretaker {
 	private static List<IMemento> mementos;
 	private static int index;
 
+	private Caretaker() {
+
+	}
+
 	public static void initialise() {
 		clear();
 	}
+
 	public static void finalise() {
 		clear();
 	}

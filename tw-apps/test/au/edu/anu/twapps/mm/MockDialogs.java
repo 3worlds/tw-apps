@@ -121,7 +121,7 @@ public class MockDialogs implements IDialogs {
 	}
 
 	@Override
-	public int editISFiles(List<File> files, int idx) {
+	public int selectFile(List<File> files, int idx) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
