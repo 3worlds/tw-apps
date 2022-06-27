@@ -1,7 +1,7 @@
 /**************************************************************************
  *  TW-APPS - Applications used by 3Worlds                                *
  *                                                                        *
- *  Copyright 2018: Jacques Gignoux & Ian D. Davies                       *
+ *  Copyright 2018: Jacques Gignoux and Ian D. Davies                     *
  *       jacques.gignoux@upmc.fr                                          *
  *       ian.davies@anu.edu.au                                            * 
  *                                                                        *
@@ -24,6 +24,6 @@
  *                                                                        *
  *  You should have received a copy of the GNU General Public License     *
  *  along with TW-APPS.                                                   *
- *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
+ *  If not, see https://www.gnu.org/licenses/gpl.html                     *
   **************************************************************************/
 package au.edu.anu.twapps.mm.graphEditor;

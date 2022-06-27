@@ -35,5 +35,10 @@ package au.edu.anu.twapps.mm.undo;
 //Undo/Redo pattern
 public interface Originator {
 	
+	/**
+	 * Adds the originator's state to the {@link Caretaker}
+	 * 
+	 * @param desc The description of this state. This description will appear in an Undo/Redo menu item.
+	 */
 	public void addState(String desc) ;
 }

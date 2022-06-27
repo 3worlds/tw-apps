@@ -29,6 +29,27 @@
 
 package au.edu.anu.twapps.dialogs;
 
+/**
+ * @author Ian Davies - 25 June 2022
+ *         <p>
+ *         A return type for some methods in {@link IDialogs}.
+ *         </p>
+ *         This is used to avoid dependence on any types in Javafx as we wish to
+ *         maintain independence from whatever implementations user may choose
+ *         (i.e something other that javafx).
+ */
 public enum YesNoCancel {
-yes, no, cancel;
+	/**
+	 * User want action performed e.g save changes before closing.
+	 */
+	yes,
+	/**
+	 * User does not want action performed e.g. do not save changes before closing.
+	 */
+	no,
+	/**
+	 * User wants to cancel the operation altogether e.g don't save or not save just
+	 * stay where we are.
+	 */
+	cancel;
 }

@@ -29,18 +29,17 @@
 
 package au.edu.anu.twapps.mm;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.*;
+
 import au.edu.anu.twapps.dialogs.Dialogs;
 import au.edu.anu.twcore.graphState.GraphState;
 
 class ModelMakerTest {
 	MockController c;
-
-	// TODO this is not the right annotation
 	//https://junit.org/junit5/docs/current/user-guide/
-	@BeforeEach
+	@BeforeAll
 	public void init() {
-		Dialogs.initialise(new MockDialogs());
+		Dialogs.setImplementation(new MockDialogs());
 		c = new MockController();
 		GraphState.initialise(null);
 	}

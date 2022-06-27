@@ -92,30 +92,79 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 /**
- * Author Ian Davies
- *
- * Date 10 Dec. 2018
+ * Author Ian Davies - 10 Dec. 2018
  */
 public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
-	// Interface supplied to the controller
+	/**
+	 * Graph containing layout information for the configuration graph.
+	 */
 	private TreeGraph<VisualNode, VisualEdge> visualGraph;
-	private IMMController controller;
-	public static String[] mmArgs;
+	/**
+	 * Reference to the controller interface ({@link IMMController}).
+	 */
+	private final IMMController controller;
+	/**
+	 * Arguments (such as logging requests), for this instance of ModelMaker, passed
+	 * on from the main class that are also passed to ModelRunner when deployed from
+	 * ModelMaker.
+	 */
+	private static String[] mmArgs;
+	/**
+	 * A lookup table of all 3Worlds node classes and their possible parent tables.
+	 * This is used to correctly identify the parent of a visual node even if the
+	 * tree is broken leading to possible ambiguity.
+	 */
 	private final Map<String, List<StringTable>> classParentTableMapping;
 
+	/**
+	 * Static logger for this class.
+	 */
 	private static Logger log = Logging.getLogger(MMModel.class);
 
+	/**
+	 * Associate a controller with this model (<a href=
+	 * "https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller">Model-View-Controller</a>).
+	 * The only controller implementation at this time is a Javafx one.
+	 * 
+	 * @param controller The controller interface
+	 */
 	public MMModel(IMMController controller) {
 		this.controller = controller;
 		buildNonEditableList();
 		classParentTableMapping = getLabelParentTableMapping();
 	}
 
+	/**
+	 * Helper method to state creation of {@link classParentTableMapping}.
+	 * @return The constructed mapping of node class and parent table entries.
+	 */
+	private Map<String, List<StringTable>> getLabelParentTableMapping() {
+		Set<String> discoveredFiles = new HashSet<>();
+		Map<String, List<StringTable>> map = new HashMap<>();
+		fillClassParentMap(map, TWA.getRoot(), discoveredFiles);
+		return map;
+	}
+
+	/**
+	 * Set the command line args passed from the main class. This usually include
+	 * logging requests.
+	 * 
+	 * @param args Command line arguments.
+	 */
+	public static void setMMArgs(String[] args) {
+		mmArgs = args;
+	}
+
+	/**
+	 * Save the current state to the {@link Caretaker} for the undo/redo memento
+	 * pattern.
+	 */
 	@Override
 	public final void addState(String desc) {
 		if (!Project.getProjectFile().exists()) {
 			doSave();
 		}
+		// Store current preferences so they can be restored with this state.
 		Preferences.flush();
 		controller.putPreferences();
 
@@ -132,8 +181,8 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		if (!canClose()) {
 			return;
 		}
-		// collect all relevant ids into a temporary scope.
 
+		/** collect all relevant ids into a temporary scope to enfore a unique name. */
 		IdentityScope prjScope = getProjectScope(templateConfig);
 		String newId = getNewProjectName(prjScope, proposedName, "New project", "", "New project name:");
 		/** Still not to late. User cancelled */
@@ -162,7 +211,8 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		visualGraph = templateVisual;
 
 		/** The visual graph parent/child require setting */
-		setupParentReferences(visualGraph.root());
+		visualGraph.root().setupParentReference(classParentTableMapping);
+//		setupParentReferences(visualGraph.root());
 
 		/**
 		 * Do all that is required of the ui for a newly created project. Currently,
@@ -204,6 +254,13 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		doSave();
 	}
 
+	/**
+	 * Builds a local scope of project names and graph names to ensure the root id
+	 * will be unique.
+	 * 
+	 * @param graph The graph for the proposed new project.
+	 * @return The scope entries of unique names.
+	 */
 	private static IdentityScope getProjectScope(TreeGraph<TreeGraphDataNode, ALEdge> graph) {
 		LocalScope result = new LocalScope("Projects");
 		/**
@@ -297,10 +354,10 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 
 		// set prev config graph
 		ConfigGraph.setGraph(a);
-		
+
 		// set prev layout graph
 		visualGraph = b;
-		
+
 		// load prev preferences
 		controller.getPreferences();
 
@@ -314,31 +371,32 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		ConfigGraph.verifyGraph();
 
 	}
+
+	@SuppressWarnings("unchecked")
 	@Override
 	public void saveAndReload() {
 		String tmpdir = System.getProperty("java.io.tmpdir");
 		File f;
-		f = new File(tmpdir+File.separator+"tmp.utg");
+		f = new File(tmpdir + File.separator + "tmp.utg");
 		new OmugiGraphExporter(f).exportGraph(ConfigGraph.getGraph());
-		
+
 		TreeGraph<TreeGraphDataNode, ALEdge> a = (TreeGraph<TreeGraphDataNode, ALEdge>) FileImporter
 				.loadGraphFromFile(f);
-		
+
 		new OmugiGraphExporter(f).exportGraph(visualGraph);
-		
-		TreeGraph<VisualNode, VisualEdge> b = (TreeGraph<VisualNode, VisualEdge>) FileImporter
-				.loadGraphFromFile(f);
+
+		TreeGraph<VisualNode, VisualEdge> b = (TreeGraph<VisualNode, VisualEdge>) FileImporter.loadGraphFromFile(f);
 
 		ConfigGraph.setGraph(a);
-		
+
 		// set prev layout graph
 		visualGraph = b;
-	
+
 		shadowGraph();
 
 		// update the ui
 		controller.onRollback(visualGraph);
-}
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -356,14 +414,6 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		TreeGraph<TreeGraphDataNode, ALEdge> importGraph = (TreeGraph<TreeGraphDataNode, ALEdge>) FileImporter
 				.loadGraphFromFile(file);
 
-//		Iterator<TreeGraphDataNode> iter = importGraph.roots().iterator();
-//
-//		int nRoots = 0;
-//		while (iter.hasNext()) {
-//			iter.next();
-//			nRoots++;
-//		}
-//
 		if (importGraph.roots().size() > 1) {
 			Dialogs.errorAlert("Import error", "Tree has more than one root.",
 					"Graphs with multiple roots cannot be imported");
@@ -399,7 +449,8 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 
 		ConfigGraph.setGraph(importGraph);
 		visualGraph = importVisual;
-		setupParentReferences(visualGraph.root());
+		visualGraph.root().setupParentReference(classParentTableMapping);
+//		setupParentReferences(visualGraph.root());
 
 		onProjectOpened();
 
@@ -418,6 +469,9 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		doSave();
 	}
 
+	/**
+	 * Action to take when closing a {@link Project}.
+	 */
 	private void onProjectClosing() {
 		controller.onProjectClosing();
 		ConfigGraph.terminateChecks();
@@ -426,6 +480,9 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		Caretaker.finalise();
 	}
 
+	/**
+	 * Actions required when after opening a {@link Project}.
+	 */
 	private void onProjectOpened() {
 		controller.onProjectOpened(visualGraph);
 		Caretaker.initialise();
@@ -436,11 +493,11 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 	@Override
 	public void doSave() {
 		File pf = Project.getProjectFile();
-		/**
-		 * User may have deleted their project during a session but has asked to save or
-		 * this has been called following a rollback file error.
-		 */
 		if (!pf.exists()) {
+			/**
+			 * Whoops - either the user has deleted their project during a session or save
+			 * has been requested following a rollback file error.
+			 */
 			pf.mkdirs();
 			Caretaker.initialise();
 			addState("init");
@@ -453,8 +510,18 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		ConfigGraph.verifyGraph();
 	}
 
+	/**
+	 * A look-up table of labels (classId) and property keys that are intended to be
+	 * immutable.
+	 */
 	private Map<String, List<String>> nonEditableMap = new HashMap<>();
 
+	/**
+	 * List a property key associated with a node that is to be listed as immutable.
+	 * 
+	 * @param nl
+	 * @param pn
+	 */
 	private void addEntry(ConfigurationNodeLabels nl, ConfigurationPropertyNames pn) {
 		String nLabel = nl.label();
 		String pKey = pn.key();
@@ -466,6 +533,9 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		lst.add(pKey);
 	}
 
+	/**
+	 * List all immutable properties so they can be disabled in a UI.
+	 */
 	private void buildNonEditableList() {
 		for (ConfigurationNodeLabels key : ConfigurationNodeLabels.values()) {
 			List<String> keys = new ArrayList<>();
@@ -474,7 +544,6 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 			keys.add(P_TWDATACLASS.key());
 			keys.add(P_FUNCTIONCLASS.key());
 			keys.add(P_DRIVERCLASS.key());
-//			keys.add(P_PARAMETERCLASS.key());
 			keys.add(P_DECORATORCLASS.key());
 			keys.add(P_DATAELEMENTTYPE.key());
 			keys.add(P_CONSTANTCLASS.key());
@@ -483,9 +552,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		}
 		addEntry(N_SPACE, P_SPACETYPE);
 		addEntry(N_FIELD, P_FIELD_TYPE);
-		addEntry(N_TABLE, P_FIELD_TYPE);// done by P_DATAELEMENTTYPE above
-//		addEntry(N_COMPONENT, P_PARAMETERCLASS);
-//		addEntry(N_SYSTEM, P_PARAMETERCLASS);
+//		addEntry(N_TABLE, P_FIELD_TYPE);// done by P_DATAELEMENTTYPE above
 		addEntry(N_FUNCTION, P_FUNCTIONCLASS);
 		addEntry(N_FUNCTION, P_FUNCTIONTYPE);
 		addEntry(N_INITFUNCTION, P_FUNCTIONTYPE);
@@ -513,6 +580,13 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		return Collections.unmodifiableCollection(pKeys);
 	}
 
+	/**
+	 * The number of deployment instances for a session is recorded and passed to
+	 * ModelRunner. This maybe used to prevent file name ambiguity.
+	 * <p>
+	 * TODO The need for this should be reassessed.
+	 */
+	@Deprecated
 	private static int nInstances = 0;
 
 	@Override
@@ -542,7 +616,13 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		}
 	}
 
-	private List<String> getQueryStringTableEntries(SimpleDataTreeNode constraint) {
+	/**
+	 * A helper method to extract query table entries in a list.
+	 * 
+	 * @param constraint The query
+	 * @return List of table entries for the given query (can be empty).
+	 */
+	static private List<String> getQueryStringTableEntries(SimpleDataTreeNode constraint) {
 		List<String> result = new ArrayList<>();
 		if (constraint == null)
 			return result;
@@ -558,27 +638,10 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 
 	// This uses the twa archetype. If the archetype changes this function may
 	// crash;
-	private void setupParentReferences(VisualNode vn) {
-		vn.setupParentReference(classParentTableMapping);
-	}
+//	private void setupParentReferences(VisualNode vn) {
+//		vn.setupParentReference(classParentTableMapping);
+//	}
 
-	private Map<String, List<StringTable>> getLabelParentTableMapping() {
-		Set<String> discoveredFiles = new HashSet<>();
-		Map<String, List<StringTable>> map = new HashMap<>();
-		fillClassParentMap(map, TWA.getRoot(), discoveredFiles);
-		return map;
-	}
-
-	// TODO expose with MMMI interface
-	public StringTable findParentTable(VisualNode vn) {
-		List<StringTable> parentList = classParentTableMapping.get(vn.configNode().classId());
-		for (StringTable table : parentList) {
-			if (vn.treeMatchesTable(table))
-				return table;
-		}
-		// must be root
-		return parentList.get(0);
-	}
 
 	private void fillClassParentMap(Map<String, List<StringTable>> classParentMap, TreeNode root,
 			Set<String> discoveredFiles) {
@@ -775,6 +838,5 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 	public LibraryTable[] getLibrary() {
 		return LibraryTable.values();
 	}
-
 
 }

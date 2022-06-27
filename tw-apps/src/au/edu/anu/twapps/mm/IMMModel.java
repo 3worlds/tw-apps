@@ -39,41 +39,106 @@ import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.twmodels.LibraryTable;
-//import fr.cnrs.iees.twmodels.*;
+import au.edu.anu.twcore.project.Project;
 
 /**
- * Author Ian Davies
- *
- * Date 10 Jan. 2019
+ * @author Ian Davies - 10 Jan. 2019
+ *         <p>
+ *         Interface implemented by {@link MMModel} as part of the <a href=
+ *         "https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller">Model-View-Controller</a>
+ *         pattern.
+ *         </p>
+ *         <p>
+ *         This interface extends {@link Originator} as part of the
+ *         <a href= "https://en.wikipedia.org/wiki/Memento_pattern">Momento</a>
+ *         pattern to restore model state as part of the undo/redo system.
  */
-//ModelMaker methods called by the Controller
-// The controller HAS one of these
-// ModelMaker IS on of these: ModelMaker implements
-// Effectively a singleton listener pattern
-public interface IMMModel extends Originator{
+public interface IMMModel extends Originator {
+	/**
+	 * Query to ask the user to confirm closing an open {@link Project}.
+	 * <p>
+	 * 
+	 * @return true if confirmed (file is saved or user does not want the file
+	 *         saved) and false if user cancels the operation.
+	 */
 	public boolean canClose();
 
-	public void doNewProject(String proposedName, TreeGraph<TreeGraphDataNode, ALEdge> templateGraph, InputStream archiveStream);
+	/**
+	 * Actions required when creating a new {@link Project}. The parameters are
+	 * supplied from the {@link LibraryTable}.
+	 * <p>
+	 * 
+	 * @param proposedName  Default name of the project.
+	 * @param templateGraph Project graph from the model.
+	 * @param archiveStream Project artifacts (may be null).
+	 */
+	public void doNewProject(String proposedName, TreeGraph<TreeGraphDataNode, ALEdge> templateGraph,
+			InputStream archiveStream);
 
-	public void doOpenProject(File file);
+	/**
+	 * Actions required when proposing to open a {@link Project} from disk.
+	 * <p>
+	 * 
+	 * @param directory the {@link Project} directory.
+	 */
+	public void doOpenProject(File directory);
 
+	/**
+	 * Actions required to deploy the current {@link Project} as a running model.
+	 * Assumes the configuration is verified.
+	 */
 	public void doDeploy();
 
+	/**
+	 * Actions required to save the current {@link Project}.
+	 */
 	public void doSave();
 
+	/**
+	 * Actions required to save the current {@link Project} under a new name.
+	 */
 	public void doSaveAs();
 
+	/**
+	 * Actions required to construct a {@link Project} from an external graph.
+	 */
 	public void doImport();
 
-	public boolean propertyEditable(String label, String key);
-	
-	public Collection<String> unEditablePropertyKeys(String label);
-	
+	/**
+	 * Query to determine if a property is immutable.
+	 * <p>
+	 * 
+	 * @param classId Class name of the element (node/edge) containing the property.
+	 * @param key     Property key
+	 * @return true if property is immutable, false otherwise.
+	 */
+	public boolean propertyEditable(String classId, String key);
+
+	/**
+	 * A collection of all immutable property keys for elements of this class name.
+	 * <p>
+	 * 
+	 * @param classId The element (node/edge) class name.
+	 * @return List of keys (can be empty).
+	 */
+	public Collection<String> unEditablePropertyKeys(String classId);
+
+	/**
+	 * Actions required to retore the configuration graph to a previous state.
+	 * <p>
+	 * 
+	 * @param m {@link MMMemento} containing state information.
+	 */
 	public void restore(MMMemento m);
-	
+
+	/**
+	 * @return All entries in the {@link LibraryTable}.
+	 */
 	public LibraryTable[] getLibrary();
-	
+
+	/**
+	 * Actions required to save the current state as an {@link MMMemento}.
+	 */
 	public void saveAndReload();
-	
 
 }

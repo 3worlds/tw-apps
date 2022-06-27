@@ -29,9 +29,18 @@
 
 package au.edu.anu.twapps;
 
+/**
+ * @author Ian Davies - 25 June 2022
+ * 
+ *         Placeholder for text translations for this library. This entire
+ *         system should be externalized so that translations can be done by
+ *         volunteers.
+ */
 public class TextTranslations {
-	private TextTranslations() {};
-	
-	
+	/**
+	 * Private constructor to ensure this class is used as a static class.
+	 */
+	private TextTranslations() {
+	};
 
 }
