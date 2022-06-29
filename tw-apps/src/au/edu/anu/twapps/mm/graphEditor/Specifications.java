@@ -39,36 +39,42 @@ import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.SimpleDataTreeNode;
 import fr.ens.biologie.generic.utils.Duple;
+import au.edu.anu.twapps.exceptions.TwAppsException;
+import au.edu.anu.twcore.archetype.tw.OutNodeXorQuery;
+import au.edu.anu.twcore.archetype.tw.RequirePropertyQuery;
 
 /**
- * Author Ian Davies
- *
- * Date 10 Jan. 2019
+ * Author Ian Davies -10 Jan. 2019
+ * <p>
+ * This interface is the contract between the 3Worlds archetype and what a
+ * configuration graph builder (i.e. ModelMaker) requires.
  */
-
-/*
- * These are the basic public methods required of an archetype implementation.
- * 
- * NOTE: There are two uses: CHECKING compliance and BUILDING a configuration
- * file. Queries are not executed when BUILDING.
- * 
- * This interface is the contract between the archetype and what a builder (e.g
- * MM) requires
- * 
- * TODO: All this needs careful documenting
- */
-
 public interface Specifications {
 
-	/*
-	 * get specification of a given node from the configuration graph. If null, it
-	 * won't be checked.
+	/**
+	 * Get specification of a given node in the configuration graph. The
+	 * specification must exist, otherwise a {@link TwAppsException} will be thrown.
+	 * <p>
+	 * This method must add an entry for each archetype file it opens.
+	 * 
+	 * @param editNode        {@link VisualNodeEditable} interface of the
+	 *                        {@link VisualNode} being edited.
+	 * @param root            The root node of the specification archetype tree.
+	 * @param discoveredFiles Archetype files that have currently been searched.
+	 * @return The specification {@link TreeNode}
 	 */
-	public SimpleDataTreeNode getSpecsOf(VisualNodeEditable editNode, TreeNode root, Set<String> discoveredFiles);
+	public SimpleDataTreeNode getSpecsOf(VisualNodeEditable editNode, TreeNode root, Set<String> discoveredFiles)
+			throws TwAppsException;
 
-	/*
-	 * Returns the sub archetype spec of the given class of this baseSpec. Often
-	 * will return null
+	/**
+	 * Get sub-class specification of a given node in the configuration graph. Null
+	 * is returned if the node has no sub-class specification.
+	 * 
+	 * @param baseSpecs The base specification returned by
+	 *                  {@link #getSpecsOf(VisualNodeEditable,TreeNode,Set)
+	 *                  getSpecsOf}
+	 * @param subClass  The java class of the node.
+	 * @return The sub-class specification if one exists.
 	 */
 	public SimpleDataTreeNode getSubSpecsOf(SimpleDataTreeNode baseSpecs, Class<? extends TreeNode> subClass);
 
@@ -76,57 +82,157 @@ public interface Specifications {
 	 * Specifications of all potential children of a parent with this label and
 	 * optional subClass.
 	 */
-	public Iterable<SimpleDataTreeNode> getChildSpecsOf(VisualNodeEditable editNode, SimpleDataTreeNode baseSpec,
+	/**
+	 * Get a list of the specifications of all potential children of the parent
+	 * node.
+	 * 
+	 * @param editParent {@link VisualNodeEditable} interface of the parent
+	 *                   {@link VisualNode}.
+	 * @param baseSpec   The base specification returned by
+	 *                   {@link #getSpecsOf(VisualNodeEditable,TreeNode,Set)
+	 *                   getSpecsOf}
+	 * @param subSpec    The sub-class specification (can be null) returned by
+	 *                   {@link #getSubSpecsOf(SimpleDataTreeNode,Class)
+	 *                   getSubSpecsOf}.
+	 * @param root       Archetype tree root.
+	 * @return List of possible child specifications.
+	 */
+	public Iterable<SimpleDataTreeNode> getChildSpecsOf(VisualNodeEditable editParent, SimpleDataTreeNode baseSpec,
 			SimpleDataTreeNode subSpec, TreeNode root);
 
-	/* edge specifications nodes of a node with this label and class */
+	/**
+	 * Get a list of the specifications of all possible out-edges from the given
+	 * base and sub-class specifications.
+	 * 
+	 * @param baseSpec The base specification returned by
+	 *                 {@link #getSpecsOf(VisualNodeEditable,TreeNode,Set)
+	 *                 getSpecsOf}
+	 * @param subSpec  The sub-class specification returned by
+	 *                 {@link #getSubSpecsOf(SimpleDataTreeNode,Class)
+	 *                 getSubSpecsOf} (can be null).
+	 * @return List of edge specifications (can be empty).
+	 */
 	public Iterable<SimpleDataTreeNode> getEdgeSpecsOf(SimpleDataTreeNode baseSpec, SimpleDataTreeNode subSpec);
 
-	/*
-	 * Returns all property specs of the given spec, both the base class spec and
-	 * its optional sub class spec (can be null)
+	/**
+	 * Get a list of all property specifications from the given base and sub-class
+	 * specifications.
+	 * 
+	 * @param baseSpec The base specification returned by
+	 *                 {@link #getSpecsOf(VisualNodeEditable,TreeNode,Set)
+	 *                 getSpecsOf}
+	 * @param subSpec  The sub-class specification returned by
+	 *                 {@link #getSubSpecsOf(SimpleDataTreeNode,Class)
+	 *                 getSubSpecsOf} (can be null).
+	 * @return List of property specifications (can be empty).
 	 */
 	public Iterable<SimpleDataTreeNode> getPropertySpecsOf(SimpleDataTreeNode baseSpec, SimpleDataTreeNode subSpec);
 
-	/* Returns the integerRange class of the spec's multiplicity property */
+	/**
+	 * Returns the {@link IntegerRange} property value of the specification's
+	 * multiplicity property.
+	 * 
+	 * @param spec The specification.
+	 * @return {@link IntegerRange} which must exist.
+	 */
 	public IntegerRange getMultiplicityOf(SimpleDataTreeNode spec);
 
-	/*
-	 * True if node name must begin with upper case letter - not sure if should be
-	 * here?
+	/**
+	 * Ask if the name of the element in the given specification must begin with an
+	 * upper-case letter.
+	 * 
+	 * @param spec The specification containing the name property.
+	 * @return true if constraint exists, false otherwise.
 	 */
 	public boolean nameStartsWithUpperCase(SimpleDataTreeNode spec);
 
+	/**
+	 * Get all java classes applicable to the given specification. These classes are
+	 * presented to the user for selection when constructing a node for the
+	 * configuration graph.
+	 * 
+	 * @param spec The specification.
+	 * @return List of all java classes in the class hierarchy of the class
+	 *         specified.
+	 */
 	public List<Class<? extends TreeNode>> getSubClassesOf(SimpleDataTreeNode spec);
 
-	/*
-	 * returns all query specs of the given query classes for the given parent spec
+	/**
+	 * Get a list of all queries (constraints) of the given class referenced by the
+	 * specification.
+	 * 
+	 * @param spec         The specification root to search for queries.
+	 * @param queryClasses List of query classes being sort.
+	 * @return List of query specifications matching any of these supplied
+	 *         queryClasses.
 	 */
 	@SuppressWarnings("unchecked")
-	public List<SimpleDataTreeNode> getQueries(SimpleDataTreeNode parentSpec, Class<? extends Queryable>... queryClass);
-//	public List<SimpleDataTreeNode> getQueries(SimpleDataTreeNode parentSpec, Class<? extends Query>... queryClass);
+	public List<SimpleDataTreeNode> getQueries(SimpleDataTreeNode spec, Class<? extends Queryable>... queryClasses);
 
-	/* check the use of this. It should use the above function */
+	/**
+	 * Get a list of Query parameters for the given query class within the
+	 * specification.
+	 * 
+	 * @param spec       The specification to search.
+	 * @param queryClass Query class sort.
+	 * @return List of query parameters.
+	 */
 	public List<String[]> getQueryStringTables(SimpleDataTreeNode spec, Class<? extends Queryable> queryClass);
-//	public List<String[]> getQueryStringTables(SimpleDataTreeNode spec, Class<? extends Query> queryClass);
 
-	/* returns false if no option chosen: expects user input */
+	/**
+	 * Present user optional property choices when constructing a new node for the
+	 * configuration graph.
+	 * 
+	 * @param propertySpecs List of eligible property specifications.
+	 * @param baseSpec      The base specification returned by
+	 *                      {@link #getSpecsOf(VisualNodeEditable,TreeNode,Set)
+	 *                      getSpecsOf}
+	 * @param subSpec       The sub-class specification returned by
+	 *                      {@link #getSubSpecsOf(SimpleDataTreeNode,Class)
+	 *                      getSubSpecsOf} (can be null).
+	 * @param childId       Label of the child being constructed.
+	 * @param queryClasses  Applicable query (constraint).
+	 * @return true if option was chosen by the user, false otherwise.
+	 */
 	@SuppressWarnings("unchecked")
 	public boolean filterPropertyStringTableOptions(Iterable<SimpleDataTreeNode> propertySpecs,
 			SimpleDataTreeNode baseSpec, SimpleDataTreeNode subSpec, String childId,
 			Class<? extends Queryable>... queryClasses);
 
-	/*
-	 * Returns a list of Duple<NodeLabel1,NodeLabel2> optons for the given query
-	 * list
+	/**
+	 * Get a list of pairs of "NodeLabel1" and "NodeLabel2" pairs for application of
+	 * other query choices (cf: {@link OutNodeXorQuery}).
+	 * 
+	 * @param queries List of query specifications.
+	 * @return Pairs of NodeLabel1 and NodeLabel2 values.
 	 */
 	public List<Duple<String, String>> getNodeLabelDuples(List<SimpleDataTreeNode> queries);
 
-	public void filterRequiredPropertyQuery(VisualNode vnode, SimpleDataTreeNode baseSpec, SimpleDataTreeNode subSpec);
+	/**
+	 * Filters properties in a newly constructed node with reference to contraints
+	 * imposed by {@link RequirePropertyQuery}
+	 * 
+	 * @param node     The node containing the properties.
+	 * @param baseSpec The base specification returned by
+	 *                 {@link #getSpecsOf(VisualNodeEditable,TreeNode,Set)
+	 *                 getSpecsOf}
+	 * @param subSpec  The sub-class specification returned by
+	 *                 {@link #getSubSpecsOf(SimpleDataTreeNode,Class)
+	 *                 getSubSpecsOf} (can be null).
+	 */
+	public void filterRequiredPropertyQuery(VisualNode node, SimpleDataTreeNode baseSpec, SimpleDataTreeNode subSpec);
 
-	/*
-	 * Returns a list of property specifications that are optional and not
-	 * associated with any query
+	/**
+	 * Get a list of the optional property specifications (0..1) whose optionality
+	 * is not constrained by some other query,
+	 * 
+	 * @param baseSpec The base specification returned by
+	 *                 {@link #getSpecsOf(VisualNodeEditable,TreeNode,Set)
+	 *                 getSpecsOf}
+	 * @param subSpec  The sub-class specification returned by
+	 *                 {@link #getSubSpecsOf(SimpleDataTreeNode,Class)
+	 *                 getSubSpecsOf} (can be null).
+	 * @return List of property specifications marked optional (can be empty).
 	 */
 	public List<SimpleDataTreeNode> getOptionalProperties(SimpleDataTreeNode baseSpec, SimpleDataTreeNode subSpec);
 

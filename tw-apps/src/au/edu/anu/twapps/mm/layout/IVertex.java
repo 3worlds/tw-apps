@@ -36,22 +36,69 @@ import java.util.Random;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 
 /**
- * @author Ian Davies 30 Apr 2020
+ * @author Ian Davies - 30 Apr 2020
+ *         <p>
+ *         Interface for wrappers of {@link VisualNode} for the purpose of graph
+ *         layout algorithms.
  */
 public interface IVertex {
-	
+
+	/**
+	 * Get the wrapped {@link VisualNode}
+	 * 
+	 * @return the wrapped node.
+	 */
 	public VisualNode getNode();
+
+	/**
+	 * Set the location of the underlying {@link VisualNode}
+	 * 
+	 * @param x x dimension
+	 * @param y y dimension.
+	 */
 	public void setLocation(double x, double y);
 
+	/**
+	 * Get the x value.
+	 * 
+	 * @return the x value.
+	 */
 	public double getX();
 
+	/**
+	 * Get the y value.
+	 * 
+	 * @return the y value.
+	 */
 	public double getY();
 
+	/**
+	 * Get the node name.
+	 * 
+	 * @return the node name.
+	 */
 	public String id();
-	
-	public void jitter(double f,Random rnd);
 
+	/**
+	 * Randomly offset the location of the {@link VisualNode}.
+	 * 
+	 * @param f   Jitter fraction.
+	 * @param rnd Random number generator.
+	 */
+	public void jitter(double f, Random rnd);
+
+	/**
+	 * Fit the node locations within the rectangle.
+	 * 
+	 * @param from Current frame.
+	 * @param to   Frame for re-scaling.
+	 */
 	public void normalise(Rectangle2D from, Rectangle2D to);
-	
+
+	/**
+	 * 
+	 * @param min Point to set for lower-left bound.
+	 * @param max Point to set for top-right bound.
+	 */
 	public void getLayoutBounds(Point2D min, Point2D max);
 }

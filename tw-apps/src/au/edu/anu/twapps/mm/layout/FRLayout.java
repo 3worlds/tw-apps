@@ -45,22 +45,17 @@ import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.ens.biologie.generic.utils.Duple;
 
 /**
- * @author Ian Davies
- *
- * @date 13 Apr 2020
- */
-
-/**
- * A force-directed layout similar to Fruchterman and Reingold but using force
- * equations from Lombardi layout approach. This is NOT the full Lombardi style.
- * Tangential and rotational forces are not used:
+ * @author Ian Davies -13 Apr 2020
+ *         <p>
+ *         A force-directed layout similar to Fruchterman and Reingold but using
+ *         force equations from:
+ *         </p>
  * 
- * Chernobelskiy, R., Cunningham, K.I., Goodrich, M.T., Kobourov, S.G. and
- * Trott, L., 2011, September. Force-directed Lombardi-style graph drawing. In
- * International Symposium on Graph Drawing (pp. 320-331). Springer, Berlin,
- * Heidelberg.
+ *         Chernobelskiy, R., Cunningham, K.I., Goodrich, M.T., Kobourov, S.G.
+ *         and Trott, L., 2011, September. Force-directed Lombardi-style graph
+ *         drawing. In International Symposium on Graph Drawing (pp. 320-331).
+ *         Springer, Berlin, Heidelberg.
  */
-
 public class FRLayout implements ILayout {
 
 	private List<FRVertex> vertices;
@@ -68,7 +63,16 @@ public class FRLayout implements ILayout {
 	/* vertices excluded from the alg. These are lined up on the RH side. */
 	private List<FRVertex> isolated;
 
-	public FRLayout(TreeGraph<VisualNode, VisualEdge> graph, boolean pcShowing, boolean xlShowing, boolean sideline) {
+	/**
+	 * Build a force-directed layout
+	 * 
+	 * @param graph                   The layout graph
+	 * @param includeParentChildEdges Include parent-child edges in the display
+	 * @param includeCrossLinks       Include cross-link edges in the display
+	 * @param sideline                Place any isolated vertices to one side
+	 */
+	public FRLayout(TreeGraph<VisualNode, VisualEdge> graph, boolean includeParentChildEdges, boolean includeCrossLinks,
+			boolean sideline) {
 		vertices = new ArrayList<>();
 		edges = new ArrayList<>();
 		isolated = new ArrayList<>();
@@ -92,7 +96,7 @@ public class FRLayout implements ILayout {
 		for (FRVertex v : vertices) {
 			// add parent/children edges
 			VisualNode vn = v.getNode();
-			if (pcShowing)
+			if (includeParentChildEdges)
 				for (VisualNode cn : vn.getChildren())
 					if (!cn.isCollapsed() && cn.isVisible()) {
 						FRVertex u = Node2Vertex(cn);
@@ -102,7 +106,7 @@ public class FRLayout implements ILayout {
 					}
 
 			// add xlink edges
-			if (xlShowing) {
+			if (includeCrossLinks) {
 				for (Edge e : vn.edges(Direction.OUT)) {
 					VisualEdge ve = (VisualEdge) e;
 					if (ve.isVisible()) {
@@ -135,7 +139,7 @@ public class FRLayout implements ILayout {
 		for (FRVertex v : vertices)
 			if (v.getNode().id().equals(vn.id()))
 				return v;
-		throw new TwAppsException("Unable to find a vertex for "+vn.toShortString());
+		throw new TwAppsException("Unable to find a vertex for " + vn.toShortString());
 	}
 
 	@Override
@@ -192,7 +196,16 @@ public class FRLayout implements ILayout {
 		return this;
 	}
 
-	// linear cooling
+	/**
+	 * Linear cooling of the rate of adjustment to spring tension. The rate needs to
+	 * reduce as the spring-graph comes into equilibrium.
+	 * 
+	 * @param ti current temperature
+	 * @param i  interaction number
+	 * @param t0 initial temperature
+	 * @param m  total number of interations that will be performed.
+	 * @return the new cooling rate.
+	 */
 	public static double cool(double ti, double i, double t0, double m) {
 		return Math.max(0.0, ti - t0 * 1.0 / m);
 	}

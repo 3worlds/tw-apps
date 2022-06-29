@@ -28,10 +28,28 @@
   **************************************************************************/
 package au.edu.anu.twapps.mm.layout;
 
+/**
+ * Author Ian Davies - 1 May 2020
+ * 
+ * All layouts currently implemented.
+ */
 public enum LayoutType {
+	/**
+	 * Depth of tree increases from left to right, breadth from top to bottom.
+	 */
 	OrderedTree,
+	/**
+	 * Vertices arranged radially around parent with radius decreasing with path
+	 * length from the tree root.
+	 */
 	RadialTree1,
+	/**
+	 * Vertices arranged radially around parent with constant radius.
+	 */
 	RadialTree2,
+	/**
+	 * Force directed graph.
+	 */
 	SpringGraph,
-	//LombardiGraph,
+	// LombardiGraph, to finish
 }

@@ -35,6 +35,9 @@ import java.util.Map;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import fr.cnrs.iees.uit.space.Distance;
 
+/**
+ *  Not yet implemented.
+ */
 public class LmbVertex extends FRVertex {
 	// private List<LmbVertex> _neighbours;
 	private double rf;// rotation force?
@@ -48,10 +51,16 @@ public class LmbVertex extends FRVertex {
 	// For safety, we need neighbours in a predicatable order
 	private List<LmbVertex> neighbours;
 
+	/**
+	 * @param node WIP
+	 */
 	public LmbVertex(VisualNode node) {
 		super(node);
 	}
 
+	/**
+	 *  WIP
+	 */
 	public void init() {
 		neighbours = new ArrayList<>();
 		if (_adjMap != null) {
@@ -70,6 +79,9 @@ public class LmbVertex extends FRVertex {
 
 	}
 
+	/**
+	 * @param adjMap WIP
+	 */
 	public void addNeighbour(Map<LmbVertex, LmbEdge> adjMap) {
 		_adjMap = adjMap;
 		setHasEdge(true);
@@ -77,51 +89,93 @@ public class LmbVertex extends FRVertex {
 
 	// ----------------------------
 
+	/**
+	 * @return WIP
+	 */
 	public double nextTanAngle() {
 		curTan++;
 		return aIncrement * curTan;
 	}
 
 	// n is to
+	/**
+	 * @param n WIP
+	 * @return WIP
+	 */
 	public double tanAngle(LmbVertex n) {
 		return getEdge(n).tanAngle(this);
 	}
 
 	// n is to
+	/**
+	 * @param n WIP
+	 * @return WIP
+	 */
 	public double tanAngleRel(LmbVertex n) {
 		return getEdge(n).tanAngleRel(this);
 	}
 
 	// #n is to
+	/**
+	 * @param n WIP
+	 * @return WIP
+	 */
 	public double edgeAngle(LmbVertex n) {
 		return getEdge(n).edgeAngle(this);
 	}
 
+	/**
+	 * @param n WIP
+	 * @return WIP
+	 */
 	public double diffAngle(LmbVertex n) {
 		return getEdge(n).diffAngle(this);
 	}
 
+	/**
+	 * @param nn WIP
+	 * @param angle WIP
+	 */
 	public void setAngle(LmbVertex nn, double angle) {
 
 		getEdge(nn).setAngle(this, angle);
 	}
 
+	/**
+	 * @param n WIP
+	 * @param f WIP
+	 */
 	public void addForce(LmbVertex n, double f) {
 		getEdge(n).addForce(this, f);
 	}
 
+	/**
+	 * @param n WIP
+	 * @return WIP
+	 */
 	private LmbEdge getEdge(LmbVertex n) {
 		return _adjMap.get(n);
 	}
 
+	/**
+	 * @return WIP
+	 */
 	public double getAngle() {
 		return angle;
 	}
 
+	/**
+	 * @return WIP
+	 */
 	public int degree() {
 		return neighbours.size();
 	}
 
+	/**
+	 * @param rfKopp WIP
+	 * @param maxDeterministicShuffle WIP
+	 * @param shuffleSamples WIP
+	 */
 	public void shuffleTans(double rfKopp, int maxDeterministicShuffle, int shuffleSamples) {
 		double bestVal = rfComputeTot(rfKopp);
 		double[] bestCombo = new double[degree()];
@@ -192,6 +246,10 @@ public class LmbVertex extends FRVertex {
 //
 //	}
 
+	/**
+	 * @param rfKopp WIP
+	 * @return WIP
+	 */
 	private double rfComputeTot(double rfKopp) {
 		double temprf = 0.0;
 		for (LmbVertex nn : neighbours) {
@@ -209,6 +267,11 @@ public class LmbVertex extends FRVertex {
 		*/
 	}
 
+	/**
+	 * @param rfKopp WIP
+	 * @param rfKadj WIP
+	 * @return WIP
+	 */
 	public double rotationalDisplacement(double rfKopp, double rfKadj) {
 		rf = rfComputeNet(rfKopp, rfKadj);
 		return rf;
@@ -224,6 +287,11 @@ public class LmbVertex extends FRVertex {
 		rf-=n.diffAngle(nn)*rfKadj
 	return rf
 	*/
+	/**
+	 * @param rfKopp WIP
+	 * @param rfKadj WIP
+	 * @return WIP
+	 */
 	private double rfComputeNet(double rfKopp, double rfKadj) {
 		double temprf = 0;
 		for (LmbVertex nn : neighbours) {
@@ -245,6 +313,10 @@ public class LmbVertex extends FRVertex {
 			n.tx += (optip[0] - n.x)*tangentialK#*(abs(rot)/m.pi)
 			n.ty += (optip[1] - n.y)*tangentialK#*(abs(rot)/m.pi)
 	*/
+	/**
+	 * @param tangentialK WIP
+	 * @return WIP
+	 */
 	public double trangentialDisplacement(double tangentialK) {
 		for (LmbVertex nn : neighbours) {
 			double avg = diffAngle(nn) - nn.diffAngle(this) / 2.0;
@@ -261,10 +333,18 @@ public class LmbVertex extends FRVertex {
 		return Math.sqrt((tx * tx) + (ty * ty));
 	}
 
+	/**
+	 * @param n1 WIP
+	 * @param n2 WIP
+	 * @return WIP
+	 */
 	private static double dist(LmbVertex n1, LmbVertex n2) {
 		return Distance.euclidianDistance(n1.getX(), n1.getY(), n2.getX(), n2.getY());
 	}
 
+	/**
+	 * @param temp WIP
+	 */
 	public void updateAngle(double temp) {
 		angle += rf * temp;
 		rf = 0;
@@ -299,6 +379,9 @@ public class LmbVertex extends FRVertex {
 			if n.y < bl[1]: bl[1] = n.y
 			elif n.y > tr[1]: tr[1] = n.y
 	*/
+	/**
+	 * WIP
+	 */
 	public double displace(double temperature) {
 		fx += tx;
 		fy += ty;

@@ -32,8 +32,8 @@ package au.edu.anu.twapps.mm;
 import au.edu.anu.twapps.mm.layout.LayoutType;
 import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
-// TODO move to tw-apps later
 import fr.cnrs.iees.graph.impl.TreeGraph;
+import au.edu.anu.twcore.root.World;
 
 /**
  * Author Ian Davies - 9 Aug 2019
@@ -61,8 +61,8 @@ public interface IGraphVisualiser {
 	 * Actions required to add visualisation elements for an edge newly added to the
 	 * graph.
 	 * 
-	 * @param edge
-	 * @param duration
+	 * @param edge     Edge that has been added.
+	 * @param duration Duration in ms of animation.
 	 */
 	public void onNewEdge(VisualEdge edge, double duration);
 
@@ -112,30 +112,81 @@ public interface IGraphVisualiser {
 	 * Actions required to create visual elements depicting a new parent-child
 	 * relationship.
 	 * 
-	 * @param child The child node of the relationship.
+	 * @param child The child {@link VisualNode} of the relationship.
 	 */
 	public void onNewParent(VisualNode child);
 
+	/**
+	 * Re-apply the layout algorithm.
+	 * 
+	 * @param root          Root of the layout (if {@link LayoutType} is a tree
+	 *                      algorithm).
+	 * @param jitterFaction Amount of random displacement to apply (relative to
+	 *                      drawing dimension)
+	 * @param layoutType    Choice of algorithm {@link LayoutType}.
+	 * @param pcShowing     Show parent-child relationships.
+	 * @param xlShowing     Show cross-links.
+	 * @param sideline      Place all isolated nodes to one side.
+	 * @param duration      Duration in ms of animation.
+	 */
 	public void doLayout(VisualNode root, double jitterFaction, LayoutType layoutType, boolean pcShowing,
 			boolean xlShowing, boolean sideline, double duration);
 
-	public void onRemoveParentLink(VisualNode vnChild);
+	/**
+	 * Remove visual elements between this child {@link VisualNode} and its parent.
+	 * 
+	 * @param child The child node.
+	 */
+	public void onRemoveParentLink(VisualNode child);
 
-	public void onNodeRenamed(VisualNode vNode);
+	/**
+	 * Update {@link VisualNode} after being renamed.
+	 * 
+	 * @param node The {@link VisualNode} to update.
+	 */
+	public void onNodeRenamed(VisualNode node);
 
-	public void onEdgeRenamed(VisualEdge vEdge);
+	/**
+	 * Update {@link VisualEdge} after being renamed.
+	 * 
+	 * @param edge The {@link VisualEdge} to update.
+	 */
+	public void onEdgeRenamed(VisualEdge edge);
 
-	public void onHighlightLocalGraph(VisualNode root, int depth);
+	/**
+	 * Highlight all parts of the graph within the given depth of the given root
+	 * node.
+	 * 
+	 * @param centerNode The node at the center of the local graph.
+	 * @param depth      Maximum path depth in the display.
+	 */
+	public void onHighlightLocalGraph(VisualNode centerNode, int depth);
 
+	/**
+	 * Return view to normal after highlighting a local portion.
+	 */
 	public void onHighlightAll();
 
-	public void onShowLocalGraph(VisualNode root, int depth);
-
-	public void onShowAll();
-
+	/**
+	 * Collapses (hides) the pre-defined sub-tree. This is use when a configuration
+	 * is first created to remove clutter.
+	 */
 	public void collapsePredef();
 
+	/**
+	 * Update the view after rollback to a previous state of the configuration graph
+	 * and the ModelMaker controls.
+	 * 
+	 * @param layoutGraph The layout graph of {@link VisualNode} and
+	 *                    {@link VisualEdge}.
+	 */
 	public void onRollback(TreeGraph<VisualNode, VisualEdge> layoutGraph);
 
-	public void setLayoutNode(VisualNode newRoot);
+	/**
+	 * Update the view when a new root is chosen for the layout. This method should
+	 * not re-apply the layout. If the root is null the true root of the graph is used ({@link World}).
+	 * 
+	 * @param root {@link VisualNode} that is now the root of the layout (can be null).
+	 */
+	public void setLayoutRoot(VisualNode root);
 }

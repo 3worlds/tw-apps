@@ -31,30 +31,49 @@ package au.edu.anu.twapps.exceptions;
 import fr.ens.biologie.generic.Textable;
 
 /**
- * @author shayne.flint@anu.edu.au
- *
+ * The {@link java.lang.Exception} class specific to this library.
  * 
+ * @author shayne.flint@anu.edu.au
  * 
  */
-// NB: this was previously AotException
-// Policy is to make an exception at least for each library
-// The general advice for exceptions is to throw early and catch late.
 public class TwAppsException extends RuntimeException {
 
 	private static final long serialVersionUID = -4216594416420546384L;
 
+	/**
+	 * Instantiate an exception on an object with a message.
+	 * 
+	 * @param item    the item which caused the problem
+	 * @param message the error message
+	 */
 	public TwAppsException(Textable item, String message) {
 		super("[on " + item + "]\n[" + message + "]");
 	}
 
+	/**
+	 * Instantiate an exception with a message
+	 * 
+	 * @param message the error message
+	 */
 	public TwAppsException(String message) {
 		super("[" + message + "]");
 	}
 
+	/**
+	 * Exception wrapper.
+	 * 
+	 * @param e the exception to wrap
+	 */
 	public TwAppsException(Exception e) {
 		super(e);
 	}
 
+	/**
+	 * Exception wrapper with additional information
+	 * 
+	 * @param message the error message
+	 * @param e       the exception to wrap
+	 */
 	public TwAppsException(String message, Exception e) {
 		super("[" + message + "]\n[original exception: " + e + "]");
 		e.printStackTrace();

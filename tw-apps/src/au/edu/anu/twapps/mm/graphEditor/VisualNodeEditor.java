@@ -52,6 +52,9 @@ import fr.cnrs.iees.identity.Identity;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 
+/**
+ * Author Ian Davies  - 10 Jan. 2019
+ */
 public class VisualNodeEditor implements //
 		VisualNodeEditable, //
 		ArchetypeArchetypeConstants, //
@@ -59,6 +62,10 @@ public class VisualNodeEditor implements //
 	private VisualNode visualNode;
 	private TreeGraph<VisualNode, VisualEdge> visualGraph;
 
+	/**
+	 * @param visualNode Node for editing.
+	 * @param visualGraph The layout graph.
+	 */
 	public VisualNodeEditor(VisualNode visualNode, TreeGraph<VisualNode, VisualEdge> visualGraph) {
 		this.visualNode = visualNode;
 		this.visualGraph = visualGraph;
@@ -156,15 +163,15 @@ public class VisualNodeEditor implements //
 	}
 
 
-	@Override
-	public String extractParentReference(StringTable parents) {
-		TreeNode node = visualNode.configNode();
-		for (int i = 0; i < parents.size(); i++)
-			if (VisualNode.referencedBy(node, parents.getWithFlatIndex(i)))
-				return parents.getWithFlatIndex(i);
-
-		return null;
-	}
+//	@Override
+//	public String extractParentReference(StringTable parents) {
+//		TreeNode node = visualNode.configNode();
+//		for (int i = 0; i < parents.size(); i++)
+//			if (VisualNode.referencedBy(node, parents.getWithFlatIndex(i)))
+//				return parents.getWithFlatIndex(i);
+//
+//		return null;
+//	}
 
 
 }

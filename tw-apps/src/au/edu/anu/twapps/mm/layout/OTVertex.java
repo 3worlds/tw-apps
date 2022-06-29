@@ -32,13 +32,13 @@ package au.edu.anu.twapps.mm.layout;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 
 /**
- * @author Ian Davies 24 Apr 2020
+ * @author Ian Davies - 24 Apr 2020
  */
 public class OTVertex extends TreeVertexAdapter {
 
 	private double _prelim;
 	private int _number;
-	// To traverse inside and outside contours of the three.
+	// To traverse inside and outside contours of the tree.
 	private OTVertex _thread;
 	private OTVertex _ancestor;
 	private double _mod;
@@ -48,8 +48,14 @@ public class OTVertex extends TreeVertexAdapter {
 	protected static double[] levels = new double[10];
 	private static final double distance = 1.0;
 
-	public OTVertex(TreeVertexAdapter parent, VisualNode vNode) {
-		super(parent, vNode);
+	/**
+	 * Construct a vertex wrapper for the {@link OTLayout}.
+	 * 
+	 * @param parent Parent vertex.
+	 * @param node   {@link VisualNode} to be wrapped
+	 */
+	public OTVertex(TreeVertexAdapter parent, VisualNode node) {
+		super(parent, node);
 	}
 
 	/**
@@ -57,6 +63,9 @@ public class OTVertex extends TreeVertexAdapter {
 	 * recursively to all children as well as the function 'apportion'. After
 	 * spacing out the children by calling ExecuteShifts, the node is placed at the
 	 * midpoint of its outermost children.
+	 * 
+	 * @param num   To traverse inside and outside contours of the tree.
+	 * @param depth tree depth
 	 */
 	public void firstWalk(int num, int depth) {
 		setNumber(num);
@@ -361,6 +370,5 @@ public class OTVertex extends TreeVertexAdapter {
 	public void setChange(double change) {
 		this._change = change;
 	}
-
 
 }

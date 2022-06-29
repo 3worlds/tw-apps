@@ -39,20 +39,16 @@ import au.edu.anu.omhtk.rng.Pcg32;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 
 /**
- * <p>
- * OTLayout computes a tidy layout of a node-link tree diagram. This
- * algorithm lays out a rooted tree such that each depth level of the tree is on
- * a shared vertical line. 
- * </p>
+ * @author Ian Davies - 24 Apr 2020
+ *         <p>
+ *         OTLayout computes a tidy layout of a node-link tree diagram. This
+ *         algorithm lays out a rooted tree such that each depth level of the
+ *         tree is on a shared vertical line.
+ *         </p>
  * 
- * <p>
- * "Improving Walker's Algorithm to Run in Linear Time"
- * 
- * http://dirk.jivas.de/papers/buchheim02improving.pdf
- */
-
-/**
- * @author Ian Davies 24 Apr 2020
+ *         <p>
+ *         "Improving Walker's Algorithm to Run in Linear Time"
+ *         http://dirk.jivas.de/papers/buchheim02improving.pdf
  */
 public class OTLayout implements ILayout {
 	private class Factory implements ITreeVertexFactory {

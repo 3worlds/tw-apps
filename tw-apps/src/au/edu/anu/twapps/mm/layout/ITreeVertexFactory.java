@@ -32,8 +32,18 @@ package au.edu.anu.twapps.mm.layout;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 
 /**
- * @author Ian Davies 1 May 2020
+ * @author Ian Davies - 1 May 2020
+ * 
+ *         <p>
+ *         A factory interface to make tree vertices.
  */
 public interface ITreeVertexFactory {
+	/**
+	 * Make a tree vertex to wrap a {@link VisualNode}
+	 * 
+	 * @param parent the parent vertex.
+	 * @param node   the node to be wrapped
+	 * @return The constructed Vertex
+	 */
 	public TreeVertexAdapter makeVertex(TreeVertexAdapter parent, VisualNode node);
 }

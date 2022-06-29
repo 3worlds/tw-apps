@@ -30,19 +30,32 @@
 package au.edu.anu.twapps.mm.layout;
 
 import java.util.List;
-
+//if this extends IVertex then we can probably remove refs to the relevant adapter
 /**
- * @author Ian Davies 30 Apr 2020
+ * @author Ian Davies - 30 Apr 2020
+ * <p>
+ * Interface to view a node as part of a tree graph.
  */
-// if this extends IVertex then we can probably remove refs to the relevant adapter
 public interface ITreeVertex<V> /* extends IVertex */ {
 	
+	/**
+	 * @return true if leaf node, false otherwise.
+	 */
 	public boolean isChildless();
 
+	/**
+	 * @return true if has a parent vertex, false otherwise (root vertex).
+	 */
 	public boolean hasParent();
 
+	/**
+	 * @return parent vertex.
+	 */
 	public V getParent();
 
+	/**
+	 * @return list of child interfaces
+	 */
 	public List<V> getChildren();
 
 }

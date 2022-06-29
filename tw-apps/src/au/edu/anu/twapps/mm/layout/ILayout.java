@@ -32,7 +32,20 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Random;
 
+/**
+ * Author Ian Davies - - 10 Jan. 2019
+ */
 public interface ILayout {
+	/**
+	 * Re-scaling function.(possible duplicate?)
+	 * 
+	 * @param value   Value within the range.
+	 * @param fromMin Minimum of value.
+	 * @param fromMax Maximum of value
+	 * @param toMin   Minimum of new range.
+	 * @param toMax   Maximum of new range.
+	 * @return scaled value.
+	 */
 	public static double rescale(double value, double fromMin, double fromMax, double toMin, double toMax) {
 		double fromRange = fromMax - fromMin;
 		double toRange = toMax - toMin;
@@ -42,6 +55,14 @@ public interface ILayout {
 		return p * toRange + toMin;
 	}
 
+	/**
+	 * Move the value (x or y) by some random amount.
+	 * 
+	 * @param value          Value to be modified.
+	 * @param jitterFraction fraction of space.
+	 * @param rnd            Random number generator.
+	 * @return updated value.
+	 */
 	public static double jitter(double value, double jitterFraction, Random rnd) {
 		double delta = rnd.nextDouble() * jitterFraction;
 		if (rnd.nextBoolean())
@@ -50,14 +71,34 @@ public interface ILayout {
 			return value - delta;
 	}
 
+	/**
+	 * get the unit dimensions of the drawing frame.
+	 * 
+	 * @return The drawing frame.
+	 */
 	public static Rectangle2D getFittingFrame() {
 		return new Rectangle2D.Double(0.05, 0.05, 0.9, 0.9);
 	}
 
+	/**
+	 * Get the bounding dimensions of the layout drawing frame. The
+	 * {@link #getFittingFrame() fittingFrame} is scaled into this frame.
+	 * 
+	 * @param min Lower-left corner
+	 * @param max Top-right corner
+	 * @return Bounding rectangle
+	 */
 	public static Rectangle2D getBoundingFrame(Point2D min, Point2D max) {
 		return new Rectangle2D.Double(min.getX(), min.getY(), max.getX() - min.getX(), max.getY() - min.getY());
 	}
 
+	/**
+	 * Compute the layout.
+	 * 
+	 * @param jitterFrac Random offset of final node positions (relative to drawing
+	 *                   area dimensions)
+	 * @return this layout class.
+	 */
 	public ILayout compute(double jitterFrac);
 
 }

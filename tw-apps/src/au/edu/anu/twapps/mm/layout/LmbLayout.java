@@ -55,6 +55,12 @@ public class LmbLayout implements ILayout {
 	// from / to
 	private Map<LmbVertex, Map<LmbVertex, LmbEdge>> adjMat;
 
+	/**
+	 * @param graph WIP
+	 * @param pcShowing WIP
+	 * @param xlShowing WIP
+	 * @param sideline WIP
+	 */
 	public LmbLayout(TreeGraph<VisualNode, VisualEdge> graph, boolean pcShowing, boolean xlShowing, boolean sideline) {
 		vertices = new ArrayList<>();
 		edges = new ArrayList<>();
@@ -129,6 +135,12 @@ public class LmbLayout implements ILayout {
 
 	}
 
+	/**
+	 * @param e WIP
+	 * @param n1 WIP
+	 * @param n2 WIP
+	 * @return WIP
+	 */
 	private Map<LmbVertex, LmbEdge> addAdjMat(LmbEdge e, LmbVertex n1, LmbVertex n2) {
 		Map<LmbVertex, LmbEdge> result = adjMat.get(n1);
 		if (result == null) {
@@ -139,6 +151,10 @@ public class LmbLayout implements ILayout {
 		return result;
 	}
 
+	/**
+	 * @param vn WIP
+	 * @return WIP
+	 */
 	private IVertex Node2Vertex(VisualNode vn) {
 		for (IVertex v : vertices)
 			if (v.getNode().id().equals(vn.id()))
@@ -265,9 +281,4 @@ public class LmbLayout implements ILayout {
 		return result;
 	}
 
-//	private static double cool(double ti, double i, double t0, double m) {
-//		return Math.max(0.0, ti - t0 * 1.0 / m);
-//	}
-	public static void main(String[] args) {
-	}
 }

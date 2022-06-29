@@ -36,35 +36,98 @@ import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
 
-// just experimenting with what services mm requires of an aotnode.
-
-// impl will have a VisualNode which hosts the configuration node
+/**
+ * Author Ian Davies - 10 Jan. 2019
+ * 
+ * <p>
+ * Interface to isolate the currently selected node from components of the graph
+ * structure editor.
+ */
 public interface VisualNodeEditable {
-	
+
+	/**
+	 * The underlying {@link VisualNode}. Ideally this should not be exposed!
+	 * 
+	 * @return The {@link VisualNode} currently selected for editing.
+	 */
 	public VisualNode visualNode();
-	
+
+	/**
+	 * The layout graph. Ideally this should not be exposed!
+	 * 
+	 * @return The layout graph.
+	 */
 	public TreeGraph<VisualNode, VisualEdge> visualGraph();
-	
+
 	/* true if the this node can have more children of this label */
+	/**
+	 * Query to ask if more children of the given node label are allowed within the
+	 * given {@link IntegerRange}.
+	 * 
+	 * @param range      Allowed number of children
+	 * @param childLabel Label of the child type.
+	 * @return true if allowed, false otherwise.
+	 */
 	public boolean moreChildrenAllowed(IntegerRange range, String childLabel);
 
+	/**
+	 * Query to ask if the currently selected node have out-edges.
+	 * 
+	 * @return true if out-edges exist, false otherwise.
+	 */
 	public boolean hasOutEdges();
-	
+
+	/**
+	 * Get the list of out-edges of the currently selected node.
+	 * 
+	 * @return List of {@link VisualEdge} out-edges.
+	 */
 	public Iterable<VisualEdge> getOutEdges();
 
+	/**
+	 * Ensure that the proposed node name (id) is unique within the scope of the
+	 * configuration graph.
+	 * 
+	 * @param proposedName Proposed name.
+	 * @return actual name, modified if required, to ensure it is unique within the
+	 *         scope.
+	 */
 	public String proposeAnId(String proposedName);
-	
+
+	/**
+	 * Get the underlying java class of the currently selected configuration.
+	 * 
+	 * @return java class of the selected node.
+	 */
 	public Class<? extends TreeGraphNode> getSubClass();
 
+	/**
+	 * Query to ask if the currently selected node has an out-edge to the given
+	 * node.
+	 * 
+	 * @param endNode   Edge destination node.
+	 * @param edgeLabel Edge label.
+	 * @return true is such an edge exists, false otherwise.
+	 */
 	public boolean hasOutEdgeTo(VisualNode endNode, String edgeLabel);
 
+	/**
+	 * Get a list of all {@link VisualNode}s which have edges to them from the
+	 * currently selected node.
+	 * 
+	 * @return List of {@link VisualNode}s than satisfy (can be empty).
+	 */
 	public Iterable<VisualNode> getOutNodes();
-	
-	public boolean references (StringTable parents);
 
-	public String extractParentReference(StringTable parents);
+	/**
+	 * Query to ask if the currently selected node is referenced in the given table
+	 * of parents.
+	 * 
+	 * @param parents {@link StringTable}
+	 * @return true if reference found, false otherwise.
+	 */
+	public boolean references(StringTable parents);
 
-	
-	//public void addProperty(String key, Object defaultValue);
+//	public String extractParentReference(StringTable parents);
 
 }

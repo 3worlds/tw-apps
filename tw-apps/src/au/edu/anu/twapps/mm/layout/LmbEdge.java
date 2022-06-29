@@ -30,7 +30,7 @@ package au.edu.anu.twapps.mm.layout;
 
 /**
  * See if we need an adjacency matrix 'adjMat' since every node has a neighbour
- * list.
+ * list. Not yet implemented.
  */
 public class LmbEdge {
 	// private double dist;// set on init - ideal spring length = k
@@ -55,35 +55,64 @@ public class LmbEdge {
 //	self.p = nodeDict[p]
 //	self.q = nodeDict[q]
 
+	/**
+	 * Not yet implemented.
+	 * 
+	 * @param p Not yet implemented.
+	 * @param q Not yet implemented.
+	 */
 	public LmbEdge(LmbVertex p, LmbVertex q) {
 		this.p = p;
 		this.q = q;
 	}
 
+	/**
+	 *  Not yet implemented.
+	 */
 	public void init() {
 		// dist = K??
 		pa = p.nextTanAngle();
 		qa = q.nextTanAngle();
 	}
 
+	/**
+	 * @return Not yet implemented.
+	 */
 	public LmbVertex getP() {
 		return p;
 	}
 
+	/**
+	 * @return Not yet implemented.
+	 */
 	public LmbVertex getQ() {
 		return q;
 	}
 
+	/**
+	 *  Not yet implemented.
+	 * @param k Not yet implemented.
+	 * @return Not yet implemented.
+	 */
 	public double setAttractionDisplacement(double k) {
 		return FRVertex.attrApply(p, q, k);
 	}
 
 	// n is from
+	/**
+	 *  Not yet implemented.
+	 * @param n Not yet implemented.
+	 * @return Not yet implemented.
+	 */
 	public double tanAngle(LmbVertex n) {
 		return pie2(n.getAngle() + tanAngleRel(n));
 	}
 
 	// n is from
+	/** Not yet implemented.
+	 * @param n Not yet implemented.
+	 * @return Not yet implemented.
+	 */
 	public double tanAngleRel(LmbVertex n) {
 		if (n == p)
 			return pa;
@@ -91,6 +120,11 @@ public class LmbEdge {
 			return qa;
 	}
 
+	/**
+	 *  Not yet implemented.
+	 * @param n Not yet implemented.
+	 * @return Not yet implemented.
+	 */
 	public double edgeAngle(LmbVertex n) {
 		LmbVertex n1;
 		LmbVertex n2;
@@ -106,11 +140,21 @@ public class LmbEdge {
 		return pie2(Math.atan2(y, x));
 	}
 
-	//#n is from
+	// #n is from
+	/**
+	 *  Not yet implemented.
+	 * @param n Not yet implemented.
+	 * @return Not yet implemented.
+	 */
 	public double diffAngle(LmbVertex n) {
 		return pie(pie(tanAngle(n)) - pie(edgeAngle(n)));
 	}
 
+	/**
+	 *  Not yet implemented.
+	 * @param n Not yet implemented.
+	 * @param angle Not yet implemented.
+	 */
 	public void setAngle(LmbVertex n, double angle) {
 		if (n == p) {
 			pa = angle;
@@ -118,7 +162,14 @@ public class LmbEdge {
 			qa = angle;
 		}
 	}
-	//#n is from
+
+	// #n is from
+	/**
+	 * Not yet implemented.
+	 * 
+	 * @param n Not yet implemented.
+	 * @param f Not yet implemented.
+	 */
 	public void addForce(LmbVertex n, double f) {
 		if (n == p)
 			pf += f;
@@ -126,11 +177,19 @@ public class LmbEdge {
 			qf += f;
 	}
 
+	/**
+	 * @return Not yet implemented.
+	 */
 	public Vector ctrlPt() {
 		return new Vector(cx, cy);
 	}
 	// ------------------------------------
 
+	/**
+	 *  Not yet implemented.
+	 * @param rad Not yet implemented.
+	 * @return Not yet implemented.
+	 */
 	public static double pie(double rad) {
 		rad = pie2(rad);
 		if (rad <= Math.PI)
@@ -139,14 +198,28 @@ public class LmbEdge {
 			return rad - 2 * Math.PI;
 	}
 
+	/**
+	 *  Not yet implemented.
+	 * @param rad Not yet implemented.
+	 * @return Not yet implemented.
+	 */
 	public static double pie2(double rad) {
 		return rad % (2 * Math.PI);
 	}
 
+	/**
+	 *  Not yet implemented.
+	 * @param x Not yet implemented.
+	 * @param y Not yet implemented.
+	 * @return Not yet implemented.
+	 */
 	public static double mag(double x, double y) {
 		return Math.sqrt(x * x + y * y);
 	}
 
+	/**
+	 * @return Not yet implemented.
+	 */
 	public boolean finalStep() {
 		boolean result = true;
 		double pd = diffAngle(p);

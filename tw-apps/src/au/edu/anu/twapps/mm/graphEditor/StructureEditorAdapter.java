@@ -56,6 +56,7 @@ import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.util.FileUtilities;
 import au.edu.anu.rscs.aot.util.IntegerRange;
 import au.edu.anu.twapps.dialogs.Dialogs;
+import au.edu.anu.twapps.exceptions.TwAppsException;
 import au.edu.anu.twapps.mm.IGraphVisualiser;
 import au.edu.anu.twapps.mm.IMMController;
 import au.edu.anu.twapps.mm.configGraph.ConfigGraph;
@@ -120,32 +121,57 @@ import fr.ens.biologie.generic.utils.Tuple;
 import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
 
+/**
+ * Author Ian Davies - 10 Jan. 2019
+ * <p>
+ * Adapter class to perform the work of the {@link StructureEditable} interface.
+ */
 public abstract class StructureEditorAdapter
 		implements StructureEditable, TwArchetypeConstants, ArchetypeArchetypeConstants {
 	private static Logger log = Logging.getLogger(StructureEditorAdapter.class);
 
-	/* what we need to know from the archetype graph */
+	/**
+	 * Reference to the 3Worlds {@link Specifications} interface.
+	 */
 	protected Specifications specifications;
-	/*
-	 * what we need to know from the visualNode that has been selected for editing
+
+	/**
+	 * Reference to the {@link VisualNodeEditable} interface with its underlying
+	 * {@VisualNode}. This is the currently selected node for editing.
 	 */
 	protected VisualNodeEditable editableNode;
-	/*
-	 * new node created by this editor. May be null because the op is not
-	 * necessarily node creation.
+	/**
+	 * Reference to any newly constructed node. If this is not null when the editor
+	 * closes (not all operations involve node creation), the user is prompted to
+	 * place the node somewhere in the view.
 	 */
 	protected VisualNode newChild;
 
-	/* specifications of this editingNode */
+	/**
+	 * The specifications of the node, currently selected for editing.
+	 */
 	protected SimpleDataTreeNode baseSpec;
 
 	/* specifications of subclass of this editingNode if it has one */
+	/**
+	 * The specifications of the sub-class of the node, currently selected for
+	 * editing (can be null).
+	 */
 	protected SimpleDataTreeNode subClassSpec;
 
+	/**
+	 * Reference to the graph {@link IGraphVisualiser} interface.
+	 */
 	protected IGraphVisualiser gvisualiser;
 
 	protected IMMController controller;
 
+	/**
+	 * Constructor
+	 * @param selectedNode The selected node for editing {@link VisualNodeEditable}.
+	 * @param gv           Interface to the {@link IGraphVisualiser}.
+	 * @param controller   The model controller {@link IMMController}.
+	 */
 	public StructureEditorAdapter(VisualNodeEditable selectedNode, IGraphVisualiser gv, IMMController controller) {
 		super();
 		this.specifications = new TwSpecifications();
@@ -307,7 +333,8 @@ public abstract class StructureEditorAdapter
 	 * @param edgeSpec  specifications of the proposed edge
 	 * @param endNode   proposed end node
 	 * @param edgeLabel the edge classId
-	 * @return true if condition is satisfied including if condition is unable to be determined because config is incomplete.
+	 * @return true if condition is satisfied including if condition is unable to be
+	 *         determined because config is incomplete.
 	 */
 	private boolean satisfyCheckConstantTrackingQuery(SimpleDataTreeNode edgeSpec, VisualNode vnEndNode,
 			String edgeLabel) {

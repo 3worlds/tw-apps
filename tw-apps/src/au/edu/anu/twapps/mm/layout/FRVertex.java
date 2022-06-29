@@ -36,12 +36,25 @@ import au.edu.anu.twapps.mm.visualGraph.VisualNode;
  */
 
 public class FRVertex extends VertexAdapter {
-	/* total displacement of x and y */
+
+	/**
+	 * Total displacement of x
+	 */
 	protected double fx;
+	/**
+	 * Total displacement of y
+	 */
 	protected double fy;
-	/* vertices without edges are excluded from the algorithm */
+	/**
+	 * Vertices without edges are excluded from the computation
+	 */
 	private boolean hasEdges;
 
+	/**
+	 * Construct a vertex wrapper for a {@link VisualNode}.
+	 * 
+	 * @param node The node to wrap.
+	 */
 	public FRVertex(VisualNode node) {
 		super(node);
 	}
@@ -50,8 +63,9 @@ public class FRVertex extends VertexAdapter {
 	 * Calculate the displacement from the repulsion force between this node and
 	 * another.
 	 * 
-	 * @param other
+	 * @param other the neighbouring node.
 	 * @param k     spacing constant (ideal spring length)
+	 * @return the current force
 	 */
 	public double setRepulsionDisplacement(FRVertex other, double k) {
 		return repApply(this, other, k);
@@ -61,8 +75,9 @@ public class FRVertex extends VertexAdapter {
 	 * Calculate the displacement from the attraction force between this node and
 	 * another connected by a common edge.
 	 * 
-	 * @param other
+	 * @param other the neighbouring node.
 	 * @param k     spacing constant (ideal spring length)
+	 * @return the current force
 	 */
 	public double setAttractionDisplacement(FRVertex other, double k) {
 		return attrApply(this, other, k);
@@ -89,14 +104,32 @@ public class FRVertex extends VertexAdapter {
 		return force;
 	}
 
+	/**
+	 * Setter for {@link #hasEdges hasEdges}
+	 * 
+	 * @param b setting value
+	 */
 	public void setHasEdge(boolean b) {
 		hasEdges = b;
 	}
 
+	/**
+	 * Getter for {@link #hasEdges hasEdges}
+	 * 
+	 * @return true if vertex has edges, false otherwise.
+	 */
 	public boolean hasEdges() {
 		return hasEdges;
 	}
 
+	/**
+	 * Apply the force and update the po
+	 * 
+	 * @param p First vertex
+	 * @param q Second vertex
+	 * @param k spacing constant (ideal spring length)
+	 * @return force applied
+	 */
 	private static double repApply(FRVertex p, FRVertex q, double k) {
 		double dx = q.getX() - p.getX();
 		double dy = q.getY() - p.getY();
@@ -115,6 +148,14 @@ public class FRVertex extends VertexAdapter {
 
 	}
 
+	/**
+	 * Apply the force of attraction
+	 * 
+	 * @param p First vertex
+	 * @param q Second vertex
+	 * @param k spacing constant (ideal spring length)
+	 * @return The force of attraction.
+	 */
 	public static double attrApply(FRVertex p, FRVertex q, double k) {
 		double dx = q.getX() - p.getX();
 		double dy = q.getY() - p.getY();
