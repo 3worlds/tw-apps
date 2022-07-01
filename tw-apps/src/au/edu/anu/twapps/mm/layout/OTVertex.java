@@ -38,7 +38,6 @@ public class OTVertex extends TreeVertexAdapter {
 
 	private double _prelim;
 	private int _number;
-	// To traverse inside and outside contours of the tree.
 	private OTVertex _thread;
 	private OTVertex _ancestor;
 	private double _mod;
@@ -49,7 +48,7 @@ public class OTVertex extends TreeVertexAdapter {
 	private static final double distance = 1.0;
 
 	/**
-	 * Construct a vertex wrapper for the {@link OTLayout}.
+	 * Construct a vertex wrapper of a {@link VisualNode} for the {@link OTLayout}.
 	 * 
 	 * @param parent Parent vertex.
 	 * @param node   {@link VisualNode} to be wrapped
@@ -59,12 +58,11 @@ public class OTVertex extends TreeVertexAdapter {
 	}
 
 	/**
-	 * Computes a preliminary x-coord. Before that, 'firstWalk' is applied
-	 * recursively to all children as well as the function 'apportion'. After
-	 * spacing out the children by calling ExecuteShifts, the node is placed at the
-	 * midpoint of its outermost children.
+	 * Applied recursively to all children as well as the function 'apportion'.
+	 * After spacing out the children by calling ExecuteShifts, the node is placed
+	 * at the midpoint of its outermost children.
 	 * 
-	 * @param num   To traverse inside and outside contours of the tree.
+	 * @param num   Ordinal position in a list of siblings.
 	 * @param depth tree depth
 	 */
 	public void firstWalk(int num, int depth) {
@@ -99,11 +97,16 @@ public class OTVertex extends TreeVertexAdapter {
 		}
 	}
 
-	private static void updateDepths(int level) {
-		if (levels.length <= level)
-			levels = resize(levels, 3 * level / 2);
-		levels[level] = Math.max(levels[level], OTVertex.distance);
-		maxLevels = Math.max(maxLevels, level);
+	/**
+	 * Update levels structure with the given level.
+	 * 
+	 * @param nLevels Number of levels required.
+	 */
+	private static void updateDepths(int nLevels) {
+		if (levels.length <= nLevels)
+			levels = resize(levels, 3 * nLevels / 2);
+		levels[nLevels] = Math.max(levels[nLevels], OTVertex.distance);
+		maxLevels = Math.max(maxLevels, nLevels);
 	}
 
 	private static final double[] resize(double[] a, int size) {
@@ -158,6 +161,7 @@ public class OTVertex extends TreeVertexAdapter {
 	 * necessary).
 	 */
 	private OTVertex apportion(OTVertex defaultAncestor) {
+		// i = inner, o = outer, r = right, l = left.
 		OTVertex w = prevSibling();
 		if (w != null) {
 			OTVertex vip, vim, vop, vom;
@@ -302,7 +306,13 @@ public class OTVertex extends TreeVertexAdapter {
 		}
 	}
 
-	/** Computes all real x-coords by summing the modifiers recursively. */
+	/**
+	 * Computes all real x-coords by summing the modifiers recursively.
+	 * 
+	 * @param p     The vertex to set.
+	 * @param m     The modifier
+	 * @param depth current depth.
+	 */
 	public void secondWalk(OTVertex p, double m, int depth) {
 		double y = getPrelim() + m;
 		double x = OTVertex.levels[depth];
@@ -315,58 +325,136 @@ public class OTVertex extends TreeVertexAdapter {
 		}
 	}
 
+	/**
+	 * Getter for the preliminary position x.
+	 * 
+	 * @return current value.
+	 */
 	public double getPrelim() {
 		return _prelim;
 	}
 
+	/**
+	 * Setter for the preliminary position x.
+	 * 
+	 * @param prelim x position
+	 */
 	public void setPrelim(double prelim) {
 		this._prelim = prelim;
 	}
 
+	/**
+	 * Getter for the ordinal position amongst siblings.
+	 * 
+	 * @return vertex position.
+	 */
 	public int getNumber() {
 		return _number;
 	}
 
+	/**
+	 * Setter for the ordinal position amongst siblings.
+	 * 
+	 * @param number ordinal postion
+	 */
 	public void setNumber(int number) {
 		this._number = number;
 	}
 
+	/**
+	 * Getter for the thread current vertex. 'Threads' are used to traverse the
+	 * inside and outside contours of the left and right subtree up to the highest
+	 * common level.
+	 * 
+	 * @return current thread.
+	 */
 	public OTVertex getThread() {
 		return _thread;
 	}
 
+	/**
+	 * Setter for the thread current vertex. 'Threads' are used to traverse the
+	 * inside and outside contours of the left and right subtree up to the highest
+	 * common level.
+	 * 
+	 * @param thread The vertex in the thread chain.
+	 */
 	public void setThread(OTVertex thread) {
 		this._thread = thread;
 	}
 
+	/**
+	 * Ancestor either points to itself or to the root of the tree it belongs to.
+	 * 
+	 * @return current ancestor.
+	 */
 	public OTVertex getAncestor() {
 		return _ancestor;
 	}
 
+	/**
+	 * Ancestor either points to itself or to the root of the tree it belongs to.
+	 * 
+	 * @param ancestor The ancestor.
+	 */
 	public void setAncestor(OTVertex ancestor) {
 		this._ancestor = ancestor;
 	}
 
+	/**
+	 * Getter for the stored distance required to center a sub-tree.
+	 * 
+	 * @return current mod.
+	 */
 	public double getMod() {
 		return _mod;
 	}
 
+	/**
+	 * Setter for the stored distance required to center a sub-tree.
+	 * 
+	 * @param mod mod to store.
+	 */
 	public void setMod(double mod) {
 		this._mod = mod;
 	}
 
+	/**
+	 * Getter for the saved calculated x distance to shift so that this node does
+	 * not overlap another. This is another term used to maintain linear time
+	 * efficiency.
+	 * 
+	 * @return current saved shift.
+	 */
 	public double getShift() {
 		return _shift;
 	}
 
+	/**
+	 * Setter for the saved calculated x distance to shift so that this node does
+	 * not overlap another. This is another term used to maintain linear time
+	 * efficiency.
+	 * 
+	 * @param shift amount to shift x.
+	 */
 	public void setShift(double shift) {
 		this._shift = shift;
 	}
 
+	/**
+	 * Getter for the actual distance x shifted.
+	 * 
+	 * @return distance x
+	 */
 	public double getChange() {
 		return _change;
 	}
 
+	/**
+	 * Setter for the actual distance x shifted.
+	 * 
+	 * @param change distance x shifted
+	 */
 	public void setChange(double change) {
 		this._change = change;
 	}

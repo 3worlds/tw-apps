@@ -28,12 +28,29 @@
   **************************************************************************/
 package au.edu.anu.twapps.mm.visualGraph;
 
+import fr.cnrs.iees.identity.Identity;
+
 /**
- * @author Ian Davies 1 Jul 2020
+ * @author Ian Davies - 1 Jul 2020
+ *         <p>
+ *         Display options for layout graph elements (nodes/edge) names.
+ * 
  */
 public enum ElementDisplayText {
+	/**
+	 * Display both the label and the unique {@link Identity}.
+	 */
 	RoleName,
+	/**
+	 * Display the label only.
+	 */
 	Role,
+	/**
+	 * Display the unique {@link Identity} only.
+	 */
 	Name,
+	/**
+	 * Display no text.
+	 */
 	None;
 }

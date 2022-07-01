@@ -31,13 +31,20 @@ package au.edu.anu.twapps.mm.undo;
 
 /**
  * @author Ian Davies 1 Jun 2020
+ *         <p>
+ *         Interface for classes that record the state of an application.
  */
-//Undo/Redo pattern
 
 public interface IMemento {
 
+	/**
+	 * Remove any artifacts on disk that may record this state.
+	 */
 	public void finalise();
 
+	/**
+	 * @return The description of this state.
+	 */
 	public String getDescription();
-	
+
 }

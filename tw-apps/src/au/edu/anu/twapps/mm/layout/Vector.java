@@ -31,47 +31,89 @@ package au.edu.anu.twapps.mm.layout;
 import fr.cnrs.iees.uit.space.Distance;
 
 /**
- * @author Ian Davies 2 May 2020
+ * @author Ian Davies - 2 May 2020
+ *         <p>
+ *         A simple vector class for use in the Lombardi layout algorithm.
  */
 public class Vector {
 	private double x;
 	private double y;
 
+	/**
+	 * Construct a vettor of 2 values.
+	 * 
+	 * @param x x component.
+	 * @param y y component.
+	 */
 	public Vector(double x, double y) {
 		this.x = x;
 		this.y = y;
 
 	}
 
+	/**
+	 * Add 2 vectors.
+	 * 
+	 * @param v vector to add.
+	 * @return vector sum.
+	 */
 	public Vector add(Vector v) {
 		return new Vector(x + v.x, y + v.y);
 	}
 
+	/**
+	 * Subtract 2 vectors.
+	 * 
+	 * @param v vector to subtract.
+	 * @return vector subtraction.
+	 */
 	public Vector sub(Vector v) {
 		return new Vector(x - v.x, y - v.y);
 	}
 
+	/**
+	 * @param factor WIP
+	 * @return WIP
+	 */
 	public Vector mul(double factor) {
 		return new Vector(x * factor, y * factor);
 	}
 
 	// Difference??
+	/**
+	 * @param factor WIP
+	 * @return WIP
+	 */
 	public Vector rmul(double factor) {
 		return new Vector(x * factor, y * factor);
 	}
 
+	/**
+	 * @param factor WIP
+	 * @return WIP
+	 */
 	public Vector truediv(double factor) {
 		return new Vector(x / factor, y / factor);
 	}
 
+	/**
+	 * @return WIP
+	 */
 	public Vector normalize() {
 		return scale(1.0 / Distance.euclidianDistance(0, 0, x, y));
 	}
 
+	/**
+	 * @param k WIP
+	 * @return WIP
+	 */
 	public Vector scale(double k) {
 		return new Vector(x * k, y * k);
 	}
 
+	/**
+	 * @return WIP
+	 */
 	public double angle() {
 		return (Math.atan2(y, x));
 	}

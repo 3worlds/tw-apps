@@ -36,29 +36,48 @@ import java.util.Random;
 
 import au.edu.anu.omhtk.rng.Pcg32;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
+import au.edu.anu.twcore.root.World;
 
 /**
  * @author Ian Davies 30 Mar 2020
+ * 
+ *         <p>
+ *         Creates an radial tree layout. Lays out a rooted tree such that all
+ *         children are evenly place in a circle around their parent. The radius
+ *         of the circle declines with increasing distance from the root.
+ *         </p>
+ *         <p>
+ *         Pavlo, A., Homan, C. and Schull, J., 2006. A parent-centered radial
+ *         layout algorithm for interactive graph visualization and animation.
+ *         arXiv preprint cs/0606007.
  */
 public class RT1Layout implements ILayout {
-	private class Factory implements ITreeVertexFactory{
+	private class Factory implements ITreeVertexFactory {
 
 		@Override
 		public TreeVertexAdapter makeVertex(TreeVertexAdapter parent, VisualNode node) {
-			return new RT1Vertex(parent,node);
+			return new RT1Vertex(parent, node);
 		}
 	}
 
 	private RT1Vertex root;
-	
+
 	private List<TreeVertexAdapter> isolated;
 
-	public RT1Layout(VisualNode vRoot, boolean pcShowing,boolean xlShowing,boolean sideline) {
-		root = new RT1Vertex(null, vRoot);
+	/**
+	 * @param rootNode                {@link VisualNode} to use as the layout root
+	 *                                (need not be {@link World} node).
+	 * @param includeParentChildEdges Use parent-child relationships.
+	 * @param includeCrossLinksEdges  Show cross-link edges
+	 * @param sideline                Move isolated vertices to one side.
+	 */
+	public RT1Layout(VisualNode rootNode, boolean includeParentChildEdges, boolean includeCrossLinksEdges,
+			boolean sideline) {
+		root = new RT1Vertex(null, rootNode);
 		TreeVertexAdapter.buildSpanningTree(root, new Factory());
 		isolated = new ArrayList<>();
 		if (sideline)
-			root.getIsolated(isolated, pcShowing, xlShowing);
+			root.getIsolated(isolated, includeParentChildEdges, includeCrossLinksEdges);
 	}
 
 	@Override

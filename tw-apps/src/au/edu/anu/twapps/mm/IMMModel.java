@@ -44,7 +44,7 @@ import au.edu.anu.twcore.project.Project;
 /**
  * @author Ian Davies - 10 Jan. 2019
  *         <p>
- *         Interface implemented by {@link MMModel} as part of the <a href=
+ *         Interface implemented by {@link MMModel} is part of the <a href=
  *         "https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller">Model-View-Controller</a>
  *         pattern.
  *         </p>

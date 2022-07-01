@@ -41,21 +41,42 @@ public class RT2Vertex extends TreeVertexAdapter {
 	private int _depth;
 	private double _angle;
 
-	public RT2Vertex(TreeVertexAdapter parent, VisualNode vNode) {
-		super(parent, vNode);
+	/**
+	 * Construct a vertex wrapper of a {@link VisualNode} for the {@link RT2Layout}.
+	 * 
+	 * @param parent Parent vertex.
+	 * @param node   {@link VisualNode} to be wrapped
+	 */
+	public RT2Vertex(TreeVertexAdapter parent, VisualNode node) {
+		super(parent, node);
 		this._depth = 0;
 		if (hasParent())
 			_depth = ((RT2Vertex) getParent()).getDepth() + 1;
 	}
 
+	/**
+	 * Get the depth of this vertex in the tree.
+	 * 
+	 * @return the depth.
+	 */
 	public int getDepth() {
 		return _depth;
 	}
 
+	/**
+	 * Set the angle of this vertex relative to its parent.
+	 * 
+	 * @param angle angle in radians.
+	 */
 	public void setAngle(double angle) {
 		_angle = angle;
 	}
 
+	/**
+	 * Get the angle of this vertex relative to its parent.
+	 * 
+	 * @return angle in radians.
+	 */
 	public double getAngle() {
 		if (!hasParent())
 			return 0.0;
@@ -70,6 +91,11 @@ public class RT2Vertex extends TreeVertexAdapter {
 		}
 	}
 
+	/**
+	 * Recursively collect all leaf vertices.
+	 * 
+	 * @param leaves current leaf collection.
+	 */
 	public void collectLeaves(List<RT2Vertex> leaves) {
 		if (isChildless())
 			leaves.add(this);
@@ -83,6 +109,9 @@ public class RT2Vertex extends TreeVertexAdapter {
 		setLocation(x, y);
 	}
 
+	/**
+	 * Recursively update position to Cartesian coordinates.
+	 */
 	public void locate() {
 		updatePosition(getAngle());
 		for (TreeVertexAdapter c : getChildren())

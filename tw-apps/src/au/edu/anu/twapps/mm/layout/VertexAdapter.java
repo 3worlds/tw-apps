@@ -37,12 +37,18 @@ import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 
 /**
  * @author Ian Davies 30 Apr 2020
+ *         <p>
+ *         Adapter for vertices with just position information.
  */
 public abstract class VertexAdapter implements IVertex {
 	private VisualNode _vNode;
 
-	public VertexAdapter(VisualNode vNode) {
-		this._vNode = vNode;
+	/**
+	 * Constructor a vertex warpper for a {@link VisualNode}.
+	 * @param node The node to be wrappeed.
+	 */
+	public VertexAdapter(VisualNode node) {
+		this._vNode = node;
 	}
 
 	@Override
@@ -95,10 +101,10 @@ public abstract class VertexAdapter implements IVertex {
 	}
 
 	@Override
-	public void jitter(double f,Random rnd) {
-		double x = ILayout.jitter(getX(),f,rnd);
-		double y = ILayout.jitter(getY(),f,rnd);
-		setLocation(x,y);
+	public void jitter(double f, Random rnd) {
+		double x = ILayout.jitter(getX(), f, rnd);
+		double y = ILayout.jitter(getY(), f, rnd);
+		setLocation(x, y);
 	}
 
 }

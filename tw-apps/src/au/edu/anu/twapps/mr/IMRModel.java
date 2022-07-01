@@ -35,23 +35,86 @@ import java.util.List;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
+import au.edu.anu.omhtk.preferences.Preferences;
 
 //ModelRunner methods called by the Controller
 //The controller HAS one of these
 //ModelRunner IS on of these: ModelRunner implements
 /**
  * @author Ian Davies 31 Dec 2019
+ * 
+ *         <p>
+ *         Interface implemented by {@link MRModel} is part of the <a href=
+ *         "https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller">Model-View-Controller</a>
+ *         pattern.
+ * 
  */
 public interface IMRModel {
+	/**
+	 * Create a file with the run-time dynamic graph.
+	 */
 	public void doISGenerate();
+
+	/**
+	 * Setter of the index one of a list of files of the dynamic graph as the one to
+	 * load when simulation begins.
+	 * 
+	 * @param idx index in the list of files.
+	 */
 	public void setISSelection(int idx);
-	public int  getISSelection();
+
+	/**
+	 * Getter of the index one of a list of files of the dynamic graph as the one to
+	 * load when simulation begins.
+	 * 
+	 * @return file index.
+	 */
+	public int getISSelection();
+
+	/**
+	 * Get a list of all available dynamic graph files.
+	 * 
+	 * @return The list of files.
+	 */
 	public List<File> getISFiles();
+
+	/**
+	 * Reload the dynamic graph during a simulation (i.e during a pause).
+	 */
 	public void doISReload();
+
+	/**
+	 * Zero all dynamic data and remove ephemeral nodes.
+	 */
 	public void doISClear();
+
+	/**
+	 * Save the dynamic graph to a file.
+	 * 
+	 * @param file The file.
+	 */
 	public void doISSaveAs(File file);
+
+	/**
+	 * Setter for the configuration graph.
+	 * 
+	 * @param graph Configuration graph.
+	 */
 	public void setGraph(TreeGraph<TreeGraphDataNode, ALEdge> graph);
-	public TreeGraph<TreeGraphDataNode, ALEdge> getGraph();	
+
+	/**
+	 * Getter of the configuration graph.
+	 * @return Configuration graph.
+	 */
+	public TreeGraph<TreeGraphDataNode, ALEdge> getGraph();
+
+	/**
+	 * Set the ModelRunner controls from the {@link Preferences} system.
+	 */
 	public void getPreferences();
+
+	/**
+	 * Save the ModelRunner controls to the {@link Preferences} system.
+	 */
 	public void putPreferences();
 }

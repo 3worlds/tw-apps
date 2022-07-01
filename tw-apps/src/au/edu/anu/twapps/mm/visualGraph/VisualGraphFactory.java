@@ -44,14 +44,26 @@ import fr.cnrs.iees.properties.PropertyListFactory;
 import fr.cnrs.iees.properties.ReadOnlyPropertyList;
 import fr.cnrs.iees.properties.SimplePropertyList;
 import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
+import fr.cnrs.iees.identity.Identity;
+import fr.cnrs.iees.identity.impl.LocalScope;
 
 /**
- * @author Ian Davies 11 Jul 2019
+ * @author Ian Davies - 11 Jul 2019
+ *         <p>
+ *         Factory to construct nodes and edges for the layout graph. All
+ *         elements use the {@link SharedPropertyListImpl} since all property
+ *         keys are the same.
  */
 public class VisualGraphFactory extends TreeGraphFactory implements EditableFactory, VisualKeys {
 
 	private static Map<String, String> vgLabels = new HashMap<>();
 
+	/**
+	 * Removes the edge {@link Identity} from the graphs {@link LocalScope}. This is
+	 * necessary if an edge is to be renamed or deleted.
+	 * 
+	 * @param edge The {@link VisualEdge} whose {@link Identity} is to be removed.
+	 */
 	public void removeEdgeId(VisualEdge edge) {
 		scope.removeId(edge.id());
 	}
@@ -98,14 +110,25 @@ public class VisualGraphFactory extends TreeGraphFactory implements EditableFact
 		}
 	};
 
+	/**
+	 * Constructor with name of the {@link LocalScope} and a map of edge labels and
+	 * their associated java class names.
+	 */
 	public VisualGraphFactory() {
-		super("VGF",vgLabels);
+		super("VGF", vgLabels);
 	}
 
+	/**
+	 * @param scopeName The name of the {@link LocalScope}.
+	 */
 	public VisualGraphFactory(String scopeName) {
 		this();
 	}
 
+	/**
+	 * @param scopeName Name of the {@link LocalScope}
+	 * @param labels    map of edge labels and their associated java class names.
+	 */
 	public VisualGraphFactory(String scopeName, Map<String, String> labels) {
 		this();
 	}
@@ -126,7 +149,7 @@ public class VisualGraphFactory extends TreeGraphFactory implements EditableFact
 
 	@Override
 	public VisualEdge makeEdge(Node start, Node end, String proposedId) {
-		//Edge e = inherited makeEdge(start,end,proposedId);
+		// Edge e = inherited makeEdge(start,end,proposedId);
 		VisualEdge result = new VisualEdge(scope.newId(true, proposedId), start, end, this);
 		return result;
 	}
@@ -146,13 +169,19 @@ public class VisualGraphFactory extends TreeGraphFactory implements EditableFact
 		vgLabels.put(VisualEdge.class.getSimpleName(), VisualEdge.class.getName());
 	}
 
-	private static PropertyKeys nodeKeys = new PropertyKeys(vnx, vny, vnCategory, vnCollapsed, vnParentRef,vnVisible);
+	private static PropertyKeys nodeKeys = new PropertyKeys(vnx, vny, vnCategory, vnCollapsed, vnParentRef, vnVisible);
 	private static PropertyKeys edgeKeys = new PropertyKeys(veVisible);
 
+	/**
+	 * @return {@link PropertyKeys} shared by all nodes of this graph.
+	 */
 	public static PropertyKeys getNodeKeys() {
 		return nodeKeys;
 	}
 
+	/**
+	 * @return {@link PropertyKeys} shared by all edges of this graph.
+	 */
 	public static PropertyKeys getEdgeKeys() {
 		return edgeKeys;
 	}

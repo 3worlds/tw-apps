@@ -55,7 +55,7 @@ import fr.ens.biologie.generic.utils.Tuple;
  */
 //Undo/Redo pattern: ModelMaker specific memento
 
-public class MMMemento implements IMemento{
+public class MMMemento implements IMemento {
 	private final static String configName = "__stateA";
 	private final static String layoutName = "__stateB";
 	private final static String prefName = "__stateC";
@@ -63,7 +63,14 @@ public class MMMemento implements IMemento{
 	private Tuple<File, File, File> state;
 	private String desc;
 
-	
+	/**
+	 * Construct a ModelMaker memento.
+	 * 
+	 * @param desc Descrption of the state to appear in application controls.
+	 * @param a    The configuration graph.
+	 * @param b    The layout graph.
+	 * @param c    The state of ModelMaker controls.
+	 */
 	public MMMemento(String desc, TreeGraph<TreeGraphDataNode, ALEdge> a, TreeGraph<VisualNode, VisualEdge> b, File c) {
 		this.state = nextState();
 		this.desc = desc;
@@ -76,6 +83,10 @@ public class MMMemento implements IMemento{
 		}
 	}
 
+	/**
+	 * @return a tuple of artifacts for this state (configuration, layout,
+	 *         application controls).
+	 */
 	public final Tuple<File, File, File> getState() {
 		return state;
 	}
@@ -119,7 +130,7 @@ public class MMMemento implements IMemento{
 		if (f.exists())
 			f.delete();
 	}
-	
+
 	@Override
 	public void finalise() {
 		deleteFile(state.getFirst());
@@ -132,21 +143,22 @@ public class MMMemento implements IMemento{
 		return desc;
 	}
 
+	/**
+	 * Delete all state files in the current {@link Project} directory.
+	 */
 	public static void deleteStrandedFiles() {
-		
+
 		File[] files = Project.getProjectFile().listFiles(new FilenameFilter() {
 
 			@Override
 			public boolean accept(File dir, String name) {
-				return (name.startsWith(configName) || name.startsWith(layoutName)
-						|| name.startsWith(prefName));
+				return (name.startsWith(configName) || name.startsWith(layoutName) || name.startsWith(prefName));
 			}
 
 		});
 		for (File f : files)
 			f.delete();
 
-		
 	}
 
 }

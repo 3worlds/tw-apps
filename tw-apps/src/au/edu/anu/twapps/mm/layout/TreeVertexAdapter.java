@@ -42,21 +42,33 @@ import fr.cnrs.iees.graph.Edge;
 
 /**
  * @author Ian Davies - 30 Apr 2020
+ *         <p>
+ *         Abstract adapter class for building tree vertices.
  */
 public abstract class TreeVertexAdapter extends VertexAdapter implements ITreeVertex<TreeVertexAdapter> {
 	private List<TreeVertexAdapter> _children;
 	private TreeVertexAdapter _parent;
 
-	public TreeVertexAdapter(TreeVertexAdapter parent, VisualNode vNode) {
-		super(vNode);
+	/**
+	 * Tree vertex constructor.
+	 * 
+	 * @param parent Parent vertex.
+	 * @param node   Underlying {@link VisualNode}.
+	 */
+	public TreeVertexAdapter(TreeVertexAdapter parent, VisualNode node) {
+		super(node);
 		this._parent = parent;
 		this._children = new ArrayList<>();
 	}
+
+	/**
+	 * @return true if this node has edges to other visible nodes.
+	 */
 	public boolean nodeHasEdgesToVisibleNodes() {
-		for (Edge e: getNode().edges()) {
+		for (Edge e : getNode().edges()) {
 			VisualNode startNode = (VisualNode) e.startNode();
-			VisualNode endNode = (VisualNode)e.endNode();
-			if (startNode.isVisible()&& endNode.isVisible())
+			VisualNode endNode = (VisualNode) e.endNode();
+			if (startNode.isVisible() && endNode.isVisible())
 				return true;
 		}
 		return false;
@@ -102,44 +114,60 @@ public abstract class TreeVertexAdapter extends VertexAdapter implements ITreeVe
 		for (IVertex c : getChildren())
 			c.normalise(from, to);
 	}
-	
-	public static void buildSpanningTree(TreeVertexAdapter vertex,ITreeVertexFactory factory) {
+
+	/**
+	 * Recursively builds the tree from just those nodes that are currently visible.
+	 * 
+	 * @param vertex  The current vertex.
+	 * @param factory The vertex factory.
+	 */
+	public static void buildSpanningTree(TreeVertexAdapter vertex, ITreeVertexFactory factory) {
 		List<VisualNode> sortList = new ArrayList<>();
 		String parentId = "";
 		if (vertex.hasParent())
 			parentId = vertex.getParent().getNode().id();
 		for (VisualNode nChild : vertex.getNode().getChildren()) {
 			String childId = nChild.id();
-			if (!nChild.isCollapsed() && !childId.equals(parentId)&& nChild.isVisible())
+			if (!nChild.isCollapsed() && !childId.equals(parentId) && nChild.isVisible())
 				sortList.add(nChild);
 		}
 		VisualNode nParent = vertex.getNode().getParent();
 		if (nParent != null)
-			if (!nParent.isCollapsed() && !nParent.id().equals(parentId)&& nParent.isVisible())
+			if (!nParent.isCollapsed() && !nParent.id().equals(parentId) && nParent.isVisible())
 				sortList.add(nParent);
 
 		sortList.sort(new Comparator<VisualNode>() {
 			@Override
 			public int compare(VisualNode o1, VisualNode o2) {
-				return o1.getDisplayText(ElementDisplayText.RoleName).compareTo(o2.getDisplayText(ElementDisplayText.RoleName));
+				return o1.getDisplayText(ElementDisplayText.RoleName)
+						.compareTo(o2.getDisplayText(ElementDisplayText.RoleName));
 			}
 		});
 		for (VisualNode nChild : sortList) {
 			TreeVertexAdapter vChild = factory.makeVertex(vertex, nChild);
 			vertex.getChildren().add(vChild);
-			buildSpanningTree(vChild,factory);
-		}
-	}
-	public void getIsolated(List<TreeVertexAdapter> lstIsolated, boolean pcShowing, boolean xlShowing) {
-		if (!pcShowing)
-			if (!xlShowing)
-				lstIsolated.add(this);
-			else if (!nodeHasEdgesToVisibleNodes())
-				lstIsolated.add(this);
-		for (TreeVertexAdapter c:getChildren()) {
-			c.getIsolated(lstIsolated,pcShowing,xlShowing);
+			buildSpanningTree(vChild, factory);
 		}
 	}
 
+	/**
+	 * Recursively builds a list of vertices that have no visible edges. These can
+	 * be placed to one side of the display to reduce clutter.
+	 * 
+	 * @param lstIsolated          The accumulating list of isolated vertices.
+	 * @param showParentChildEdges true if these edges are currently displayed.
+	 * @param showCrossLinkEdges   true if these edges are currently displayed.
+	 */
+	public void getIsolated(List<TreeVertexAdapter> lstIsolated, boolean showParentChildEdges,
+			boolean showCrossLinkEdges) {
+		if (!showParentChildEdges)
+			if (!showCrossLinkEdges)
+				lstIsolated.add(this);
+			else if (!nodeHasEdgesToVisibleNodes())
+				lstIsolated.add(this);
+		for (TreeVertexAdapter c : getChildren()) {
+			c.getIsolated(lstIsolated, showParentChildEdges, showCrossLinkEdges);
+		}
+	}
 
 }

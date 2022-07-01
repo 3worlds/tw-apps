@@ -39,6 +39,12 @@ import fr.ens.biologie.generic.utils.Duple;
 public class RT1Vertex extends TreeVertexAdapter {
 	private double radius;// distance to all children
 
+	/**
+	 * Construct a vertex wrapper of a {@link VisualNode} for the {@link RT1Layout}.
+	 * 
+	 * @param parent Parent vertex.
+	 * @param node   {@link VisualNode} to be wrapped
+	 */
 	public RT1Vertex(TreeVertexAdapter parent, VisualNode node) {
 		super(parent, node);
 	}
@@ -108,7 +114,12 @@ public class RT1Vertex extends TreeVertexAdapter {
 		return new Duple<Double, Double>(x, y);
 	}
 
-	/** Recursively translate relative polar coords to absolute Cartesian */
+	/**
+	 * Recursively translate relative polar coords to absolute Cartesian.
+	 * 
+	 * @param depth    path depth.
+	 * @param angleSum accumulated sum of angles across siblings.
+	 */
 	public void locate(int depth, double angleSum) {
 		if (!hasParent()) {
 			setLocation(0, 0);
@@ -120,7 +131,7 @@ public class RT1Vertex extends TreeVertexAdapter {
 			double distance = ((RT1Vertex) getParent()).getRadius();
 			Duple<Double, Double> p = RT1Vertex.polarToCartesian(angleSum, distance);
 			double px = getParent().getX();
-			double py = getParent().getY();		
+			double py = getParent().getY();
 			double cx = p.getFirst();
 			double cy = p.getSecond();
 			setLocation(px + cx, py + cy);

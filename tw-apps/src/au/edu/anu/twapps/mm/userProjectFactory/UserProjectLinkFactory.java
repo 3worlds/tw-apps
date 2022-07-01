@@ -34,11 +34,25 @@ import java.io.File;
 import au.edu.anu.twapps.dialogs.Dialogs;
 import au.edu.anu.twcore.userProject.UPLEclipse;
 import au.edu.anu.twcore.userProject.UserProjectLink;
+import au.edu.anu.twcore.project.Project;
 
+/**
+ * Author Ian Davies - 23 Aug 2019
+ * <p>
+ * Factory to initialize a link between an IDE and a 3Worlds {@link Project}.
+ */
 public class UserProjectLinkFactory {
 	private UserProjectLinkFactory() {
 	};
 
+	/**
+	 * Initialize a link between an IDE and a 3Worlds {@link Project}. An error
+	 * alert is produced if the requested IDE is not supported.
+	 * 
+	 * @param projectRoot The File path to the Java project.
+	 * @param type        The {@link IDETypes} in use.
+	 * @return true if initialization was successful, false otherwise.
+	 */
 	public static boolean makeEnv(File projectRoot, IDETypes type) {
 		switch (type) {
 		case eclipse: {

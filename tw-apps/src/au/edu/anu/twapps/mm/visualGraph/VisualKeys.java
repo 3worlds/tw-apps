@@ -29,12 +29,41 @@
 
 package au.edu.anu.twapps.mm.visualGraph;
 
+import au.edu.anu.twapps.mm.visualGraph.VisualGraphFactory;
+
+/**
+ * Author Ian Davies - - 11 Jul 2019
+ * <p>
+ * Keys shared by all nodes created by the {@link VisualGraphFactory}.
+ */
 public interface VisualKeys {
+	/**
+	 * y position.
+	 */
 	public final static String vnx = "x";
+	/**
+	 * y position.
+	 */
 	public final static String vny = "y";
+	/**
+	 * the cateogyr of sub-tree the node belongs to (for purposes of colour
+	 * schemes).
+	 */
 	public final static String vnCategory = "category";
+	/**
+	 * Tree if node is collapsed (hidden).
+	 */
 	public final static String vnCollapsed = "collapsed";
+	/**
+	 * The parent reference for this node (maintained for purpose of graph editing).
+	 */
 	public final static String vnParentRef = "parentRef";
-	public final static String vnVisible  = "visible";
+	/**
+	 * Node is visible.
+	 */
+	public final static String vnVisible = "visible";
+	/**
+	 * Edge is visible.
+	 */
 	public final static String veVisible = "visible";
 }

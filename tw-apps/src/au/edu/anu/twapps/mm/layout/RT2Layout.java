@@ -36,9 +36,21 @@ import java.util.Random;
 
 import au.edu.anu.omhtk.rng.Pcg32;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
+import au.edu.anu.twcore.root.World;
+
 
 /**
- * @author Ian Davies 1 May 2020
+ * @author Ian Davies - 1 May 2020
+ *         <p>
+ *         Creates radial tree layout similar to {@link RT1Layout} but with
+ *         vertices of the same depth on the same circle. Circle radius increase
+ *         with depth.
+ *         </p>
+ *         <p>
+ *         Yee, K.P., Fisher, D., Dhamija, R. and Hearst, M., 2001, October.
+ *         Animated exploration of graphs with radial layout. In Proc. IEEE
+ *         InfoVis 2001 (pp. 43-50).
+ * 
  */
 public class RT2Layout implements ILayout {
 	private class Factory implements ITreeVertexFactory {
@@ -53,15 +65,21 @@ public class RT2Layout implements ILayout {
 
 	private RT2Vertex root;
 	private List<TreeVertexAdapter> isolated;
-	
-	public RT2Layout(VisualNode vRoot, boolean pcShowing, boolean xlShowing, boolean sideline) {
-		root = new RT2Vertex(null, vRoot);
-		TreeVertexAdapter.buildSpanningTree(root,new Factory());
+
+	/**
+	 * @param rootNode                {@link VisualNode} to use as the layout root
+	 *                                (need not be {@link World} node).
+	 * @param includeParentChildEdges Use parent-child relationships.
+	 * @param includeCrossLinksEdges  Show cross-link edges
+	 * @param sideline                Move isolated vertices to one side.
+	 */
+	public RT2Layout(VisualNode rootNode, boolean includeParentChildEdges, boolean includeCrossLinksEdges, boolean sideline) {
+		root = new RT2Vertex(null, rootNode);
+		TreeVertexAdapter.buildSpanningTree(root, new Factory());
 		isolated = new ArrayList<>();
 		if (sideline)
-			root.getIsolated(isolated, pcShowing, xlShowing);
+			root.getIsolated(isolated, includeParentChildEdges, includeCrossLinksEdges);
 	}
-
 
 	@Override
 	public ILayout compute(double jitter) {

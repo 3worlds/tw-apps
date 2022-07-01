@@ -57,6 +57,12 @@ import fr.ens.biologie.generic.utils.Duple;
 
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
+/**
+ * Author Ian Davies - 11 Jul 2019
+ * <p>
+ * Visualization of configuration graph nodes constructed by the
+ * {@link VisualGraphFactory}.
+ */
 public class VisualNode extends TreeGraphDataNode implements VisualKeys, SaveableAsText {
 
 	private TreeGraphDataNode configNode;
@@ -65,38 +71,73 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 	 * them stored in a property list. To store them in a property list would cause
 	 * problems when reloading the file with the omugiImporter.
 	 */
-
 	private Object vnSymbol;
 	private Object vnText;
 	private Object vnParentLine;
 	private Object vnArrowhead;
 
+	/**
+	 * @param id       The unique {@link Identity} of this node.
+	 * @param props    {@link SimplePropertyList} of node properties.
+	 * @param gfactory The graph factory ({@link VisualGraphFactory})
+	 */
 	public VisualNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
 	}
 
+	/**
+	 * @param id      The unique {@link Identity} of this node.
+	 * @param factory The graph factory ({@link VisualGraphFactory})
+	 */
 	public VisualNode(Identity id, GraphFactory factory) {
 		super(id, new SharedPropertyListImpl(VisualGraphFactory.getNodeKeys()), factory);
 	}
 
-	public VisualNode(Identity newId, ReadOnlyPropertyList props, VisualGraphFactory factory) {
-		super(newId, (SimplePropertyList) props, factory);
+	/**
+	 * @param id      The unique {@link Identity} of this node.
+	 * @param props   Node property list.
+	 * @param factory The graph factory ({@link VisualGraphFactory})
+	 */
+	public VisualNode(Identity id, ReadOnlyPropertyList props, VisualGraphFactory factory) {
+		super(id, (SimplePropertyList) props, factory);
 	}
 
+	/**
+	 * Setter for the configuration node.
+	 * 
+	 * @param configNode The configuration {@link TreeGraphDataNode}.
+	 */
 	public void setConfigNode(TreeGraphDataNode configNode) {
 		this.configNode = configNode;
 	}
 
+	/**
+	 * Getter for the configuration node.
+	 * 
+	 * @return {@link TreeGraphDataNode} configuration node.
+	 */
 	public TreeGraphDataNode configNode() {
 		return configNode;
 	}
 
+	/**
+	 * Getter for the visible property value of the VisualNode. This property is set
+	 * by graph display controls such as collapsing/expanding sub-trees or hiding
+	 * all edges.
+	 * 
+	 * @return true if visible, false otherwise.
+	 */
 	public boolean isVisible() {
 		if (properties().getPropertyValue(vnVisible) == null)
 			properties().setProperty(vnVisible, true);
 		return (Boolean) properties().getPropertyValue(vnVisible);
 	}
 
+	/**
+	 * Setter for the visible property of the VisualNode.
+	 * 
+	 * @param value true if visible, false otherwise.
+	 */
 	public void setVisible(boolean value) {
 		properties().setProperty(vnVisible, value);
 	}
@@ -128,10 +169,19 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 		return (VisualNode) super.getParent();
 	}
 
+	/**
+	 * Setter for the collapsed property.
+	 * 
+	 * @param b true or false.
+	 */
 	public void setCollapse(boolean b) {
 		properties().setProperty(vnCollapsed, b);
 	}
 
+	/**
+	 * Setter for the category property. Nodes are coloured according the the
+	 * category (in this case the sub-tree) they belong to.
+	 */
 	public void setCategory() {
 		if (PrimaryTreeLabels.contains(configNode.classId()))
 			properties().setProperty(vnCategory, configNode.classId());
@@ -139,6 +189,13 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 			setCategory(getParent());
 	}
 
+	/**
+	 * Setter for the category property. Nodes are coloured according the the
+	 * category (in this case the sub-tree) they belong to. This setter inherited
+	 * category of parent if present.
+	 * 
+	 * @param parent Parent whose category is to be inherited.
+	 */
 	private void setCategory(VisualNode parent) {
 		if (parent != null) {
 			if (PrimaryTreeLabels.contains(parent.configNode.classId()))
@@ -148,10 +205,22 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 		}
 	}
 
+	/**
+	 * Setter for the category property. Nodes are coloured according the the
+	 * category (in this case the sub-tree) they belong to.
+	 * 
+	 * @param category Category value to set in the node's property list.
+	 */
 	private void setCategory(String category) {
 		properties().setProperty(vnCategory, category);
 	}
 
+	/**
+	 * Return the text to display given the display option.
+	 * 
+	 * @param option the {@link ElementDisplayText}.
+	 * @return string to display.
+	 */
 	public String getDisplayText(ElementDisplayText option) {
 		switch (option) {
 		case RoleName: {
@@ -170,45 +239,91 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 
 	}
 
+	/**
+	 * Setter to wrap the node's x position property.
+	 * 
+	 * @param x X position.
+	 */
 	public void setX(double x) {
 		properties().setProperty(vnx, x);
 	}
 
+	/**
+	 * Setter to wrap the node's y position property.
+	 * 
+	 * @param y Y position.
+	 */
 	public void setY(double y) {
 		properties().setProperty(vny, y);
 	}
 
+	/**
+	 * Setter for the node's x,y position.
+	 * 
+	 * @param x X position.
+	 * @param y Y position.
+	 */
 	public void setPosition(double x, double y) {
 		setX(x);
 		setY(y);
 	}
 
+	/**
+	 * Getter for the node's x property.
+	 * 
+	 * @return X position.
+	 */
 	public double getX() {
 		return (Double) properties().getPropertyValue(vnx);
 	}
 
+	/**
+	 * Getter for the node's y property.
+	 * 
+	 * @return Y position.
+	 */
 	public double getY() {
 		return (Double) properties().getPropertyValue(vny);
 	}
 
-	private void setSymbol(Object symbol) {
+	/**
+	 * Set the implementation specific symbol drawing object.
+	 * 
+	 * @param symbol The symbol drawing object.
+	 * @throws TwAppsException If symbol has already been set.
+	 */
+	private void setSymbol(Object symbol) throws TwAppsException {
 		if (vnSymbol != null)
 			throw new TwAppsException("Attempt to overwrite node symbol " + id());
 		vnSymbol = symbol;
 	}
 
-	private void setText(Object text) {
+	private void setText(Object text) throws TwAppsException {
 		if (vnText != null)
 			throw new TwAppsException("Attempt to overwrite node text " + id());
 		vnText = text;
 	}
 
-	public void setVisualElements(Object c, Object t) {
+	/**
+	 * Set drawing objects for this node.
+	 * 
+	 * @param c The symbol object.
+	 * @param t The text object.
+	 * @throws TwAppsException If objects have already been set.
+	 */
+	public void setVisualElements(Object c, Object t) throws TwAppsException {
 		setSymbol(c);
 		setText(t);
 	}
 
-	public void setParentLine(Object line, Object arrowhead) {
+	/**
+	 * Set the drawing objects for the parent-child edge (maintained by the child).
+	 * 
+	 * @param line      The edge drawing object
+	 * @param arrowhead The arrowhead drawing object.
+	 * @throws TwAppsException If the objects already exist.
+	 */
+	public void setParentLine(Object line, Object arrowhead) throws TwAppsException {
 		if (vnParentLine != null)
 			throw new TwAppsException("Attempt to overwrite line to parent line " + id());
 		vnParentLine = line;
@@ -217,7 +332,12 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 		vnArrowhead = arrowhead;
 	}
 
-	public void removeParentLine() {
+	/**
+	 * Remove drawing objects for the parent-child edge.
+	 * 
+	 * @throws TwAppsException If objects do not exist.
+	 */
+	public void removeParentLine() throws TwAppsException {
 		if (vnParentLine != null)
 			vnParentLine = null;
 		else
@@ -229,26 +349,56 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 
 	}
 
+	/**
+	 * Getter for the category of this node. Nodes are coloured according the the
+	 * category (in this case the sub-tree) they belong to.
+	 * 
+	 * @return The category.
+	 */
 	public String getCategory() {
 		return (String) properties().getPropertyValue(vnCategory);
 	}
 
+	/**
+	 * Getter for the node drawing object.
+	 * 
+	 * @return the node drawing object.
+	 */
 	public Object getSymbol() {
 		return vnSymbol;
 	}
 
+	/**
+	 * Getter for the node text drawing object.
+	 * 
+	 * @return the node text drawing object.
+	 */
 	public Object getText() {
 		return vnText;
 	}
 
+	/**
+	 * Getter for the parent-child edge drawing objects.
+	 * 
+	 * @return duple of line and arrowhead drawing objects.
+	 */
 	public Duple<Object, Object> getParentLine() {
 		return new Duple<Object, Object>(vnParentLine, vnArrowhead);
 	}
 
+	/**
+	 * Getter for the isCollapse node property.
+	 * 
+	 * @return true if collapsed, false otherwise.
+	 */
 	public boolean isCollapsed() {
 		return (Boolean) properties().getPropertyValue(vnCollapsed);
 	}
 
+	/**
+	 * @return true if this node is not collapsed and has children that are
+	 *         collapse, false otherwise.
+	 */
 	public boolean hasCollaspedChild() {
 		if (isCollapsed())
 			return false;
@@ -259,6 +409,10 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 		return false;
 	}
 
+	/**
+	 * @return true if this node is not collapsed but has at least one child that is
+	 *         not collapsed.
+	 */
 	public boolean hasUncollapsedChildren() {
 		if (isCollapsed())
 			return false;
@@ -269,38 +423,86 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 		return false;
 	}
 
+	/**
+	 * Getter for the parent table. This is used to provide correct options to the
+	 * user when a parent-child edge is to been restored after having been removed.
+	 * 
+	 * @return the table {@link StringTable} of potential parents.
+	 */
 	public StringTable parentTable() {
 		return (StringTable) properties().getPropertyValue(vnParentRef);
 	}
 
+	/**
+	 * Setter for the parent table. This is used to provide correct options to the
+	 * user when a parent-child edge is to been restored after having been removed.
+	 * 
+	 * @param table {@link StringTable} of potential parents.
+	 */
 	public void setParentRef(StringTable table) {
 		properties().setProperty(vnParentRef, table);
 	}
 
+	/**
+	 * Getter for the property list of the underlying configuration graph node.
+	 * 
+	 * @return The {@link ExtendablePropertyList}.
+	 */
 	private ExtendablePropertyList configProperties() {
 		return (ExtendablePropertyList) configNode.properties();
 	}
 
+	/**
+	 * Getter for the property list of the underlying configuration graph node.
+	 * 
+	 * @return The {@link SimplePropertyList}.
+	 */
 	public SimplePropertyList cProperties() {
 		return configNode.properties();
 	}
 
+	/**
+	 * Add a property to the configuration node's {@link ExtendablePropertyList}.
+	 * This is to allow optional properties to be added or removed from the node.
+	 * 
+	 * @param key   Property key.
+	 * @param value Property value.
+	 */
 	public void addProperty(String key, Object value) {
 		configProperties().addProperty(key, value);
 	}
 
-	public void addProperty(String key) {
-		configProperties().addProperty(key);
-	}
+//	public void addProperty(String key) {
+//		configProperties().addProperty(key);
+//	}
 
+	/**
+	 * Query to check of the underlying configuration node has a property with the
+	 * given key.
+	 * 
+	 * @param key Property key
+	 * @return true if present, false otherwise.
+	 */
 	public boolean configHasProperty(String key) {
 		return configNode.properties().hasProperty(key);
 	};
 
+	/**
+	 * Getter for the property value of the underlying configuration node.
+	 * 
+	 * @param key The property key.
+	 * @return the value.
+	 */
 	public Object configGetPropertyValue(String key) {
 		return configNode.properties().getPropertyValue(key);
 	}
 
+	/**
+	 * Search the configuration graph to match this node with the configuration
+	 * node. They are matched by ids.
+	 * 
+	 * @param configGraph The configuration graph.
+	 */
 	public void shadowElements(TreeGraph<TreeGraphDataNode, ALEdge> configGraph) {
 		for (TreeGraphDataNode cNode : configGraph.nodes()) {
 			if (cNode.id().equals(id())) {
@@ -315,6 +517,10 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 		}
 	}
 
+	/**
+	 * Remove the layout node and the underlying configuration node from both
+	 * graphs. This includes all edges and ids.
+	 */
 	public void remove() {
 		EditableFactory vf = (EditableFactory) factory();
 		EditableFactory cf = (EditableFactory) configNode.factory();
@@ -324,6 +530,14 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 		configNode.disconnect();
 	}
 
+	/**
+	 * Construct a new child node for both the layout and the configuration graphs.
+	 * 
+	 * @param label      The child label (aka classId).
+	 * @param proposedId The proposed id. The given value may be changed to ensure
+	 *                   uniqueness.
+	 * @return The newly constructed {@link VisualNode}.
+	 */
 	public VisualNode newChild(String label, String proposedId) {
 		NodeFactory cf = configNode.factory();
 		TreeGraphDataNode cChild = (TreeGraphDataNode) cf.makeNode(cf.nodeClass(label), proposedId);
@@ -337,6 +551,14 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 		return vChild;
 	}
 
+	/**
+	 * Construct a new cross-link edge.
+	 * 
+	 * @param id    Unique name of the edge
+	 * @param label The edge label (aka classId)
+	 * @param vEnd  The end node.
+	 * @return The new {@link VisualEdge}
+	 */
 	public VisualEdge newEdge(String id, String label, VisualNode vEnd) {
 		VisualGraphFactory vf = (VisualGraphFactory) factory();
 		VisualEdge result = vf.makeEdge(this, vEnd, id);
@@ -352,20 +574,37 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 		return result;
 	}
 
+	/**
+	 * Set this node as parent to the given child node.
+	 * 
+	 * @param vChild The child node.
+	 */
 	public void reconnectChild(VisualNode vChild) {
 		TreeGraphNode cChild = vChild.configNode;
 		configNode.connectChild(cChild);
 		connectChild(vChild);
 	}
 
+	/**
+	 * @return true if this is an immutable node in the configuration graph scheme.
+	 */
 	public boolean isPredefined() {
 		return ConfigurationReservedNodeId.isPredefined(id());
 	}
 
+	/**
+	 * returns true of this node has the label '3worlds'.
+	 */
+	@Override
 	public boolean isRoot() {
 		return configNode.classId().equals(N_ROOT.label());
 	}
 
+	/**
+	 * Builds a look-up table of node labels and the parents options they can have.
+	 * 
+	 * @param map The look-up table.
+	 */
 	public void setupParentReference(Map<String, List<StringTable>> map) {
 		setupParentReference(this, map);
 	}
@@ -400,6 +639,13 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 
 	}
 
+	/**
+	 * Check if the place of this node in it's tree matches to parents listed in the
+	 * table.
+	 * 
+	 * @param parents {@link StringTable} of parent references.
+	 * @return true if match found, false otherwise.
+	 */
 	public boolean treeMatchesTable(StringTable parents) {
 		TreeNode node = configNode().getParent();
 		for (int i = 0; i < parents.size(); i++) {
@@ -409,6 +655,13 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 		return false;
 	}
 
+	/**
+	 * This should probably be private and other classes use treeMatchesTable().
+	 * 
+	 * @param node The node to check
+	 * @param ref  The string parent reference.
+	 * @return true if match, flase otherwise.
+	 */
 	public static boolean referencedBy(TreeNode node, String ref) {
 		if (ref == null)
 			return false;

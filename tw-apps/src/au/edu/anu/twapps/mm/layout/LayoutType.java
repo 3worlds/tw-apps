@@ -35,7 +35,8 @@ package au.edu.anu.twapps.mm.layout;
  */
 public enum LayoutType {
 	/**
-	 * Depth of tree increases from left to right, breadth from top to bottom.
+	 * A tree layout with depth of tree increasing from left to right, breadth from
+	 * top to bottom. Nodes of the same depth are vertically aligned.
 	 */
 	OrderedTree,
 	/**
