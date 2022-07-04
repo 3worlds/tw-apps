@@ -44,6 +44,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.logging.Logger;
+
+import au.edu.anu.omhtk.preferences.PrefImpl;
 import au.edu.anu.omhtk.preferences.Preferences;
 import au.edu.anu.rscs.aot.archetype.ArchetypeArchetypeConstants;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
@@ -165,7 +167,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 			doSave();
 		}
 		// Store current preferences so they can be restored with this state.
-		Preferences.flush();
+		Preferences.getImplementation().flush();
 		controller.putPreferences();
 
 		Caretaker.addState(
@@ -806,7 +808,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 
 		doSave();
 
-		Preferences.initialise(Project.makeProjectPreferencesFile());
+		Preferences.setImplementation(new PrefImpl(Project.makeProjectPreferencesFile()));
 
 		// force a rebuild of the property editors
 		controller.onRootNameChange();

@@ -33,6 +33,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import au.edu.anu.omhtk.preferences.IPreferences;
 import au.edu.anu.omhtk.preferences.Preferences;
 import au.edu.anu.twapps.dialogs.Dialogs;
 import fr.cnrs.iees.graph.impl.ALEdge;
@@ -48,6 +49,9 @@ public class MRModel implements IMRModel {
 	private List<File> ISFiles;
 	private int currentIdx;
 
+	/**
+	 * TODO
+	 */
 	public MRModel(/*IMRController controller*/) {
 		//this.controller = controller;
 	}
@@ -86,21 +90,23 @@ public class MRModel implements IMRModel {
 
 	@Override
 	public void getPreferences() {
-		currentIdx = Preferences.getInt(ISCurrentFileIndex, -1);
-		int n = Preferences.getInt(ISFileCount, 0);
+		IPreferences prefs = Preferences.getImplementation();
+		currentIdx = prefs.getInt(ISCurrentFileIndex, -1);
+		int n = prefs.getInt(ISFileCount, 0);
 		ISFiles = new ArrayList<>();
 		for (int i = 0; i < n; i++) {
-			String s = Preferences.getString(ISFileName + "_" + i, "");
+			String s = prefs.getString(ISFileName + "_" + i, "");
 			ISFiles.add(new File(s));
 		}
 	}
 
 	@Override
 	public void putPreferences() {
-		Preferences.putInt(ISCurrentFileIndex, currentIdx);
-		Preferences.putInt(ISFileCount, ISFiles.size());
+		IPreferences prefs = Preferences.getImplementation();
+		prefs.putInt(ISCurrentFileIndex, currentIdx);
+		prefs.putInt(ISFileCount, ISFiles.size());
 		for (int i = 0; i < ISFiles.size(); i++)
-			Preferences.putString(ISFileName + "_" + i, ISFiles.get(i).getAbsolutePath());
+			prefs.putString(ISFileName + "_" + i, ISFiles.get(i).getAbsolutePath());
 	}
 
 	@Override

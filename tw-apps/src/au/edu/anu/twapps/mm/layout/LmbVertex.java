@@ -34,6 +34,8 @@ import java.util.List;
 import java.util.Map;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import fr.cnrs.iees.uit.space.Distance;
+import fr.ens.biologie.generic.utils.Permute;
+import fr.ens.biologie.generic.utils.Shuffle;
 
 /**
  *  Not yet implemented.
@@ -218,7 +220,7 @@ public class LmbVertex extends FRVertex {
 					}
 			double[] angles = bestCombo.clone();
 			for (int z = 0; z < shuffleSamples; z++) {
-				Integer[] indices = Permute.shuffle(angles.length);
+				Integer[] indices = Shuffle.shuffleIndices(angles.length);
 				for (int i = 0; i < degree(); i++)
 					setAngle(neighbours.get(i), angles[indices[i]]);
 				double val = rfComputeTot(rfKopp);
