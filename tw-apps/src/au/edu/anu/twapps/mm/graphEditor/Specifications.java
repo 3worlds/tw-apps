@@ -52,19 +52,20 @@ import au.edu.anu.twcore.archetype.tw.RequirePropertyQuery;
 public interface Specifications {
 
 	/**
-	 * Get specification of a given node in the configuration graph. The
-	 * specification must exist, otherwise a {@link TwAppsException} will be thrown.
+	 * Get specification of a given node in the configuration graph. This is a
+	 * recursive function, called when searching all sub-archetype files.
+	 * Ultimately, the caller should ensure that a specification has been found and
+	 * throw an exception if this is not the case.
 	 * <p>
-	 * This method must add an entry for each archetype file it opens.
+	 * The method must add an entry for each archetype file it opens.
 	 * 
 	 * @param editNode        {@link VisualNodeEditable} interface of the
 	 *                        {@link VisualNode} being edited.
 	 * @param root            The root node of the specification archetype tree.
 	 * @param discoveredFiles Archetype files that have currently been searched.
-	 * @return The specification {@link TreeNode}
+	 * @return The specification {@link TreeNode} (often null during recursive searches).
 	 */
-	public SimpleDataTreeNode getSpecsOf(VisualNodeEditable editNode, TreeNode root, Set<String> discoveredFiles)
-			throws TwAppsException;
+	public SimpleDataTreeNode getSpecsOf(VisualNodeEditable editNode, TreeNode root, Set<String> discoveredFiles);
 
 	/**
 	 * Get sub-class specification of a given node in the configuration graph. Null

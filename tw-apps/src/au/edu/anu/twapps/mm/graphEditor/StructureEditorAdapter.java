@@ -180,6 +180,10 @@ public abstract class StructureEditorAdapter
 		this.editableNode = selectedNode;
 		Set<String> discoveredFile = new HashSet<>();
 		this.baseSpec = specifications.getSpecsOf(editableNode, TWA.getRoot(), discoveredFile);
+		if (baseSpec ==null)
+			throw new TwAppsException(
+					"Specification for '" + editableNode.visualNode().configNode().toShortString() + "' was not found.");
+
 		this.subClassSpec = specifications.getSubSpecsOf(baseSpec, editableNode.getSubClass());
 		this.gvisualiser = gv;
 		log.info("BaseSpec: " + baseSpec);

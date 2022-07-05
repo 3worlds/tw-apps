@@ -100,7 +100,7 @@ public class TwSpecifications implements //
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public SimpleDataTreeNode getSpecsOf(VisualNodeEditable editNode, TreeNode root, Set<String> discoveredFiles) throws TwAppsException{
+	public SimpleDataTreeNode getSpecsOf(VisualNodeEditable editNode, TreeNode root, Set<String> discoveredFiles){
 		for (TreeNode childSpec : root.getChildren()) {
 			if (isOfClass((SimpleDataTreeNode) childSpec, editNode.visualNode().configNode().classId())) {
 				StringTable parentsSpecTable = (StringTable) ((SimpleDataTreeNode) childSpec).properties()
@@ -138,8 +138,7 @@ public class TwSpecifications implements //
 				}
 			}
 		}
-		throw new TwAppsException("Specification for '"+editNode.visualNode().configNode().toShortString()+"' can't be found.");
-//		return null;
+		return null; // DO NOT throw exp on null as this is recursive and expected!
 	}
 
 	@SuppressWarnings("unchecked")
@@ -482,7 +481,8 @@ public class TwSpecifications implements //
 			StringTable conditions = (StringTable) cXORpq.properties().getPropertyValue(twaEdgeProp);
 			depProps.add(conditions.getWithFlatIndex(1));
 		}
-		// CAUTION: this query has changed and now uses EDGE labels instead of NODE labels
+		// CAUTION: this query has changed and now uses EDGE labels instead of NODE
+		// labels
 		// I dont know the consequences - JG 16/12/2021
 		List<SimpleDataTreeNode> eXORpqs = getQueries(baseSpec, OutEdgeXorPropertyQuery.class);
 		eXORpqs.addAll(getQueries(subSpec, OutEdgeXorPropertyQuery.class));
