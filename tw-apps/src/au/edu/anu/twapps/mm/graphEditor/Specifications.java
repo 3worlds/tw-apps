@@ -39,7 +39,6 @@ import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.SimpleDataTreeNode;
 import fr.ens.biologie.generic.utils.Duple;
-import au.edu.anu.twapps.exceptions.TwAppsException;
 import au.edu.anu.twcore.archetype.tw.OutNodeXorQuery;
 import au.edu.anu.twcore.archetype.tw.RequirePropertyQuery;
 

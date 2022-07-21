@@ -32,9 +32,9 @@ package au.edu.anu.twapps.mm.visualGraph;
 import au.edu.anu.twapps.mm.visualGraph.VisualGraphFactory;
 
 /**
- * Author Ian Davies - - 11 Jul 2019
- * <p>
  * Keys shared by all nodes created by the {@link VisualGraphFactory}.
+ * 
+ * @author Ian Davies - - 11 Jul 2019
  */
 public interface VisualKeys {
 	/**
