@@ -50,6 +50,7 @@ import au.edu.anu.omhtk.preferences.Preferences;
 import au.edu.anu.rscs.aot.archetype.ArchetypeArchetypeConstants;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.errorMessaging.ErrorMessageManager;
+import au.edu.anu.rscs.aot.util.FileUtilities;
 import au.edu.anu.twapps.dialogs.Dialogs;
 import au.edu.anu.twapps.exceptions.TwAppsException;
 import au.edu.anu.twapps.mm.visualGraph.VisualGraphFactory;
@@ -66,6 +67,7 @@ import au.edu.anu.twcore.errorMessaging.ModelBuildErrorMsg;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrors;
 import au.edu.anu.twcore.graphState.GraphState;
 import au.edu.anu.twcore.project.Project;
+import au.edu.anu.twcore.project.ProjectPaths;
 import au.edu.anu.twcore.userProject.UserProjectLink;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Node;
@@ -138,6 +140,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 
 	/**
 	 * Helper method to state creation of {@link classParentTableMapping}.
+	 * 
 	 * @return The constructed mapping of node class and parent table entries.
 	 */
 	private Map<String, List<StringTable>> getLabelParentTableMapping() {
@@ -465,10 +468,48 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 
 		/** Re apply layout after collapsing predefined tree. */
 		controller.doLayout(duration);
+		/**
+		 * check for any code dependencies. TODO need to check for 3rd party jars
+		 */
+		List<File> depFiles = getDependentJavaFiles(importGraph.root());
+		for (File outfile : depFiles) {
+			File infile = Dialogs.getOpenFile(new File(System.getProperty("user.home")), "Import "+outfile.getName(), new String("Java files,*.java"));
+			if (infile!=null) 
+				FileUtilities.copyFileReplace(infile, outfile);
+		}
 
 		addState("init");
 
 		doSave();
+	}
+
+	/**
+	 * Searches the {@code importSnippet} property for any import statements that
+	 * begins with the key word 'code'. These entries indicate a dependency on user code.
+	 * 
+	 * This method assumes the Project is open.
+	 * 
+	 * @param root The configuration root node containing the {@code importSnippet}
+	 *             property.
+	 * @return list of destination files.
+	 */
+	private List<File> getDependentJavaFiles(TreeGraphDataNode root) {
+		List<File> result = new ArrayList<>();
+		// e.g. static code.utilities.Utilities3A.*
+		StringTable importTable = (StringTable) root.properties().getPropertyValue(P_MODEL_IMPORTSNIPPET.key());
+		for (int i=0;i<importTable.size();i++) {
+			String s = importTable.getByInt(i);
+			s = s.replace("static","");
+			s= s.replace(".*", "").trim();
+			if (s.startsWith(ProjectPaths.CODE)) {
+				s=ProjectPaths.LOCALJAVA_PKG+"."+s;
+				String[] parts = s.split("\\.");
+				parts[parts.length-1] += ".java";
+				result.add(Project.makeFile(parts));
+			}
+		}
+		return result;
+
 	}
 
 	/**
@@ -643,7 +684,6 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 //	private void setupParentReferences(VisualNode vn) {
 //		vn.setupParentReference(classParentTableMapping);
 //	}
-
 
 	private void fillClassParentMap(Map<String, List<StringTable>> classParentMap, TreeNode root,
 			Set<String> discoveredFiles) {
@@ -840,5 +880,5 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 	public LibraryTable[] getLibrary() {
 		return LibraryTable.values();
 	}
-
+	
 }
