@@ -82,13 +82,13 @@ public class VersionSettings {
 	 *
 	 */
 	protected static String[][] DEPS = {
-			{"fr.ens.biologie", "generics", "[0.3.1,)", null},
+			{"fr.ens.biologie", "generics", "[0.4.0,)", null},
 			{"au.edu.anu.rscs.aot", "omugi", "[0.5.0,)", null},
 			{"au.edu.anu.rscs.aot", "qgraph", "[0.2.0,)", null},
 			{"au.edu.anu.rscs.aot", "aot", "[0.2.0,)", null},
-			{"fr.cnrs.iees.tw-core", "tw-core", "[0.6.3,)", null},
+			{"fr.cnrs.iees.tw-core", "tw-core", "[0.6.4,)", null},
 			{"org.apache.commons", "commons-text", "[1,)", null},
-			{"fr.cnrs.iees.tw-models", "tw-models", "[0.0.4,)", null},
+			{"fr.cnrs.iees.tw-models", "tw-models", "[0.0.5,)", null},
 	};
 
 	/** The name of the main class to put in the jar manifest, if any. This enables users to
