@@ -29,7 +29,6 @@
 
 package au.edu.anu.twapps.mm.visualGraph;
 
-import au.edu.anu.twapps.exceptions.TwAppsException;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.EdgeFactory;
 import fr.cnrs.iees.graph.Node;
@@ -148,11 +147,11 @@ public class VisualEdge extends ALDataEdge implements VisualKeys {
 	 * specific.
 	 * 
 	 * @return The text object.
-	 * @throws TwAppsException if the object is null.
+	 * @throws NullPointerException if the object is null.
 	 */
-	public Object getText() throws TwAppsException {
+	public Object getText() {
 		if (veText == null)
-			throw new TwAppsException(
+			throw new NullPointerException(
 					"Attempt to access null edge text object [" + getDisplayText(ElementDisplayText.RoleName) + "]");
 		return veText;
 	}
@@ -166,18 +165,18 @@ public class VisualEdge extends ALDataEdge implements VisualKeys {
 		return new Duple<Object, Object>(veSymbol, veArrowhead);
 	}
 
-	private void setSymbol(Object line, Object arrowhead) throws TwAppsException{
+	private void setSymbol(Object line, Object arrowhead){
 		if (veSymbol != null)
-			throw new TwAppsException("Attempt to overwrite edge line " + id());
+			throw new IllegalStateException("Attempt to overwrite edge line " + id());
 		veSymbol = line;
 		if (veArrowhead != null)
-			throw new TwAppsException("Attempt to overwrite edge line arrowhead" + id());
+			throw new IllegalStateException("Attempt to overwrite edge line arrowhead" + id());
 		veArrowhead = arrowhead;
 	}
 
 	private void setText(Object t) {
 		if (veText != null)
-			throw new TwAppsException("Attempt to overwrite edge text " + id());
+			throw new IllegalStateException("Attempt to overwrite edge text " + id());
 		veText = t;
 	}
 

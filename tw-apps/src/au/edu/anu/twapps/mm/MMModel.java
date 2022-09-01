@@ -52,7 +52,6 @@ import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.errorMessaging.ErrorMessageManager;
 import au.edu.anu.rscs.aot.util.FileUtilities;
 import au.edu.anu.twapps.dialogs.Dialogs;
-import au.edu.anu.twapps.exceptions.TwAppsException;
 import au.edu.anu.twapps.mm.visualGraph.VisualGraphFactory;
 import au.edu.anu.twapps.mm.configGraph.ConfigGraph;
 import au.edu.anu.twapps.mm.undo.Caretaker;
@@ -734,7 +733,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 			if (resultNode1 != null && resultNode2 != null)
 				return new Duple<VisualNode, VisualNode>(resultNode1, resultNode2);
 		}
-		throw new TwAppsException(
+		throw new IllegalStateException(
 				"Matching node pair not found in visual graph [" + node1.id() + "," + node2.id() + "]");
 	}
 

@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
-import au.edu.anu.twapps.exceptions.TwAppsException;
 import au.edu.anu.twcore.archetype.PrimaryTreeLabels;
 import au.edu.anu.twcore.root.EditableFactory;
 import au.edu.anu.twcore.root.TwConfigFactory;
@@ -290,17 +289,17 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 	 * Set the implementation specific symbol drawing object.
 	 * 
 	 * @param symbol The symbol drawing object.
-	 * @throws TwAppsException If symbol has already been set.
+	 * @throws IllegalStateException If symbol has already been set.
 	 */
-	private void setSymbol(Object symbol) throws TwAppsException {
+	private void setSymbol(Object symbol) {
 		if (vnSymbol != null)
-			throw new TwAppsException("Attempt to overwrite node symbol " + id());
+			throw new IllegalStateException("Attempt to overwrite node symbol " + id());
 		vnSymbol = symbol;
 	}
 
-	private void setText(Object text) throws TwAppsException {
+	private void setText(Object text) {
 		if (vnText != null)
-			throw new TwAppsException("Attempt to overwrite node text " + id());
+			throw new IllegalStateException("Attempt to overwrite node text " + id());
 		vnText = text;
 	}
 
@@ -309,9 +308,8 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 	 * 
 	 * @param c The symbol object.
 	 * @param t The text object.
-	 * @throws TwAppsException If objects have already been set.
 	 */
-	public void setVisualElements(Object c, Object t) throws TwAppsException {
+	public void setVisualElements(Object c, Object t) {
 		setSymbol(c);
 		setText(t);
 	}
@@ -321,31 +319,31 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 	 * 
 	 * @param line      The edge drawing object
 	 * @param arrowhead The arrowhead drawing object.
-	 * @throws TwAppsException If the objects already exist.
+	 * @throws IllegalStateException If the objects already exist.
 	 */
-	public void setParentLine(Object line, Object arrowhead) throws TwAppsException {
+	public void setParentLine(Object line, Object arrowhead) {
 		if (vnParentLine != null)
-			throw new TwAppsException("Attempt to overwrite line to parent line " + id());
+			throw new IllegalStateException("Attempt to overwrite line to parent line " + id());
 		vnParentLine = line;
 		if (vnArrowhead != null)
-			throw new TwAppsException("Attempt to overwrite arrowhead of parent line " + id());
+			throw new IllegalStateException("Attempt to overwrite arrowhead of parent line " + id());
 		vnArrowhead = arrowhead;
 	}
 
 	/**
 	 * Remove drawing objects for the parent-child edge.
 	 * 
-	 * @throws TwAppsException If objects do not exist.
+	 * @throws NullPointerException If objects do not exist.
 	 */
-	public void removeParentLine() throws TwAppsException {
+	public void removeParentLine() {
 		if (vnParentLine != null)
 			vnParentLine = null;
 		else
-			throw new TwAppsException("Attempt to remove non-existant line to parent line " + id());
+			throw new NullPointerException("Attempt to remove non-existant line to parent line " + id());
 		if (vnArrowhead != null)
 			vnArrowhead = null;
 		else
-			throw new TwAppsException("Attempt to remove non-existant arrowhead of parent line " + id());
+			throw new NullPointerException("Attempt to remove non-existant arrowhead of parent line " + id());
 
 	}
 
@@ -537,6 +535,9 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 	 * @param proposedId The proposed id. The given value may be changed to ensure
 	 *                   uniqueness.
 	 * @return The newly constructed {@link VisualNode}.
+	 * 
+	 * @throws IllegalStateException if visual and configuration node Id's don't
+	 *                               match.
 	 */
 	public VisualNode newChild(String label, String proposedId) {
 		NodeFactory cf = configNode.factory();
@@ -547,7 +548,7 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 		vChild.connectParent(this);
 		vChild.setConfigNode(cChild);
 		if (!cChild.id().equals(vChild.id()))
-			throw new TwAppsException("Ids must match -[config: " + cChild.id() + "; visual: " + vChild.id());
+			throw new IllegalStateException("Ids must match -[config: " + cChild.id() + "; visual: " + vChild.id());
 		return vChild;
 	}
 
@@ -558,6 +559,8 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 	 * @param label The edge label (aka classId)
 	 * @param vEnd  The end node.
 	 * @return The new {@link VisualEdge}
+	 * 
+	 * @throws If visual and configuration Id's don't match.
 	 */
 	public VisualEdge newEdge(String id, String label, VisualNode vEnd) {
 		VisualGraphFactory vf = (VisualGraphFactory) factory();
@@ -570,7 +573,7 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 		result.setConfigEdge(cEdge);
 		result.setVisible(true);
 		if (!cEdge.id().equals(result.id()))
-			throw new TwAppsException("Ids must match -[config: " + cEdge.id() + "; visual: " + result.id());
+			throw new IllegalStateException("Ids must match -[config: " + cEdge.id() + "; visual: " + result.id());
 		return result;
 	}
 
@@ -611,13 +614,13 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 
 	private static void setupParentReference(VisualNode parent, Map<String, List<StringTable>> map) {
 		if (parent == null)
-			throw new TwAppsException("Parent is null.");
+			throw new NullPointerException("Parent is null.");
 		if (map == null)
-			throw new TwAppsException(
+			throw new NullPointerException(
 					"Map is null when processing parent " + parent.getDisplayText(ElementDisplayText.RoleName));
 		List<StringTable> parentList = map.get(parent.configNode.classId());
 		if (parentList == null)
-			throw new TwAppsException("Archetype error: ParentList is null for parent "
+			throw new NullPointerException("Archetype error: ParentList is null for parent "
 					+ parent.getDisplayText(ElementDisplayText.RoleName));
 
 		/**

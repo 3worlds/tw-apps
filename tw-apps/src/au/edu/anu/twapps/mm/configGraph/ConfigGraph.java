@@ -39,7 +39,6 @@ import javax.tools.ToolProvider;
 import au.edu.anu.rscs.aot.errorMessaging.ErrorMessageManager;
 import au.edu.anu.rscs.aot.errorMessaging.ErrorMessagable;
 import au.edu.anu.rscs.aot.errorMessaging.impl.SpecificationErrorMsg;
-import au.edu.anu.twapps.exceptions.TwAppsException;
 import au.edu.anu.twcore.archetype.TWA;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrorMsg;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrors;
@@ -130,7 +129,7 @@ public class ConfigGraph {
 
 				if (!ErrorMessageManager.haveErrors()) {
 					if (graph == null)
-						throw new TwAppsException("Graph is null in ValidateGraph");
+						throw new NullPointerException("Graph is null in ValidateGraph");
 					ProjectJarGenerator gen = new ProjectJarGenerator();
 					gen.generate(graph);
 				}

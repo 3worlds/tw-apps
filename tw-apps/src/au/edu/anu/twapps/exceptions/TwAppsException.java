@@ -36,6 +36,7 @@ import fr.ens.biologie.generic.Textable;
  * @author shayne.flint@anu.edu.au
  * 
  */
+@Deprecated
 public class TwAppsException extends RuntimeException {
 
 	private static final long serialVersionUID = -4216594416420546384L;

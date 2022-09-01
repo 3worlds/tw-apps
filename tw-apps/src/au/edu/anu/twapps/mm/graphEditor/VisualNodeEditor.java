@@ -37,7 +37,6 @@ import java.util.List;
 import au.edu.anu.rscs.aot.archetype.ArchetypeArchetypeConstants;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.util.IntegerRange;
-import au.edu.anu.twapps.exceptions.TwAppsException;
 import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import au.edu.anu.twcore.archetype.TwArchetypeConstants;
@@ -111,7 +110,7 @@ public class VisualNodeEditor implements //
 			try {
 				return (Class<? extends TreeGraphNode>) Class.forName(result, true, classLoader);
 			} catch (ClassNotFoundException e) {
-				throw new TwAppsException("Subclass not found in the system: " + result + visualNode.configNode());
+				e.printStackTrace();
 			}
 		} else {
 		}

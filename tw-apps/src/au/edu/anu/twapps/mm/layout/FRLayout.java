@@ -38,7 +38,6 @@ import java.util.Random;
 import au.edu.anu.omhtk.rng.Pcg32;
 import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
-import au.edu.anu.twapps.exceptions.TwAppsException;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
@@ -139,7 +138,7 @@ public class FRLayout implements ILayout {
 		for (FRVertex v : vertices)
 			if (v.getNode().id().equals(vn.id()))
 				return v;
-		throw new TwAppsException("Unable to find a vertex for " + vn.toShortString());
+		throw new NullPointerException("Unable to find a vertex for " + vn.toShortString());
 	}
 
 	@Override

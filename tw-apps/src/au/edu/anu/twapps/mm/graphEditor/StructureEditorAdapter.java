@@ -56,7 +56,6 @@ import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.util.FileUtilities;
 import au.edu.anu.rscs.aot.util.IntegerRange;
 import au.edu.anu.twapps.dialogs.Dialogs;
-import au.edu.anu.twapps.exceptions.TwAppsException;
 import au.edu.anu.twapps.mm.IGraphVisualiser;
 import au.edu.anu.twapps.mm.IMMController;
 import au.edu.anu.twapps.mm.configGraph.ConfigGraph;
@@ -181,7 +180,7 @@ public abstract class StructureEditorAdapter
 		Set<String> discoveredFile = new HashSet<>();
 		this.baseSpec = specifications.getSpecsOf(editableNode, TWA.getRoot(), discoveredFile);
 		if (baseSpec ==null)
-			throw new TwAppsException(
+			throw new NullPointerException(
 					"Specification for '" + editableNode.visualNode().configNode().toShortString() + "' was not found.");
 
 		this.subClassSpec = specifications.getSubSpecsOf(baseSpec, editableNode.getSubClass());
