@@ -30,6 +30,7 @@
 package au.edu.anu.twapps.mm.configGraph;
 
 import java.io.File;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -74,7 +75,7 @@ public class ConfigGraph {
 	 * @param graph The configuration graph.
 	 */
 	public static void setGraph(TreeGraph<TreeGraphDataNode, ALEdge> graph) {
-		ConfigGraph.graph = graph;
+		ConfigGraph.graph = Objects.requireNonNull(graph);
 	}
 
 	/**
