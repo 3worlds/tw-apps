@@ -73,14 +73,15 @@ public class LmbLayout implements ILayout {
 			}
 		}
 		/* sort for predictability */
-		vertices.sort(new Comparator<IVertex>() {
-
-			@Override
-			public int compare(IVertex v1, IVertex v2) {
-				return v1.id().compareTo(v2.id());
-			}
-
-		});
+		vertices.sort((v1,v2)->v1.id().compareTo(v2.id()));
+//		vertices.sort(new Comparator<IVertex>() {
+//
+//			@Override
+//			public int compare(IVertex v1, IVertex v2) {
+//				return v1.id().compareTo(v2.id());
+//			}
+//
+//		});
 
 		/* collect all visible edges */
 		for (LmbVertex v : vertices) {

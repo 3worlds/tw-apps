@@ -68,14 +68,15 @@ public class LmbVertex extends FRVertex {
 		if (_adjMap != null) {
 			for (LmbVertex nn : _adjMap.keySet())
 				neighbours.add(nn);
-			neighbours.sort(new Comparator<LmbVertex>() {
-
-				@Override
-				public int compare(LmbVertex v1, LmbVertex v2) {
-					return v1.id().compareTo(v2.id());
-				}
-
-			});
+			neighbours.sort((v1,v2)->v1.id().compareTo(v2.id()));
+//			neighbours.sort(new Comparator<LmbVertex>() {
+//
+//				@Override
+//				public int compare(LmbVertex v1, LmbVertex v2) {
+//					return v1.id().compareTo(v2.id());
+//				}
+//
+//			});
 			aIncrement = (2 * Math.PI) / (double) degree();
 		}
 

@@ -213,12 +213,13 @@ public abstract class StructureEditorAdapter
 				}
 			}
 		}
-		Collections.sort(result, new Comparator<Node>() {
-			@Override
-			public int compare(Node o1, Node o2) {
-				return o1.id().compareToIgnoreCase(o2.id());
-			}
-		});
+		result.sort((n1,n2)-> n1.id().compareToIgnoreCase(n2.id()));
+//		Collections.sort(result, new Comparator<Node>() {
+//			@Override
+//			public int compare(Node o1, Node o2) {
+//				return o1.id().compareToIgnoreCase(o2.id());
+//			}
+//		});
 		return result;
 	}
 
@@ -457,12 +458,13 @@ public abstract class StructureEditorAdapter
 					result.add(root);
 			}
 		}
-		Collections.sort(result, new Comparator<Node>() {
-			@Override
-			public int compare(Node o1, Node o2) {
-				return o1.id().compareToIgnoreCase(o2.id());
-			}
-		});
+		result.sort((n1,n2)-> n1.id().compareToIgnoreCase(n2.id()));
+//		Collections.sort(result, new Comparator<Node>() {
+//			@Override
+//			public int compare(Node o1, Node o2) {
+//				return o1.id().compareToIgnoreCase(o2.id());
+//			}
+//		});
 		return result;
 	}
 

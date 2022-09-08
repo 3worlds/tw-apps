@@ -82,14 +82,15 @@ public class FRLayout implements ILayout {
 			}
 		}
 		/* sort for predictability */
-		vertices.sort(new Comparator<FRVertex>() {
-
-			@Override
-			public int compare(FRVertex o1, FRVertex o2) {
-				return o1.id().compareTo(o2.id());
-			}
-
-		});
+		vertices.sort((v1,v2)->v1.id().compareTo(v2.id()));
+//		vertices.sort(new Comparator<FRVertex>() {
+//
+//			@Override
+//			public int compare(FRVertex o1, FRVertex o2) {
+//				return o1.id().compareTo(o2.id());
+//			}
+//
+//		});
 
 		/* collect all visible edges */
 		for (FRVertex v : vertices) {

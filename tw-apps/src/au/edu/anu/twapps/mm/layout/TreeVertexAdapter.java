@@ -136,13 +136,15 @@ public abstract class TreeVertexAdapter extends VertexAdapter implements ITreeVe
 			if (!nParent.isCollapsed() && !nParent.id().equals(parentId) && nParent.isVisible())
 				sortList.add(nParent);
 
-		sortList.sort(new Comparator<VisualNode>() {
-			@Override
-			public int compare(VisualNode o1, VisualNode o2) {
-				return o1.getDisplayText(ElementDisplayText.RoleName)
-						.compareTo(o2.getDisplayText(ElementDisplayText.RoleName));
-			}
-		});
+		sortList.sort((n1, n2) -> n1.getDisplayText(ElementDisplayText.RoleName)
+				.compareTo(n2.getDisplayText(ElementDisplayText.RoleName)));
+//		sortList.sort(new Comparator<VisualNode>() {
+//			@Override
+//			public int compare(VisualNode o1, VisualNode o2) {
+//				return o1.getDisplayText(ElementDisplayText.RoleName)
+//						.compareTo(o2.getDisplayText(ElementDisplayText.RoleName));
+//			}
+//		});
 		for (VisualNode nChild : sortList) {
 			TreeVertexAdapter vChild = factory.makeVertex(vertex, nChild);
 			vertex.getChildren().add(vChild);
