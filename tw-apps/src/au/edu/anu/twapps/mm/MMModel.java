@@ -66,7 +66,6 @@ import au.edu.anu.twcore.errorMessaging.ModelBuildErrorMsg;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrors;
 import au.edu.anu.twcore.graphState.GraphState;
 import au.edu.anu.twcore.project.Project;
-import au.edu.anu.twcore.project.ProjectPaths;
 import au.edu.anu.twcore.userProject.UserProjectLink;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Node;
@@ -500,8 +499,8 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 			String s = importTable.getByInt(i);
 			s = s.replace("static","");
 			s= s.replace(".*", "").trim();
-			if (s.startsWith(ProjectPaths.CODE)) {
-				s=ProjectPaths.LOCALJAVA_PKG+"."+s;
+			if (s.startsWith(Project.CODE)) {
+				s=Project.LOCAL_JAVA_PKG+"."+s;
 				String[] parts = s.split("\\.");
 				parts[parts.length-1] += ".java";
 				result.add(Project.makeFile(parts));

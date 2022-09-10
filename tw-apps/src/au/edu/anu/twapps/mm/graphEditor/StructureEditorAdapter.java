@@ -76,8 +76,6 @@ import au.edu.anu.twcore.archetype.tw.OutNodeXorQuery;
 import au.edu.anu.twcore.archetype.tw.PropertyXorQuery;
 import au.edu.anu.twcore.graphState.GraphState;
 import au.edu.anu.twcore.project.Project;
-import au.edu.anu.twcore.project.ProjectPaths;
-import au.edu.anu.twcore.project.TwPaths;
 import au.edu.anu.twcore.root.EditableFactory;
 import au.edu.anu.twcore.root.TwConfigFactory;
 import au.edu.anu.twcore.userProject.UserProjectLink;
@@ -801,7 +799,7 @@ public abstract class StructureEditorAdapter
 	private void renameNode(String uniqueId, VisualNode vNode) {
 		TreeGraphDataNode cNode = vNode.configNode();
 		if (cNode.classId().equals(N_SYSTEM.label())) {
-			File javaDir = Project.makeFile(ProjectPaths.LOCALJAVA, ProjectPaths.CODE, vNode.id());
+			File javaDir = Project.makeFile(Project.LOCAL_JAVA_CODE, vNode.id());
 			if (javaDir.exists()) {
 				File[] deps = javaDir.listFiles(new FilenameFilter() {
 					@Override
@@ -828,7 +826,7 @@ public abstract class StructureEditorAdapter
 					if (UserProjectLink.haveUserProject()) {
 						// delete old tree in user project
 						File remoteDir = new File(UserProjectLink.srcRoot().getAbsolutePath() + File.separator
-								+ ProjectPaths.CODE + File.separator + vNode.id());
+								+ Project.CODE + File.separator + vNode.id());
 						if (remoteDir.exists())
 							FileUtilities.deleteFileTree(remoteDir);
 					}
@@ -1012,7 +1010,7 @@ public abstract class StructureEditorAdapter
 	@Override
 	public void onExportTree(VisualNode root) {
 		String filePrompt = root.getDisplayText(ElementDisplayText.RoleName).replace(":", "_") + ".utg";
-		File file = Dialogs.exportFile("", TwPaths.USER_ROOT, filePrompt);
+		File file = Dialogs.exportFile("", Project.USER_ROOT, filePrompt);
 		if (file == null)
 			return;
 		if (file.getAbsolutePath().contains(".3w/"))

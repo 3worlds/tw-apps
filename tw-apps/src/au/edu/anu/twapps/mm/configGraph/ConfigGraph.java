@@ -44,7 +44,6 @@ import au.edu.anu.twcore.archetype.TWA;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrorMsg;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrors;
 import au.edu.anu.twcore.graphState.GraphState;
-import au.edu.anu.twcore.project.TwPaths;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
@@ -136,10 +135,10 @@ public class ConfigGraph {
 				}
 
 				if (!ErrorMessageManager.haveErrors()) {
-					File file = new File(TwPaths.TW_ROOT + File.separator + TwPaths.TW_DEP_JAR);
+					File file = new File(Project.USER_ROOT_TW_ROOT + File.separator + Project.TW_DEP_JAR);
 					if (!file.exists())
 						ErrorMessageManager.dispatch(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_RESOURCE_MISSING,
-								TwPaths.TW_DEP_JAR, TwPaths.TW_ROOT));
+								Project.TW_DEP_JAR, Project.USER_ROOT_TW_ROOT));
 
 				}
 				if (!ErrorMessageManager.haveErrors() && GraphState.changed())
