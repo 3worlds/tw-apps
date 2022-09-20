@@ -34,12 +34,11 @@ import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import au.edu.anu.rscs.aot.archetype.ArchetypeArchetypeConstants;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.util.IntegerRange;
 import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
-import au.edu.anu.twcore.archetype.TwArchetypeConstants;
+import au.edu.anu.twcore.archetype.TWA;
 import fr.cnrs.iees.OmugiClassLoader;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.TreeNode;
@@ -55,9 +54,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
  * Author Ian Davies  - 10 Jan. 2019
  */
 public class VisualNodeEditor implements //
-		VisualNodeEditable, //
-		ArchetypeArchetypeConstants, //
-		TwArchetypeConstants {
+		VisualNodeEditable{
 	private VisualNode visualNode;
 	private TreeGraph<VisualNode, VisualEdge> visualGraph;
 
@@ -105,8 +102,8 @@ public class VisualNodeEditor implements //
 	@Override
 	public Class<? extends TreeGraphNode> getSubClass() {
 		ClassLoader classLoader = OmugiClassLoader.getAppClassLoader();
-		if (visualNode.configHasProperty(twaSubclass)) {
-			String result = (String) visualNode.configGetPropertyValue(twaSubclass);
+		if (visualNode.configHasProperty(TWA.SUBCLASS)) {
+			String result = (String) visualNode.configGetPropertyValue(TWA.SUBCLASS);
 			try {
 				return (Class<? extends TreeGraphNode>) Class.forName(result, true, classLoader);
 			} catch (ClassNotFoundException e) {

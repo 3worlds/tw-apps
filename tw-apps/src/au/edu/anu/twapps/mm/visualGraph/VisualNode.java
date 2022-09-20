@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
-import au.edu.anu.twcore.archetype.PrimaryTreeLabels;
 import au.edu.anu.twcore.root.EditableFactory;
 import au.edu.anu.twcore.root.TwConfigFactory;
 import fr.cnrs.iees.graph.Direction;
@@ -182,7 +181,7 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 	 * category (in this case the sub-tree) they belong to.
 	 */
 	public void setCategory() {
-		if (PrimaryTreeLabels.contains(configNode.classId()))
+		if (ConfigSubtreeRootLabels.contains(configNode.classId()))
 			properties().setProperty(vnCategory, configNode.classId());
 		else
 			setCategory(getParent());
@@ -197,7 +196,7 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 	 */
 	private void setCategory(VisualNode parent) {
 		if (parent != null) {
-			if (PrimaryTreeLabels.contains(parent.configNode.classId()))
+			if (ConfigSubtreeRootLabels.contains(parent.configNode.classId()))
 				setCategory(parent.configNode.classId());
 			else
 				setCategory(parent.getParent());

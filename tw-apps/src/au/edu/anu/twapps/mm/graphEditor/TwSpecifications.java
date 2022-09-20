@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import au.edu.anu.rscs.aot.archetype.ArchetypeArchetypeConstants;
+import au.edu.anu.rscs.aot.archetype.Archetypes;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.Queryable;
 import au.edu.anu.rscs.aot.util.IntegerRange;
@@ -44,7 +44,6 @@ import au.edu.anu.twapps.dialogs.Dialogs;
 import au.edu.anu.twapps.mm.visualGraph.ElementDisplayText;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import au.edu.anu.twcore.archetype.TWA;
-import au.edu.anu.twcore.archetype.TwArchetypeConstants;
 import au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery;
 import au.edu.anu.twcore.archetype.tw.ChildXorPropertyQuery;
 import au.edu.anu.twcore.archetype.tw.IsInValueSetQuery;
@@ -70,32 +69,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
  * Author Ian Davies - 10 Jan. 2019
  */
 public class TwSpecifications implements //
-		Specifications, //
-		ArchetypeArchetypeConstants, //
-		TwArchetypeConstants {
-// replaced by TableAdapter.equals() method
-//	private static boolean equals(StringTable t1, StringTable t2) {
-//		// NB: should assume neither table is null.
-//		// yes, but table elements may be null...
-//		if (t1.ndim() != t2.ndim())
-//			return false;
-//		if (t1.size() != t2.size())
-//			return false;
-//		for (int i = 0; i < t1.size(); i++) {
-//			if (t1.getWithFlatIndex(i)==null) {
-//				if (t2.getWithFlatIndex(i)!=null)
-//					return false;
-//			}
-//			else {
-//				if (t2.getWithFlatIndex(i)==null)
-//					return false;
-//				else
-//					if (!t1.getWithFlatIndex(i).equals(t2.getWithFlatIndex(i)))
-//						return false;
-//			}
-//		}
-//		return true;
-//	}
+		Specifications{
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -103,7 +77,7 @@ public class TwSpecifications implements //
 		for (TreeNode childSpec : root.getChildren()) {
 			if (isOfClass((SimpleDataTreeNode) childSpec, editNode.visualNode().configNode().classId())) {
 				StringTable parentsSpecTable = (StringTable) ((SimpleDataTreeNode) childSpec).properties()
-						.getPropertyValue(aaHasParent);
+						.getPropertyValue(Archetypes.HAS_PARENT);
 				StringTable parentsTable = editNode.visualNode().parentTable();
 				// Dodgy: the parentTable is unknown during an import;
 				if (parentsTable == null)
@@ -111,8 +85,8 @@ public class TwSpecifications implements //
 //				else if (equals(parentsTable, parentsSpecTable)) {
 				else if (parentsTable.equals(parentsSpecTable)) {
 					DataHolder dh = (DataHolder) childSpec;
-					if (dh.properties().hasProperty(aaHasId)) {
-						String hasId = (String) dh.properties().getPropertyValue(aaHasId);
+					if (dh.properties().hasProperty(Archetypes.HAS_ID)) {
+						String hasId = (String) dh.properties().getPropertyValue(Archetypes.HAS_ID);
 						if (editNode.visualNode().configNode().id().equals(hasId))
 							return (SimpleDataTreeNode) childSpec;
 					} else
@@ -121,7 +95,7 @@ public class TwSpecifications implements //
 			}
 			// search subArchetypes
 			List<SimpleDataTreeNode> saConstraints = (List<SimpleDataTreeNode>) get(childSpec.getChildren(),
-					selectZeroOrMany(hasProperty(aaClassName, CheckSubArchetypeQuery.class.getName())));
+					selectZeroOrMany(hasProperty(Archetypes.CLASS_NAME, CheckSubArchetypeQuery.class.getName())));
 			for (SimpleDataTreeNode constraint : saConstraints) {
 				List<String> pars = getQueryStringTableEntries(constraint);
 				if (pars.get(0).equals(P_SA_SUBCLASS.key())) {
@@ -145,17 +119,17 @@ public class TwSpecifications implements //
 	public SimpleDataTreeNode getSubSpecsOf(SimpleDataTreeNode baseSpecs, Class<? extends TreeNode> subClass) {
 		// multiple stopping condtions have many entries of IsOfClass
 		if (subClass != null) {
-			String parent = (String) baseSpecs.properties().getPropertyValue(aaIsOfClass);
+			String parent = (String) baseSpecs.properties().getPropertyValue(Archetypes.IS_OF_CLASS);
 			Tree<?> subClassTree = getSubArchetype(baseSpecs, subClass);
 			if (subClassTree == null)
 				return null;
 			List<SimpleDataTreeNode> specs = (List<SimpleDataTreeNode>) get(subClassTree.root().getChildren(),
-					selectOneOrMany(hasProperty(aaIsOfClass, parent)));
+					selectOneOrMany(hasProperty(Archetypes.IS_OF_CLASS, parent)));
 			if (specs.size() == 1)
 				return specs.get(0);
 			else {
 				for (SimpleDataTreeNode spec : specs) {
-					StringTable t = (StringTable) spec.properties().getPropertyValue(aaHasParent);
+					StringTable t = (StringTable) spec.properties().getPropertyValue(Archetypes.HAS_PARENT);
 					if (t.contains(parent + PairIdentity.LABEL_NAME_SEPARATOR)) {
 						return spec;
 					}
@@ -173,21 +147,21 @@ public class TwSpecifications implements //
 		// String parentLabel = (String)
 		// parentSpec.properties().getPropertyValue(aaIsOfClass);
 		List<SimpleDataTreeNode> children = (List<SimpleDataTreeNode>) get(root.getChildren(),
-				selectZeroOrMany(hasProperty(aaHasParent)));
+				selectZeroOrMany(hasProperty(Archetypes.HAS_PARENT)));
 		// could have a query here for finding a parent in a parent Stringtable
 		List<SimpleDataTreeNode> result = new ArrayList<>();
 		for (SimpleDataTreeNode n : children)
-			if (editNode.references((StringTable) n.properties().getPropertyValue(aaHasParent)))
+			if (editNode.references((StringTable) n.properties().getPropertyValue(Archetypes.HAS_PARENT)))
 				result.add(n);
 
 		// addChildrenTo(result, parentLabel, children);
 		if (parentSubSpec != null) {
 			// look for children in the subclass tree root
 			children = (List<SimpleDataTreeNode>) get(parentSubSpec.getParent().getChildren(),
-					selectZeroOrMany(hasProperty(aaHasParent)));
+					selectZeroOrMany(hasProperty(Archetypes.HAS_PARENT)));
 			// addChildrenTo(result, parentLabel, children);
 			for (SimpleDataTreeNode an : children)
-				if (editNode.references((StringTable) an.properties().getPropertyValue(aaHasParent)))
+				if (editNode.references((StringTable) an.properties().getPropertyValue(Archetypes.HAS_PARENT)))
 					result.add(an);
 
 		}
@@ -199,10 +173,10 @@ public class TwSpecifications implements //
 	@Override
 	public Iterable<SimpleDataTreeNode> getPropertySpecsOf(SimpleDataTreeNode spec, SimpleDataTreeNode subSpec) {
 		List<SimpleDataTreeNode> results = (List<SimpleDataTreeNode>) get(spec.getChildren(),
-				selectZeroOrMany(hasTheLabel(aaHasProperty)));
+				selectZeroOrMany(hasTheLabel(Archetypes.HAS_PROPERTY)));
 		if (subSpec != null) {
 			List<SimpleDataTreeNode> subList = (List<SimpleDataTreeNode>) get(subSpec.getChildren(),
-					selectZeroOrMany(hasTheLabel(aaHasProperty)));
+					selectZeroOrMany(hasTheLabel(Archetypes.HAS_PROPERTY)));
 			results.addAll(subList);
 		}
 		return results;
@@ -212,10 +186,10 @@ public class TwSpecifications implements //
 	@Override
 	public Iterable<SimpleDataTreeNode> getEdgeSpecsOf(SimpleDataTreeNode baseSpec, SimpleDataTreeNode subSpec) {
 		List<SimpleDataTreeNode> result = (List<SimpleDataTreeNode>) get(baseSpec.getChildren(),
-				selectZeroOrMany(hasTheLabel(aaHasEdge)));
+				selectZeroOrMany(hasTheLabel(Archetypes.HAS_EDGE)));
 		if (subSpec != null)
 			result.addAll(
-					(List<SimpleDataTreeNode>) get(subSpec.getChildren(), selectZeroOrMany(hasTheLabel(aaHasEdge))));
+					(List<SimpleDataTreeNode>) get(subSpec.getChildren(), selectZeroOrMany(hasTheLabel(Archetypes.HAS_EDGE))));
 		return result;
 	}
 
@@ -229,11 +203,11 @@ public class TwSpecifications implements //
 	public List<Class<? extends TreeNode>> getSubClassesOf(SimpleDataTreeNode spec) {
 		List<Class<? extends TreeNode>> result = new ArrayList<>();
 		SimpleDataTreeNode propertySpec = (SimpleDataTreeNode) get(spec.getChildren(),
-				selectZeroOrOne(hasProperty(aaHasName, twaSubclass)));
+				selectZeroOrOne(hasProperty(Archetypes.HAS_NAME, TWA.SUBCLASS)));
 		if (propertySpec != null) {
 			SimpleDataTreeNode constraint = (SimpleDataTreeNode) get(propertySpec.getChildren(),
-					selectOne(hasProperty(aaClassName, IsInValueSetQuery.class.getName())));
-			StringTable classes = (StringTable) constraint.properties().getPropertyValue(twaValues);
+					selectOne(hasProperty(Archetypes.CLASS_NAME, IsInValueSetQuery.class.getName())));
+			StringTable classes = (StringTable) constraint.properties().getPropertyValue(TWA.VALUES);
 			for (int i = 0; i < classes.size(); i++) {
 				try {
 					result.add((Class<? extends TreeNode>) Class.forName(classes.getWithFlatIndex(i), true,
@@ -253,7 +227,7 @@ public class TwSpecifications implements //
 		if (spec == null)
 			return result;
 		List<SimpleDataTreeNode> querySpecs = (List<SimpleDataTreeNode>) get(spec.getChildren(),
-				selectZeroOrMany(hasProperty(aaClassName, queryClass.getName())));
+				selectZeroOrMany(hasProperty(Archetypes.CLASS_NAME, queryClass.getName())));
 		for (SimpleDataTreeNode querySpec : querySpecs) {
 			List<String> entries = getQueryStringTableEntries(querySpec);
 			if (!entries.isEmpty()) {
@@ -293,7 +267,7 @@ public class TwSpecifications implements //
 			String keyHandled = null;
 			while (iter.hasNext()) {
 				SimpleDataTreeNode ps = iter.next();
-				String key = (String) ps.properties().getPropertyValue(aaHasName);
+				String key = (String) ps.properties().getPropertyValue(Archetypes.HAS_NAME);
 				if (entriesContains(key, entries)) {
 					String optionalKey = getSelectedEntry(key, selectedKeys, entries);
 					if (!Objects.equals(key, keyHandled)) {
@@ -310,7 +284,7 @@ public class TwSpecifications implements //
 
 	@Override
 	public IntegerRange getMultiplicityOf(SimpleDataTreeNode spec) {
-		return (IntegerRange) spec.properties().getPropertyValue(aaMultiplicity);
+		return (IntegerRange) spec.properties().getPropertyValue(Archetypes.MULTIPLICITY);
 	}
 
 	// -----------------------end of implementation methods-----------------------
@@ -346,10 +320,10 @@ public class TwSpecifications implements //
 	@SuppressWarnings("unchecked")
 	private Tree<? extends TreeNode> getSubArchetype(SimpleDataTreeNode spec, Class<? extends TreeNode> subClass) {
 		List<SimpleDataTreeNode> constraints = (List<SimpleDataTreeNode>) get(spec.getChildren(),
-				selectZeroOrMany(hasProperty(aaClassName, CheckSubArchetypeQuery.class.getName())));
+				selectZeroOrMany(hasProperty(Archetypes.CLASS_NAME, CheckSubArchetypeQuery.class.getName())));
 
 		for (SimpleDataTreeNode constraint : constraints) {
-			StringTable pars = (StringTable) constraint.properties().getPropertyValue(twaParameters);
+			StringTable pars = (StringTable) constraint.properties().getPropertyValue(TWA.PARAMETERS);
 			// We only want to add an SA if the pars.get(0)==subclass
 			if (pars.get(0).equals(P_SA_SUBCLASS.key()))
 				if (pars.getWithFlatIndex(1).equals(subClass.getName())) {
@@ -361,11 +335,11 @@ public class TwSpecifications implements //
 
 	private SimpleDataTreeNode getConstraint(SimpleDataTreeNode spec, String constraintClass) {
 		return (SimpleDataTreeNode) get(spec.getChildren(),
-				selectZeroOrOne(andQuery(hasTheLabel(aaMustSatisfyQuery), hasProperty(aaClassName, constraintClass))));
+				selectZeroOrOne(andQuery(hasTheLabel(Archetypes.MUST_SATISFY_QUERY), hasProperty(Archetypes.CLASS_NAME, constraintClass))));
 	}
 
 	private boolean isOfClass(SimpleDataTreeNode child, String label) {
-		String ioc = (String) child.properties().getPropertyValue(aaIsOfClass);
+		String ioc = (String) child.properties().getPropertyValue(Archetypes.IS_OF_CLASS);
 		return ioc.equals(label);
 	}
 
@@ -377,7 +351,7 @@ public class TwSpecifications implements //
 			return result;
 		for (Class<? extends Queryable> query : queries) {
 			result.addAll((List<SimpleDataTreeNode>) get(spec.getChildren(), selectZeroOrMany(
-					andQuery(hasTheLabel(aaMustSatisfyQuery), hasProperty(aaClassName, query.getName())))));
+					andQuery(hasTheLabel(Archetypes.MUST_SATISFY_QUERY), hasProperty(Archetypes.CLASS_NAME, query.getName())))));
 		}
 		return result;
 	}
@@ -391,9 +365,9 @@ public class TwSpecifications implements //
 	public List<Duple<String, String>> getNodeLabelDuples(List<SimpleDataTreeNode> queries) {
 		List<Duple<String, String>> result = new ArrayList<>();
 		for (SimpleDataTreeNode query : queries) {
-			if (query.properties().hasProperty(twaNodeLabel1) && query.properties().hasProperty(twaNodeLabel2)) {
-				result.add(new Duple<String, String>((String) query.properties().getPropertyValue(twaNodeLabel1),
-						(String) query.properties().getPropertyValue(twaNodeLabel2)));
+			if (query.properties().hasProperty(TWA.NODE_LABEL_1) && query.properties().hasProperty(TWA.NODE_LABEL_2)) {
+				result.add(new Duple<String, String>((String) query.properties().getPropertyValue(TWA.NODE_LABEL_1),
+						(String) query.properties().getPropertyValue(TWA.NODE_LABEL_2)));
 			}
 		}
 		return result;
@@ -407,7 +381,7 @@ public class TwSpecifications implements //
 		queries.addAll(getQueries(subSpec, RequirePropertyQuery.class));
 		Set<String> pset = new HashSet<>();
 		for (SimpleDataTreeNode query : queries) {
-			StringTable conditions = (StringTable) query.properties().getPropertyValue(twaConditions);
+			StringTable conditions = (StringTable) query.properties().getPropertyValue(TWA.CONDITIONS);
 			String key = conditions.getWithFlatIndex(1);
 			if (!pset.contains(key)) {
 				pset.add(key);
@@ -429,7 +403,7 @@ public class TwSpecifications implements //
 
 		ExtendablePropertyList props = (ExtendablePropertyList) vnode.cProperties();
 		for (SimpleDataTreeNode query : queries) {
-			StringTable conditions = (StringTable) query.properties().getPropertyValue(twaConditions);
+			StringTable conditions = (StringTable) query.properties().getPropertyValue(TWA.CONDITIONS);
 			String subjectKey = conditions.getWithFlatIndex(0);
 			String conditionalKey = conditions.getWithFlatIndex(1);
 			String[] conditionalValues = new String[conditions.size() - 2];
@@ -455,10 +429,10 @@ public class TwSpecifications implements //
 	public List<SimpleDataTreeNode> getOptionalProperties(SimpleDataTreeNode baseSpec, SimpleDataTreeNode subSpec) {
 
 		List<SimpleDataTreeNode> props = (List<SimpleDataTreeNode>) get(baseSpec.getChildren(),
-				selectZeroOrMany(hasTheLabel(aaHasProperty)));
+				selectZeroOrMany(hasTheLabel(Archetypes.HAS_PROPERTY)));
 		if (subSpec != null) {
 			List<SimpleDataTreeNode> propsSub = (List<SimpleDataTreeNode>) get(subSpec.getChildren(),
-					selectZeroOrMany(hasTheLabel(aaHasProperty)));
+					selectZeroOrMany(hasTheLabel(Archetypes.HAS_PROPERTY)));
 			props.addAll(propsSub);
 		}
 
@@ -468,7 +442,7 @@ public class TwSpecifications implements //
 		for (SimpleDataTreeNode req : reqs) {
 			// conditions =
 			// StringTable(([8]"units","dataElementType","Double","Float","Integer","Long","Short","Byte"))
-			StringTable conditions = (StringTable) req.properties().getPropertyValue(twaConditions);
+			StringTable conditions = (StringTable) req.properties().getPropertyValue(TWA.CONDITIONS);
 			depProps.add(conditions.getWithFlatIndex(0));
 			depProps.add(conditions.getWithFlatIndex(1));
 		}
@@ -477,7 +451,7 @@ public class TwSpecifications implements //
 		cXORpqs.addAll(getQueries(subSpec, ChildXorPropertyQuery.class));
 		for (SimpleDataTreeNode cXORpq : cXORpqs) {
 			// edge_prop = StringTable(([2]"record","dataElementType"))
-			StringTable conditions = (StringTable) cXORpq.properties().getPropertyValue(twaEdgeProp);
+			StringTable conditions = (StringTable) cXORpq.properties().getPropertyValue(TWA.EDGE_PROP);
 			depProps.add(conditions.getWithFlatIndex(1));
 		}
 		// CAUTION: this query has changed and now uses EDGE labels instead of NODE
@@ -493,15 +467,15 @@ public class TwSpecifications implements //
 		pXORps.addAll(getQueries(subSpec, PropertyXorQuery.class));
 		for (SimpleDataTreeNode pXORp : pXORps) {
 			// proplist = StringTable(([2]file,type))
-			StringTable conditions = (StringTable) pXORp.properties().getPropertyValue(twaPropList);
+			StringTable conditions = (StringTable) pXORp.properties().getPropertyValue(TWA.PROP_LIST);
 			depProps.add(conditions.getWithFlatIndex(0));
 			depProps.add(conditions.getWithFlatIndex(1));
 		}
 
 		List<SimpleDataTreeNode> result = new ArrayList<>();
 		for (SimpleDataTreeNode prop : props) {
-			String name = (String) prop.properties().getPropertyValue(aaHasName);
-			IntegerRange ir = (IntegerRange) prop.properties().getPropertyValue(aaMultiplicity);
+			String name = (String) prop.properties().getPropertyValue(Archetypes.HAS_NAME);
+			IntegerRange ir = (IntegerRange) prop.properties().getPropertyValue(Archetypes.MULTIPLICITY);
 			if (ir.getFirst() == 0 && ir.getLast() == 1 && !depProps.contains(name))
 				result.add(prop);
 		}

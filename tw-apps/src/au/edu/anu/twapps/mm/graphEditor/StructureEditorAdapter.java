@@ -50,7 +50,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.text.WordUtils;
 
-import au.edu.anu.rscs.aot.archetype.ArchetypeArchetypeConstants;
+import au.edu.anu.rscs.aot.archetype.Archetypes;
 import au.edu.anu.rscs.aot.collections.tables.Dimensioner;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.util.FileUtilities;
@@ -64,7 +64,6 @@ import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualGraphFactory;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import au.edu.anu.twcore.archetype.TWA;
-import au.edu.anu.twcore.archetype.TwArchetypeConstants;
 import au.edu.anu.twcore.archetype.tw.CheckConstantTrackingQuery;
 import au.edu.anu.twcore.archetype.tw.ChildXorPropertyQuery;
 import au.edu.anu.twcore.archetype.tw.EndNodeHasPropertyQuery;
@@ -124,7 +123,7 @@ import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
  * Adapter class to perform the work of the {@link StructureEditable} interface.
  */
 public abstract class StructureEditorAdapter
-		implements StructureEditable, TwArchetypeConstants, ArchetypeArchetypeConstants {
+		implements StructureEditable{
 	private static Logger log = Logging.getLogger(StructureEditorAdapter.class);
 
 	/**
@@ -195,12 +194,12 @@ public abstract class StructureEditorAdapter
 		tables.addAll(specifications.getQueryStringTables(subClassSpec, ChildXorPropertyQuery.class));
 		for (SimpleDataTreeNode childSpec : childSpecs) {
 			boolean reserved = false;
-			if (childSpec.properties().hasProperty(aaHasId)) {
+			if (childSpec.properties().hasProperty(Archetypes.HAS_ID)) {
 				reserved = ConfigurationReservedNodeId
-						.isPredefined((String) childSpec.properties().getPropertyValue(aaHasId));
+						.isPredefined((String) childSpec.properties().getPropertyValue(Archetypes.HAS_ID));
 			}
 			if (!reserved) {
-				String childLabel = (String) childSpec.properties().getPropertyValue(aaIsOfClass);
+				String childLabel = (String) childSpec.properties().getPropertyValue(Archetypes.IS_OF_CLASS);
 				IntegerRange range = specifications.getMultiplicityOf(childSpec);
 				if (editableNode.moreChildrenAllowed(range, childLabel)) {
 					if (!tables.isEmpty()) {
@@ -268,8 +267,8 @@ public abstract class StructureEditorAdapter
 		List<Tuple<String, VisualNode, SimpleDataTreeNode>> result = new ArrayList<>();
 		for (SimpleDataTreeNode edgeSpec : edgeSpecs) {
 //			log.info(edgeSpec.toShortString());
-			String toNodeRef = (String) edgeSpec.properties().getPropertyValue(aaToNode);
-			String edgeLabel = (String) edgeSpec.properties().getPropertyValue(aaIsOfClass);
+			String toNodeRef = (String) edgeSpec.properties().getPropertyValue(Archetypes.TO_NODE);
+			String edgeLabel = (String) edgeSpec.properties().getPropertyValue(Archetypes.IS_OF_CLASS);
 			if (toNodeRef.endsWith(":"))
 				toNodeRef = toNodeRef.substring(0, toNodeRef.length() - 1);
 			String[] labels = toNodeRef.split(":/");
@@ -324,7 +323,7 @@ public abstract class StructureEditorAdapter
 		List<SimpleDataTreeNode> queries = specifications.getQueries((SimpleDataTreeNode) edgeSpec,
 				EndNodeHasPropertyQuery.class);
 		for (SimpleDataTreeNode query : queries) {
-			String key = (String) query.properties().getPropertyValue(twaPropName);
+			String key = (String) query.properties().getPropertyValue(TWA.PROP_NAME);
 			if (!endNode.configHasProperty(key))
 				return false;
 		}
@@ -356,11 +355,11 @@ public abstract class StructureEditorAdapter
 		List<SimpleDataTreeNode> queries = specifications.getQueries((SimpleDataTreeNode) edgeSpec.getParent(),
 				OutEdgeXorQuery.class);
 		for (SimpleDataTreeNode query : queries) {
-			if (queryReferencesLabel(proposedEdgeLabel, query, twaEdgeLabel1, twaEdgeLabel2)) {
+			if (queryReferencesLabel(proposedEdgeLabel, query, TWA.EDGE_LABEL_1, TWA.EDGE_LABEL_2)) {
 				Set<String> qp1 = new HashSet<>();
 				Set<String> qp2 = new HashSet<>();
-				qp1.addAll(getEdgeLabelRefs(query.properties(), twaEdgeLabel1));
-				qp2.addAll(getEdgeLabelRefs(query.properties(), twaEdgeLabel2));
+				qp1.addAll(getEdgeLabelRefs(query.properties(), TWA.EDGE_LABEL_1));
+				qp2.addAll(getEdgeLabelRefs(query.properties(), TWA.EDGE_LABEL_2));
 				Set<String> es1 = new HashSet<>();
 				Set<String> es2 = new HashSet<>();
 				for (Edge e : editableNode.visualNode().configNode().edges(Direction.OUT))
@@ -451,7 +450,7 @@ public abstract class StructureEditorAdapter
 		for (VisualNode root : editableNode.visualGraph().roots()) {
 			String rootLabel = root.configNode().classId();
 			for (SimpleDataTreeNode childSpec : childSpecs) {
-				String specLabel = (String) childSpec.properties().getPropertyValue(aaIsOfClass);
+				String specLabel = (String) childSpec.properties().getPropertyValue(Archetypes.IS_OF_CLASS);
 				if (rootLabel.equals(specLabel))
 					result.add(root);
 			}
@@ -528,7 +527,7 @@ public abstract class StructureEditorAdapter
 					childBaseSpec);
 		if (promptId == null)
 			return;
-		String childClassName = (String) childBaseSpec.properties().getPropertyValue(aaIsOfClass);
+		String childClassName = (String) childBaseSpec.properties().getPropertyValue(Archetypes.IS_OF_CLASS);
 		Class<? extends TreeNode> subClass = null;
 		List<Class<? extends TreeNode>> subClasses = specifications.getSubClassesOf(childBaseSpec);
 		if (subClasses.size() > 1) {
@@ -563,25 +562,25 @@ public abstract class StructureEditorAdapter
 		newChild.setVisible(true);
 		newChild.setCategory();
 //		VisualNodeEditable vne = new VisualNodeEditor(newChild, editableNode.getGraph());
-		StringTable parents = (StringTable) childBaseSpec.properties().getPropertyValue(aaHasParent);
+		StringTable parents = (StringTable) childBaseSpec.properties().getPropertyValue(Archetypes.HAS_PARENT);
 		newChild.setParentRef(parents);
 		for (SimpleDataTreeNode propertySpec : propertySpecs) {
-			String key = (String) propertySpec.properties().getPropertyValue(aaHasName);
+			String key = (String) propertySpec.properties().getPropertyValue(Archetypes.HAS_NAME);
 //			System.out.println(key);
-			if (key.equals(twaSubclass)) {
+			if (key.equals(TWA.SUBCLASS)) {
 				log.info("Add property: " + subClass.getName());
-				newChild.addProperty(twaSubclass, subClass.getName());
+				newChild.addProperty(TWA.SUBCLASS, subClass.getName());
 			} else {
-				String type = (String) propertySpec.properties().getPropertyValue(aaType);
+				String type = (String) propertySpec.properties().getPropertyValue(Archetypes.TYPE);
 				Object defValue = ValidPropertyTypes.getDefaultValue(type);
 
 				if (defValue instanceof Enum<?>) {
 					Class<? extends Enum<?>> e = (Class<? extends Enum<?>>) defValue.getClass();
 
 					SimpleDataTreeNode constraint = (SimpleDataTreeNode) get(propertySpec.getChildren(),
-							selectZeroOrOne(hasProperty(aaClassName, IsInValueSetQuery.class.getName())));
+							selectZeroOrOne(hasProperty(Archetypes.CLASS_NAME, IsInValueSetQuery.class.getName())));
 					if (constraint != null) {
-						StringTable classes = (StringTable) constraint.properties().getPropertyValue(twaValues);
+						StringTable classes = (StringTable) constraint.properties().getPropertyValue(TWA.VALUES);
 						if (classes.size() > 1) {
 							String[] names = ValidPropertyTypes.namesOf(e);
 							int choice = Dialogs.getListChoice(names,
@@ -729,8 +728,8 @@ public abstract class StructureEditorAdapter
 					propertySpecs.remove(op);
 
 			for (SimpleDataTreeNode propertySpec : propertySpecs) {
-				String key = (String) propertySpec.properties().getPropertyValue(aaHasName);
-				String type = (String) propertySpec.properties().getPropertyValue(aaType);
+				String key = (String) propertySpec.properties().getPropertyValue(Archetypes.HAS_NAME);
+				String type = (String) propertySpec.properties().getPropertyValue(Archetypes.TYPE);
 				Object defValue = ValidPropertyTypes.getDefaultValue(type);
 				log.info("Add property: " + key);
 				props.addProperty(key, defValue);
@@ -1157,7 +1156,7 @@ public abstract class StructureEditorAdapter
 		// StringTable parentTable = controller.findParentTable(newVNode);
 
 		SimpleDataTreeNode specs = specifications.getSpecsOf(vne, TWA.getRoot(), discoveredFile);
-		StringTable parents = (StringTable) specs.properties().getPropertyValue(aaHasParent);
+		StringTable parents = (StringTable) specs.properties().getPropertyValue(Archetypes.HAS_PARENT);
 		newVNode.setParentRef(parents);
 		newVNode.setCategory();
 		newVNode.setVisible(true);
@@ -1189,7 +1188,7 @@ public abstract class StructureEditorAdapter
 		TreeGraph<TreeGraphDataNode, ALEdge> importGraph = (TreeGraph<TreeGraphDataNode, ALEdge>) FileImporter
 				.loadGraphFromFile(importFile);
 		// check the root node class is the same as that in the spec
-		String label = (String) childSpec.properties().getPropertyValue(aaIsOfClass);
+		String label = (String) childSpec.properties().getPropertyValue(Archetypes.IS_OF_CLASS);
 		if (!label.equals(importGraph.root().classId())) {
 			Dialogs.errorAlert("Import error", "Incompatible file", "Tree with root '" + label
 					+ "' requested but root of this file is '" + importGraph.root().classId() + "'.");
@@ -1222,7 +1221,7 @@ public abstract class StructureEditorAdapter
 		Map<String, Tuple<String, SimpleDataTreeNode, ExtendablePropertyList>> propertyDetailsMap = new LinkedHashMap<>();
 		TreeGraphDataNode cn = (TreeGraphDataNode) editableNode.visualNode().configNode();
 		for (SimpleDataTreeNode p : optionalNodePropertySpecs) {
-			String name = (String) p.properties().getPropertyValue(aaHasName);
+			String name = (String) p.properties().getPropertyValue(Archetypes.HAS_NAME);
 			String displayName = cn.toShortString() + "#" + name;
 			displayNames.add(displayName);
 			propertyDetailsMap.put(displayName, new Tuple<String, SimpleDataTreeNode, ExtendablePropertyList>(name, p,
@@ -1235,7 +1234,7 @@ public abstract class StructureEditorAdapter
 		for (Duple<VisualEdge, SimpleDataTreeNode> ep : optionalEdgePropertySpecs) {
 			ALDataEdge edge = (ALDataEdge) ep.getFirst().getConfigEdge();
 			SimpleDataTreeNode ps = ep.getSecond();
-			String name = (String) ps.properties().getPropertyValue(aaHasName);
+			String name = (String) ps.properties().getPropertyValue(Archetypes.HAS_NAME);
 			String displayName = edge.toShortString() + "#" + name;
 			displayNames.add(displayName);
 			propertyDetailsMap.put(displayName, new Tuple<String, SimpleDataTreeNode, ExtendablePropertyList>(name, ps,
@@ -1289,7 +1288,7 @@ public abstract class StructureEditorAdapter
 				}
 				defValue = Box.boundingBox(points[0], points[1]);
 			} else {
-				String type = (String) spec.properties().getPropertyValue(aaType);
+				String type = (String) spec.properties().getPropertyValue(Archetypes.TYPE);
 				defValue = ValidPropertyTypes.getDefaultValue(type);
 			}
 			p.addProperty(key, defValue);

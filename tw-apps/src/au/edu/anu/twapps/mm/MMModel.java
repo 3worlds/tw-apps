@@ -47,7 +47,7 @@ import java.util.logging.Logger;
 
 import au.edu.anu.omhtk.preferences.PrefImpl;
 import au.edu.anu.omhtk.preferences.Preferences;
-import au.edu.anu.rscs.aot.archetype.ArchetypeArchetypeConstants;
+import au.edu.anu.rscs.aot.archetype.Archetypes;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.errorMessaging.ErrorMessageManager;
 import au.edu.anu.rscs.aot.util.FileUtilities;
@@ -60,7 +60,6 @@ import au.edu.anu.twapps.mm.visualGraph.ElementDisplayText;
 import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import au.edu.anu.twcore.archetype.TWA;
-import au.edu.anu.twcore.archetype.TwArchetypeConstants;
 import au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrorMsg;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrors;
@@ -96,7 +95,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 /**
  * Author Ian Davies - 10 Dec. 2018
  */
-public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
+public class MMModel implements IMMModel{
 	/**
 	 * Graph containing layout information for the configuration graph.
 	 */
@@ -581,7 +580,7 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 		for (ConfigurationNodeLabels key : ConfigurationNodeLabels.values()) {
 			List<String> keys = new ArrayList<>();
 			// default - subclass is never editable
-			keys.add(TwArchetypeConstants.twaSubclass);
+			keys.add(TWA.SUBCLASS);
 			keys.add(P_TWDATACLASS.key());
 			keys.add(P_FUNCTIONCLASS.key());
 			keys.add(P_DRIVERCLASS.key());
@@ -686,19 +685,19 @@ public class MMModel implements IMMModel, ArchetypeArchetypeConstants {
 	private void fillClassParentMap(Map<String, List<StringTable>> classParentMap, TreeNode root,
 			Set<String> discoveredFiles) {
 		for (TreeNode childSpec : root.getChildren()) {
-			String key = (String) ((SimpleDataTreeNode) childSpec).properties().getPropertyValue(aaIsOfClass);
+			String key = (String) ((SimpleDataTreeNode) childSpec).properties().getPropertyValue(Archetypes.IS_OF_CLASS);
 			List<StringTable> value = classParentMap.get(key);
 			if (value == null)
 				value = new ArrayList<>();
 			StringTable item = (StringTable) ((SimpleDataTreeNode) childSpec).properties()
-					.getPropertyValue(aaHasParent);
+					.getPropertyValue(Archetypes.HAS_PARENT);
 			value.add(item);
 			classParentMap.put(key, value);
 			// search subA
 
 			@SuppressWarnings("unchecked")
 			List<SimpleDataTreeNode> saConstraints = (List<SimpleDataTreeNode>) get(childSpec.getChildren(),
-					selectZeroOrMany(hasProperty(aaClassName, CheckSubArchetypeQuery.class.getName())));
+					selectZeroOrMany(hasProperty(Archetypes.CLASS_NAME, CheckSubArchetypeQuery.class.getName())));
 			for (SimpleDataTreeNode constraint : saConstraints) {
 				List<String> pars = getQueryStringTableEntries(constraint);
 				if (pars.get(0).equals(P_SA_SUBCLASS.key())) {

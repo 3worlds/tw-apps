@@ -26,33 +26,38 @@
  *  along with TW-APPS.                                                   *
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
   **************************************************************************/
+package au.edu.anu.twapps.mm.visualGraph;
 
-package au.edu.anu.twapps.mm;
+import java.util.HashSet;
+import java.util.Set;
 
-import org.junit.jupiter.api.*;
+import fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels;
 
-import au.edu.anu.twapps.dialogs.Dialogs;
-import au.edu.anu.twcore.graphState.GraphState;
-
-class ModelMakerTest {
-	MockController c;
-	//https://junit.org/junit5/docs/current/user-guide/
-	@BeforeAll
-	public void init() {
-		Dialogs.setImplementation(new MockDialogs());
-		c = new MockController();
-		GraphState.setImplementation(null);
+/**
+ * This static class is used to identify the sub-tree membership for nodes in
+ * the configuration graph. This information can be used to determine a colour
+ * scheme for display.
+ * 
+ * @author Ian Davies - 20 Sep. 2017
+ */
+public class ConfigSubtreeRootLabels {
+	private static Set<String> labelSet = new HashSet<>();
+	static {
+		labelSet.add(ConfigurationNodeLabels.N_SYSTEM.label());
+		labelSet.add(ConfigurationNodeLabels.N_DYNAMICS.label());
+		labelSet.add(ConfigurationNodeLabels.N_STRUCTURE.label());
+		labelSet.add(ConfigurationNodeLabels.N_DATADEFINITION.label());
+		labelSet.add(ConfigurationNodeLabels.N_EXPERIMENT.label());
+		labelSet.add(ConfigurationNodeLabels.N_UI.label());
+		labelSet.add(ConfigurationNodeLabels.N_PREDEFINED.label());
 	}
 
-//	@Test
-//	public void test() {
-//		c.handleNewProject();
-//		assertTrue(Project.makeConfigurationFile().exists());
-//		// TODO write visual graph assertTrue(Project.makeLayoutFile().exists());
-//		File pf = Project.getProjectFile();
-//		Project.close();
-//		// awaiting AotGraphImporter
-//		c.handleOpenProject(pf);
-//	}
+	/**
+	 * @param nodeLabel The label to search for.
+	 * @return True if the given node label is present: false otherwise
+	 */
+	public static boolean contains(String nodeLabel) {
+		return labelSet.contains(nodeLabel);
+	}
 
 }
