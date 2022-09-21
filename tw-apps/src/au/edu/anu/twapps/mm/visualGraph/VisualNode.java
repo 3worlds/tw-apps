@@ -56,12 +56,39 @@ import fr.ens.biologie.generic.utils.Duple;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
 /**
- * Author Ian Davies - 11 Jul 2019
  * <p>
  * Visualization of configuration graph nodes constructed by the
  * {@link VisualGraphFactory}.
+ * <p>
+ * @author Ian Davies - 11 Jul 2019
  */
-public class VisualNode extends TreeGraphDataNode implements VisualKeys, SaveableAsText {
+public class VisualNode extends TreeGraphDataNode implements SaveableAsText {
+	/**
+	 * x location of node in unit space ]0.0..1.0[
+	 */
+	final static String LOCATION_X = "x";
+	/**
+	 * y location of node in unit space ]0.0..1.0[
+	 */
+	final static String LOCATION_Y = "y";
+	/**
+	 * the sub-tree the node belongs to (for purposes of colour
+	 * schemes).
+	 */
+	final static String SUB_TREE = "category";
+	/**
+	 * True if node is collapsed (hidden).
+	 */
+	final static String IS_COLLAPSED = "collapsed";
+	/**
+	 * The parent reference for this node (maintained for purpose of graph editing).
+	 */
+	final static String PARENT_REFERENCE = "parentRef";
+	/**
+	 * Node is visible.
+	 */
+	final static String IS_VISIBLE = "visible";
+
 
 	private TreeGraphDataNode configNode;
 	/**
@@ -126,9 +153,9 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 	 * @return true if visible, false otherwise.
 	 */
 	public boolean isVisible() {
-		if (properties().getPropertyValue(vnVisible) == null)
-			properties().setProperty(vnVisible, true);
-		return (Boolean) properties().getPropertyValue(vnVisible);
+		if (properties().getPropertyValue(IS_VISIBLE) == null)
+			properties().setProperty(IS_VISIBLE, true);
+		return (Boolean) properties().getPropertyValue(IS_VISIBLE);
 	}
 
 	/**
@@ -137,7 +164,7 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 	 * @param value true if visible, false otherwise.
 	 */
 	public void setVisible(boolean value) {
-		properties().setProperty(vnVisible, value);
+		properties().setProperty(IS_VISIBLE, value);
 	}
 
 	@Override
@@ -173,7 +200,7 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 	 * @param b true or false.
 	 */
 	public void setCollapse(boolean b) {
-		properties().setProperty(vnCollapsed, b);
+		properties().setProperty(IS_COLLAPSED, b);
 	}
 
 	/**
@@ -182,7 +209,7 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 	 */
 	public void setCategory() {
 		if (ConfigSubtreeRootLabels.contains(configNode.classId()))
-			properties().setProperty(vnCategory, configNode.classId());
+			properties().setProperty(SUB_TREE, configNode.classId());
 		else
 			setCategory(getParent());
 	}
@@ -210,7 +237,7 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 	 * @param category Category value to set in the node's property list.
 	 */
 	private void setCategory(String category) {
-		properties().setProperty(vnCategory, category);
+		properties().setProperty(SUB_TREE, category);
 	}
 
 	/**
@@ -243,7 +270,7 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 	 * @param x X position.
 	 */
 	public void setX(double x) {
-		properties().setProperty(vnx, x);
+		properties().setProperty(LOCATION_X, x);
 	}
 
 	/**
@@ -252,7 +279,7 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 	 * @param y Y position.
 	 */
 	public void setY(double y) {
-		properties().setProperty(vny, y);
+		properties().setProperty(LOCATION_Y, y);
 	}
 
 	/**
@@ -272,7 +299,7 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 	 * @return X position.
 	 */
 	public double getX() {
-		return (Double) properties().getPropertyValue(vnx);
+		return (Double) properties().getPropertyValue(LOCATION_X);
 	}
 
 	/**
@@ -281,7 +308,7 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 	 * @return Y position.
 	 */
 	public double getY() {
-		return (Double) properties().getPropertyValue(vny);
+		return (Double) properties().getPropertyValue(LOCATION_Y);
 	}
 
 	/**
@@ -353,7 +380,7 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 	 * @return The category.
 	 */
 	public String getCategory() {
-		return (String) properties().getPropertyValue(vnCategory);
+		return (String) properties().getPropertyValue(SUB_TREE);
 	}
 
 	/**
@@ -389,7 +416,7 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 	 * @return true if collapsed, false otherwise.
 	 */
 	public boolean isCollapsed() {
-		return (Boolean) properties().getPropertyValue(vnCollapsed);
+		return (Boolean) properties().getPropertyValue(IS_COLLAPSED);
 	}
 
 	/**
@@ -427,7 +454,7 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 	 * @return the table {@link StringTable} of potential parents.
 	 */
 	public StringTable parentTable() {
-		return (StringTable) properties().getPropertyValue(vnParentRef);
+		return (StringTable) properties().getPropertyValue(PARENT_REFERENCE);
 	}
 
 	/**
@@ -437,7 +464,7 @@ public class VisualNode extends TreeGraphDataNode implements VisualKeys, Saveabl
 	 * @param table {@link StringTable} of potential parents.
 	 */
 	public void setParentRef(StringTable table) {
-		properties().setProperty(vnParentRef, table);
+		properties().setProperty(PARENT_REFERENCE, table);
 	}
 
 	/**

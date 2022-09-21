@@ -47,7 +47,11 @@ import fr.ens.biologie.generic.utils.Duple;
  * {@link VisualGraphFactory}.
  * 
  */
-public class VisualEdge extends ALDataEdge implements VisualKeys {
+public class VisualEdge extends ALDataEdge  {
+	/**
+	 * Edge is visible.
+	 */
+	final static String IS_VISIBLE = "visible";
 	private ALEdge configEdge;
 	/**
 	 * These Objects are constructed at startup time. Thus, there is no need to have
@@ -200,9 +204,9 @@ public class VisualEdge extends ALDataEdge implements VisualKeys {
 	 * @return true if visible, false otherwise.
 	 */
 	public boolean isVisible() {
-		if (properties().getPropertyValue(veVisible) == null)
-			properties().setProperty(veVisible, true);
-		return (Boolean) properties().getPropertyValue(veVisible);
+		if (properties().getPropertyValue(IS_VISIBLE) == null)
+			properties().setProperty(IS_VISIBLE, true);
+		return (Boolean) properties().getPropertyValue(IS_VISIBLE);
 	}
 
 	/**
@@ -211,7 +215,7 @@ public class VisualEdge extends ALDataEdge implements VisualKeys {
 	 * @param value true if visible, false otherwise.
 	 */
 	public void setVisible(boolean value) {
-		properties().setProperty(veVisible, value);
+		properties().setProperty(IS_VISIBLE, value);
 	}
 
 }

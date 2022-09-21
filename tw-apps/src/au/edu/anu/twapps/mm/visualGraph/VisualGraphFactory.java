@@ -54,7 +54,7 @@ import fr.cnrs.iees.identity.impl.LocalScope;
  *         elements use the {@link SharedPropertyListImpl} since all property
  *         keys are the same.
  */
-public class VisualGraphFactory extends TreeGraphFactory implements EditableFactory, VisualKeys {
+public class VisualGraphFactory extends TreeGraphFactory implements EditableFactory{
 
 	private static Map<String, String> vgLabels = new HashMap<>();
 
@@ -169,8 +169,8 @@ public class VisualGraphFactory extends TreeGraphFactory implements EditableFact
 		vgLabels.put(VisualEdge.class.getSimpleName(), VisualEdge.class.getName());
 	}
 
-	private static PropertyKeys nodeKeys = new PropertyKeys(vnx, vny, vnCategory, vnCollapsed, vnParentRef, vnVisible);
-	private static PropertyKeys edgeKeys = new PropertyKeys(veVisible);
+	private static PropertyKeys nodeKeys = new PropertyKeys(VisualNode.LOCATION_X, VisualNode.LOCATION_Y, VisualNode.SUB_TREE, VisualNode.IS_COLLAPSED, VisualNode.PARENT_REFERENCE, VisualNode.IS_VISIBLE);
+	private static PropertyKeys edgeKeys = new PropertyKeys(VisualEdge.IS_VISIBLE);
 
 	/**
 	 * @return {@link PropertyKeys} shared by all nodes of this graph.

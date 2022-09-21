@@ -62,7 +62,8 @@ public interface Specifications {
 	 *                        {@link VisualNode} being edited.
 	 * @param root            The root node of the specification archetype tree.
 	 * @param discoveredFiles Archetype files that have currently been searched.
-	 * @return The specification {@link TreeNode} (often null during recursive searches).
+	 * @return The specification {@link TreeNode} (often null during recursive
+	 *         searches).
 	 */
 	public SimpleDataTreeNode getSpecsOf(VisualNodeEditable editNode, TreeNode root, Set<String> discoveredFiles);
 
@@ -78,10 +79,6 @@ public interface Specifications {
 	 */
 	public SimpleDataTreeNode getSubSpecsOf(SimpleDataTreeNode baseSpecs, Class<? extends TreeNode> subClass);
 
-	/*
-	 * Specifications of all potential children of a parent with this label and
-	 * optional subClass.
-	 */
 	/**
 	 * Get a list of the specifications of all potential children of the parent
 	 * node.

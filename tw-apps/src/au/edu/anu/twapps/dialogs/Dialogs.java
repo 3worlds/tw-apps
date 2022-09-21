@@ -32,14 +32,13 @@ import java.io.File;
 import java.util.List;
 
 /**
- * Author Ian Davies
- *
- * Date 12 Dec. 2018
- * <p>
  * A static class to call dialogs for the assigned implementation.
  * </p>
  * This class should provide a method for every method defined in
- * {@link IDialogs} interface.
+ * {@link IDialogs} interface. Author Ian Davies
+ *
+ * @author Ian Davies - 12 Dec. 2018
+ * 
  */
 public class Dialogs {
 	private static IDialogs impl;
