@@ -74,7 +74,7 @@ public class ConfigGraph {
 	 * @param graph The configuration graph.
 	 */
 	public static void setGraph(TreeGraph<TreeGraphDataNode, ALEdge> graph) {
-		ConfigGraph.graph = Objects.requireNonNull(graph);
+		ConfigGraph.graph =graph;
 	}
 
 	/**
