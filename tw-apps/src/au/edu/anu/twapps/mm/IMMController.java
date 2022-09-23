@@ -31,6 +31,7 @@ package au.edu.anu.twapps.mm;
 
 import java.util.Collection;
 
+import au.edu.anu.omhtk.preferences.Preferenceable;
 import au.edu.anu.twapps.mm.layout.LayoutType;
 import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
 import au.edu.anu.twapps.mm.visualGraph.VisualNode;
@@ -44,7 +45,7 @@ import fr.cnrs.iees.graph.impl.TreeGraph;
  * of ModelMaker ({@link MMModel}).
  */
 // 
-public interface IMMController {
+public interface IMMController extends Preferenceable{
 
 	/**
 	 * Owners of the controller interface ({@link MMModel}) have a need to directly
@@ -161,16 +162,6 @@ public interface IMMController {
 	 * @param layoutGraph The new layout graph.
 	 */
 	public void onRollback(TreeGraph<VisualNode, VisualEdge> layoutGraph);
-
-	/**
-	 * Retrieve controller settings from a preferences system.
-	 */
-	public void getPreferences();
-
-	/**
-	 * Store controller settings to preferences system.
-	 */
-	public void putPreferences();
 
 	// TODO This should be paired with the same process for edge properties.
 	/**

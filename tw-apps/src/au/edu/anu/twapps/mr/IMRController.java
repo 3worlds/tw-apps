@@ -29,10 +29,10 @@
 
 package au.edu.anu.twapps.mr;
 
+import au.edu.anu.omhtk.preferences.Preferenceable;
 
 /**
  * @author Ian Davies 31 Dec 2019
  */
-public interface IMRController {
-
+public interface IMRController extends Preferenceable{
 }
