@@ -95,7 +95,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 /**
  * Author Ian Davies - 10 Dec. 2018
  */
-public class MMModel implements IMMModel{
+public class MMModel implements IMMModel {
 	/**
 	 * Graph containing layout information for the configuration graph.
 	 */
@@ -273,9 +273,11 @@ public class MMModel implements IMMModel{
 		for (String prjName : Project.getAllProjectNames())
 			result.newId(true, prjName);
 
-		for (Node n : graph.nodes()) { // check its not already there because project name is the same as root.id()
-			if (result.newId(false, n.id()).id().equals(n.id()))
-				result.newId(true, n.id());
+		for (Node n : graph.nodes()) {
+			if (!n.classId().equals(N_ROOT.label()))
+				// check its not already there because project name is the same as root.id()
+				if (result.newId(false, n.id()).id().equals(n.id()))
+					result.newId(true, n.id());
 		}
 		return result;
 	}
@@ -429,11 +431,11 @@ public class MMModel implements IMMModel{
 					"This file does not have a root node called '" + N_ROOT.label() + "'");
 			return;
 		}
+		
+		String proposedId = twRoot.id();
 
-		// (IdentityScope scope, String proposedId, String title, String header, String
-		// content)
 		IdentityScope prjScope = getProjectScope(importGraph);
-		String newId = getNewProjectName(prjScope, "Prj1", "Import '" + file.getName() + "'", "", "New project name:");
+		String newId = getNewProjectName(prjScope, proposedId, "Import '" + file.getName() + "'", "", "New project name:");
 		/** Still not to late. User cancelled */
 		if (newId == null)
 			return;
@@ -470,8 +472,9 @@ public class MMModel implements IMMModel{
 		 */
 		List<File> depFiles = getDependentJavaFiles(importGraph.root());
 		for (File outfile : depFiles) {
-			File infile = Dialogs.getOpenFile(new File(System.getProperty("user.home")), "Import "+outfile.getName(), new String("Java files,*.java"));
-			if (infile!=null) 
+			File infile = Dialogs.getOpenFile(new File(System.getProperty("user.home")), "Import " + outfile.getName(),
+					new String("Java files,*.java"));
+			if (infile != null)
 				FileUtilities.copyFileReplace(infile, outfile);
 		}
 
@@ -482,7 +485,8 @@ public class MMModel implements IMMModel{
 
 	/**
 	 * Searches the {@code importSnippet} property for any import statements that
-	 * begins with the key word 'code'. These entries indicate a dependency on user code.
+	 * begins with the key word 'code'. These entries indicate a dependency on user
+	 * code.
 	 * 
 	 * This method assumes the Project is open.
 	 * 
@@ -494,14 +498,14 @@ public class MMModel implements IMMModel{
 		List<File> result = new ArrayList<>();
 		// e.g. static code.utilities.Utilities3A.*
 		StringTable importTable = (StringTable) root.properties().getPropertyValue(P_MODEL_IMPORTSNIPPET.key());
-		for (int i=0;i<importTable.size();i++) {
+		for (int i = 0; i < importTable.size(); i++) {
 			String s = importTable.getByInt(i);
-			s = s.replace("static","");
-			s= s.replace(".*", "").trim();
+			s = s.replace("static", "");
+			s = s.replace(".*", "").trim();
 			if (s.startsWith(Project.CODE)) {
-				s=Project.LOCAL_JAVA_PKG+"."+s;
+				s = Project.LOCAL_JAVA_PKG + "." + s;
 				String[] parts = s.split("\\.");
-				parts[parts.length-1] += ".java";
+				parts[parts.length - 1] += ".java";
 				result.add(Project.makeFile(parts));
 			}
 		}
@@ -685,7 +689,8 @@ public class MMModel implements IMMModel{
 	private void fillClassParentMap(Map<String, List<StringTable>> classParentMap, TreeNode root,
 			Set<String> discoveredFiles) {
 		for (TreeNode childSpec : root.getChildren()) {
-			String key = (String) ((SimpleDataTreeNode) childSpec).properties().getPropertyValue(Archetypes.IS_OF_CLASS);
+			String key = (String) ((SimpleDataTreeNode) childSpec).properties()
+					.getPropertyValue(Archetypes.IS_OF_CLASS);
 			List<StringTable> value = classParentMap.get(key);
 			if (value == null)
 				value = new ArrayList<>();
@@ -877,5 +882,5 @@ public class MMModel implements IMMModel{
 	public LibraryTable[] getLibrary() {
 		return LibraryTable.values();
 	}
-	
+
 }
