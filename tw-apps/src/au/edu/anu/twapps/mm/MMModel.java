@@ -67,6 +67,7 @@ import au.edu.anu.twcore.graphState.GraphState;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.userProject.UserProjectLink;
 import fr.cnrs.iees.graph.Direction;
+import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Node;
 import fr.cnrs.iees.graph.Tree;
 import fr.cnrs.iees.graph.TreeNode;
@@ -257,27 +258,37 @@ public class MMModel implements IMMModel {
 	}
 
 	/**
-	 * Builds a local scope of project names and graph names to ensure the root id
+	 * Builds a local scope of project and graph element ids to ensure the root id
 	 * will be unique.
 	 * 
-	 * @param graph The graph for the proposed new project.
-	 * @return The scope entries of unique names.
+	 * @param graph The configuration graph for the proposed new project.
+	 * @return The scope entries of unique names in use.
 	 */
 	private static IdentityScope getProjectScope(TreeGraph<TreeGraphDataNode, ALEdge> graph) {
 		LocalScope result = new LocalScope("Projects");
 		/**
-		 * If a project is open, the project name is the same as the root node name. If
-		 * so, this would force an increment in the name meaning this function will inc
-		 * by 2 instead of 1. Well this is no good. Prj1 always produces Prj1 for ever.
+		 * Collect all project names (i.e the "name" part of project_<name>_date)
 		 */
 		for (String prjName : Project.getAllProjectNames())
 			result.newId(true, prjName);
 
+		/**
+		 * Add the ids of all elements except the root id - preserve this as a possible
+		 * proposed id.
+		 */
 		for (Node n : graph.nodes()) {
 			if (!n.classId().equals(N_ROOT.label()))
-				// check its not already there because project name is the same as root.id()
+				/** check its not already there so we don't accidently add incremented ids! */
 				if (result.newId(false, n.id()).id().equals(n.id()))
 					result.newId(true, n.id());
+			/**
+			 * add outEdge ids! E.g. we don't want a project called "Trk1"!!(Caps are not
+			 * enforced)
+			 */
+			for (Edge e : n.edges(Direction.OUT)) {
+				if (result.newId(false, e.id()).id().equals(e.id()))
+					result.newId(true, e.id());
+			}
 		}
 		return result;
 	}
@@ -431,11 +442,12 @@ public class MMModel implements IMMModel {
 					"This file does not have a root node called '" + N_ROOT.label() + "'");
 			return;
 		}
-		
+
 		String proposedId = twRoot.id();
 
 		IdentityScope prjScope = getProjectScope(importGraph);
-		String newId = getNewProjectName(prjScope, proposedId, "Import '" + file.getName() + "'", "", "New project name:");
+		String newId = getNewProjectName(prjScope, proposedId, "Import '" + file.getName() + "'", "",
+				"New project name:");
 		/** Still not to late. User cancelled */
 		if (newId == null)
 			return;
