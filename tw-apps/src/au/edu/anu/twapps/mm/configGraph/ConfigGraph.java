@@ -74,7 +74,14 @@ public class ConfigGraph {
 	 * @param graph The configuration graph.
 	 */
 	public static void setGraph(TreeGraph<TreeGraphDataNode, ALEdge> graph) {
-		ConfigGraph.graph =graph;
+		ConfigGraph.graph =Objects.requireNonNull(graph);
+	}
+	
+	/**
+	 * Set the graph to null when closing a project
+	 */
+	public static void close() {
+		graph = null;
 	}
 
 	/**
@@ -83,7 +90,7 @@ public class ConfigGraph {
 	 * @return The configuration graph.
 	 */
 	public static TreeGraph<TreeGraphDataNode, ALEdge> getGraph() {
-		return graph;
+		return Objects.requireNonNull(graph);
 	}
 
 	/**

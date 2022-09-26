@@ -515,7 +515,7 @@ public class MMModel implements IMMModel{
 	private void onProjectClosing() {
 		controller.onProjectClosing();
 		ConfigGraph.terminateChecks();
-		ConfigGraph.setGraph(null);
+		ConfigGraph.close();
 		visualGraph = null;
 		Caretaker.finalise();
 	}
