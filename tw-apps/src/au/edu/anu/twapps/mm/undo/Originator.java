@@ -30,6 +30,9 @@
 package au.edu.anu.twapps.mm.undo;
 
 /**
+ * Implemented by any class that wishes to record the state of the system before
+ * an edit operation.
+ * 
  * @author Ian Davies 1 Jun 2020
  */
 //Undo/Redo pattern

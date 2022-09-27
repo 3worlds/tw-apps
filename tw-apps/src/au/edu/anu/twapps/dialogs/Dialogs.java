@@ -35,7 +35,7 @@ import java.util.List;
  * A static class to call dialogs for the assigned implementation.
  * </p>
  * This class should provide a method for every method defined in
- * {@link IDialogs} interface. Author Ian Davies
+ * {@link IDialogs} interface.
  *
  * @author Ian Davies - 12 Dec. 2018
  * 

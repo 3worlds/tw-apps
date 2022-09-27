@@ -52,9 +52,9 @@ import fr.cnrs.iees.twcore.generators.ProjectJarGenerator;
 import au.edu.anu.twcore.project.Project;
 
 /**
+ * A static singleton class to manage the configuration graph
+ * 
  * @author Ian Davies - 13 Aug 2019
- *         <p>
- *         A static global class to manage the configuration graph
  */
 public class ConfigGraph {
 	/**
@@ -74,9 +74,9 @@ public class ConfigGraph {
 	 * @param graph The configuration graph.
 	 */
 	public static void setGraph(TreeGraph<TreeGraphDataNode, ALEdge> graph) {
-		ConfigGraph.graph =Objects.requireNonNull(graph);
+		ConfigGraph.graph = Objects.requireNonNull(graph);
 	}
-	
+
 	/**
 	 * Set the graph to null when closing a project
 	 */

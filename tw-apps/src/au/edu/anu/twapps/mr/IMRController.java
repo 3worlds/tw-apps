@@ -32,7 +32,10 @@ package au.edu.anu.twapps.mr;
 import au.edu.anu.omhtk.preferences.Preferenceable;
 
 /**
+ * Extension of IMRController to allow control settings to be stored are
+ * retrieved in a preference system.
+ * 
  * @author Ian Davies 31 Dec 2019
  */
-public interface IMRController extends Preferenceable{
+public interface IMRController extends Preferenceable {
 }

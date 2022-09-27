@@ -66,14 +66,16 @@ import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 /**
- * Author Ian Davies - 10 Jan. 2019
+ * Wrapper class for managing the configuration archetype.
+ * 
+ * @author Ian Davies - 10 Jan. 2019
  */
 public class TwSpecifications implements //
-		Specifications{
+		Specifications {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public SimpleDataTreeNode getSpecsOf(VisualNodeEditable editNode, TreeNode root, Set<String> discoveredFiles){
+	public SimpleDataTreeNode getSpecsOf(VisualNodeEditable editNode, TreeNode root, Set<String> discoveredFiles) {
 		for (TreeNode childSpec : root.getChildren()) {
 			if (isOfClass((SimpleDataTreeNode) childSpec, editNode.visualNode().configNode().classId())) {
 				StringTable parentsSpecTable = (StringTable) ((SimpleDataTreeNode) childSpec).properties()
@@ -188,8 +190,8 @@ public class TwSpecifications implements //
 		List<SimpleDataTreeNode> result = (List<SimpleDataTreeNode>) get(baseSpec.getChildren(),
 				selectZeroOrMany(hasTheLabel(Archetypes.HAS_EDGE)));
 		if (subSpec != null)
-			result.addAll(
-					(List<SimpleDataTreeNode>) get(subSpec.getChildren(), selectZeroOrMany(hasTheLabel(Archetypes.HAS_EDGE))));
+			result.addAll((List<SimpleDataTreeNode>) get(subSpec.getChildren(),
+					selectZeroOrMany(hasTheLabel(Archetypes.HAS_EDGE))));
 		return result;
 	}
 
@@ -335,7 +337,8 @@ public class TwSpecifications implements //
 
 	private SimpleDataTreeNode getConstraint(SimpleDataTreeNode spec, String constraintClass) {
 		return (SimpleDataTreeNode) get(spec.getChildren(),
-				selectZeroOrOne(andQuery(hasTheLabel(Archetypes.MUST_SATISFY_QUERY), hasProperty(Archetypes.CLASS_NAME, constraintClass))));
+				selectZeroOrOne(andQuery(hasTheLabel(Archetypes.MUST_SATISFY_QUERY),
+						hasProperty(Archetypes.CLASS_NAME, constraintClass))));
 	}
 
 	private boolean isOfClass(SimpleDataTreeNode child, String label) {
@@ -350,8 +353,9 @@ public class TwSpecifications implements //
 		if (spec == null)
 			return result;
 		for (Class<? extends Queryable> query : queries) {
-			result.addAll((List<SimpleDataTreeNode>) get(spec.getChildren(), selectZeroOrMany(
-					andQuery(hasTheLabel(Archetypes.MUST_SATISFY_QUERY), hasProperty(Archetypes.CLASS_NAME, query.getName())))));
+			result.addAll((List<SimpleDataTreeNode>) get(spec.getChildren(),
+					selectZeroOrMany(andQuery(hasTheLabel(Archetypes.MUST_SATISFY_QUERY),
+							hasProperty(Archetypes.CLASS_NAME, query.getName())))));
 		}
 		return result;
 	}

@@ -30,9 +30,9 @@
 package au.edu.anu.twapps.mm.undo;
 
 /**
+ * Interface for classes that record the state of an application.
+ * 
  * @author Ian Davies 1 Jun 2020
- *         <p>
- *         Interface for classes that record the state of an application.
  */
 
 public interface IMemento {

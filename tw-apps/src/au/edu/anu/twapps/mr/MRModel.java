@@ -41,19 +41,22 @@ import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
 
 /**
+ * Implementation of {@IMRModel} to manage model logic for GUI implementation
+ * independent tasks.
+ * 
  * @author Ian Davies date 31 Dec 2019
  */
 public class MRModel implements IMRModel {
 	private TreeGraph<TreeGraphDataNode, ALEdge> graph;
-	//private IMRController controller; // TODO Not used
+	// private IMRController controller; // TODO Not used
 	private List<File> ISFiles;
 	private int currentIdx;
 
 	/**
 	 * TODO
 	 */
-	public MRModel(/*IMRController controller*/) {
-		//this.controller = controller;
+	public MRModel(/* IMRController controller */) {
+		// this.controller = controller;
 	}
 
 	@Override

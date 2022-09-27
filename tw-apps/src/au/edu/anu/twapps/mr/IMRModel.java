@@ -41,12 +41,12 @@ import au.edu.anu.omhtk.preferences.Preferences;
 //The controller HAS one of these
 //ModelRunner IS on of these: ModelRunner implements
 /**
- * @author Ian Davies 31 Dec 2019
  * 
- *         <p>
- *         Interface implemented by {@link MRModel} is part of the <a href=
- *         "https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller">Model-View-Controller</a>
- *         pattern.
+ * Interface implemented by {@link MRModel} is part of the <a href=
+ * "https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller">Model-View-Controller</a>
+ * pattern.
+ * 
+ * @author Ian Davies 31 Dec 2019
  * 
  */
 public interface IMRModel {
@@ -104,6 +104,7 @@ public interface IMRModel {
 
 	/**
 	 * Getter of the configuration graph.
+	 * 
 	 * @return Configuration graph.
 	 */
 	public TreeGraph<TreeGraphDataNode, ALEdge> getGraph();

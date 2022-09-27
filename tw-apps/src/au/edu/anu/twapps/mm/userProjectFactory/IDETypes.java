@@ -30,12 +30,10 @@
 package au.edu.anu.twapps.mm.userProjectFactory;
 
 /**
- * @author Ian Davies - 23 Aug 2019
- */
-
-/**
  * These enums define the IDE support for user projects: location of java, class
  * and library files.
+ * 
+ * @author Ian Davies - 23 Aug 2019
  */
 public enum IDETypes {
 	/**

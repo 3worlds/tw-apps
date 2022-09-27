@@ -26,4 +26,13 @@
  *  along with TW-APPS.                                                   *
  *  If not, see https://www.gnu.org/licenses/gpl.html                     *
   **************************************************************************/
+/**
+ * Configuration graph editing package.
+ * <p>
+ * <img src="{@docRoot}/../doc/images/GSE.png" width="700" alt=
+ * "GSE package"/>
+ * </p>
+ * @author Ian Davies - 10 Jan. 2019
+ */
 package au.edu.anu.twapps.mm.graphEditor;
+//TODO: UML Here

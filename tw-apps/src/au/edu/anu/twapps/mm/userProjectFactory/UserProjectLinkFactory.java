@@ -37,9 +37,10 @@ import au.edu.anu.twcore.userProject.UserProjectLink;
 import au.edu.anu.twcore.project.Project;
 
 /**
- * Author Ian Davies - 23 Aug 2019
- * <p>
- * Factory to initialize a link between an IDE and a 3Worlds {@link Project}.
+ * Factory to initialize a link between an IDE java project and a 3Worlds
+ * {@link Project}.
+ * 
+ * @author Ian Davies - 23 Aug 2019
  */
 public class UserProjectLinkFactory {
 	private UserProjectLinkFactory() {

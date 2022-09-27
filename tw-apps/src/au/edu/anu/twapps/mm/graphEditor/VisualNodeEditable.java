@@ -37,11 +37,11 @@ import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
 
 /**
- * Author Ian Davies - 10 Jan. 2019
  * 
- * <p>
- * Interface to isolate the currently selected node from components of the graph
- * structure editor.
+ * Interface to provide a wrapper class to manage the currently selected node
+ * for editing for the graph structure editor.
+ * 
+ * @author Ian Davies - 10 Jan. 2019
  */
 public interface VisualNodeEditable {
 

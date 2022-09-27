@@ -43,10 +43,10 @@ import au.edu.anu.twcore.archetype.tw.OutNodeXorQuery;
 import au.edu.anu.twcore.archetype.tw.RequirePropertyQuery;
 
 /**
- * Author Ian Davies -10 Jan. 2019
- * <p>
  * This interface is the contract between the 3Worlds archetype and what a
  * configuration graph builder (i.e. ModelMaker) requires.
+ * 
+ * @author Ian Davies -10 Jan. 2019
  */
 public interface Specifications {
 

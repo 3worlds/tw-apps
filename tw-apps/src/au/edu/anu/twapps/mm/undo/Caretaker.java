@@ -33,10 +33,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
+ * A static class to manage the list of {@link IMemento} and the index of the
+ * current state.
+ * 
  * @author Ian Davies - 1 Jun 2020
- *         <p>
- *         A static class to manage the list of {@link IMemento} and the index
- *         of the current state.
  */
 
 public class Caretaker {

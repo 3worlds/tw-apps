@@ -56,10 +56,9 @@ import fr.ens.biologie.generic.utils.Duple;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
 /**
- * <p>
  * Visualization of configuration graph nodes constructed by the
  * {@link VisualGraphFactory}.
- * <p>
+ * 
  * @author Ian Davies - 11 Jul 2019
  */
 public class VisualNode extends TreeGraphDataNode implements SaveableAsText {
@@ -72,8 +71,7 @@ public class VisualNode extends TreeGraphDataNode implements SaveableAsText {
 	 */
 	final static String LOCATION_Y = "y";
 	/**
-	 * the sub-tree the node belongs to (for purposes of colour
-	 * schemes).
+	 * the sub-tree the node belongs to (for purposes of colour schemes).
 	 */
 	final static String SUB_TREE = "category";
 	/**
@@ -88,7 +86,6 @@ public class VisualNode extends TreeGraphDataNode implements SaveableAsText {
 	 * Node is visible.
 	 */
 	final static String IS_VISIBLE = "visible";
-
 
 	private TreeGraphDataNode configNode;
 	/**
@@ -586,7 +583,7 @@ public class VisualNode extends TreeGraphDataNode implements SaveableAsText {
 	 * @param vEnd  The end node.
 	 * @return The new {@link VisualEdge}
 	 * 
-	 * @throws If visual and configuration Id's don't match.
+	 * Throws {@link IllegalStateException} if visual and configuration Id's don't match.
 	 */
 	public VisualEdge newEdge(String id, String label, VisualNode vEnd) {
 		VisualGraphFactory vf = (VisualGraphFactory) factory();

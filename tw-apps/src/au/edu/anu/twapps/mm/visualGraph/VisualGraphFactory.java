@@ -48,13 +48,12 @@ import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.identity.impl.LocalScope;
 
 /**
+ * Factory to construct nodes and edges for the layout graph. All elements use
+ * the {@link SharedPropertyListImpl} as all property keys are the same.
+ * 
  * @author Ian Davies - 11 Jul 2019
- *         <p>
- *         Factory to construct nodes and edges for the layout graph. All
- *         elements use the {@link SharedPropertyListImpl} since all property
- *         keys are the same.
  */
-public class VisualGraphFactory extends TreeGraphFactory implements EditableFactory{
+public class VisualGraphFactory extends TreeGraphFactory implements EditableFactory {
 
 	private static Map<String, String> vgLabels = new HashMap<>();
 
@@ -169,7 +168,8 @@ public class VisualGraphFactory extends TreeGraphFactory implements EditableFact
 		vgLabels.put(VisualEdge.class.getSimpleName(), VisualEdge.class.getName());
 	}
 
-	private static PropertyKeys nodeKeys = new PropertyKeys(VisualNode.LOCATION_X, VisualNode.LOCATION_Y, VisualNode.SUB_TREE, VisualNode.IS_COLLAPSED, VisualNode.PARENT_REFERENCE, VisualNode.IS_VISIBLE);
+	private static PropertyKeys nodeKeys = new PropertyKeys(VisualNode.LOCATION_X, VisualNode.LOCATION_Y,
+			VisualNode.SUB_TREE, VisualNode.IS_COLLAPSED, VisualNode.PARENT_REFERENCE, VisualNode.IS_VISIBLE);
 	private static PropertyKeys edgeKeys = new PropertyKeys(VisualEdge.IS_VISIBLE);
 
 	/**

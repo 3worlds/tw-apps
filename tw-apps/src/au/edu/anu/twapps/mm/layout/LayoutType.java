@@ -29,9 +29,10 @@
 package au.edu.anu.twapps.mm.layout;
 
 /**
- * Author Ian Davies - 1 May 2020
  * 
  * All layouts currently implemented.
+ * 
+ * @author Ian Davies - 1 May 2020
  */
 public enum LayoutType {
 	/**

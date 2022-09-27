@@ -118,12 +118,11 @@ import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
 
 /**
- * Author Ian Davies - 10 Jan. 2019
- * <p>
  * Adapter class to perform the work of the {@link StructureEditable} interface.
+ * 
+ * @author Ian Davies - 10 Jan. 2019
  */
-public abstract class StructureEditorAdapter
-		implements StructureEditable{
+public abstract class StructureEditorAdapter implements StructureEditable {
 	private static Logger log = Logging.getLogger(StructureEditorAdapter.class);
 
 	/**
@@ -164,6 +163,7 @@ public abstract class StructureEditorAdapter
 
 	/**
 	 * Constructor
+	 * 
 	 * @param selectedNode The selected node for editing {@link VisualNodeEditable}.
 	 * @param gv           Interface to the {@link IGraphVisualiser}.
 	 * @param controller   The model controller {@link IMMController}.
@@ -176,9 +176,9 @@ public abstract class StructureEditorAdapter
 		this.editableNode = selectedNode;
 		Set<String> discoveredFile = new HashSet<>();
 		this.baseSpec = specifications.getSpecsOf(editableNode, TWA.getRoot(), discoveredFile);
-		if (baseSpec ==null)
-			throw new NullPointerException(
-					"Specification for '" + editableNode.visualNode().configNode().toShortString() + "' was not found.");
+		if (baseSpec == null)
+			throw new NullPointerException("Specification for '"
+					+ editableNode.visualNode().configNode().toShortString() + "' was not found.");
 
 		this.subClassSpec = specifications.getSubSpecsOf(baseSpec, editableNode.getSubClass());
 		this.gvisualiser = gv;
@@ -210,7 +210,7 @@ public abstract class StructureEditorAdapter
 				}
 			}
 		}
-		result.sort((n1,n2)-> n1.id().compareToIgnoreCase(n2.id()));
+		result.sort((n1, n2) -> n1.id().compareToIgnoreCase(n2.id()));
 //		Collections.sort(result, new Comparator<Node>() {
 //			@Override
 //			public int compare(Node o1, Node o2) {
@@ -455,7 +455,7 @@ public abstract class StructureEditorAdapter
 					result.add(root);
 			}
 		}
-		result.sort((n1,n2)-> n1.id().compareToIgnoreCase(n2.id()));
+		result.sort((n1, n2) -> n1.id().compareToIgnoreCase(n2.id()));
 //		Collections.sort(result, new Comparator<Node>() {
 //			@Override
 //			public int compare(Node o1, Node o2) {

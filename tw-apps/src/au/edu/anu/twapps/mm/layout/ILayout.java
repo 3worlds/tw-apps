@@ -33,7 +33,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.Random;
 
 /**
- * Author Ian Davies - - 10 Jan. 2019
+ * @author Ian Davies - 10 Jan. 2019
  */
 public interface ILayout {
 	/**

@@ -49,12 +49,13 @@ import fr.cnrs.iees.identity.impl.LocalScope;
 import fr.cnrs.iees.io.GraphFileFormats;
 import fr.ens.biologie.generic.utils.Duple;
 import fr.ens.biologie.generic.utils.Tuple;
+import au.edu.anu.twapps.mm.MMModel;
 
 /**
+ * Implementation of {@link IMemento} for use by {@link MMModel}.
+ * 
  * @author Ian Davies 1 Jun 2020
  */
-//Undo/Redo pattern: ModelMaker specific memento
-
 public class MMMemento implements IMemento {
 	private final static String configName = "__stateA";
 	private final static String layoutName = "__stateB";

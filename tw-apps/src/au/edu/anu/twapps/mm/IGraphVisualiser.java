@@ -36,10 +36,11 @@ import fr.cnrs.iees.graph.impl.TreeGraph;
 import au.edu.anu.twcore.root.World;
 
 /**
- * Author Ian Davies - 9 Aug 2019
  * 
  * Interface for the "view" of <a href=
  * "https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller">Model-View-Controller</a>
+ * 
+ * @author Ian Davies - 9 Aug 2019
  */
 public interface IGraphVisualiser {
 	/**
@@ -184,9 +185,11 @@ public interface IGraphVisualiser {
 
 	/**
 	 * Update the view when a new root is chosen for the layout. This method should
-	 * not re-apply the layout. If the root is null the true root of the graph is used ({@link World}).
+	 * not re-apply the layout. If the root is null the true root of the graph is
+	 * used ({@link World}).
 	 * 
-	 * @param root {@link VisualNode} that is now the root of the layout (can be null).
+	 * @param root {@link VisualNode} that is now the root of the layout (can be
+	 *             null).
 	 */
 	public void setLayoutRoot(VisualNode root);
 }

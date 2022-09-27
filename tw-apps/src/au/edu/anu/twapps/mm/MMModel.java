@@ -94,7 +94,7 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 /**
- * Author Ian Davies - 10 Dec. 2018
+ * @author Ian Davies - 10 Dec. 2018
  */
 public class MMModel implements IMMModel {
 	/**
@@ -124,9 +124,8 @@ public class MMModel implements IMMModel {
 	private static Logger log = Logging.getLogger(MMModel.class);
 
 	/**
-	 * Associate a controller with this model (<a href=
+	 * Constructor associates a controller with this model (<a href=
 	 * "https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller">Model-View-Controller</a>).
-	 * The only controller implementation at this time is a Javafx one.
 	 * 
 	 * @param controller The controller interface
 	 */

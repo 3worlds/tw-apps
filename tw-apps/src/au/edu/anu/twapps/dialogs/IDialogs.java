@@ -35,13 +35,14 @@ import java.util.List;
 //import javafx.stage.FileChooser.ExtensionFilter;
 
 /**
- * Author Ian Davies - 11 Dec. 2018
  * <p>
  * Interface for implementation-independent dialogs
+ * 
+ * @author Ian Davies - 11 Dec. 2018
  */
 public interface IDialogs {
 	/**
-	 * Present dialog to inform user of an error condition.
+	 * Show dialog to inform user of an error condition.
 	 * 
 	 * @param title   Dialog title
 	 * @param header  Dialog header (can be null)

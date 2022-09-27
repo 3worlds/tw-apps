@@ -31,10 +31,10 @@ package au.edu.anu.twapps.mm.visualGraph;
 import fr.cnrs.iees.identity.Identity;
 
 /**
- * @author Ian Davies - 1 Jul 2020
- *         <p>
- *         Display options for layout graph elements (nodes/edge) names.
+ * Display options for layout graph elements (nodes/edge) labels and ids.
  * 
+ * @author Ian Davies - 1 Jul 2020
+ *
  */
 public enum ElementDisplayText {
 	/**

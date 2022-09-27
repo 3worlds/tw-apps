@@ -38,14 +38,13 @@ import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 
 /**
- * Author Ian Davies - 17 Dec. 2018
- * <p>
  * Interface for the controller (cf: <a href=
  * "https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller">MVC</a>)
  * of ModelMaker ({@link MMModel}).
+ * 
+ * @author Ian Davies - 17 Dec. 2018
  */
-// 
-public interface IMMController extends Preferenceable{
+public interface IMMController extends Preferenceable {
 
 	/**
 	 * Owners of the controller interface ({@link MMModel}) have a need to directly

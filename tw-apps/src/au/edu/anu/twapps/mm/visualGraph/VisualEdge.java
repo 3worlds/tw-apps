@@ -41,13 +41,12 @@ import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
 import fr.ens.biologie.generic.utils.Duple;
 
 /**
- * Author Ian Davies - 11 Jul 2019
- * <p>
  * Visualization of configuration graph edges constructed by the
  * {@link VisualGraphFactory}.
  * 
+ * @author Ian Davies - 11 Jul 2019
  */
-public class VisualEdge extends ALDataEdge  {
+public class VisualEdge extends ALDataEdge {
 	/**
 	 * Edge is visible.
 	 */
@@ -169,7 +168,7 @@ public class VisualEdge extends ALDataEdge  {
 		return new Duple<Object, Object>(veSymbol, veArrowhead);
 	}
 
-	private void setSymbol(Object line, Object arrowhead){
+	private void setSymbol(Object line, Object arrowhead) {
 		if (veSymbol != null)
 			throw new IllegalStateException("Attempt to overwrite edge line " + id());
 		veSymbol = line;

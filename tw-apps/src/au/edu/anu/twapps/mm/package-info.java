@@ -11,6 +11,6 @@
  * 
  * <p>
  * 
- * @author Ian Davies - - 10 Jan. 2019
+ * @author Ian Davies - 10 Jan. 2019
  */
 package au.edu.anu.twapps.mm;
