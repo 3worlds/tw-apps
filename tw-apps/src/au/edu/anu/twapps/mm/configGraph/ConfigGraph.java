@@ -142,10 +142,10 @@ public class ConfigGraph {
 				}
 
 				if (!ErrorMessageManager.haveErrors()) {
-					File file = new File(Project.USER_ROOT_TW_ROOT + File.separator + Project.TW_DEP_JAR);
+					File file = new File(Project.TW_HOME + File.separator + Project.TW_DEP_JAR);
 					if (!file.exists())
 						ErrorMessageManager.dispatch(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_RESOURCE_MISSING,
-								Project.TW_DEP_JAR, Project.USER_ROOT_TW_ROOT));
+								Project.TW_DEP_JAR, Project.TW_HOME));
 
 				}
 				if (!ErrorMessageManager.haveErrors() && GraphState.changed())
