@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Random;
 
 import au.edu.anu.omhtk.rng.Pcg32;
-import au.edu.anu.twapps.mm.visualGraph.VisualNode;
+import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
 import au.edu.anu.twcore.root.World;
 
 
@@ -56,7 +56,7 @@ public class RT2Layout implements ILayout {
 	private class Factory implements ITreeVertexFactory {
 
 		@Override
-		public TreeVertexAdapter makeVertex(TreeVertexAdapter parent, VisualNode node) {
+		public TreeVertexAdapter makeVertex(TreeVertexAdapter parent, LayoutNode node) {
 
 			return new RT2Vertex(parent, node);
 		}
@@ -67,13 +67,13 @@ public class RT2Layout implements ILayout {
 	private List<TreeVertexAdapter> isolated;
 
 	/**
-	 * @param rootNode                {@link VisualNode} to use as the layout root
+	 * @param rootNode                {@link LayoutNode} to use as the layout root
 	 *                                (need not be {@link World} node).
 	 * @param includeParentChildEdges Use parent-child relationships.
 	 * @param includeCrossLinksEdges  Show cross-link edges
 	 * @param sideline                Move isolated vertices to one side.
 	 */
-	public RT2Layout(VisualNode rootNode, boolean includeParentChildEdges, boolean includeCrossLinksEdges, boolean sideline) {
+	public RT2Layout(LayoutNode rootNode, boolean includeParentChildEdges, boolean includeCrossLinksEdges, boolean sideline) {
 		root = new RT2Vertex(null, rootNode);
 		TreeVertexAdapter.buildSpanningTree(root, new Factory());
 		isolated = new ArrayList<>();

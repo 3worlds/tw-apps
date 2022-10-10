@@ -29,7 +29,7 @@
 
 package au.edu.anu.twapps.mm.layout;
 
-import au.edu.anu.twapps.mm.visualGraph.VisualNode;
+import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
 
 /**
  * @author Ian Davies - 1 May 2020
@@ -39,11 +39,11 @@ import au.edu.anu.twapps.mm.visualGraph.VisualNode;
  */
 public interface ITreeVertexFactory {
 	/**
-	 * Make a tree vertex to wrap a {@link VisualNode}
+	 * Make a tree vertex to wrap a {@link LayoutNode}
 	 * 
 	 * @param parent the parent vertex.
 	 * @param node   the node to be wrapped
 	 * @return The constructed Vertex
 	 */
-	public TreeVertexAdapter makeVertex(TreeVertexAdapter parent, VisualNode node);
+	public TreeVertexAdapter makeVertex(TreeVertexAdapter parent, LayoutNode node);
 }

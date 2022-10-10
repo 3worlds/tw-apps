@@ -33,25 +33,25 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Random;
 
-import au.edu.anu.twapps.mm.visualGraph.VisualNode;
+import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
 
 /**
  * @author Ian Davies - 30 Apr 2020
  *         <p>
- *         Interface for wrappers of {@link VisualNode} for the purpose of graph
+ *         Interface for wrappers of {@link LayoutNode} for the purpose of graph
  *         layout algorithms.
  */
 public interface IVertex {
 
 	/**
-	 * Get the wrapped {@link VisualNode}
+	 * Get the wrapped {@link LayoutNode}
 	 * 
 	 * @return the wrapped node.
 	 */
-	public VisualNode getNode();
+	public LayoutNode getNode();
 
 	/**
-	 * Set the location of the underlying {@link VisualNode}
+	 * Set the location of the underlying {@link LayoutNode}
 	 * 
 	 * @param x x dimension
 	 * @param y y dimension.
@@ -80,7 +80,7 @@ public interface IVertex {
 	public String id();
 
 	/**
-	 * Randomly offset the location of the {@link VisualNode}.
+	 * Randomly offset the location of the {@link LayoutNode}.
 	 * 
 	 * @param f   Jitter fraction.
 	 * @param rnd Random number generator.

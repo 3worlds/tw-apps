@@ -27,7 +27,7 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
   **************************************************************************/
 
-package au.edu.anu.twapps.mm.visualGraph;
+package au.edu.anu.twapps.mm.layoutGraph;
 
 import java.util.Collection;
 import java.util.List;
@@ -57,11 +57,11 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 
 /**
  * Visualization of configuration graph nodes constructed by the
- * {@link VisualGraphFactory}.
+ * {@link LayoutGraphFactory}.
  * 
  * @author Ian Davies - 11 Jul 2019
  */
-public class VisualNode extends TreeGraphDataNode implements SaveableAsText {
+public class LayoutNode extends TreeGraphDataNode implements SaveableAsText {
 	/**
 	 * x location of node in unit space ]0.0..1.0[
 	 */
@@ -101,26 +101,26 @@ public class VisualNode extends TreeGraphDataNode implements SaveableAsText {
 	/**
 	 * @param id       The unique {@link Identity} of this node.
 	 * @param props    {@link SimplePropertyList} of node properties.
-	 * @param gfactory The graph factory ({@link VisualGraphFactory})
+	 * @param gfactory The graph factory ({@link LayoutGraphFactory})
 	 */
-	public VisualNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
+	public LayoutNode(Identity id, SimplePropertyList props, GraphFactory gfactory) {
 		super(id, props, gfactory);
 	}
 
 	/**
 	 * @param id      The unique {@link Identity} of this node.
-	 * @param factory The graph factory ({@link VisualGraphFactory})
+	 * @param factory The graph factory ({@link LayoutGraphFactory})
 	 */
-	public VisualNode(Identity id, GraphFactory factory) {
-		super(id, new SharedPropertyListImpl(VisualGraphFactory.getNodeKeys()), factory);
+	public LayoutNode(Identity id, GraphFactory factory) {
+		super(id, new SharedPropertyListImpl(LayoutGraphFactory.getNodeKeys()), factory);
 	}
 
 	/**
 	 * @param id      The unique {@link Identity} of this node.
 	 * @param props   Node property list.
-	 * @param factory The graph factory ({@link VisualGraphFactory})
+	 * @param factory The graph factory ({@link LayoutGraphFactory})
 	 */
-	public VisualNode(Identity id, ReadOnlyPropertyList props, VisualGraphFactory factory) {
+	public LayoutNode(Identity id, ReadOnlyPropertyList props, LayoutGraphFactory factory) {
 		super(id, (SimplePropertyList) props, factory);
 	}
 
@@ -182,13 +182,13 @@ public class VisualNode extends TreeGraphDataNode implements SaveableAsText {
 	// helper methods
 	@SuppressWarnings("unchecked")
 	@Override
-	public Collection<VisualNode> getChildren() {
-		return (Collection<VisualNode>) super.getChildren();
+	public Collection<LayoutNode> getChildren() {
+		return (Collection<LayoutNode>) super.getChildren();
 	}
 
 	@Override
-	public VisualNode getParent() {
-		return (VisualNode) super.getParent();
+	public LayoutNode getParent() {
+		return (LayoutNode) super.getParent();
 	}
 
 	/**
@@ -218,7 +218,7 @@ public class VisualNode extends TreeGraphDataNode implements SaveableAsText {
 	 * 
 	 * @param parent Parent whose category is to be inherited.
 	 */
-	private void setCategory(VisualNode parent) {
+	private void setCategory(LayoutNode parent) {
 		if (parent != null) {
 			if (ConfigSubtreeRootLabels.contains(parent.configNode.classId()))
 				setCategory(parent.configNode.classId());
@@ -423,7 +423,7 @@ public class VisualNode extends TreeGraphDataNode implements SaveableAsText {
 	public boolean hasCollaspedChild() {
 		if (isCollapsed())
 			return false;
-		for (VisualNode n : getChildren()) {
+		for (LayoutNode n : getChildren()) {
 			if (n.isCollapsed())
 				return true;
 		}
@@ -437,7 +437,7 @@ public class VisualNode extends TreeGraphDataNode implements SaveableAsText {
 	public boolean hasUncollapsedChildren() {
 		if (isCollapsed())
 			return false;
-		for (VisualNode n : getChildren()) {
+		for (LayoutNode n : getChildren()) {
 			if (!n.isCollapsed())
 				return true;
 		}
@@ -529,7 +529,7 @@ public class VisualNode extends TreeGraphDataNode implements SaveableAsText {
 			if (cNode.id().equals(id())) {
 				configNode = cNode;
 				for (ALEdge edge : edges(Direction.OUT)) {
-					VisualEdge vEdge = (VisualEdge) edge;
+					LayoutEdge vEdge = (LayoutEdge) edge;
 					vEdge.shadowElements(configNode);
 				}
 				return;
@@ -557,17 +557,17 @@ public class VisualNode extends TreeGraphDataNode implements SaveableAsText {
 	 * @param label      The child label (aka classId).
 	 * @param proposedId The proposed id. The given value may be changed to ensure
 	 *                   uniqueness.
-	 * @return The newly constructed {@link VisualNode}.
+	 * @return The newly constructed {@link LayoutNode}.
 	 * 
 	 * @throws IllegalStateException if visual and configuration node Id's don't
 	 *                               match.
 	 */
-	public VisualNode newChild(String label, String proposedId) {
+	public LayoutNode newChild(String label, String proposedId) {
 		NodeFactory cf = configNode.factory();
 		TreeGraphDataNode cChild = (TreeGraphDataNode) cf.makeNode(cf.nodeClass(label), proposedId);
 		cChild.connectParent(configNode);
 		proposedId = cChild.id();
-		VisualNode vChild = (VisualNode) factory().makeNode(proposedId);
+		LayoutNode vChild = (LayoutNode) factory().makeNode(proposedId);
 		vChild.connectParent(this);
 		vChild.setConfigNode(cChild);
 		if (!cChild.id().equals(vChild.id()))
@@ -581,13 +581,13 @@ public class VisualNode extends TreeGraphDataNode implements SaveableAsText {
 	 * @param id    Unique name of the edge
 	 * @param label The edge label (aka classId)
 	 * @param vEnd  The end node.
-	 * @return The new {@link VisualEdge}
+	 * @return The new {@link LayoutEdge}
 	 * 
 	 * Throws {@link IllegalStateException} if visual and configuration Id's don't match.
 	 */
-	public VisualEdge newEdge(String id, String label, VisualNode vEnd) {
-		VisualGraphFactory vf = (VisualGraphFactory) factory();
-		VisualEdge result = vf.makeEdge(this, vEnd, id);
+	public LayoutEdge newEdge(String id, String label, LayoutNode vEnd) {
+		LayoutGraphFactory vf = (LayoutGraphFactory) factory();
+		LayoutEdge result = vf.makeEdge(this, vEnd, id);
 		id = result.id();
 
 		TreeGraphNode cEnd = vEnd.configNode;
@@ -605,7 +605,7 @@ public class VisualNode extends TreeGraphDataNode implements SaveableAsText {
 	 * 
 	 * @param vChild The child node.
 	 */
-	public void reconnectChild(VisualNode vChild) {
+	public void reconnectChild(LayoutNode vChild) {
 		TreeGraphNode cChild = vChild.configNode;
 		configNode.connectChild(cChild);
 		connectChild(vChild);
@@ -631,11 +631,11 @@ public class VisualNode extends TreeGraphDataNode implements SaveableAsText {
 	 * 
 	 * @param map The look-up table.
 	 */
-	public void setupParentReference(Map<String, List<StringTable>> map) {
+	public void setParentReference(Map<String, List<StringTable>> map) {
 		setupParentReference(this, map);
 	}
 
-	private static void setupParentReference(VisualNode parent, Map<String, List<StringTable>> map) {
+	private static void setupParentReference(LayoutNode parent, Map<String, List<StringTable>> map) {
 		if (parent == null)
 			throw new NullPointerException("Parent is null.");
 		if (map == null)
@@ -660,7 +660,7 @@ public class VisualNode extends TreeGraphDataNode implements SaveableAsText {
 		// This is the empty parent table for the root!
 		if (parent.parentTable() == null)
 			parent.setParentRef(parentList.get(0));
-		for (VisualNode child : parent.getChildren())
+		for (LayoutNode child : parent.getChildren())
 			setupParentReference(child, map);
 
 	}

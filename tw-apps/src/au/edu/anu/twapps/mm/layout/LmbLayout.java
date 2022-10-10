@@ -37,8 +37,8 @@ import java.util.Map;
 import java.util.Random;
 
 import au.edu.anu.omhtk.rng.Pcg32;
-import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
-import au.edu.anu.twapps.mm.visualGraph.VisualNode;
+import au.edu.anu.twapps.mm.layoutGraph.LayoutEdge;
+import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
@@ -61,13 +61,13 @@ public class LmbLayout implements ILayout {
 	 * @param xlShowing WIP
 	 * @param sideline WIP
 	 */
-	public LmbLayout(TreeGraph<VisualNode, VisualEdge> graph, boolean pcShowing, boolean xlShowing, boolean sideline) {
+	public LmbLayout(TreeGraph<LayoutNode, LayoutEdge> graph, boolean pcShowing, boolean xlShowing, boolean sideline) {
 		vertices = new ArrayList<>();
 		edges = new ArrayList<>();
 		adjMat = new HashMap<>();
 		isolated = new ArrayList<>();
 		/* make vertices of all visible nodes */
-		for (VisualNode v : graph.nodes()) {
+		for (LayoutNode v : graph.nodes()) {
 			if (!v.isCollapsed() && v.isVisible()) {
 				vertices.add(new LmbVertex(v));
 			}
@@ -86,9 +86,9 @@ public class LmbLayout implements ILayout {
 		/* collect all visible edges */
 		for (LmbVertex v : vertices) {
 			// add parent/children edges
-			VisualNode vn = v.getNode();
+			LayoutNode vn = v.getNode();
 			if (pcShowing)
-				for (VisualNode cn : vn.getChildren())
+				for (LayoutNode cn : vn.getChildren())
 					if (!cn.isCollapsed() && cn.isVisible()) {
 						LmbVertex u = (LmbVertex) Node2Vertex(cn);
 						LmbEdge e = new LmbEdge(v, u);
@@ -102,9 +102,9 @@ public class LmbLayout implements ILayout {
 			// add xlink edges
 			if (xlShowing) {
 				for (Edge e : vn.edges(Direction.OUT)) {
-					VisualEdge ve = (VisualEdge) e;
+					LayoutEdge ve = (LayoutEdge) e;
 					if (ve.isVisible()) {
-						VisualNode endNode = (VisualNode) ve.endNode();
+						LayoutNode endNode = (LayoutNode) ve.endNode();
 						if (!endNode.isCollapsed() && endNode.isVisible()) {
 							LmbVertex u = (LmbVertex) Node2Vertex(endNode);
 							LmbEdge le = new LmbEdge(v, u);
@@ -156,7 +156,7 @@ public class LmbLayout implements ILayout {
 	 * @param vn WIP
 	 * @return WIP
 	 */
-	private IVertex Node2Vertex(VisualNode vn) {
+	private IVertex Node2Vertex(LayoutNode vn) {
 		for (IVertex v : vertices)
 			if (v.getNode().id().equals(vn.id()))
 				return v;

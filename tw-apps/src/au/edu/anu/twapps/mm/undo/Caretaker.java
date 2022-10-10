@@ -33,14 +33,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * A static class to manage the list of {@link IMemento} and the index of the
+ * A static class to manage the list of {@link Memento} and the index of the
  * current state.
  * 
  * @author Ian Davies - 1 Jun 2020
  */
 
 public class Caretaker {
-	private static List<IMemento> mementos;
+	private static List<Memento> mementos;
 	private static int index;
 
 	private Caretaker() {
@@ -48,7 +48,7 @@ public class Caretaker {
 	}
 
 	/**
-	 * Called when a project opens to clear any remaining {@link IMemento}s. Only
+	 * Called when a project opens to clear any remaining {@link Memento}s. Only
 	 * required is project has terminated unexpectedly.
 	 */
 	public static void initialise() {
@@ -56,18 +56,18 @@ public class Caretaker {
 	}
 
 	/**
-	 * Called when a project closes to clear any remaining {@link IMemento}s.
+	 * Called when a project closes to clear any remaining {@link Memento}s.
 	 */
 	public static void finalise() {
 		clear();
 	}
 
 	/**
-	 * Add an {@link IMemento} state to the list and increment the index.
+	 * Add an {@link Memento} state to the list and increment the index.
 	 * 
 	 * @param m The new state.
 	 */
-	public static void addState(IMemento m) {
+	public static void addState(Memento m) {
 		index++;
 		mementos.add(index, m);
 	}
@@ -77,7 +77,7 @@ public class Caretaker {
 	 * 
 	 * @return The previous state.
 	 */
-	public static IMemento prev() {
+	public static Memento prev() {
 		index--;
 		return mementos.get(index);
 	}
@@ -87,7 +87,7 @@ public class Caretaker {
 	 * 
 	 * @return The next state.
 	 */
-	public static IMemento succ() {
+	public static Memento succ() {
 		index++;
 		return mementos.get(index);
 	}
@@ -130,7 +130,7 @@ public class Caretaker {
 
 	private static void clear() {
 		if (mementos != null)
-			for (IMemento m : mementos)
+			for (Memento m : mementos)
 				m.finalise();
 		mementos = new LinkedList<>();
 		index = -1;

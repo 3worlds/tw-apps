@@ -33,7 +33,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Random;
 
-import au.edu.anu.twapps.mm.visualGraph.VisualNode;
+import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
 
 /**
  * @author Ian Davies 30 Apr 2020
@@ -41,18 +41,18 @@ import au.edu.anu.twapps.mm.visualGraph.VisualNode;
  *         Adapter for vertices with just position information.
  */
 public abstract class VertexAdapter implements IVertex {
-	private VisualNode _vNode;
+	private LayoutNode _vNode;
 
 	/**
-	 * Constructor a vertex warpper for a {@link VisualNode}.
+	 * Constructor a vertex warpper for a {@link LayoutNode}.
 	 * @param node The node to be wrappeed.
 	 */
-	public VertexAdapter(VisualNode node) {
+	public VertexAdapter(LayoutNode node) {
 		this._vNode = node;
 	}
 
 	@Override
-	public VisualNode getNode() {
+	public LayoutNode getNode() {
 		return _vNode;
 	}
 

@@ -30,111 +30,92 @@
 package au.edu.anu.twapps.mr;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
-import au.edu.anu.omhtk.preferences.IPreferences;
-import au.edu.anu.omhtk.preferences.Preferences;
-import au.edu.anu.twapps.dialogs.Dialogs;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
+import au.edu.anu.omhtk.preferences.Preferences;
 
+//ModelRunner methods called by the Controller
+//The controller HAS one of these
+//ModelRunner IS on of these: ModelRunner implements
 /**
- * Implementation of {@IMRModel} to manage model logic for GUI implementation
- * independent tasks.
  * 
- * @author Ian Davies date 31 Dec 2019
+ * Interface implemented by {@link MRModelImpl} is part of the <a href=
+ * "https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller">Model-View-Controller</a>
+ * pattern.
+ * 
+ * @author Ian Davies 31 Dec 2019
+ * 
  */
-public class MRModel implements IMRModel {
-	private TreeGraph<TreeGraphDataNode, ALEdge> graph;
-	// private IMRController controller; // TODO Not used
-	private List<File> ISFiles;
-	private int currentIdx;
+public interface MRModel {
+	/**
+	 * Create a file with the run-time dynamic graph.
+	 */
+	public void doISGenerate();
 
 	/**
-	 * TODO
+	 * Setter of the index one of a list of files of the dynamic graph as the one to
+	 * load when simulation begins.
+	 * 
+	 * @param idx index in the list of files.
 	 */
-	public MRModel(/* IMRController controller */) {
-		// this.controller = controller;
-	}
+	public void setISSelection(int idx);
 
-	@Override
-	public void doISGenerate() {
-		// output of this is a saved *.isf file
-		Dialogs.infoAlert("Info", "Not implemented", "Show dlg to generated bootstrap driver values and populations");
+	/**
+	 * Getter of the index one of a list of files of the dynamic graph as the one to
+	 * load when simulation begins.
+	 * 
+	 * @return file index.
+	 */
+	public int getISSelection();
 
-	}
+	/**
+	 * Get a list of all available dynamic graph files.
+	 * 
+	 * @return The list of files.
+	 */
+	public List<File> getISFiles();
 
-	@Override
-	public void doISReload() {
-		// doISClear();
-		if (currentIdx >= 0)
-			Dialogs.infoAlert("Info", "Not implemented",
-					"Load drivers and populations from " + ISFiles.get(currentIdx).getName());
-	}
+	/**
+	 * Reload the dynamic graph during a simulation (i.e during a pause).
+	 */
+	public void doISReload();
 
-	@Override
-	public void doISClear() {
-		Dialogs.infoAlert("Info", "Not implemented", "Clear all drivers and populations");
-		// TODO set all data and populations to appropriate zero values
+	/**
+	 * Zero all dynamic data and remove ephemeral nodes.
+	 */
+	public void doISClear();
 
-	}
+	/**
+	 * Save the dynamic graph to a file.
+	 * 
+	 * @param file The file.
+	 */
+	public void doISSaveAs(File file);
 
-	@Override
-	public void doISSaveAs(File file) {
-		Dialogs.infoAlert("Info", "Not implemented", "Save current drivers and populations to " + file);
+	/**
+	 * Setter for the configuration graph.
+	 * 
+	 * @param graph Configuration graph.
+	 */
+	public void setGraph(TreeGraph<TreeGraphDataNode, ALEdge> graph);
 
-	}
+	/**
+	 * Getter of the configuration graph.
+	 * 
+	 * @return Configuration graph.
+	 */
+	public TreeGraph<TreeGraphDataNode, ALEdge> getGraph();
 
-	private static final String ISCurrentFileIndex = "ISCurrentFileIndex";
-	private static final String ISFileName = "ISFileName";
-	private static final String ISFileCount = "ISFileCount";
+	/**
+	 * Set the ModelRunner controls from the {@link Preferences} system.
+	 */
+	public void getPreferences();
 
-	@Override
-	public void getPreferences() {
-		IPreferences prefs = Preferences.getImplementation();
-		currentIdx = prefs.getInt(ISCurrentFileIndex, -1);
-		int n = prefs.getInt(ISFileCount, 0);
-		ISFiles = new ArrayList<>();
-		for (int i = 0; i < n; i++) {
-			String s = prefs.getString(ISFileName + "_" + i, "");
-			ISFiles.add(new File(s));
-		}
-	}
-
-	@Override
-	public void putPreferences() {
-		IPreferences prefs = Preferences.getImplementation();
-		prefs.putInt(ISCurrentFileIndex, currentIdx);
-		prefs.putInt(ISFileCount, ISFiles.size());
-		for (int i = 0; i < ISFiles.size(); i++)
-			prefs.putString(ISFileName + "_" + i, ISFiles.get(i).getAbsolutePath());
-	}
-
-	@Override
-	public int getISSelection() {
-		return currentIdx;
-	}
-
-	@Override
-	public void setISSelection(int idx) {
-		currentIdx = idx;
-	}
-
-	@Override
-	public List<File> getISFiles() {
-		return ISFiles;
-	}
-
-	@Override
-	public TreeGraph<TreeGraphDataNode, ALEdge> getGraph() {
-		return graph;
-	}
-
-	@Override
-	public void setGraph(TreeGraph<TreeGraphDataNode, ALEdge> graph) {
-		this.graph = graph;
-	}
-
+	/**
+	 * Save the ModelRunner controls to the {@link Preferences} system.
+	 */
+	public void putPreferences();
 }

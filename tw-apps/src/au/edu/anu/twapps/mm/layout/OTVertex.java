@@ -29,7 +29,7 @@
 
 package au.edu.anu.twapps.mm.layout;
 
-import au.edu.anu.twapps.mm.visualGraph.VisualNode;
+import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
 
 /**
  * @author Ian Davies - 24 Apr 2020
@@ -48,12 +48,12 @@ public class OTVertex extends TreeVertexAdapter {
 	private static final double distance = 1.0;
 
 	/**
-	 * Construct a vertex wrapper of a {@link VisualNode} for the {@link OTLayout}.
+	 * Construct a vertex wrapper of a {@link LayoutNode} for the {@link OTLayout}.
 	 * 
 	 * @param parent Parent vertex.
-	 * @param node   {@link VisualNode} to be wrapped
+	 * @param node   {@link LayoutNode} to be wrapped
 	 */
-	public OTVertex(TreeVertexAdapter parent, VisualNode node) {
+	public OTVertex(TreeVertexAdapter parent, LayoutNode node) {
 		super(parent, node);
 	}
 

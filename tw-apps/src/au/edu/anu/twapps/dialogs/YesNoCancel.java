@@ -30,13 +30,12 @@
 package au.edu.anu.twapps.dialogs;
 
 /**
+ * A return type for some methods in {@link Dialogs}.
+ * <p>
+ * This is used to avoid dependence on any types in Javafx to maintain
+ * independence from the implementations (i.e something other that javafx).
+ * 
  * @author Ian Davies - 25 June 2022
- *         <p>
- *         A return type for some methods in {@link IDialogs}.
- *         </p>
- *         This is used to avoid dependence on any types in Javafx as we wish to
- *         maintain independence from whatever implementations user may choose
- *         (i.e something other that javafx).
  */
 public enum YesNoCancel {
 	/**

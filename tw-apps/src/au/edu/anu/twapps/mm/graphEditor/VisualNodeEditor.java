@@ -36,8 +36,8 @@ import java.util.List;
 
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.util.IntegerRange;
-import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
-import au.edu.anu.twapps.mm.visualGraph.VisualNode;
+import au.edu.anu.twapps.mm.layoutGraph.LayoutEdge;
+import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
 import au.edu.anu.twcore.archetype.TWA;
 import fr.cnrs.iees.OmugiClassLoader;
 import fr.cnrs.iees.graph.Direction;
@@ -55,32 +55,32 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
  */
 public class VisualNodeEditor implements //
 		VisualNodeEditable {
-	private VisualNode visualNode;
-	private TreeGraph<VisualNode, VisualEdge> visualGraph;
+	private LayoutNode visualNode;
+	private TreeGraph<LayoutNode, LayoutEdge> visualGraph;
 
 	/**
 	 * @param visualNode  Node for editing.
 	 * @param visualGraph The layout graph.
 	 */
-	public VisualNodeEditor(VisualNode visualNode, TreeGraph<VisualNode, VisualEdge> visualGraph) {
+	public VisualNodeEditor(LayoutNode visualNode, TreeGraph<LayoutNode, LayoutEdge> visualGraph) {
 		this.visualNode = visualNode;
 		this.visualGraph = visualGraph;
 	}
 
 	@Override
-	public VisualNode visualNode() {
+	public LayoutNode visualNode() {
 		return visualNode;
 	}
 
 	@Override
-	public TreeGraph<VisualNode, VisualEdge> visualGraph() {
+	public TreeGraph<LayoutNode, LayoutEdge> visualGraph() {
 		return visualGraph;
 	}
 
 	@Override
 	public boolean moreChildrenAllowed(IntegerRange range, String childLabel) {
-		List<VisualNode> lst = new ArrayList<>();
-		for (VisualNode child : visualNode.getChildren()) {
+		List<LayoutNode> lst = new ArrayList<>();
+		for (LayoutNode child : visualNode.getChildren()) {
 			String label = child.configNode().classId();
 			if (label.equals(childLabel))
 				lst.add(child);
@@ -117,8 +117,8 @@ public class VisualNodeEditor implements //
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Iterable<VisualEdge> getOutEdges() {
-		return (Iterable<VisualEdge>) visualNode.edges(Direction.OUT);
+	public Iterable<LayoutEdge> getOutEdges() {
+		return (Iterable<LayoutEdge>) visualNode.edges(Direction.OUT);
 	}
 
 	private static boolean ignoreDuplicateEdgesBetween(TreeGraphNode start, TreeGraphNode end, String edgeLabel) {
@@ -129,7 +129,7 @@ public class VisualNodeEditor implements //
 	}
 
 	@Override
-	public boolean hasOutEdgeTo(VisualNode vEnd, String edgeLabel) {
+	public boolean hasOutEdgeTo(LayoutNode vEnd, String edgeLabel) {
 
 		TreeGraphNode cStart = visualNode.configNode();
 		TreeGraphNode cEnd = vEnd.configNode();
@@ -146,15 +146,15 @@ public class VisualNodeEditor implements //
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Iterable<VisualNode> getOutNodes() {
-		return (Iterable<VisualNode>) get(visualNode.edges(Direction.OUT), selectZeroOrMany(), edgeListEndNodes());
+	public Iterable<LayoutNode> getOutNodes() {
+		return (Iterable<LayoutNode>) get(visualNode.edges(Direction.OUT), selectZeroOrMany(), edgeListEndNodes());
 	}
 
 	@Override
 	public boolean references(StringTable parents) {
 		TreeNode node = visualNode.configNode();
 		for (int i = 0; i < parents.size(); i++)
-			if (VisualNode.referencedBy(node, parents.getWithFlatIndex(i)))
+			if (LayoutNode.referencedBy(node, parents.getWithFlatIndex(i)))
 				return true;
 		return false;
 	}

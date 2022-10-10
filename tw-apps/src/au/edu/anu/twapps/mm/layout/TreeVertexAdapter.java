@@ -35,8 +35,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import au.edu.anu.twapps.mm.visualGraph.ElementDisplayText;
-import au.edu.anu.twapps.mm.visualGraph.VisualNode;
+import au.edu.anu.twapps.mm.layoutGraph.ElementDisplayText;
+import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
 import fr.cnrs.iees.graph.Edge;
 
 /**
@@ -52,9 +52,9 @@ public abstract class TreeVertexAdapter extends VertexAdapter implements ITreeVe
 	 * Tree vertex constructor.
 	 * 
 	 * @param parent Parent vertex.
-	 * @param node   Underlying {@link VisualNode}.
+	 * @param node   Underlying {@link LayoutNode}.
 	 */
-	public TreeVertexAdapter(TreeVertexAdapter parent, VisualNode node) {
+	public TreeVertexAdapter(TreeVertexAdapter parent, LayoutNode node) {
 		super(node);
 		this._parent = parent;
 		this._children = new ArrayList<>();
@@ -65,8 +65,8 @@ public abstract class TreeVertexAdapter extends VertexAdapter implements ITreeVe
 	 */
 	public boolean nodeHasEdgesToVisibleNodes() {
 		for (Edge e : getNode().edges()) {
-			VisualNode startNode = (VisualNode) e.startNode();
-			VisualNode endNode = (VisualNode) e.endNode();
+			LayoutNode startNode = (LayoutNode) e.startNode();
+			LayoutNode endNode = (LayoutNode) e.endNode();
 			if (startNode.isVisible() && endNode.isVisible())
 				return true;
 		}
@@ -121,16 +121,16 @@ public abstract class TreeVertexAdapter extends VertexAdapter implements ITreeVe
 	 * @param factory The vertex factory.
 	 */
 	public static void buildSpanningTree(TreeVertexAdapter vertex, ITreeVertexFactory factory) {
-		List<VisualNode> sortList = new ArrayList<>();
+		List<LayoutNode> sortList = new ArrayList<>();
 		String parentId = "";
 		if (vertex.hasParent())
 			parentId = vertex.getParent().getNode().id();
-		for (VisualNode nChild : vertex.getNode().getChildren()) {
+		for (LayoutNode nChild : vertex.getNode().getChildren()) {
 			String childId = nChild.id();
 			if (!nChild.isCollapsed() && !childId.equals(parentId) && nChild.isVisible())
 				sortList.add(nChild);
 		}
-		VisualNode nParent = vertex.getNode().getParent();
+		LayoutNode nParent = vertex.getNode().getParent();
 		if (nParent != null)
 			if (!nParent.isCollapsed() && !nParent.id().equals(parentId) && nParent.isVisible())
 				sortList.add(nParent);
@@ -144,7 +144,7 @@ public abstract class TreeVertexAdapter extends VertexAdapter implements ITreeVe
 //						.compareTo(o2.getDisplayText(ElementDisplayText.RoleName));
 //			}
 //		});
-		for (VisualNode nChild : sortList) {
+		for (LayoutNode nChild : sortList) {
 			TreeVertexAdapter vChild = factory.makeVertex(vertex, nChild);
 			vertex.getChildren().add(vChild);
 			buildSpanningTree(vChild, factory);

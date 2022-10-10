@@ -37,8 +37,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 
-import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
-import au.edu.anu.twapps.mm.visualGraph.VisualNode;
 import au.edu.anu.twcore.project.Project;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
@@ -49,14 +47,16 @@ import fr.cnrs.iees.identity.impl.LocalScope;
 import fr.cnrs.iees.io.GraphFileFormats;
 import fr.ens.biologie.generic.utils.Duple;
 import fr.ens.biologie.generic.utils.Tuple;
-import au.edu.anu.twapps.mm.MMModel;
+import au.edu.anu.twapps.mm.MMModelImpl;
+import au.edu.anu.twapps.mm.layoutGraph.LayoutEdge;
+import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
 
 /**
- * Implementation of {@link IMemento} for use by {@link MMModel}.
+ * Implementation of {@link Memento} for use by {@link MMModelImpl}.
  * 
  * @author Ian Davies 1 Jun 2020
  */
-public class MMMemento implements IMemento {
+public class MMMemento implements Memento {
 	private final static String configName = "__stateA";
 	private final static String layoutName = "__stateB";
 	private final static String prefName = "__stateC";
@@ -72,7 +72,7 @@ public class MMMemento implements IMemento {
 	 * @param b    The layout graph.
 	 * @param c    The state of ModelMaker controls.
 	 */
-	public MMMemento(String desc, TreeGraph<TreeGraphDataNode, ALEdge> a, TreeGraph<VisualNode, VisualEdge> b, File c) {
+	public MMMemento(String desc, TreeGraph<TreeGraphDataNode, ALEdge> a, TreeGraph<LayoutNode, LayoutEdge> b, File c) {
 		this.state = nextState();
 		this.desc = desc;
 		new OmugiGraphExporter(state.getFirst()).exportGraph(a);

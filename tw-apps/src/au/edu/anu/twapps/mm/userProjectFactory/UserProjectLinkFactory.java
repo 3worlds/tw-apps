@@ -31,7 +31,7 @@ package au.edu.anu.twapps.mm.userProjectFactory;
 
 import java.io.File;
 
-import au.edu.anu.twapps.dialogs.Dialogs;
+import au.edu.anu.twapps.dialogs.DialogsFactory;
 import au.edu.anu.twcore.userProject.UPLEclipse;
 import au.edu.anu.twcore.userProject.UserProjectLink;
 import au.edu.anu.twcore.project.Project;
@@ -62,12 +62,12 @@ public class UserProjectLinkFactory {
 					UserProjectLink.initialise(new UPLEclipse(projectRoot));
 					return true;
 				}
-			Dialogs.errorAlert(type.name() + "[" + projectRoot.getName() + "]",
+			DialogsFactory.errorAlert(type.name() + "[" + projectRoot.getName() + "]",
 					"Project is missing or non-standard directory structure", "Expected 'src' and 'bin' directories");
 			return false;
 		}
 		default: {
-			Dialogs.errorAlert("IDE", type.name(), "This IDE is not yet supported.");
+			DialogsFactory.errorAlert("IDE", type.name(), "This IDE is not yet supported.");
 			return false;
 		}
 		}

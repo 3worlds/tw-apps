@@ -31,8 +31,8 @@ package au.edu.anu.twapps.mm.graphEditor;
 
 import java.util.List;
 
-import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
-import au.edu.anu.twapps.mm.visualGraph.VisualNode;
+import au.edu.anu.twapps.mm.layoutGraph.LayoutEdge;
+import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
 import fr.cnrs.iees.graph.impl.SimpleDataTreeNode;
 import fr.ens.biologie.generic.utils.Duple;
 import fr.ens.biologie.generic.utils.Tuple;
@@ -74,7 +74,7 @@ public interface StructureEditable {
 	 * @return A list (can be empty) of tuples the out-edge label, the end-node and
 	 *         the out-edge specification.
 	 */
-	public List<Tuple<String, VisualNode, SimpleDataTreeNode>> filterEdgeSpecs(Iterable<SimpleDataTreeNode> edgeSpecs);
+	public List<Tuple<String, LayoutNode, SimpleDataTreeNode>> filterEdgeSpecs(Iterable<SimpleDataTreeNode> edgeSpecs);
 
 	/* list of nodes that are eligible children of the edit node */
 	/**
@@ -85,9 +85,9 @@ public interface StructureEditable {
 	 * 
 	 * @param childSpecs List of relevant child specifications of the node being
 	 *                   edited.
-	 * @return List of valid child {@link VisualNode}s.
+	 * @return List of valid child {@link LayoutNode}s.
 	 */
-	public List<VisualNode> orphanedChildList(Iterable<SimpleDataTreeNode> childSpecs);
+	public List<LayoutNode> orphanedChildList(Iterable<SimpleDataTreeNode> childSpecs);
 
 	/**
 	 * Actions required to construct a new child node.
@@ -103,19 +103,19 @@ public interface StructureEditable {
 	/**
 	 * Actions required to construct a new out-edge.
 	 * 
-	 * @param details  A tuple contains the edge label, {@link VisualNode}
+	 * @param details  A tuple contains the edge label, {@link LayoutNode}
 	 *                 (end-node) to which the edge connects and the edge
 	 *                 specifications.
 	 * @param duration Duration in ms of animation.
 	 */
-	public void onNewEdge(Tuple<String, VisualNode, SimpleDataTreeNode> details, double duration);
+	public void onNewEdge(Tuple<String, LayoutNode, SimpleDataTreeNode> details, double duration);
 
 	/**
 	 * Actions required when user asks to delete an out-edge.
 	 * 
-	 * @param edge {@link VisualEdge} to delete
+	 * @param edge {@link LayoutEdge} to delete
 	 */
-	public void onDeleteEdge(VisualEdge edge);
+	public void onDeleteEdge(LayoutEdge edge);
 
 	/**
 	 * Actions required when user asks to delete a node.
@@ -138,7 +138,7 @@ public interface StructureEditable {
 	 * @param edge Out-edge of the currently selected node.
 	 * @return true if renamed, false otherwise.
 	 */
-	public boolean onRenameEdge(VisualEdge edge);
+	public boolean onRenameEdge(LayoutEdge edge);
 
 	/**
 	 * Actions required to delete a sub-tree of the currently selected node.
@@ -146,7 +146,7 @@ public interface StructureEditable {
 	 * @param childRoot The root of the sub-tree to be deleted.
 	 * @param duration  Duration in ms of animation.
 	 */
-	public void onDeleteTree(VisualNode childRoot, double duration);
+	public void onDeleteTree(LayoutNode childRoot, double duration);
 
 	/**
 	 * Actions required when collapsing a sub-tree to the currently selected node.
@@ -155,7 +155,7 @@ public interface StructureEditable {
 	 *                  as the focus of the operation.
 	 * @param duration  Duration in ms of animation.
 	 */
-	public void onCollapseTree(VisualNode childRoot, double duration);
+	public void onCollapseTree(LayoutNode childRoot, double duration);
 
 	/**
 	 * Collapse all sub-trees of the currently selected node.
@@ -170,7 +170,7 @@ public interface StructureEditable {
 	 * @param childRoot root of the particular sub-tree;
 	 * @param duration  Duration in ms of animation.
 	 */
-	public void onExpandTree(VisualNode childRoot, double duration);
+	public void onExpandTree(LayoutNode childRoot, double duration);
 
 	/**
 	 * Expand all sub-trees of the currently selected node
@@ -185,7 +185,7 @@ public interface StructureEditable {
 	 * 
 	 * @param childNode The proposed child node.
 	 */
-	public void onReconnectChild(VisualNode childNode);
+	public void onReconnectChild(LayoutNode childNode);
 
 	/**
 	 * Build implementation specific gui (e.g javafx)
@@ -197,7 +197,7 @@ public interface StructureEditable {
 	 * 
 	 * @param root The root of the sub-tree to export.
 	 */
-	void onExportTree(VisualNode root);
+	void onExportTree(LayoutNode root);
 
 	/**
 	 * Import a sub-tree to the currently selected node. The root of the imported
@@ -216,7 +216,7 @@ public interface StructureEditable {
 	 * @param child The child whose parent-child relationship to the currently
 	 *              select node is to be removed.
 	 */
-	void onDeleteParentLink(VisualNode child);
+	void onDeleteParentLink(LayoutNode child);
 
 	/**
 	 * Actions require to add/remove optional properties.
@@ -229,6 +229,6 @@ public interface StructureEditable {
 	 * @return true is options have changed, false otherwise.
 	 */
 	boolean onOptionalProperties(List<SimpleDataTreeNode> propertySpecs,
-			List<Duple<VisualEdge, SimpleDataTreeNode>> optionalEdgePropertySpecs);
+			List<Duple<LayoutEdge, SimpleDataTreeNode>> optionalEdgePropertySpecs);
 
 }

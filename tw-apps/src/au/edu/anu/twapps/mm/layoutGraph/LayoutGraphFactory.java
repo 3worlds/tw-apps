@@ -26,7 +26,7 @@
  *  along with TW-APPS.                                                   *
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
   **************************************************************************/
-package au.edu.anu.twapps.mm.visualGraph;
+package au.edu.anu.twapps.mm.layoutGraph;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -53,7 +53,7 @@ import fr.cnrs.iees.identity.impl.LocalScope;
  * 
  * @author Ian Davies - 11 Jul 2019
  */
-public class VisualGraphFactory extends TreeGraphFactory implements EditableFactory {
+public class LayoutGraphFactory extends TreeGraphFactory implements EditableFactory {
 
 	private static Map<String, String> vgLabels = new HashMap<>();
 
@@ -61,9 +61,9 @@ public class VisualGraphFactory extends TreeGraphFactory implements EditableFact
 	 * Removes the edge {@link Identity} from the graphs {@link LocalScope}. This is
 	 * necessary if an edge is to be renamed or deleted.
 	 * 
-	 * @param edge The {@link VisualEdge} whose {@link Identity} is to be removed.
+	 * @param edge The {@link LayoutEdge} whose {@link Identity} is to be removed.
 	 */
-	public void removeEdgeId(VisualEdge edge) {
+	public void removeEdgeId(LayoutEdge edge) {
 		scope.removeId(edge.id());
 	}
 
@@ -113,14 +113,14 @@ public class VisualGraphFactory extends TreeGraphFactory implements EditableFact
 	 * Constructor with name of the {@link LocalScope} and a map of edge labels and
 	 * their associated java class names.
 	 */
-	public VisualGraphFactory() {
+	public LayoutGraphFactory() {
 		super("VGF", vgLabels);
 	}
 
 	/**
 	 * @param scopeName The name of the {@link LocalScope}.
 	 */
-	public VisualGraphFactory(String scopeName) {
+	public LayoutGraphFactory(String scopeName) {
 		this();
 	}
 
@@ -128,28 +128,28 @@ public class VisualGraphFactory extends TreeGraphFactory implements EditableFact
 	 * @param scopeName Name of the {@link LocalScope}
 	 * @param labels    map of edge labels and their associated java class names.
 	 */
-	public VisualGraphFactory(String scopeName, Map<String, String> labels) {
+	public LayoutGraphFactory(String scopeName, Map<String, String> labels) {
 		this();
 	}
 
 	@Override
-	public VisualNode makeNode(String proposedId) {
-		VisualNode result = new VisualNode(scope.newId(true, proposedId), this);
+	public LayoutNode makeNode(String proposedId) {
+		LayoutNode result = new LayoutNode(scope.newId(true, proposedId), this);
 		addNodeToGraphs(result);
 		return result;
 	}
 
 	@Override
-	public VisualNode makeNode(String proposedId, ReadOnlyPropertyList props) {
-		VisualNode result = new VisualNode(scope.newId(true, proposedId), props, this);
+	public LayoutNode makeNode(String proposedId, ReadOnlyPropertyList props) {
+		LayoutNode result = new LayoutNode(scope.newId(true, proposedId), props, this);
 		addNodeToGraphs(result);
 		return result;
 	}
 
 	@Override
-	public VisualEdge makeEdge(Node start, Node end, String proposedId) {
+	public LayoutEdge makeEdge(Node start, Node end, String proposedId) {
 		// Edge e = inherited makeEdge(start,end,proposedId);
-		VisualEdge result = new VisualEdge(scope.newId(true, proposedId), start, end, this);
+		LayoutEdge result = new LayoutEdge(scope.newId(true, proposedId), start, end, this);
 		return result;
 	}
 
@@ -164,13 +164,13 @@ public class VisualGraphFactory extends TreeGraphFactory implements EditableFact
 	}
 
 	static {
-		vgLabels.put(VisualNode.class.getSimpleName(), VisualNode.class.getName());
-		vgLabels.put(VisualEdge.class.getSimpleName(), VisualEdge.class.getName());
+		vgLabels.put(LayoutNode.class.getSimpleName(), LayoutNode.class.getName());
+		vgLabels.put(LayoutEdge.class.getSimpleName(), LayoutEdge.class.getName());
 	}
 
-	private static PropertyKeys nodeKeys = new PropertyKeys(VisualNode.LOCATION_X, VisualNode.LOCATION_Y,
-			VisualNode.SUB_TREE, VisualNode.IS_COLLAPSED, VisualNode.PARENT_REFERENCE, VisualNode.IS_VISIBLE);
-	private static PropertyKeys edgeKeys = new PropertyKeys(VisualEdge.IS_VISIBLE);
+	private static PropertyKeys nodeKeys = new PropertyKeys(LayoutNode.LOCATION_X, LayoutNode.LOCATION_Y,
+			LayoutNode.SUB_TREE, LayoutNode.IS_COLLAPSED, LayoutNode.PARENT_REFERENCE, LayoutNode.IS_VISIBLE);
+	private static PropertyKeys edgeKeys = new PropertyKeys(LayoutEdge.IS_VISIBLE);
 
 	/**
 	 * @return {@link PropertyKeys} shared by all nodes of this graph.

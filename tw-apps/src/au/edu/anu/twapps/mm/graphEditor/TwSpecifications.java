@@ -40,9 +40,9 @@ import au.edu.anu.rscs.aot.archetype.Archetypes;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.queries.Queryable;
 import au.edu.anu.rscs.aot.util.IntegerRange;
-import au.edu.anu.twapps.dialogs.Dialogs;
-import au.edu.anu.twapps.mm.visualGraph.ElementDisplayText;
-import au.edu.anu.twapps.mm.visualGraph.VisualNode;
+import au.edu.anu.twapps.dialogs.DialogsFactory;
+import au.edu.anu.twapps.mm.layoutGraph.ElementDisplayText;
+import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
 import au.edu.anu.twcore.archetype.TWA;
 import au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery;
 import au.edu.anu.twcore.archetype.tw.ChildXorPropertyQuery;
@@ -262,7 +262,7 @@ public class TwSpecifications implements //
 		}
 		// TODO: this is a mess! to be cleaned up
 		if (!entries.isEmpty()) {
-			List<String> selectedKeys = Dialogs.getRadioButtonChoices(childId, "PropertyChoices", "", entries);
+			List<String> selectedKeys = DialogsFactory.getRadioButtonChoices(childId, "PropertyChoices", "", entries);
 			if (selectedKeys == null)
 				return false;
 			Iterator<SimpleDataTreeNode> iter = propertySpecs.iterator();
@@ -379,7 +379,7 @@ public class TwSpecifications implements //
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void filterRequiredPropertyQuery(VisualNode vnode, SimpleDataTreeNode baseSpec, SimpleDataTreeNode subSpec) {
+	public void filterRequiredPropertyQuery(LayoutNode vnode, SimpleDataTreeNode baseSpec, SimpleDataTreeNode subSpec) {
 		List<SimpleDataTreeNode> queries = getQueries(baseSpec, RequirePropertyQuery.class);
 
 		queries.addAll(getQueries(subSpec, RequirePropertyQuery.class));
@@ -395,7 +395,7 @@ public class TwSpecifications implements //
 				if (obj instanceof Enum<?>) {
 					Class<? extends Enum<?>> e = (Class<? extends Enum<?>>) obj.getClass();
 					String[] names = ValidPropertyTypes.namesOf(e);
-					int choice = Dialogs.getListChoice(names, vnode.getDisplayText(ElementDisplayText.RoleName), key,
+					int choice = DialogsFactory.getListChoice(names, vnode.getDisplayText(ElementDisplayText.RoleName), key,
 							obj.getClass().getSimpleName());
 					if (choice >= 0) {
 						Enum<?> value = ValidPropertyTypes.valueOf(names[choice], e);

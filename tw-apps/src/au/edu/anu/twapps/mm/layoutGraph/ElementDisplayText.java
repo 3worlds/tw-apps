@@ -26,21 +26,31 @@
  *  along with TW-APPS.                                                   *
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
   **************************************************************************/
+package au.edu.anu.twapps.mm.layoutGraph;
 
-package au.edu.anu.twapps;
+import fr.cnrs.iees.identity.Identity;
 
 /**
- * @author Ian Davies - 25 June 2022
+ * Display options for layout graph elements (nodes/edge) labels and ids.
  * 
- *         Placeholder for text translations for this library. This entire
- *         system should be externalized so that translations can be done by
- *         volunteers.
+ * @author Ian Davies - 1 Jul 2020
+ *
  */
-public class TextTranslations {
+public enum ElementDisplayText {
 	/**
-	 * Private constructor to ensure this class is used as a static class.
+	 * Display both the label and the unique {@link Identity}.
 	 */
-	private TextTranslations() {
-	};
-
+	RoleName,
+	/**
+	 * Display the label only.
+	 */
+	Role,
+	/**
+	 * Display the unique {@link Identity} only.
+	 */
+	Name,
+	/**
+	 * Display no text.
+	 */
+	None;
 }

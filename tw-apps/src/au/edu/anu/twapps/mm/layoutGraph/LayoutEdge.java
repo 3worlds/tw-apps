@@ -27,7 +27,7 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
   **************************************************************************/
 
-package au.edu.anu.twapps.mm.visualGraph;
+package au.edu.anu.twapps.mm.layoutGraph;
 
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.EdgeFactory;
@@ -42,11 +42,11 @@ import fr.ens.biologie.generic.utils.Duple;
 
 /**
  * Visualization of configuration graph edges constructed by the
- * {@link VisualGraphFactory}.
+ * {@link LayoutGraphFactory}.
  * 
  * @author Ian Davies - 11 Jul 2019
  */
-public class VisualEdge extends ALDataEdge {
+public class LayoutEdge extends ALDataEdge {
 	/**
 	 * Edge is visible.
 	 */
@@ -63,24 +63,24 @@ public class VisualEdge extends ALDataEdge {
 
 	/**
 	 * @param id      Edge {@link Identity}
-	 * @param start   The {@link VisualNode} start node.
-	 * @param end     The {@link VisualNode} end node.
+	 * @param start   The {@link LayoutNode} start node.
+	 * @param end     The {@link LayoutNode} end node.
 	 * @param props   The property list which will be a
 	 *                {@link SharedPropertyListImpl}.
-	 * @param factory The {@link VisualGraphFactory}
+	 * @param factory The {@link LayoutGraphFactory}
 	 */
-	public VisualEdge(Identity id, Node start, Node end, SimplePropertyList props, EdgeFactory factory) {
+	public LayoutEdge(Identity id, Node start, Node end, SimplePropertyList props, EdgeFactory factory) {
 		super(id, start, end, props, factory);
 	}
 
 	/**
 	 * @param id      Edge {@link Identity}
-	 * @param start   The {@link VisualNode} start node.
-	 * @param end     The {@link VisualNode} end node.
-	 * @param factory The {@link VisualGraphFactory}
+	 * @param start   The {@link LayoutNode} start node.
+	 * @param end     The {@link LayoutNode} end node.
+	 * @param factory The {@link LayoutGraphFactory}
 	 */
-	public VisualEdge(Identity id, Node start, Node end, EdgeFactory factory) {
-		super(id, start, end, new SharedPropertyListImpl(VisualGraphFactory.getEdgeKeys()), factory);
+	public LayoutEdge(Identity id, Node start, Node end, EdgeFactory factory) {
+		super(id, start, end, new SharedPropertyListImpl(LayoutGraphFactory.getEdgeKeys()), factory);
 	}
 
 	/**

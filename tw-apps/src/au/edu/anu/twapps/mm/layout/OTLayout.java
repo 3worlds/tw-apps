@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Random;
 
 import au.edu.anu.omhtk.rng.Pcg32;
-import au.edu.anu.twapps.mm.visualGraph.VisualNode;
+import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
 import au.edu.anu.twcore.root.World;
 
 /**
@@ -62,7 +62,7 @@ public class OTLayout implements ILayout {
 	private class Factory implements ITreeVertexFactory {
 
 		@Override
-		public TreeVertexAdapter makeVertex(TreeVertexAdapter parent, VisualNode node) {
+		public TreeVertexAdapter makeVertex(TreeVertexAdapter parent, LayoutNode node) {
 			return new OTVertex(parent, node);
 		}
 	}
@@ -73,13 +73,13 @@ public class OTLayout implements ILayout {
 	/**
 	 * Create an {@link LayoutType#OrderedTree OrderedTree} layout.
 	 * 
-	 * @param rootNode                {@link VisualNode} to use as the layout root
+	 * @param rootNode                {@link LayoutNode} to use as the layout root
 	 *                                (need not be {@link World} node).
 	 * @param includeParentChildEdges Use parent-child relationships.
 	 * @param includeCrossLinksEdges  Show cross-link edges
 	 * @param sideline                Move isolated vertices to one side.
 	 */
-	public OTLayout(VisualNode rootNode, boolean includeParentChildEdges, boolean includeCrossLinksEdges,
+	public OTLayout(LayoutNode rootNode, boolean includeParentChildEdges, boolean includeCrossLinksEdges,
 			boolean sideline) {
 		this.root = new OTVertex(null, rootNode);
 		TreeVertexAdapter.buildSpanningTree(root, new Factory());

@@ -29,7 +29,7 @@
 
 package au.edu.anu.twapps.mm.layout;
 
-import au.edu.anu.twapps.mm.visualGraph.VisualNode;
+import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
 import fr.cnrs.iees.uit.space.Distance;
 import fr.ens.biologie.generic.utils.Duple;
 
@@ -40,12 +40,12 @@ public class RT1Vertex extends TreeVertexAdapter {
 	private double radius;// distance to all children
 
 	/**
-	 * Construct a vertex wrapper of a {@link VisualNode} for the {@link RT1Layout}.
+	 * Construct a vertex wrapper of a {@link LayoutNode} for the {@link RT1Layout}.
 	 * 
 	 * @param parent Parent vertex.
-	 * @param node   {@link VisualNode} to be wrapped
+	 * @param node   {@link LayoutNode} to be wrapped
 	 */
-	public RT1Vertex(TreeVertexAdapter parent, VisualNode node) {
+	public RT1Vertex(TreeVertexAdapter parent, LayoutNode node) {
 		super(parent, node);
 	}
 

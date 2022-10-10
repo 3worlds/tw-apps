@@ -26,7 +26,7 @@
  *  along with TW-APPS.                                                   *
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
   **************************************************************************/
-package au.edu.anu.twapps.mm.visualGraph;
+package au.edu.anu.twapps.mm.layoutGraph;
 
 import java.util.HashSet;
 import java.util.Set;

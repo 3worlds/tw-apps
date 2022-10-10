@@ -35,7 +35,7 @@ import java.util.Set;
 //import au.edu.anu.rscs.aot.queries.Query;
 import au.edu.anu.rscs.aot.queries.Queryable;
 import au.edu.anu.rscs.aot.util.IntegerRange;
-import au.edu.anu.twapps.mm.visualGraph.VisualNode;
+import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.SimpleDataTreeNode;
 import fr.ens.biologie.generic.utils.Duple;
@@ -59,7 +59,7 @@ public interface Specifications {
 	 * The method must add an entry for each archetype file it opens.
 	 * 
 	 * @param editNode        {@link VisualNodeEditable} interface of the
-	 *                        {@link VisualNode} being edited.
+	 *                        {@link LayoutNode} being edited.
 	 * @param root            The root node of the specification archetype tree.
 	 * @param discoveredFiles Archetype files that have currently been searched.
 	 * @return The specification {@link TreeNode} (often null during recursive
@@ -84,7 +84,7 @@ public interface Specifications {
 	 * node.
 	 * 
 	 * @param editParent {@link VisualNodeEditable} interface of the parent
-	 *                   {@link VisualNode}.
+	 *                   {@link LayoutNode}.
 	 * @param baseSpec   The base specification returned by
 	 *                   {@link #getSpecsOf(VisualNodeEditable,TreeNode,Set)
 	 *                   getSpecsOf}
@@ -217,7 +217,7 @@ public interface Specifications {
 	 *                 {@link #getSubSpecsOf(SimpleDataTreeNode,Class)
 	 *                 getSubSpecsOf} (can be null).
 	 */
-	public void filterRequiredPropertyQuery(VisualNode node, SimpleDataTreeNode baseSpec, SimpleDataTreeNode subSpec);
+	public void filterRequiredPropertyQuery(LayoutNode node, SimpleDataTreeNode baseSpec, SimpleDataTreeNode subSpec);
 
 	/**
 	 * Get a list of the optional property specifications (0..1) whose optionality

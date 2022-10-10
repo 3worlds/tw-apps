@@ -26,31 +26,16 @@
  *  along with TW-APPS.                                                   *
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
   **************************************************************************/
-package au.edu.anu.twapps.mm.visualGraph;
 
-import fr.cnrs.iees.identity.Identity;
+package au.edu.anu.twapps.mr;
+
+import au.edu.anu.omhtk.preferences.Preferenceable;
 
 /**
- * Display options for layout graph elements (nodes/edge) labels and ids.
+ * Extension of IMRController to allow control settings to be stored are
+ * retrieved in a preference system.
  * 
- * @author Ian Davies - 1 Jul 2020
- *
+ * @author Ian Davies 31 Dec 2019
  */
-public enum ElementDisplayText {
-	/**
-	 * Display both the label and the unique {@link Identity}.
-	 */
-	RoleName,
-	/**
-	 * Display the label only.
-	 */
-	Role,
-	/**
-	 * Display the unique {@link Identity} only.
-	 */
-	Name,
-	/**
-	 * Display no text.
-	 */
-	None;
+public interface MRController extends Preferenceable {
 }

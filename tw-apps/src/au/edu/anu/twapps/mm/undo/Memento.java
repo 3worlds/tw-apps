@@ -27,15 +27,24 @@
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
   **************************************************************************/
 
-package au.edu.anu.twapps.mr;
-
-import au.edu.anu.omhtk.preferences.Preferenceable;
+package au.edu.anu.twapps.mm.undo;
 
 /**
- * Extension of IMRController to allow control settings to be stored are
- * retrieved in a preference system.
+ * Interface for classes that record the state of an application.
  * 
- * @author Ian Davies 31 Dec 2019
+ * @author Ian Davies 1 Jun 2020
  */
-public interface IMRController extends Preferenceable {
+
+public interface Memento {
+
+	/**
+	 * Remove any artifacts on disk that may record this state.
+	 */
+	public void finalise();
+
+	/**
+	 * @return The description of this state.
+	 */
+	public String getDescription();
+
 }

@@ -32,7 +32,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import au.edu.anu.twapps.mm.visualGraph.VisualNode;
+
+import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
 import fr.cnrs.iees.uit.space.Distance;
 import fr.ens.biologie.generic.utils.Permute;
 import fr.ens.biologie.generic.utils.Shuffle;
@@ -56,7 +57,7 @@ public class LmbVertex extends FRVertex {
 	/**
 	 * @param node WIP
 	 */
-	public LmbVertex(VisualNode node) {
+	public LmbVertex(LayoutNode node) {
 		super(node);
 	}
 

@@ -31,7 +31,7 @@ package au.edu.anu.twapps.mm.layout;
 
 import java.util.List;
 
-import au.edu.anu.twapps.mm.visualGraph.VisualNode;
+import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
 
 /**
  * @author Ian Davies 26 Apr 2020
@@ -42,12 +42,12 @@ public class RT2Vertex extends TreeVertexAdapter {
 	private double _angle;
 
 	/**
-	 * Construct a vertex wrapper of a {@link VisualNode} for the {@link RT2Layout}.
+	 * Construct a vertex wrapper of a {@link LayoutNode} for the {@link RT2Layout}.
 	 * 
 	 * @param parent Parent vertex.
-	 * @param node   {@link VisualNode} to be wrapped
+	 * @param node   {@link LayoutNode} to be wrapped
 	 */
-	public RT2Vertex(TreeVertexAdapter parent, VisualNode node) {
+	public RT2Vertex(TreeVertexAdapter parent, LayoutNode node) {
 		super(parent, node);
 		this._depth = 0;
 		if (hasParent())

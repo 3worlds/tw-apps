@@ -30,8 +30,8 @@
 package au.edu.anu.twapps.mm;
 
 import au.edu.anu.twapps.mm.layout.LayoutType;
-import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
-import au.edu.anu.twapps.mm.visualGraph.VisualNode;
+import au.edu.anu.twapps.mm.layoutGraph.LayoutEdge;
+import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import au.edu.anu.twcore.root.World;
 
@@ -42,7 +42,7 @@ import au.edu.anu.twcore.root.World;
  * 
  * @author Ian Davies - 9 Aug 2019
  */
-public interface IGraphVisualiser {
+public interface GraphVisualiser {
 	/**
 	 * Actions required to build the initial view from the graph.
 	 * 
@@ -56,7 +56,7 @@ public interface IGraphVisualiser {
 	 * 
 	 * @param node The node to add to the view.
 	 */
-	public void onNewNode(VisualNode node);
+	public void onNewNode(LayoutNode node);
 
 	/**
 	 * Actions required to add visualisation elements for an edge newly added to the
@@ -65,7 +65,7 @@ public interface IGraphVisualiser {
 	 * @param edge     Edge that has been added.
 	 * @param duration Duration in ms of animation.
 	 */
-	public void onNewEdge(VisualEdge edge, double duration);
+	public void onNewEdge(LayoutEdge edge, double duration);
 
 	/**
 	 * Actions required to collapse a sub-tree to the given root.
@@ -73,7 +73,7 @@ public interface IGraphVisualiser {
 	 * @param root     Root of the sub-tree to be hidden.
 	 * @param duration Duration in ms of animation.
 	 */
-	public void collapseTreeFrom(VisualNode root, double duration);
+	public void collapseTreeFrom(LayoutNode root, double duration);
 
 	/**
 	 * Actions required to expand a sub-tree from the given root.
@@ -81,14 +81,14 @@ public interface IGraphVisualiser {
 	 * @param root     Root of the sub-tree to be expanded.
 	 * @param duration Duration in ms of animation.
 	 */
-	public void expandTreeFrom(VisualNode root, double duration);
+	public void expandTreeFrom(LayoutNode root, double duration);
 
 	/**
 	 * Get the underlying graph (the layout graph) of the visualisation.
 	 * 
 	 * @return layout graph.
 	 */
-	public TreeGraph<VisualNode, VisualEdge> getVisualGraph();
+	public TreeGraph<LayoutNode, LayoutEdge> getVisualGraph();
 
 	/**
 	 * Clear all elements of the view.
@@ -100,22 +100,22 @@ public interface IGraphVisualiser {
 	 * 
 	 * @param node The node to remove.
 	 */
-	public void removeView(VisualNode node);
+	public void removeView(LayoutNode node);
 
 	/**
 	 * Actions required to remove all visual elements of an edge.
 	 * 
 	 * @param edge The edge to remove
 	 */
-	public void removeView(VisualEdge edge);
+	public void removeView(LayoutEdge edge);
 
 	/**
 	 * Actions required to create visual elements depicting a new parent-child
 	 * relationship.
 	 * 
-	 * @param child The child {@link VisualNode} of the relationship.
+	 * @param child The child {@link LayoutNode} of the relationship.
 	 */
-	public void onNewParent(VisualNode child);
+	public void onNewParent(LayoutNode child);
 
 	/**
 	 * Re-apply the layout algorithm.
@@ -130,29 +130,29 @@ public interface IGraphVisualiser {
 	 * @param sideline      Place all isolated nodes to one side.
 	 * @param duration      Duration in ms of animation.
 	 */
-	public void doLayout(VisualNode root, double jitterFaction, LayoutType layoutType, boolean pcShowing,
+	public void doLayout(LayoutNode root, double jitterFaction, LayoutType layoutType, boolean pcShowing,
 			boolean xlShowing, boolean sideline, double duration);
 
 	/**
-	 * Remove visual elements between this child {@link VisualNode} and its parent.
+	 * Remove visual elements between this child {@link LayoutNode} and its parent.
 	 * 
 	 * @param child The child node.
 	 */
-	public void onRemoveParentLink(VisualNode child);
+	public void onRemoveParentLink(LayoutNode child);
 
 	/**
-	 * Update {@link VisualNode} after being renamed.
+	 * Update {@link LayoutNode} after being renamed.
 	 * 
-	 * @param node The {@link VisualNode} to update.
+	 * @param node The {@link LayoutNode} to update.
 	 */
-	public void onNodeRenamed(VisualNode node);
+	public void onNodeRenamed(LayoutNode node);
 
 	/**
-	 * Update {@link VisualEdge} after being renamed.
+	 * Update {@link LayoutEdge} after being renamed.
 	 * 
-	 * @param edge The {@link VisualEdge} to update.
+	 * @param edge The {@link LayoutEdge} to update.
 	 */
-	public void onEdgeRenamed(VisualEdge edge);
+	public void onEdgeRenamed(LayoutEdge edge);
 
 	/**
 	 * Highlight all parts of the graph within the given depth of the given root
@@ -161,7 +161,7 @@ public interface IGraphVisualiser {
 	 * @param centerNode The node at the center of the local graph.
 	 * @param depth      Maximum path depth in the display.
 	 */
-	public void onHighlightLocalGraph(VisualNode centerNode, int depth);
+	public void onHighlightLocalGraph(LayoutNode centerNode, int depth);
 
 	/**
 	 * Return view to normal after highlighting a local portion.
@@ -178,18 +178,18 @@ public interface IGraphVisualiser {
 	 * Update the view after rollback to a previous state of the configuration graph
 	 * and the ModelMaker controls.
 	 * 
-	 * @param layoutGraph The layout graph of {@link VisualNode} and
-	 *                    {@link VisualEdge}.
+	 * @param layoutGraph The layout graph of {@link LayoutNode} and
+	 *                    {@link LayoutEdge}.
 	 */
-	public void onRollback(TreeGraph<VisualNode, VisualEdge> layoutGraph);
+	public void onRollback(TreeGraph<LayoutNode, LayoutEdge> layoutGraph);
 
 	/**
 	 * Update the view when a new root is chosen for the layout. This method should
 	 * not re-apply the layout. If the root is null the true root of the graph is
 	 * used ({@link World}).
 	 * 
-	 * @param root {@link VisualNode} that is now the root of the layout (can be
+	 * @param root {@link LayoutNode} that is now the root of the layout (can be
 	 *             null).
 	 */
-	public void setLayoutRoot(VisualNode root);
+	public void setLayoutRoot(LayoutNode root);
 }

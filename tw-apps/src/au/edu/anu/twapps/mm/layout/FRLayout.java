@@ -35,8 +35,8 @@ import java.util.List;
 import java.util.Random;
 
 import au.edu.anu.omhtk.rng.Pcg32;
-import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
-import au.edu.anu.twapps.mm.visualGraph.VisualNode;
+import au.edu.anu.twapps.mm.layoutGraph.LayoutEdge;
+import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
@@ -69,13 +69,13 @@ public class FRLayout implements ILayout {
 	 * @param includeCrossLinks       Include cross-link edges in the display
 	 * @param sideline                Place any isolated vertices to one side
 	 */
-	public FRLayout(TreeGraph<VisualNode, VisualEdge> graph, boolean includeParentChildEdges, boolean includeCrossLinks,
+	public FRLayout(TreeGraph<LayoutNode, LayoutEdge> graph, boolean includeParentChildEdges, boolean includeCrossLinks,
 			boolean sideline) {
 		vertices = new ArrayList<>();
 		edges = new ArrayList<>();
 		isolated = new ArrayList<>();
 		/* make vertices of all visible nodes */
-		for (VisualNode v : graph.nodes()) {
+		for (LayoutNode v : graph.nodes()) {
 			if (!v.isCollapsed() && v.isVisible()) {
 				vertices.add(new FRVertex(v));
 			}
@@ -94,9 +94,9 @@ public class FRLayout implements ILayout {
 		/* collect all visible edges */
 		for (FRVertex v : vertices) {
 			// add parent/children edges
-			VisualNode vn = v.getNode();
+			LayoutNode vn = v.getNode();
 			if (includeParentChildEdges)
-				for (VisualNode cn : vn.getChildren())
+				for (LayoutNode cn : vn.getChildren())
 					if (!cn.isCollapsed() && cn.isVisible()) {
 						FRVertex u = Node2Vertex(cn);
 						edges.add(new Duple<FRVertex, FRVertex>(v, u));
@@ -107,9 +107,9 @@ public class FRLayout implements ILayout {
 			// add xlink edges
 			if (includeCrossLinks) {
 				for (Edge e : vn.edges(Direction.OUT)) {
-					VisualEdge ve = (VisualEdge) e;
+					LayoutEdge ve = (LayoutEdge) e;
 					if (ve.isVisible()) {
-						VisualNode endNode = (VisualNode) ve.endNode();
+						LayoutNode endNode = (LayoutNode) ve.endNode();
 						if (!endNode.isCollapsed() && endNode.isVisible()) {
 							FRVertex u = Node2Vertex(endNode);
 							edges.add(new Duple<FRVertex, FRVertex>(v, u));
@@ -134,7 +134,7 @@ public class FRLayout implements ILayout {
 		}
 	}
 
-	private FRVertex Node2Vertex(VisualNode vn) {
+	private FRVertex Node2Vertex(LayoutNode vn) {
 		for (FRVertex v : vertices)
 			if (v.getNode().id().equals(vn.id()))
 				return v;

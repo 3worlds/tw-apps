@@ -29,7 +29,7 @@
 
 package au.edu.anu.twapps.mm.layout;
 
-import au.edu.anu.twapps.mm.visualGraph.VisualNode;
+import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
 
 /**
  * @author Ian Davies 13 Apr 2020
@@ -51,11 +51,11 @@ public class FRVertex extends VertexAdapter {
 	private boolean hasEdges;
 
 	/**
-	 * Construct a vertex wrapper for a {@link VisualNode}.
+	 * Construct a vertex wrapper for a {@link LayoutNode}.
 	 * 
 	 * @param node The node to wrap.
 	 */
-	public FRVertex(VisualNode node) {
+	public FRVertex(LayoutNode node) {
 		super(node);
 	}
 

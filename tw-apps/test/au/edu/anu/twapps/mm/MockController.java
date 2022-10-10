@@ -33,15 +33,15 @@ import java.io.File;
 import java.util.Collection;
 
 import au.edu.anu.twapps.mm.layout.LayoutType;
-import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
-import au.edu.anu.twapps.mm.visualGraph.VisualNode;
+import au.edu.anu.twapps.mm.layoutGraph.LayoutEdge;
+import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 
-public class MockController implements IMMController{
-	private IMMModel model;
-	private TreeGraph<VisualNode,VisualEdge> graph;
+public class MockController implements MMController{
+	private MMModel model;
+	private TreeGraph<LayoutNode,LayoutEdge> graph;
 	public MockController() {
-		model = new MMModel(this);
+		model = new MMModelImpl(this);
 	}
 
 	@Override
@@ -51,11 +51,11 @@ public class MockController implements IMMController{
 	}
 
 	@Override
-	public void onProjectOpened(TreeGraph<VisualNode, VisualEdge> layoutGraph) {
+	public void onProjectOpened(TreeGraph<LayoutNode, LayoutEdge> layoutGraph) {
 		this.graph=layoutGraph;
 		// Here we would build the graph display and populate the property editors
 		System.out.println("onProjectOpened: "+graph.nNodes());	
-		for (VisualNode n : graph.nodes()) {
+		for (LayoutNode n : graph.nodes()) {
 			System.out.println(n.toString());
 			//System.out.println(n.getConfigNode().toString());
 		}
@@ -71,13 +71,13 @@ public class MockController implements IMMController{
 	}
 
 	@Override
-	public void onNodeSelected(VisualNode n) {
+	public void onNodeSelected(LayoutNode n) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onNewNode(VisualNode n) {
+	public void onNewNode(LayoutNode n) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -108,7 +108,7 @@ public class MockController implements IMMController{
 	}
 
 	@Override
-	public void onNewEdge(VisualEdge e) {
+	public void onNewEdge(LayoutEdge e) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -146,7 +146,7 @@ public class MockController implements IMMController{
 //	}
 
 	@Override
-	public void onRollback(TreeGraph<VisualNode, VisualEdge> layoutGraph) {
+	public void onRollback(TreeGraph<LayoutNode, LayoutEdge> layoutGraph) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -170,7 +170,7 @@ public class MockController implements IMMController{
 	}
 
 	@Override
-	public void doFocusedLayout(VisualNode root, LayoutType layout, double duration) {
+	public void doFocusedLayout(LayoutNode root, LayoutType layout, double duration) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -182,19 +182,19 @@ public class MockController implements IMMController{
 	}
 
 	@Override
-	public void onAddRemoveProperty(VisualNode vn) {
+	public void onAddRemoveProperty(LayoutNode vn) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public VisualNode setLayoutRoot(VisualNode layoutRoot) {
+	public LayoutNode setLayoutRoot(LayoutNode layoutRoot) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public VisualNode getLayoutRoot() {
+	public LayoutNode getLayoutRoot() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -206,13 +206,13 @@ public class MockController implements IMMController{
 	}
 
 	@Override
-	public IMMModel model() {
+	public MMModel model() {
 		// TODO Auto-generated method stub
 		return model;
 	}
 
 	@Override
-	public IGraphVisualiser visualiser() {
+	public GraphVisualiser visualiser() {
 		// TODO Auto-generated method stub
 		return null;
 	}

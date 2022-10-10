@@ -33,27 +33,27 @@ import java.util.Collection;
 
 import au.edu.anu.omhtk.preferences.Preferenceable;
 import au.edu.anu.twapps.mm.layout.LayoutType;
-import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
-import au.edu.anu.twapps.mm.visualGraph.VisualNode;
+import au.edu.anu.twapps.mm.layoutGraph.LayoutEdge;
+import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 
 /**
  * Interface for the controller (cf: <a href=
  * "https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller">MVC</a>)
- * of ModelMaker ({@link MMModel}).
+ * of ModelMaker ({@link MMModelImpl}).
  * 
  * @author Ian Davies - 17 Dec. 2018
  */
-public interface IMMController extends Preferenceable {
+public interface MMController extends Preferenceable {
 
 	/**
-	 * Owners of the controller interface ({@link MMModel}) have a need to directly
+	 * Owners of the controller interface ({@link MMModelImpl}) have a need to directly
 	 * call methods of the visualisation interface. This will be hidden in a future
 	 * release by making all such calls via the controller itself.
 	 * 
 	 * @return interface to the configuration graph visualisation.
 	 */
-	public IGraphVisualiser visualiser();
+	public GraphVisualiser visualiser();
 
 	/**
 	 * Inform the controller that a project is closing. Typically, a controller will
@@ -68,7 +68,7 @@ public interface IMMController extends Preferenceable {
 	 * 
 	 * @param layoutGraph The graph that maintains layout information.
 	 */
-	public void onProjectOpened(TreeGraph<VisualNode, VisualEdge> layoutGraph);
+	public void onProjectOpened(TreeGraph<LayoutNode, LayoutEdge> layoutGraph);
 
 	/**
 	 * Actions to take when a node has been selected by the user.
@@ -76,7 +76,7 @@ public interface IMMController extends Preferenceable {
 	 * 
 	 * @param n The user selected node.
 	 */
-	public void onNodeSelected(VisualNode n);
+	public void onNodeSelected(LayoutNode n);
 
 	/**
 	 * Actions to take when a new node has been added to the configuration graph.
@@ -84,7 +84,7 @@ public interface IMMController extends Preferenceable {
 	 * 
 	 * @param n The newly constructed node
 	 */
-	public void onNewNode(VisualNode n);
+	public void onNewNode(LayoutNode n);
 
 	/**
 	 * Actions to take when a new edge has been added to the configuration graph.
@@ -92,7 +92,7 @@ public interface IMMController extends Preferenceable {
 	 * 
 	 * @param e The newly constructed edge.
 	 */
-	public void onNewEdge(VisualEdge e);
+	public void onNewEdge(LayoutEdge e);
 
 	/**
 	 * Actions to take when a configuration node has been deleted.
@@ -146,7 +146,7 @@ public interface IMMController extends Preferenceable {
 	 * @param layout   The {@link LayoutType} to be used.
 	 * @param duration Time in milliseconds for animation of the action.
 	 */
-	public void doFocusedLayout(VisualNode root, LayoutType layout, double duration);
+	public void doFocusedLayout(LayoutNode root, LayoutType layout, double duration);
 
 	/**
 	 * Set a default title for the ModelMaker window.
@@ -160,12 +160,12 @@ public interface IMMController extends Preferenceable {
 	 * 
 	 * @param layoutGraph The new layout graph.
 	 */
-	public void onRollback(TreeGraph<VisualNode, VisualEdge> layoutGraph);
+	public void onRollback(TreeGraph<LayoutNode, LayoutEdge> layoutGraph);
 
 	// TODO This should be paired with the same process for edge properties.
 	/**
-	 * Queries {@link MMModel} to return all property keys for nodes with the given
-	 * classId. The {@link IGraphVisualiser} requires this to disable editing of
+	 * Queries {@link MMModelImpl} to return all property keys for nodes with the given
+	 * classId. The {@link GraphVisualiser} requires this to disable editing of
 	 * immutable properties.
 	 * <p>
 	 * 
@@ -182,7 +182,7 @@ public interface IMMController extends Preferenceable {
 	 * 
 	 * @param vn the node containing the relevant properties.
 	 */
-	public void onAddRemoveProperty(VisualNode vn);
+	public void onAddRemoveProperty(LayoutNode vn);
 
 	/**
 	 * Set the current layout root. This only has meaning when a tree
@@ -194,7 +194,7 @@ public interface IMMController extends Preferenceable {
 	 *                   true root of the tree. If
 	 * @return the previous layout root.
 	 */
-	public VisualNode setLayoutRoot(VisualNode layoutRoot);
+	public LayoutNode setLayoutRoot(LayoutNode layoutRoot);
 
 	/**
 	 * Gets the current layout root.
@@ -202,7 +202,7 @@ public interface IMMController extends Preferenceable {
 	 * 
 	 * @return current layout root.
 	 */
-	public VisualNode getLayoutRoot();
+	public LayoutNode getLayoutRoot();
 
 	/**
 	 * Actions to take if the layout root name has changed (i.e uptake controls as
@@ -211,10 +211,10 @@ public interface IMMController extends Preferenceable {
 	public void onRootNameChange();
 
 	/**
-	 * The model interface {@link IMMModel} controlled by this controller.
+	 * The model interface {@link MMModel} controlled by this controller.
 	 * <p>
 	 * 
 	 * @return The model interface.
 	 */
-	public IMMModel model();
+	public MMModel model();
 }

@@ -31,8 +31,8 @@ package au.edu.anu.twapps.mm.graphEditor;
 
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.util.IntegerRange;
-import au.edu.anu.twapps.mm.visualGraph.VisualEdge;
-import au.edu.anu.twapps.mm.visualGraph.VisualNode;
+import au.edu.anu.twapps.mm.layoutGraph.LayoutEdge;
+import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
 
@@ -46,18 +46,18 @@ import fr.cnrs.iees.graph.impl.TreeGraphNode;
 public interface VisualNodeEditable {
 
 	/**
-	 * The underlying {@link VisualNode}. Ideally this should not be exposed!
+	 * The underlying {@link LayoutNode}. Ideally this should not be exposed!
 	 * 
-	 * @return The {@link VisualNode} currently selected for editing.
+	 * @return The {@link LayoutNode} currently selected for editing.
 	 */
-	public VisualNode visualNode();
+	public LayoutNode visualNode();
 
 	/**
 	 * The layout graph. Ideally this should not be exposed!
 	 * 
 	 * @return The layout graph.
 	 */
-	public TreeGraph<VisualNode, VisualEdge> visualGraph();
+	public TreeGraph<LayoutNode, LayoutEdge> visualGraph();
 
 	/* true if the this node can have more children of this label */
 	/**
@@ -80,9 +80,9 @@ public interface VisualNodeEditable {
 	/**
 	 * Get the list of out-edges of the currently selected node.
 	 * 
-	 * @return List of {@link VisualEdge} out-edges.
+	 * @return List of {@link LayoutEdge} out-edges.
 	 */
-	public Iterable<VisualEdge> getOutEdges();
+	public Iterable<LayoutEdge> getOutEdges();
 
 	/**
 	 * Ensure that the proposed node name (id) is unique within the scope of the
@@ -109,15 +109,15 @@ public interface VisualNodeEditable {
 	 * @param edgeLabel Edge label.
 	 * @return true is such an edge exists, false otherwise.
 	 */
-	public boolean hasOutEdgeTo(VisualNode endNode, String edgeLabel);
+	public boolean hasOutEdgeTo(LayoutNode endNode, String edgeLabel);
 
 	/**
-	 * Get a list of all {@link VisualNode}s which have edges to them from the
+	 * Get a list of all {@link LayoutNode}s which have edges to them from the
 	 * currently selected node.
 	 * 
-	 * @return List of {@link VisualNode}s than satisfy (can be empty).
+	 * @return List of {@link LayoutNode}s than satisfy (can be empty).
 	 */
-	public Iterable<VisualNode> getOutNodes();
+	public Iterable<LayoutNode> getOutNodes();
 
 	/**
 	 * Query to ask if the currently selected node is referenced in the given table
