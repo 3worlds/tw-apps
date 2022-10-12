@@ -63,7 +63,7 @@ import au.edu.anu.twcore.archetype.TWA;
 import au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrorMsg;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrors;
-import au.edu.anu.twcore.graphState.GraphState;
+import au.edu.anu.twcore.graphState.*;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.userProject.UserProjectLink;
 import fr.cnrs.iees.graph.Direction;
@@ -560,7 +560,7 @@ public class MMModelImpl implements MMModel {
 		new OmugiGraphExporter(Project.makeConfigurationFile()).exportGraph(ConfigGraph.getGraph());
 		new OmugiGraphExporter(Project.makeLayoutFile()).exportGraph(layoutGraph);
 
-		GraphState.clear();
+		GraphStateFactory.clear();
 
 		ConfigGraph.verifyGraph();
 	}
@@ -816,7 +816,7 @@ public class MMModelImpl implements MMModel {
 				return true;
 			}
 		}
-		if (!GraphState.changed())
+		if (!GraphStateFactory.changed())
 			return true;
 
 		switch (DialogsFactory.yesNoCancel("Project has changed",

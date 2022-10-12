@@ -43,7 +43,7 @@ import au.edu.anu.rscs.aot.errorMessaging.impl.SpecificationErrorMsg;
 import au.edu.anu.twcore.archetype.TWA;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrorMsg;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrors;
-import au.edu.anu.twcore.graphState.GraphState;
+import au.edu.anu.twcore.graphState.*;
 import fr.cnrs.iees.graph.impl.ALEdge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
@@ -144,7 +144,7 @@ public class ConfigGraph {
 	}
 
 	private static void dispatchUnsavedProjectError() {
-		if (!ErrorMessageManager.haveErrors() && GraphState.changed())
+		if (!ErrorMessageManager.haveErrors() && GraphStateFactory.changed())
 			ErrorMessageManager.dispatch(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_PROJECT_UNSAVED));
 	}
 

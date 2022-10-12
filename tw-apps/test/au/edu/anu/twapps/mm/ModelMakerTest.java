@@ -32,7 +32,7 @@ package au.edu.anu.twapps.mm;
 import org.junit.jupiter.api.*;
 
 import au.edu.anu.twapps.dialogs.DialogsFactory;
-import au.edu.anu.twcore.graphState.GraphState;
+import au.edu.anu.twcore.graphState.*;
 
 class ModelMakerTest {
 	MockController c;
@@ -41,7 +41,7 @@ class ModelMakerTest {
 	public void init() {
 		DialogsFactory.setImplementation(new MockDialogs());
 		c = new MockController();
-		GraphState.setImplementation(null);
+		GraphStateFactory.setImplementation(null);
 	}
 
 //	@Test

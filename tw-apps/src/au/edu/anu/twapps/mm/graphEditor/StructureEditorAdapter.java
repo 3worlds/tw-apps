@@ -32,18 +32,7 @@ package au.edu.anu.twapps.mm.graphEditor;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -73,7 +62,7 @@ import au.edu.anu.twcore.archetype.tw.OutEdgeXorQuery;
 import au.edu.anu.twcore.archetype.tw.OutNodeXorQuery;
 //import au.edu.anu.twcore.archetype.tw.PropertiesMatchDefinitionQuery;
 import au.edu.anu.twcore.archetype.tw.PropertyXorQuery;
-import au.edu.anu.twcore.graphState.GraphState;
+import au.edu.anu.twcore.graphState.*;
 import au.edu.anu.twcore.project.Project;
 import au.edu.anu.twcore.root.EditableFactory;
 import au.edu.anu.twcore.root.TwConfigFactory;
@@ -702,7 +691,7 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 		connectTo(id, details, duration);
 
 		ConfigGraph.verifyGraph();
-		GraphState.setChanged();
+		GraphStateFactory.setChanged();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -754,7 +743,7 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 	public void onDeleteNode(double duration) {
 		deleteNode(editableNode.visualNode(), duration);
 		controller.onNodeDeleted();
-		GraphState.setChanged();
+		GraphStateFactory.setChanged();
 		ConfigGraph.verifyGraph();
 	}
 
@@ -923,7 +912,7 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 	public void onCollapseTree(LayoutNode childRoot, double duration) {
 		gvisualiser.collapseTreeFrom(childRoot, duration);
 		controller.onTreeCollapse();
-		GraphState.setChanged();
+		GraphStateFactory.setChanged();
 
 	}
 
@@ -934,14 +923,14 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 				gvisualiser.collapseTreeFrom(child, duration);
 		}
 		controller.onTreeCollapse();
-		GraphState.setChanged();
+		GraphStateFactory.setChanged();
 	}
 
 	@Override
 	public void onExpandTree(LayoutNode childRoot, double duration) {
 		gvisualiser.expandTreeFrom(childRoot, duration);
 		controller.onTreeExpand();
-		GraphState.setChanged();
+		GraphStateFactory.setChanged();
 	}
 
 	@Override
@@ -951,7 +940,7 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 				gvisualiser.expandTreeFrom(child, duration);
 		}
 		controller.onTreeExpand();
-		GraphState.setChanged();
+		GraphStateFactory.setChanged();
 	}
 
 	@Override
@@ -959,7 +948,7 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 		editableNode.visualNode().reconnectChild(vnChild);
 		gvisualiser.onNewParent(vnChild);
 		ConfigGraph.verifyGraph();
-		GraphState.setChanged();
+		GraphStateFactory.setChanged();
 	}
 
 	private void deleteTree(LayoutNode root, double duration) {
@@ -977,7 +966,7 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 	public void onDeleteTree(LayoutNode root, double duration) {
 		deleteTree(root, duration);
 		controller.onNodeDeleted();
-		GraphState.setChanged();
+		GraphStateFactory.setChanged();
 		ConfigGraph.verifyGraph();
 	}
 
@@ -1002,7 +991,7 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 		deleteEdge(edge);
 		if (mayHaveProperties)
 			controller.onEdgeDeleted();
-		GraphState.setChanged();
+		GraphStateFactory.setChanged();
 		ConfigGraph.verifyGraph();
 	}
 
@@ -1077,7 +1066,7 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 		if (importGraph != null) {
 			importGraph(importGraph, editableNode.visualNode(), duration);
 			controller.doLayout(duration);
-			GraphState.setChanged();
+			GraphStateFactory.setChanged();
 			ConfigGraph.verifyGraph();
 		}
 	}
@@ -1208,7 +1197,7 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 		cParent.disconnectFrom(cChild);
 		gvisualiser.getLayoutGraph().onParentChanged();
 		ConfigGraph.onParentChanged();
-		GraphState.setChanged();
+		GraphStateFactory.setChanged();
 		ConfigGraph.verifyGraph();
 	}
 
