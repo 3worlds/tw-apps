@@ -33,13 +33,13 @@ package au.edu.anu.twapps.dialogs;
  * A return type for some methods in {@link Dialogs}.
  * <p>
  * This is used to avoid dependence on any types in Javafx to maintain
- * independence from the implementations (i.e something other that javafx).
+ * independence from the implementations.
  * 
  * @author Ian Davies - 25 June 2022
  */
 public enum YesNoCancel {
 	/**
-	 * User want action performed e.g save changes before closing.
+	 * User wants action performed e.g save changes before closing.
 	 */
 	yes,
 	/**

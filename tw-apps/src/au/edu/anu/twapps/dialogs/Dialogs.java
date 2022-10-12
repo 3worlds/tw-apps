@@ -35,8 +35,11 @@ import java.util.List;
 //import javafx.stage.FileChooser.ExtensionFilter;
 
 /**
- * <p>
+ * 
  * Interface for implementation-independent dialogs
+ * <p>
+ * Any implementation of this should install it in the factory with
+ * {@link DialogsFactory#setImplementation(Dialogs}.
  * 
  * @author Ian Davies - 11 Dec. 2018
  */
@@ -44,7 +47,7 @@ public interface Dialogs {
 	/**
 	 * Show dialog to inform user of an error condition.
 	 * 
-	 * @param title   Dialog title
+	 * @param title   Dialog title displayed in the window title bar.
 	 * @param header  Dialog header (can be null)
 	 * @param content Dialog content (can be null)
 	 */

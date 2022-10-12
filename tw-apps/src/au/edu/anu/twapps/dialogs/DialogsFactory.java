@@ -35,7 +35,8 @@ import java.util.List;
  * A factory to instantiate dialogs for the assigned implementation.
  * </p>
  * This class should provide a method for every method defined in
- * {@link Dialogs} interface. It cannot extend {@link Dialogs} because all methods are static.
+ * {@link Dialogs} interface. It cannot extend {@link Dialogs} because all
+ * methods here are static factory methods.
  *
  * @author Ian Davies - 12 Dec. 2018
  * 
@@ -51,7 +52,7 @@ public final class DialogsFactory {
 
 	/**
 	 * Sets the current implementation of the dialogs to be used. This must be done
-	 * when application first starts.
+	 * before any other use of the DialogsFactory.
 	 * 
 	 * @param impl The implementation of {@link Dialogs}.
 	 */
@@ -61,6 +62,8 @@ public final class DialogsFactory {
 
 	/**
 	 * Present dialog to inform user of an error condition.
+	 * <p>
+	 * Throws a nullPointer exception if the implementation has not been set.
 	 * 
 	 * @param title   Dialog title
 	 * @param header  Dialog header (can be null)
@@ -72,6 +75,8 @@ public final class DialogsFactory {
 
 	/**
 	 * Present dialog to supply information to the user.
+	 * <p>
+	 * Throws a nullPointer exception if the implementation has not been set.
 	 * 
 	 * @param title   Dialog title
 	 * @param header  Dialog header (can be null)
@@ -82,7 +87,9 @@ public final class DialogsFactory {
 	}
 
 	/**
-	 * Present dialog to indicate a warning to the user.
+	 * Present dialog to indicate a warning condition to the user.
+	 * <p>
+	 * Throws a nullPointer exception if the implementation has not been set.
 	 * 
 	 * @param title   Dialog title
 	 * @param header  Dialog header (can be null)
@@ -94,6 +101,8 @@ public final class DialogsFactory {
 
 	/**
 	 * Present a dialog for directory selection.
+	 * <p>
+	 * Throws a nullPointer exception if the implementation has not been set.
 	 * 
 	 * @param title       Dialog title
 	 * @param initialPath Initial directory to show.
@@ -105,6 +114,8 @@ public final class DialogsFactory {
 
 	/**
 	 * Dialog to export a file.
+	 * <p>
+	 * Throws a nullPointer exception if the implementation has not been set.
 	 * 
 	 * @param title          Dialog title
 	 * @param promptDir      Initial directory.
@@ -117,8 +128,13 @@ public final class DialogsFactory {
 	}
 
 	/**
-	 * A triple-response dialog. {@link YesNoCancel} is exposed to prevent
-	 * dependency on any Javafx classes.
+	 * A triple-response dialog.
+	 * <p>
+	 * {@link YesNoCancel} is exposed to prevent dependency on any Javafx classes.
+	 * </p>
+	 * <p>
+	 * Throws a nullPointer exception if the implementation has not been set.
+	 * 
 	 * 
 	 * @param title   Dialog title
 	 * @param header  Dialog header (can be null)
@@ -131,6 +147,8 @@ public final class DialogsFactory {
 
 	/**
 	 * Prompts the user for a validated string.
+	 * <p>
+	 * Throws a nullPointer exception if the implementation has not been set.
 	 * 
 	 * @param title         Dialog title
 	 * @param header        Dialog header (can be null)
@@ -145,6 +163,11 @@ public final class DialogsFactory {
 
 	/**
 	 * Dialog to prompt for a file to import into a project.
+	 * <p>
+	 * Implementations should show an error if no Project is open.
+	 * </p>
+	 * <p>
+	 * Throws a nullPointer exception if the implementation has not been set.
 	 * 
 	 * @return File or null if cancelled.
 	 */
@@ -153,9 +176,9 @@ public final class DialogsFactory {
 	}
 
 	/**
-	 * Creates a confirmation dialog using the given implementation (Javafx or
-	 * other).
+	 * Creates a confirmation dialog.
 	 * <p>
+	 * Throws a nullPointer exception if the implementation has not been set.
 	 * 
 	 * @param title   Dialog title text
 	 * @param header  Dialog header text (can be null)
@@ -168,6 +191,8 @@ public final class DialogsFactory {
 
 	/**
 	 * Get a user selected file.
+	 * <p>
+	 * Throws a nullPointer exception if the implementation has not been set.
 	 * 
 	 * @param directory  Directory to open with
 	 * @param title      Dialog title
@@ -180,6 +205,8 @@ public final class DialogsFactory {
 
 	/**
 	 * Presents user with a list of enum options that can be selected or deselected.
+	 * <p>
+	 * Throws a nullPointer exception if the implementation has not been set.
 	 * 
 	 * @param title   Dialog title
 	 * @param header  Dialog header (can be null)
@@ -193,6 +220,8 @@ public final class DialogsFactory {
 
 	/**
 	 * Enables the user to select one string from a list of strings.
+	 * <p>
+	 * Throws a nullPointer exception if the implementation has not been set.
 	 * 
 	 * @param list    List of strings
 	 * @param title   Dialog title
@@ -207,6 +236,8 @@ public final class DialogsFactory {
 	/**
 	 * Presents the user with any number of groups of toggles allowing selection of
 	 * one from each group.
+	 * <p>
+	 * Throws a nullPointer exception if the implementation has not been set.
 	 * 
 	 * @param title   Dialog title
 	 * @param header  Dialog header (can be null)
@@ -221,6 +252,8 @@ public final class DialogsFactory {
 
 	/**
 	 * Show a file save dialog.
+	 * <p>
+	 * Throws a nullPointer exception if the implementation has not been set.
 	 * 
 	 * @param directory Initial directory
 	 * @param title     Dialog title
@@ -233,6 +266,8 @@ public final class DialogsFactory {
 
 	/**
 	 * Show a file open dialog.
+	 * <p>
+	 * Throws a nullPointer exception if the implementation has not been set.
 	 * 
 	 * @param directory Initial directory
 	 * @param title     Dialog title
@@ -245,6 +280,8 @@ public final class DialogsFactory {
 
 	/**
 	 * Get the owning window of the dialog implementation.
+	 * <p>
+	 * Throws a nullPointer exception if the implementation has not been set.
 	 * 
 	 * @return Owning object.
 	 */
@@ -254,6 +291,8 @@ public final class DialogsFactory {
 
 	/**
 	 * Select one file from a list of files.
+	 * <p>
+	 * Throws a nullPointer exception if the implementation has not been set.
 	 * 
 	 * @param files         The file list
 	 * @param initSelection zero-based index of initial selection.
@@ -265,6 +304,8 @@ public final class DialogsFactory {
 
 	/**
 	 * Select any number of entries from a list of strings.
+	 * <p>
+	 * Throws a nullPointer exception if the implementation has not been set.
 	 * 
 	 * @param title    Dialog title
 	 * @param header   Dialog header (may be null).
@@ -277,71 +318,27 @@ public final class DialogsFactory {
 		return impl.getCBSelections(title, header, items, selected);
 	}
 
-//	public static boolean isValid(String s, String regex) {
-//		Pattern pattern = Pattern.compile(regex);
-//		Matcher matcher = pattern.matcher(s);
-//		return matcher.matches();
-//	}
-
-//	public static final String vsInteger = "([0-9]*)?";
 	/**
 	 * regex for all chars of a floating point number
 	 */
-	public static final String vsReal = "[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?";
-//	public static final String vsReal2 = "^-?\\d+(,\\d+)*(\\.\\d+(e\\d+)?)?$";
-//	public static final String vsAlpha = "([a-zA-Z]*)?";
+	public static final String REGX_REAL = "[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?";
+	/**
+	 * regex string for any alphabetic character.
+	 */
+	public static final String REGX_ALPHA = "([a-zA-Z]*)?";
 	/**
 	 * regex string for alpha-numeric characters.
 	 */
-	public static final String vsAlphaNumeric = "([a-zA-Z0-9]*)?";
+	public static final String REGX_ALPHA_NUMERIC = "([a-zA-Z0-9]*)?";
 	/**
 	 * regex string for alpha-numeric chars or blank space. This may need to change!
 	 * It is used to allow the user to return an empty string but this is bad
 	 * practice. The user should choose cancel!
 	 */
-	public static final String vsAlphaAlphaNumericSpace = "([a-zA-Z][a-zA-Z0-9 ]*)?";
+	public static final String REGX_ALPHA_NUMERIC_SPACE = "([a-zA-Z][a-zA-Z0-9 ]*)?";
 	/**
 	 * regex for Alpha-numeric string starting with uppercase.
 	 */
-	public static final String vsAlphaCapAlphaNumeric = "([A-Z][a-zA-Z0-9]*)?";
+	public static final String REGX_ALPHA_CAP_NUMERIC = "([A-Z][a-zA-Z0-9]*)?";
 
-//	public static final String test = "([*a-zA-Z][a-zA-Z0-9 *]*)?";
-
-//	public static void main(String[] args) {
-//
-//		String regex = vsReal;
-//
-//		List<String> names = new ArrayList<String>();
-//		names.add("prj1"); // 1
-//		names.add("1prj"); // 2
-//		names.add("*)(*"); // 3
-//		names.add("123"); // 4
-//		names.add("1"); // 5
-//		names.add("abc"); // 6
-//		names.add("Abc"); // 7
-//		names.add("ABC"); // 8
-//		names.add("a"); // 9
-//		names.add("A"); // 10
-//		names.add(""); // 11
-//		names.add("BlahAndBlah");// 12
-//		names.add("Blah And              Blah");// 13
-//		names.add(" Blah And Blah");// 14
-//		names.add(" Blah");// 15
-//		names.add("*Blah");// 16
-//		names.add("*Blah*");// 17
-//		names.add("*Bl*ah*");// 18
-//		names.add("0.0");// 19
-//		names.add(".1");// 20
-//		names.add("");// 21
-//		names.add(".");// 22
-//		names.add("0.");// 23
-//
-//		Pattern pattern = Pattern.compile(regex);
-//		System.out.println(regex);
-//		for (int i = 0; i < names.size(); i++) {
-//			String name = names.get(i);
-//			Matcher matcher = pattern.matcher(name);
-//			System.out.println((i + 1) + ") " + matcher.matches() + "\t'" + name + "'");
-//		}
-//	}
 }

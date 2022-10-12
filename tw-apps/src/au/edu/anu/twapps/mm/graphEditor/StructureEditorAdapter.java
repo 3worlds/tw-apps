@@ -237,7 +237,7 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 		String[] labels = ref.split(":/");
 		int end = labels.length - 1;
 		List<LayoutNode> result = new ArrayList<>();
-		TreeGraph<LayoutNode, LayoutEdge> vg = gvisualiser.getVisualGraph();
+		TreeGraph<LayoutNode, LayoutEdge> vg = gvisualiser.getLayoutGraph();
 		for (LayoutNode vn : vg.nodes()) {
 			if (vn.configNode().classId().equals(labels[end])) {
 				if (end == 0)
@@ -470,9 +470,9 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 	}
 
 	private String promptForNewNode(String label, String promptName, boolean capitalize) {
-		String strPattern = DialogsFactory.vsAlphaAlphaNumericSpace;
+		String strPattern = DialogsFactory.REGX_ALPHA_NUMERIC_SPACE;
 		if (capitalize)
-			strPattern = DialogsFactory.vsAlphaCapAlphaNumeric;
+			strPattern = DialogsFactory.REGX_ALPHA_CAP_NUMERIC;
 		return DialogsFactory.getText("'" + label + "' element name.", "", "Name:", promptName, strPattern);
 	}
 
@@ -893,7 +893,7 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 					candidate = true;
 			}
 			if (candidate) {
-				text = findReplace(DialogsFactory.vsAlphaNumeric, from, to, text);
+				text = findReplace(DialogsFactory.REGX_ALPHA_NUMERIC, from, to, text);
 				String[] lines = text.split("\\n");
 				if (lines.length < t.size()) {
 					for (int j = lines.length; j < t.size(); j++)
@@ -1206,7 +1206,7 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 		gvisualiser.onRemoveParentLink(vChild);
 		vParent.disconnectFrom(vChild);
 		cParent.disconnectFrom(cChild);
-		gvisualiser.getVisualGraph().onParentChanged();
+		gvisualiser.getLayoutGraph().onParentChanged();
 		ConfigGraph.onParentChanged();
 		GraphState.setChanged();
 		ConfigGraph.verifyGraph();

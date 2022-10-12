@@ -37,30 +37,29 @@ import au.edu.anu.twcore.root.World;
 
 /**
  * 
- * Interface for the "view" of <a href=
+ * Interface for the "view" component of <a href=
  * "https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller">Model-View-Controller</a>
+ * pattern for displaying an interactive graph.
  * 
  * @author Ian Davies - 9 Aug 2019
  */
 public interface GraphVisualiser {
 	/**
-	 * Actions required to build the initial view from the graph.
+	 * Build the initial view from the graph.
 	 * 
 	 * @param duration Duration in ms of animations.
 	 */
 	public void initialiseView(double duration);
 
 	/**
-	 * Actions required to add visualisation elements for a node newly added to the
-	 * graph.
+	 * Add visual elements when adding a new node to the graph.
 	 * 
 	 * @param node The node to add to the view.
 	 */
 	public void onNewNode(LayoutNode node);
 
 	/**
-	 * Actions required to add visualisation elements for an edge newly added to the
-	 * graph.
+	 * Add visual elements when adding a new edge to the graph.
 	 * 
 	 * @param edge     Edge that has been added.
 	 * @param duration Duration in ms of animation.
@@ -68,7 +67,7 @@ public interface GraphVisualiser {
 	public void onNewEdge(LayoutEdge edge, double duration);
 
 	/**
-	 * Actions required to collapse a sub-tree to the given root.
+	 * Collapse a sub-tree to the given root.
 	 * 
 	 * @param root     Root of the sub-tree to be hidden.
 	 * @param duration Duration in ms of animation.
@@ -76,7 +75,7 @@ public interface GraphVisualiser {
 	public void collapseTreeFrom(LayoutNode root, double duration);
 
 	/**
-	 * Actions required to expand a sub-tree from the given root.
+	 * Expand a sub-tree from the given root.
 	 * 
 	 * @param root     Root of the sub-tree to be expanded.
 	 * @param duration Duration in ms of animation.
@@ -88,7 +87,7 @@ public interface GraphVisualiser {
 	 * 
 	 * @return layout graph.
 	 */
-	public TreeGraph<LayoutNode, LayoutEdge> getVisualGraph();
+	public TreeGraph<LayoutNode, LayoutEdge> getLayoutGraph();
 
 	/**
 	 * Clear all elements of the view.
@@ -96,22 +95,21 @@ public interface GraphVisualiser {
 	public void close();
 
 	/**
-	 * Actions required to remove all visual elements of a node.
+	 * Remove all visual elements associated with the given node.
 	 * 
 	 * @param node The node to remove.
 	 */
 	public void removeView(LayoutNode node);
 
 	/**
-	 * Actions required to remove all visual elements of an edge.
+	 * Remove all visual elements associated with a given edge.
 	 * 
 	 * @param edge The edge to remove
 	 */
 	public void removeView(LayoutEdge edge);
 
 	/**
-	 * Actions required to create visual elements depicting a new parent-child
-	 * relationship.
+	 * Create visual elements depicting a new parent-child relationship.
 	 * 
 	 * @param child The child {@link LayoutNode} of the relationship.
 	 */

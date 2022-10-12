@@ -55,8 +55,7 @@ import au.edu.anu.twcore.project.Project;
  */
 public interface MMModel extends Originator {
 	/**
-	 * Query to ask the user to confirm closing an open {@link Project}.
-	 * <p>
+	 * Prompt the user to confirm closing an open {@link Project}.
 	 * 
 	 * @return true if confirmed (file is saved or user does not want the file
 	 *         saved) and false if user cancels the operation.
@@ -77,7 +76,6 @@ public interface MMModel extends Originator {
 
 	/**
 	 * Actions required when proposing to open a {@link Project} from disk.
-	 * <p>
 	 * 
 	 * @param directory the {@link Project} directory.
 	 */
@@ -106,7 +104,6 @@ public interface MMModel extends Originator {
 
 	/**
 	 * Query to determine if a property is immutable.
-	 * <p>
 	 * 
 	 * @param classId Class name of the element (node/edge) containing the property.
 	 * @param key     Property key
@@ -116,7 +113,6 @@ public interface MMModel extends Originator {
 
 	/**
 	 * A collection of all immutable property keys for elements of this class name.
-	 * <p>
 	 * 
 	 * @param classId The element (node/edge) class name.
 	 * @return List of keys (can be empty).
@@ -125,7 +121,6 @@ public interface MMModel extends Originator {
 
 	/**
 	 * Actions required to retore the configuration graph to a previous state.
-	 * <p>
 	 * 
 	 * @param m {@link MMMemento} containing state information.
 	 */

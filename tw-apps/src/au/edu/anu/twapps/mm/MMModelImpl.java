@@ -872,7 +872,7 @@ public class MMModelImpl implements MMModel {
 		boolean modified = true;
 		String result = scope.newId(false, proposedId).id();
 		while (modified) {
-			String userName = DialogsFactory.getText(title, header, content, result, DialogsFactory.vsAlphaCapAlphaNumeric);
+			String userName = DialogsFactory.getText(title, header, content, result, DialogsFactory.REGX_ALPHA_CAP_NUMERIC);
 			if (userName == null)
 				return null;
 

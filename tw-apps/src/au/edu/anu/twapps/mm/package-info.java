@@ -9,7 +9,6 @@
  * "Model-View-Controller interfaces"/>
  * </p>
  * 
- * <p>
  * 
  * @author Ian Davies - 10 Jan. 2019
  */

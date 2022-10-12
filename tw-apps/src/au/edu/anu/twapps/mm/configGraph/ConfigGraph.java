@@ -52,7 +52,7 @@ import fr.cnrs.iees.twcore.generators.ProjectJarGenerator;
 import au.edu.anu.twcore.project.Project;
 
 /**
- * A static singleton class to manage the configuration graph
+ * A static singleton class to manage the configuration graph.
  * 
  * @author Ian Davies - 13 Aug 2019
  */
@@ -98,8 +98,58 @@ public class ConfigGraph {
 	 */
 	private static ExecutorService executor;
 
+	private static void dispatchSpecificationErrors() {
+		Iterable<ErrorMessagable> specErrors = TWA.checkSpecifications(graph);
+		if (specErrors != null) {
+			for (ErrorMessagable e : specErrors) {
+				SpecificationErrorMsg se = (SpecificationErrorMsg) e;
+				ModelBuildErrorMsg mbem = new ModelBuildErrorMsg(ModelBuildErrors.SPECIFICATION, se, graph);
+				ErrorMessageManager.dispatch(mbem);
+			}
+		}
+	}
+
+	private static void dispatchCompilerMissing() {
+		if (!ErrorMessageManager.haveErrors()) {
+			boolean haveCompiler = !(ToolProvider.getSystemJavaCompiler() == null);
+			if (!haveCompiler)
+				ErrorMessageManager.dispatch(new ModelBuildErrorMsg(ModelBuildErrors.COMPILER_MISSING));
+		}
+
+	}
+
+	private static void compileGraph() {
+		if (!ErrorMessageManager.haveErrors()) {
+			CodeGenerator gen = new CodeGenerator(graph);
+			gen.generate();
+		}
+	}
+
+	private static void createProjectJar() {
+		if (!ErrorMessageManager.haveErrors()) {
+			ProjectJarGenerator gen = new ProjectJarGenerator();
+			gen.generate(graph);
+		}
+
+	}
+
+	private static void dispatchMissingResource() {
+		if (!ErrorMessageManager.haveErrors()) {
+			File file = new File(Project.TW_HOME + File.separator + Project.TW_DEP_JAR);
+			if (!file.exists())
+				ErrorMessageManager.dispatch(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_RESOURCE_MISSING,
+						Project.TW_DEP_JAR, Project.TW_HOME));
+
+		}
+	}
+
+	private static void dispatchUnsavedProjectError() {
+		if (!ErrorMessageManager.haveErrors() && GraphState.changed())
+			ErrorMessageManager.dispatch(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_PROJECT_UNSAVED));
+	}
+
 	/**
-	 * Execute graph verification.
+	 * Execute graph verification in a separate thread.
 	 */
 	public static void verifyGraph() {
 		// calls listeners ie. mm controller to set buttons and clear display
@@ -115,44 +165,13 @@ public class ConfigGraph {
 		 */
 		Runnable checkTask = () -> {
 			try {
-				Iterable<ErrorMessagable> specErrors = TWA.checkSpecifications(graph);
-				if (specErrors != null) {
-					for (ErrorMessagable e : specErrors) {
-						SpecificationErrorMsg se = (SpecificationErrorMsg) e;
-						ModelBuildErrorMsg mbem = new ModelBuildErrorMsg(ModelBuildErrors.SPECIFICATION, se, graph);
-						ErrorMessageManager.dispatch(mbem);
-					}
-				}
-				if (!ErrorMessageManager.haveErrors()) {
-					boolean haveCompiler = !(ToolProvider.getSystemJavaCompiler() == null);
-					if (!haveCompiler)
-						ErrorMessageManager.dispatch(new ModelBuildErrorMsg(ModelBuildErrors.COMPILER_MISSING));
-				}
-
-				if (!ErrorMessageManager.haveErrors()) {
-					CodeGenerator gen = new CodeGenerator(graph);
-					gen.generate();
-				}
-
-				if (!ErrorMessageManager.haveErrors()) {
-					if (graph == null)
-						throw new NullPointerException("Graph is null in ValidateGraph");
-					ProjectJarGenerator gen = new ProjectJarGenerator();
-					gen.generate(graph);
-				}
-
-				if (!ErrorMessageManager.haveErrors()) {
-					File file = new File(Project.TW_HOME + File.separator + Project.TW_DEP_JAR);
-					if (!file.exists())
-						ErrorMessageManager.dispatch(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_RESOURCE_MISSING,
-								Project.TW_DEP_JAR, Project.TW_HOME));
-
-				}
-				if (!ErrorMessageManager.haveErrors() && GraphState.changed())
-					ErrorMessageManager.dispatch(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_PROJECT_UNSAVED));
-
+				dispatchSpecificationErrors();
+				dispatchCompilerMissing();
+				compileGraph();
+				createProjectJar();
+				dispatchMissingResource();
+				dispatchUnsavedProjectError();
 				ErrorMessageManager.endCheck();
-
 			} catch (Throwable e) {
 				e.printStackTrace();
 			}

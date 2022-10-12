@@ -38,18 +38,20 @@ import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 
 /**
- * Interface for the controller (cf: <a href=
- * "https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller">MVC</a>)
- * of ModelMaker ({@link MMModelImpl}).
+ * Interface for the 'controller' component of a (cf: <a href=
+ * "https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller">Model-View-Controller</a>)
+ * of ModelMaker.
+ * 
+ * @see MMModelImpl
  * 
  * @author Ian Davies - 17 Dec. 2018
  */
 public interface MMController extends Preferenceable {
 
 	/**
-	 * Owners of the controller interface ({@link MMModelImpl}) have a need to directly
-	 * call methods of the visualisation interface. This will be hidden in a future
-	 * release by making all such calls via the controller itself.
+	 * Owners of the controller interface ({@link MMModelImpl}) have a need to
+	 * directly call methods of the visualisation interface. This will be hidden in
+	 * a future release by making all such calls via the controller itself.
 	 * 
 	 * @return interface to the configuration graph visualisation.
 	 */
@@ -62,9 +64,8 @@ public interface MMController extends Preferenceable {
 	public void onProjectClosing();
 
 	/**
-	 * Actions to take when a new project is opened. The controller will ask the
-	 * view to build itself based upon information in the layout graph.
-	 * <p>
+	 * Once a project is opened, the controller will ask the view to build itself
+	 * based upon information in the layout graph.
 	 * 
 	 * @param layoutGraph The graph that maintains layout information.
 	 */
@@ -72,40 +73,39 @@ public interface MMController extends Preferenceable {
 
 	/**
 	 * Actions to take when a node has been selected by the user.
-	 * <p>
 	 * 
-	 * @param n The user selected node.
+	 * @param selectedNode The user-selected node.
 	 */
-	public void onNodeSelected(LayoutNode n);
+	public void onNodeSelected(LayoutNode selectedNode);
 
 	/**
 	 * Actions to take when a new node has been added to the configuration graph.
-	 * <p>
 	 * 
-	 * @param n The newly constructed node
+	 * @param newNode The newly constructed node
 	 */
-	public void onNewNode(LayoutNode n);
+	public void onNewNode(LayoutNode newNode);
 
 	/**
 	 * Actions to take when a new edge has been added to the configuration graph.
 	 * <p>
 	 * 
-	 * @param e The newly constructed edge.
+	 * @param newEdge The newly constructed edge.
 	 */
-	public void onNewEdge(LayoutEdge e);
+	public void onNewEdge(LayoutEdge newEdge);
 
 	/**
-	 * Actions to take when a configuration node has been deleted.
+	 * Actions to take when any configuration node has been deleted.
 	 */
 	public void onNodeDeleted();
 
 	/**
-	 * Actions to take when a configuration edge has been deleted.
+	 * Actions to take when any configuration edge has been deleted.
 	 */
 	public void onEdgeDeleted();
 
 	/**
-	 * Actions to take when a configuration element (node or edge) has been renamed.
+	 * Actions to take when any configuration element (node or edge) has been
+	 * renamed.
 	 */
 	public void onElementRenamed();
 
@@ -122,7 +122,6 @@ public interface MMController extends Preferenceable {
 	/**
 	 * Actions to take when the properties of an element (node or edge) have
 	 * changed.
-	 * <p>
 	 * 
 	 * @param item The element that has had changes to its properties. Its class
 	 *             will be implementation specific.
@@ -131,22 +130,22 @@ public interface MMController extends Preferenceable {
 
 	/**
 	 * Apply the current layout algorithm to the graph visualisation.
-	 * <p>
 	 * 
-	 * @param duration Time in milliseconds for animation of the action
+	 * @param durationInMilliSec Time in milliseconds for animation of the action
 	 */
-	public void doLayout(double duration);
+	public void doLayout(double durationInMilliSec);
 
 	/**
 	 * Apply the given layout algorithm using given node as the root.
 	 * <p>
 	 * 
-	 * @param root     The node that will form the root of the layout (ignored if
-	 *                 the current layout algorithm is not a tree layout).
-	 * @param layout   The {@link LayoutType} to be used.
-	 * @param duration Time in milliseconds for animation of the action.
+	 * @param root               The node that will form the root of the layout
+	 *                           (ignored if the current layout algorithm is not a
+	 *                           tree layout).
+	 * @param layoutType         The {@link LayoutType} to be used.
+	 * @param durationInMilliSec Time in milliseconds for animation of the action.
 	 */
-	public void doFocusedLayout(LayoutNode root, LayoutType layout, double duration);
+	public void doFocusedLayout(LayoutNode root, LayoutType layoutType, double durationInMilliSec);
 
 	/**
 	 * Set a default title for the ModelMaker window.
@@ -156,17 +155,15 @@ public interface MMController extends Preferenceable {
 	/**
 	 * Actions to take when the configuration graph has been rolled back to some
 	 * other previously saved state.
-	 * <p>
 	 * 
 	 * @param layoutGraph The new layout graph.
 	 */
 	public void onRollback(TreeGraph<LayoutNode, LayoutEdge> layoutGraph);
 
-	// TODO This should be paired with the same process for edge properties.
 	/**
-	 * Queries {@link MMModelImpl} to return all property keys for nodes with the given
-	 * classId. The {@link GraphVisualiser} requires this to disable editing of
-	 * immutable properties.
+	 * Queries {@link MMModelImpl} to return all property keys for nodes with the
+	 * given classId. The {@link GraphVisualiser} requires this to disable editing
+	 * of immutable properties.
 	 * <p>
 	 * 
 	 * @param classId The class of node.
@@ -175,30 +172,27 @@ public interface MMController extends Preferenceable {
 	 */
 	public Collection<String> getUnEditablePropertyKeys(String classId);
 
-	// TODO This should be paired with the same process for edge properties.
 	/**
 	 * Actions to take when optional properties are added or removed from a node.
 	 * <p>
 	 * 
-	 * @param vn the node containing the relevant properties.
+	 * @param propertyOwner the node containing the relevant properties.
 	 */
-	public void onAddRemoveProperty(LayoutNode vn);
+	public void onAddRemoveProperty(LayoutNode propertyOwner);
 
 	/**
 	 * Set the current layout root. This only has meaning when a tree
 	 * {@link LayoutType} is used. If layoutRoot is null, the new root will be the
 	 * true root of the tree, even if the tree is broken.
-	 * <p>
 	 * 
 	 * @param layoutRoot The new layout root. If null, the layout root will be the
-	 *                   true root of the tree. If
+	 *                   true root of the tree.
 	 * @return the previous layout root.
 	 */
 	public LayoutNode setLayoutRoot(LayoutNode layoutRoot);
 
 	/**
 	 * Gets the current layout root.
-	 * <p>
 	 * 
 	 * @return current layout root.
 	 */
