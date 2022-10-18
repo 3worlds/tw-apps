@@ -40,13 +40,13 @@ import fr.ens.biologie.generic.utils.Tuple;
 /**
  * Interface for the graph structure editor for ModelMaker. All these methods
  * are in the context of a single user-selected node. This node, represented by
- * {@link VisualNodeEditable} is assumed available in implementations of this
+ * {@link VisualNodeEditor} is assumed available in implementations of this
  * interface.
  * 
  * @author Ian Davies - 11 Jan. 2019
  * 
  */
-public interface StructureEditable {
+public interface StructureEditor {
 
 	/**
 	 * Filters the list of potential child specifications to just those applicable
@@ -60,10 +60,6 @@ public interface StructureEditable {
 	 */
 	public List<SimpleDataTreeNode> filterChildSpecs(Iterable<SimpleDataTreeNode> childNodeSpecs);
 
-	/*
-	 * Filters a list of edgeSpecs to produce a list of Tuples of edge labels and
-	 * end nodes
-	 */
 	/**
 	 * Filters the list of potential out-edge specifications to just those
 	 * applicable to the current state of the configuration graph (e.g.
@@ -76,7 +72,6 @@ public interface StructureEditable {
 	 */
 	public List<Tuple<String, LayoutNode, SimpleDataTreeNode>> filterEdgeSpecs(Iterable<SimpleDataTreeNode> edgeSpecs);
 
-	/* list of nodes that are eligible children of the edit node */
 	/**
 	 * Returns a list of nodes without parents whose specifications appear in the
 	 * childSpecs list. This situation can arise when editing the configuration

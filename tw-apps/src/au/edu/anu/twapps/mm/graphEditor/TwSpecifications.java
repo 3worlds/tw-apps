@@ -73,9 +73,10 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 public class TwSpecifications implements //
 		Specifications {
 
+	
 	@SuppressWarnings("unchecked")
 	@Override
-	public SimpleDataTreeNode getSpecsOf(VisualNodeEditable editNode, TreeNode root, Set<String> discoveredFiles) {
+	public SimpleDataTreeNode getSpecsOf(VisualNodeEditor editNode, TreeNode root, Set<String> discoveredFiles) {
 		for (TreeNode childSpec : root.getChildren()) {
 			if (isOfClass((SimpleDataTreeNode) childSpec, editNode.visualNode().configNode().classId())) {
 				StringTable parentsSpecTable = (StringTable) ((SimpleDataTreeNode) childSpec).properties()
@@ -84,7 +85,6 @@ public class TwSpecifications implements //
 				// Dodgy: the parentTable is unknown during an import;
 				if (parentsTable == null)
 					return (SimpleDataTreeNode) childSpec;
-//				else if (equals(parentsTable, parentsSpecTable)) {
 				else if (parentsTable.equals(parentsSpecTable)) {
 					DataHolder dh = (DataHolder) childSpec;
 					if (dh.properties().hasProperty(Archetypes.HAS_ID)) {
@@ -119,7 +119,7 @@ public class TwSpecifications implements //
 	@SuppressWarnings("unchecked")
 	@Override
 	public SimpleDataTreeNode getSubSpecsOf(SimpleDataTreeNode baseSpecs, Class<? extends TreeNode> subClass) {
-		// multiple stopping condtions have many entries of IsOfClass
+		// multiple stopping conditions have many entries of IsOfClass
 		if (subClass != null) {
 			String parent = (String) baseSpecs.properties().getPropertyValue(Archetypes.IS_OF_CLASS);
 			Tree<?> subClassTree = getSubArchetype(baseSpecs, subClass);
@@ -144,10 +144,8 @@ public class TwSpecifications implements //
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Iterable<SimpleDataTreeNode> getChildSpecsOf(VisualNodeEditable editNode, SimpleDataTreeNode parentSpec,
+	public Iterable<SimpleDataTreeNode> getChildSpecsOf(VisualNodeEditor editNode, SimpleDataTreeNode parentSpec,
 			SimpleDataTreeNode parentSubSpec, TreeNode root) {
-		// String parentLabel = (String)
-		// parentSpec.properties().getPropertyValue(aaIsOfClass);
 		List<SimpleDataTreeNode> children = (List<SimpleDataTreeNode>) get(root.getChildren(),
 				selectZeroOrMany(hasProperty(Archetypes.HAS_PARENT)));
 		// could have a query here for finding a parent in a parent Stringtable

@@ -29,144 +29,105 @@
 
 package au.edu.anu.twapps.mm.graphEditor;
 
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
-import java.util.ArrayList;
-import java.util.List;
-
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.util.IntegerRange;
 import au.edu.anu.twapps.mm.layoutGraph.LayoutEdge;
 import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
-import au.edu.anu.twcore.archetype.TWA;
-import fr.cnrs.iees.OmugiClassLoader;
-import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.TreeNode;
-import fr.cnrs.iees.graph.impl.ALEdge;
-import fr.cnrs.iees.graph.impl.ALNode;
 import fr.cnrs.iees.graph.impl.TreeGraph;
 import fr.cnrs.iees.graph.impl.TreeGraphNode;
-import fr.cnrs.iees.identity.Identity;
-import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
-import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 
 /**
+ * 
+ * Interface to provide a wrapper class to manage the currently selected node
+ * for editing for the graph structure editor.
+ * 
  * @author Ian Davies - 10 Jan. 2019
  */
-public class VisualNodeEditor implements //
-		VisualNodeEditable {
-	private LayoutNode visualNode;
-	private TreeGraph<LayoutNode, LayoutEdge> visualGraph;
+public interface VisualNodeEditor {
 
 	/**
-	 * @param visualNode  Node for editing.
-	 * @param visualGraph The layout graph.
+	 * The underlying {@link LayoutNode}. Ideally this should not be exposed!
+	 * 
+	 * @return The {@link LayoutNode} currently selected for editing.
 	 */
-	public VisualNodeEditor(LayoutNode visualNode, TreeGraph<LayoutNode, LayoutEdge> visualGraph) {
-		this.visualNode = visualNode;
-		this.visualGraph = visualGraph;
-	}
+	public LayoutNode visualNode();
 
-	@Override
-	public LayoutNode visualNode() {
-		return visualNode;
-	}
+	/**
+	 * The layout graph. Ideally this should not be exposed!
+	 * 
+	 * @return The layout graph.
+	 */
+	public TreeGraph<LayoutNode, LayoutEdge> visualGraph();
 
-	@Override
-	public TreeGraph<LayoutNode, LayoutEdge> visualGraph() {
-		return visualGraph;
-	}
+	/* true if the this node can have more children of this label */
+	/**
+	 * Query to ask if more children of the given node label are allowed within the
+	 * given {@link IntegerRange}.
+	 * 
+	 * @param range      Allowed number of children
+	 * @param childLabel Label of the child type.
+	 * @return true if allowed, false otherwise.
+	 */
+	public boolean moreChildrenAllowed(IntegerRange range, String childLabel);
 
-	@Override
-	public boolean moreChildrenAllowed(IntegerRange range, String childLabel) {
-		List<LayoutNode> lst = new ArrayList<>();
-		for (LayoutNode child : visualNode.getChildren()) {
-			String label = child.configNode().classId();
-			if (label.equals(childLabel))
-				lst.add(child);
-		}
-		return range.inRange(lst.size() + 1);
-	}
+	/**
+	 * Query to ask if the currently selected node have out-edges.
+	 * 
+	 * @return true if out-edges exist, false otherwise.
+	 */
+	public boolean hasOutEdges();
 
-	@Override
-	public boolean hasOutEdges() {
-		return visualNode.edges(Direction.OUT).iterator().hasNext();
-	}
+	/**
+	 * Get the list of out-edges of the currently selected node.
+	 * 
+	 * @return List of {@link LayoutEdge} out-edges.
+	 */
+	public Iterable<LayoutEdge> getOutEdges();
 
-	@Override
-	public String proposeAnId(String proposedName) {
-		Identity id = visualNode.scope().newId(false, proposedName);
-		return id.id();
-	}
+	/**
+	 * Ensure that the proposed node name (id) is unique within the scope of the
+	 * configuration graph.
+	 * 
+	 * @param proposedName Proposed name.
+	 * @return actual name, modified if required, to ensure it is unique within the
+	 *         scope.
+	 */
+	public String proposeAnId(String proposedName);
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public Class<? extends TreeGraphNode> getSubClass() {
-		ClassLoader classLoader = OmugiClassLoader.getAppClassLoader();
-		if (visualNode.configHasProperty(TWA.SUBCLASS)) {
-			String result = (String) visualNode.configGetPropertyValue(TWA.SUBCLASS);
-			try {
-				return (Class<? extends TreeGraphNode>) Class.forName(result, true, classLoader);
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-		} else {
-		}
-		return null;
-	}
+	/**
+	 * Get the underlying java class of the currently selected configuration.
+	 * 
+	 * @return java class of the selected node.
+	 */
+	public Class<? extends TreeGraphNode> getSubClass();
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public Iterable<LayoutEdge> getOutEdges() {
-		return (Iterable<LayoutEdge>) visualNode.edges(Direction.OUT);
-	}
+	/**
+	 * Query to ask if the currently selected node has an out-edge to the given
+	 * node.
+	 * 
+	 * @param endNode   Edge destination node.
+	 * @param edgeLabel Edge label.
+	 * @return true is such an edge exists, false otherwise.
+	 */
+	public boolean hasOutEdgeTo(LayoutNode endNode, String edgeLabel);
 
-	private static boolean ignoreDuplicateEdgesBetween(TreeGraphNode start, TreeGraphNode end, String edgeLabel) {
-		if (end.classId().equals(N_DIMENSIONER.label()) && start.classId().equals(N_TABLE.label())
-				&& E_SIZEDBY.label().equals(edgeLabel))
-			return true;
-		return false;
-	}
+	/**
+	 * Get a list of all {@link LayoutNode}s which have edges to them from the
+	 * currently selected node.
+	 * 
+	 * @return List of {@link LayoutNode}s than satisfy (can be empty).
+	 */
+	public Iterable<LayoutNode> getOutNodes();
 
-	@Override
-	public boolean hasOutEdgeTo(LayoutNode vEnd, String edgeLabel) {
+	/**
+	 * Query to ask if the currently selected node is referenced in the given table
+	 * of parents.
+	 * 
+	 * @param parents {@link StringTable}
+	 * @return true if reference found, false otherwise.
+	 */
+	public boolean references(StringTable parents);
 
-		TreeGraphNode cStart = visualNode.configNode();
-		TreeGraphNode cEnd = vEnd.configNode();
-		if (ignoreDuplicateEdgesBetween(cStart, cEnd, edgeLabel))
-			return false;
-		for (ALEdge cEdge : cStart.edges(Direction.OUT)) {
-			ALNode cEndNode = cEdge.endNode();
-			if (cEndNode.id().equals(cEnd.id()))
-				if ((cEdge.classId()).equals(edgeLabel))
-					return true;
-		}
-		return false;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public Iterable<LayoutNode> getOutNodes() {
-		return (Iterable<LayoutNode>) get(visualNode.edges(Direction.OUT), selectZeroOrMany(), edgeListEndNodes());
-	}
-
-	@Override
-	public boolean references(StringTable parents) {
-		TreeNode node = visualNode.configNode();
-		for (int i = 0; i < parents.size(); i++)
-			if (LayoutNode.referencedBy(node, parents.getWithFlatIndex(i)))
-				return true;
-		return false;
-	}
-
-//	@Override
-//	public String extractParentReference(StringTable parents) {
-//		TreeNode node = visualNode.configNode();
-//		for (int i = 0; i < parents.size(); i++)
-//			if (VisualNode.referencedBy(node, parents.getWithFlatIndex(i)))
-//				return parents.getWithFlatIndex(i);
-//
-//		return null;
-//	}
+//	public String extractParentReference(StringTable parents);
 
 }

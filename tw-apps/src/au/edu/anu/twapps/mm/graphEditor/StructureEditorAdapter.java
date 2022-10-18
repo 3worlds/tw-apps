@@ -107,11 +107,11 @@ import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
 import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
 
 /**
- * Adapter class to perform the work of the {@link StructureEditable} interface.
+ * Adapter class to perform the work of the {@link StructureEditor} interface.
  * 
  * @author Ian Davies - 10 Jan. 2019
  */
-public abstract class StructureEditorAdapter implements StructureEditable {
+public abstract class StructureEditorAdapter implements StructureEditor {
 	private static Logger log = Logging.getLogger(StructureEditorAdapter.class);
 
 	/**
@@ -120,10 +120,10 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 	protected Specifications specifications;
 
 	/**
-	 * Reference to the {@link VisualNodeEditable} interface with its underlying
+	 * Reference to the {@link VisualNodeEditor} interface with its underlying
 	 * {@VisualNode}. This is the currently selected node for editing.
 	 */
-	protected VisualNodeEditable editableNode;
+	protected VisualNodeEditor nodeEditor;
 	/**
 	 * Reference to any newly constructed node. If this is not null when the editor
 	 * closes (not all operations involve node creation), the user is prompted to
@@ -146,31 +146,30 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 	/**
 	 * Reference to the graph {@link GraphVisualiser} interface.
 	 */
-	protected GraphVisualiser gvisualiser;
+	protected GraphVisualiser visualiser;
 
 	protected MMController controller;
 
 	/**
-	 * Constructor
 	 * 
-	 * @param selectedNode The selected node for editing {@link VisualNodeEditable}.
-	 * @param gv           Interface to the {@link GraphVisualiser}.
+	 * @param nodeEditor The selected node for editing {@link VisualNodeEditor}.
+	 * @param visualiser   Interface to the {@link GraphVisualiser}.
 	 * @param controller   The model controller {@link MMController}.
 	 */
-	public StructureEditorAdapter(VisualNodeEditable selectedNode, GraphVisualiser gv, MMController controller) {
+	public StructureEditorAdapter(VisualNodeEditor nodeEditor, GraphVisualiser visualiser, MMController controller) {
 		super();
 		this.specifications = new TwSpecifications();
 		this.controller = controller;
 		this.newChild = null;
-		this.editableNode = selectedNode;
+		this.nodeEditor = nodeEditor;
 		Set<String> discoveredFile = new HashSet<>();
-		this.baseSpec = specifications.getSpecsOf(editableNode, TWA.getRoot(), discoveredFile);
+		this.baseSpec = specifications.getSpecsOf(nodeEditor, TWA.getRoot(), discoveredFile);
 		if (baseSpec == null)
 			throw new NullPointerException("Specification for '"
-					+ editableNode.visualNode().configNode().toShortString() + "' was not found.");
+					+ nodeEditor.visualNode().configNode().toShortString() + "' was not found.");
 
-		this.subClassSpec = specifications.getSubSpecsOf(baseSpec, editableNode.getSubClass());
-		this.gvisualiser = gv;
+		this.subClassSpec = specifications.getSubSpecsOf(baseSpec, nodeEditor.getSubClass());
+		this.visualiser = visualiser;
 		log.info("BaseSpec: " + baseSpec);
 		log.info("SubSpec: " + subClassSpec);
 	}
@@ -190,7 +189,7 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 			if (!reserved) {
 				String childLabel = (String) childSpec.properties().getPropertyValue(Archetypes.IS_OF_CLASS);
 				IntegerRange range = specifications.getMultiplicityOf(childSpec);
-				if (editableNode.moreChildrenAllowed(range, childLabel)) {
+				if (nodeEditor.moreChildrenAllowed(range, childLabel)) {
 					if (!tables.isEmpty()) {
 						if (allowedChild(childLabel, tables))
 							result.add(childSpec);
@@ -210,7 +209,7 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 	}
 
 	private boolean allowedChild(String childLabel, List<String[]> tables) {
-		LayoutNode vn = editableNode.visualNode();
+		LayoutNode vn = nodeEditor.visualNode();
 		for (String[] ss : tables) {
 			if (ss[0].equals(childLabel)) {
 				if (vn.configHasProperty(ss[1]))
@@ -226,7 +225,7 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 		String[] labels = ref.split(":/");
 		int end = labels.length - 1;
 		List<LayoutNode> result = new ArrayList<>();
-		TreeGraph<LayoutNode, LayoutEdge> vg = gvisualiser.getLayoutGraph();
+		TreeGraph<LayoutNode, LayoutEdge> vg = visualiser.getLayoutGraph();
 		for (LayoutNode vn : vg.nodes()) {
 			if (vn.configNode().classId().equals(labels[end])) {
 				if (end == 0)
@@ -266,8 +265,8 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 			log.info(edgeLabel);
 			List<LayoutNode> endNodes = findNodesReferenced(toNodeRef);
 			for (LayoutNode endNode : endNodes) {
-				if (!editableNode.visualNode().id().equals(endNode.id())) // no edges to self
-					if (!editableNode.hasOutEdgeTo(endNode, edgeLabel))
+				if (!nodeEditor.visualNode().id().equals(endNode.id())) // no edges to self
+					if (!nodeEditor.hasOutEdgeTo(endNode, edgeLabel))
 						if (satisfiesEdgeMultiplicity(edgeSpec, toNodeLabel, edgeLabel))
 							if (satisfyExclusiveCategoryQuery(edgeSpec, endNode, edgeLabel))
 								if (satisfyOutNodeXorQuery(edgeSpec, endNode, edgeLabel))
@@ -294,7 +293,7 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 	private boolean satisfiesEdgeMultiplicity(SimpleDataTreeNode edgeSpec, String toNodeLabel, String edgeLabel) {
 		IntegerRange range = specifications.getMultiplicityOf(edgeSpec);
 		@SuppressWarnings("unchecked")
-		List<Node> nodes = (List<Node>) get(editableNode.visualNode().configNode().edges(Direction.OUT),
+		List<Node> nodes = (List<Node>) get(nodeEditor.visualNode().configNode().edges(Direction.OUT),
 				selectZeroOrMany(hasTheLabel(edgeLabel)), edgeListStartNodes(),
 				selectZeroOrMany(hasTheLabel(toNodeLabel)));
 		if (nodes.size() >= range.getLast())
@@ -351,7 +350,7 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 				qp2.addAll(getEdgeLabelRefs(query.properties(), TWA.EDGE_LABEL_2));
 				Set<String> es1 = new HashSet<>();
 				Set<String> es2 = new HashSet<>();
-				for (Edge e : editableNode.visualNode().configNode().edges(Direction.OUT))
+				for (Edge e : nodeEditor.visualNode().configNode().edges(Direction.OUT))
 					if (qp1.contains(e.classId()))
 						es1.add(e.classId());
 					else if (qp2.contains(e.classId()))
@@ -413,12 +412,12 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 		List<Duple<String, String>> entries = specifications.getNodeLabelDuples(queries);
 
 		// Uncommitted: therefore we can have either of the entries
-		if (!editableNode.hasOutEdges())
+		if (!nodeEditor.hasOutEdges())
 			return true;
 
 		boolean result = false;
 		for (Duple<String, String> entry : entries) {
-			result = result || OutNodeXorQuery.propose(editableNode.visualNode().configNode(),
+			result = result || OutNodeXorQuery.propose(nodeEditor.visualNode().configNode(),
 					proposedEndNode.configNode(), entry.getFirst(), entry.getSecond());
 		}
 		return result;
@@ -431,12 +430,12 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 		if (specifications.getQueries((SimpleDataTreeNode) edgeSpec.getParent(), ExclusiveCategoryQuery.class)
 				.isEmpty())
 			return true;
-		return ExclusiveCategoryQuery.propose(editableNode.visualNode().configNode(), proposedCat.configNode());
+		return ExclusiveCategoryQuery.propose(nodeEditor.visualNode().configNode(), proposedCat.configNode());
 	}
 
 	public List<LayoutNode> orphanedChildList(Iterable<SimpleDataTreeNode> childSpecs) {
 		List<LayoutNode> result = new ArrayList<>();
-		for (LayoutNode root : editableNode.visualGraph().roots()) {
+		for (LayoutNode root : nodeEditor.visualGraph().roots()) {
 			String rootLabel = root.configNode().classId();
 			for (SimpleDataTreeNode childSpec : childSpecs) {
 				String specLabel = (String) childSpec.properties().getPropertyValue(Archetypes.IS_OF_CLASS);
@@ -489,7 +488,7 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 		if (capitalize)
 			promptId = WordUtils.capitalize(promptId);
 		boolean modified = true;
-		promptId = editableNode.proposeAnId(promptId);
+		promptId = nodeEditor.proposeAnId(promptId);
 		while (modified) {
 			String userName = promptForNewNode(title, promptId, capitalize);
 			if (userName == null)
@@ -500,7 +499,7 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 			// userName = promptId;
 //			if (capitalize)
 //				userName = WordUtils.capitalize(userName);
-			String newName = editableNode.proposeAnId(userName);
+			String newName = nodeEditor.proposeAnId(userName);
 			modified = !newName.equals(userName);
 			promptId = newName;
 		}
@@ -546,7 +545,7 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 //			opNames.add((String) op.properties().getPropertyValue(aaHasName));
 
 		// make the node
-		newChild = editableNode.visualNode().newChild(childLabel, promptId);
+		newChild = nodeEditor.visualNode().newChild(childLabel, promptId);
 		newChild.setCollapse(false);
 		newChild.setVisible(true);
 		newChild.setCategory();
@@ -682,8 +681,8 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 
 	@Override
 	public void onNewEdge(Tuple<String, LayoutNode, SimpleDataTreeNode> details, double duration) {
-		if (editableNode.visualNode().isCollapsed())
-			gvisualiser.expandTreeFrom(editableNode.visualNode(), duration);
+		if (nodeEditor.visualNode().isCollapsed())
+			visualiser.expandTreeFrom(nodeEditor.visualNode(), duration);
 		String id = getNewName(details.getFirst(), details.getFirst(),
 				ConfigurationEdgeLabels.labelValueOf(details.getFirst()).defName(), null);
 		if (id == null)
@@ -699,7 +698,7 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 		String edgeLabel = p.getFirst();
 		LayoutNode target = p.getSecond();
 		SimpleDataTreeNode edgeSpec = p.getThird();
-		LayoutEdge vEdge = editableNode.visualNode().newEdge(edgeId, edgeLabel, target);
+		LayoutEdge vEdge = nodeEditor.visualNode().newEdge(edgeId, edgeLabel, target);
 		if (vEdge.getConfigEdge() instanceof ALDataEdge) {
 			ALDataEdge edge = (ALDataEdge) vEdge.getConfigEdge();
 			ExtendablePropertyList props = (ExtendablePropertyList) edge.properties();
@@ -725,23 +724,23 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 			}
 			controller.onNewEdge(vEdge);
 		}
-		gvisualiser.onNewEdge(vEdge, duration);
+		visualiser.onNewEdge(vEdge, duration);
 
 	}
 
 	private void deleteNode(LayoutNode vNode, double duration) {
 		// don't leave nodes hidden
 		if (vNode.hasCollaspedChild())
-			gvisualiser.expandTreeFrom(vNode, duration);
+			visualiser.expandTreeFrom(vNode, duration);
 		// remove from view while still intact
-		gvisualiser.removeView(vNode);
+		visualiser.removeView(vNode);
 		// this and its config from graphs and disconnect
 		vNode.remove();
 	}
 
 	@Override
 	public void onDeleteNode(double duration) {
-		deleteNode(editableNode.visualNode(), duration);
+		deleteNode(nodeEditor.visualNode(), duration);
 		controller.onNodeDeleted();
 		GraphStateFactory.setChanged();
 		ConfigGraph.verifyGraph();
@@ -750,12 +749,12 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 	@Override
 	public boolean onRenameNode() {
 		String userName = getNewName(
-				editableNode.visualNode().configNode() + ":" + editableNode.visualNode().configNode().id(),
-				editableNode.visualNode().configNode().classId(), editableNode.visualNode().configNode().id(),
+				nodeEditor.visualNode().configNode() + ":" + nodeEditor.visualNode().configNode().id(),
+				nodeEditor.visualNode().configNode().classId(), nodeEditor.visualNode().configNode().id(),
 				baseSpec);
 		if (userName != null) {
-			renameNode(userName, editableNode.visualNode());
-			gvisualiser.onNodeRenamed(editableNode.visualNode());
+			renameNode(userName, nodeEditor.visualNode());
+			visualiser.onNodeRenamed(nodeEditor.visualNode());
 			controller.onElementRenamed();
 			return true;
 		}
@@ -769,7 +768,7 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 				null);
 		if (userName != null) {
 			renameEdge(userName, edge);
-			gvisualiser.onEdgeRenamed(edge);
+			visualiser.onEdgeRenamed(edge);
 			controller.onElementRenamed();
 			return true;
 		}
@@ -910,7 +909,7 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 
 	@Override
 	public void onCollapseTree(LayoutNode childRoot, double duration) {
-		gvisualiser.collapseTreeFrom(childRoot, duration);
+		visualiser.collapseTreeFrom(childRoot, duration);
 		controller.onTreeCollapse();
 		GraphStateFactory.setChanged();
 
@@ -918,9 +917,9 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 
 	@Override
 	public void onCollapseTrees(double duration) {
-		for (LayoutNode child : editableNode.visualNode().getChildren()) {
+		for (LayoutNode child : nodeEditor.visualNode().getChildren()) {
 			if (!child.isCollapsed())
-				gvisualiser.collapseTreeFrom(child, duration);
+				visualiser.collapseTreeFrom(child, duration);
 		}
 		controller.onTreeCollapse();
 		GraphStateFactory.setChanged();
@@ -928,16 +927,16 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 
 	@Override
 	public void onExpandTree(LayoutNode childRoot, double duration) {
-		gvisualiser.expandTreeFrom(childRoot, duration);
+		visualiser.expandTreeFrom(childRoot, duration);
 		controller.onTreeExpand();
 		GraphStateFactory.setChanged();
 	}
 
 	@Override
 	public void onExpandTrees(double duration) {
-		for (LayoutNode child : editableNode.visualNode().getChildren()) {
+		for (LayoutNode child : nodeEditor.visualNode().getChildren()) {
 			if (child.isCollapsed())
-				gvisualiser.expandTreeFrom(child, duration);
+				visualiser.expandTreeFrom(child, duration);
 		}
 		controller.onTreeExpand();
 		GraphStateFactory.setChanged();
@@ -945,8 +944,8 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 
 	@Override
 	public void onReconnectChild(LayoutNode vnChild) {
-		editableNode.visualNode().reconnectChild(vnChild);
-		gvisualiser.onNewParent(vnChild);
+		nodeEditor.visualNode().reconnectChild(vnChild);
+		visualiser.onNewParent(vnChild);
 		ConfigGraph.verifyGraph();
 		GraphStateFactory.setChanged();
 	}
@@ -973,7 +972,7 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 	private void deleteEdge(LayoutEdge vEdge) {
 		ALEdge cEdge = vEdge.getConfigEdge();
 		// Remove visual elements before disconnecting
-		gvisualiser.removeView(vEdge);
+		visualiser.removeView(vEdge);
 		// Remove ids before disconnecting;
 		EditableFactory vf = (EditableFactory) vEdge.factory();
 		EditableFactory cf = (EditableFactory) cEdge.factory();
@@ -1064,7 +1063,7 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 	public void onImportTree(SimpleDataTreeNode childSpec, double duration) {
 		TreeGraph<TreeGraphDataNode, ALEdge> importGraph = getImportGraph(childSpec);
 		if (importGraph != null) {
-			importGraph(importGraph, editableNode.visualNode(), duration);
+			importGraph(importGraph, nodeEditor.visualNode(), duration);
 			controller.doLayout(duration);
 			GraphStateFactory.setChanged();
 			ConfigGraph.verifyGraph();
@@ -1100,7 +1099,7 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 			newVEdge.setConfigEdge(newCEdge);
 			newVEdge.setVisible(true);
 			cloneEdgeProperties(importEdge, newCEdge);
-			gvisualiser.onNewEdge(newVEdge, duration);
+			visualiser.onNewEdge(newVEdge, duration);
 		});
 
 	}
@@ -1138,7 +1137,7 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 		newVNode.connectParent(vParent);
 		newVNode.setConfigNode(newCNode);
 		Set<String> discoveredFile = new HashSet<>();
-		VisualNodeEditable vne = new VisualNodeEditor(newVNode, editableNode.visualGraph());
+		VisualNodeEditor vne = new VisualNodeEditorAdapter(newVNode, nodeEditor.visualGraph());
 		// this depends on the parent table been present so its circular
 		// This will break eventually when finding the spec without knowing the precise
 		// parent when there can be more than one.
@@ -1163,7 +1162,7 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 		cloneNodeProperties(importNode, newCNode);
 
 		// update visual display
-		gvisualiser.onNewNode(newVNode);
+		visualiser.onNewNode(newVNode);
 
 		for (TreeNode importChild : importNode.getChildren())
 			importTree((TreeGraphDataNode) importChild, newCNode, newVNode, cFactory, vFactory, outEdgeMap, inEdgeMap);
@@ -1189,13 +1188,13 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 	@Override
 	public void onDeleteParentLink(LayoutNode vChild) {
 		// messy: onParentChanged never expect edge deletion
-		LayoutNode vParent = editableNode.visualNode();
+		LayoutNode vParent = nodeEditor.visualNode();
 		TreeGraphNode cChild = vChild.configNode();
-		TreeGraphNode cParent = editableNode.visualNode().configNode();
-		gvisualiser.onRemoveParentLink(vChild);
+		TreeGraphNode cParent = nodeEditor.visualNode().configNode();
+		visualiser.onRemoveParentLink(vChild);
 		vParent.disconnectFrom(vChild);
 		cParent.disconnectFrom(cChild);
-		gvisualiser.getLayoutGraph().onParentChanged();
+		visualiser.getLayoutGraph().onParentChanged();
 		ConfigGraph.onParentChanged();
 		GraphStateFactory.setChanged();
 		ConfigGraph.verifyGraph();
@@ -1208,7 +1207,7 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 		List<Boolean> selected = new ArrayList<>();
 		// DisplayName, Spec, propertyList
 		Map<String, Tuple<String, SimpleDataTreeNode, ExtendablePropertyList>> propertyDetailsMap = new LinkedHashMap<>();
-		TreeGraphDataNode cn = (TreeGraphDataNode) editableNode.visualNode().configNode();
+		TreeGraphDataNode cn = (TreeGraphDataNode) nodeEditor.visualNode().configNode();
 		for (SimpleDataTreeNode p : optionalNodePropertySpecs) {
 			String name = (String) p.properties().getPropertyValue(Archetypes.HAS_NAME);
 			String displayName = cn.toShortString() + "#" + name;
@@ -1238,8 +1237,8 @@ public abstract class StructureEditorAdapter implements StructureEditable {
 		List<Tuple<String, SimpleDataTreeNode, ExtendablePropertyList>> deletions = new ArrayList<>();
 		// If cancel is pressed the original list of selected items is returned and
 		// therefore no change should result.
-		List<String> selectedItems = DialogsFactory.getCBSelections(editableNode.visualNode().configNode().toShortString(),
-				"Optional properties", displayNames, selected);
+		List<String> selectedItems = DialogsFactory.getCBSelections(
+				nodeEditor.visualNode().configNode().toShortString(), "Optional properties", displayNames, selected);
 		for (String displayName : displayNames) {
 			boolean isSelected = selected.get(displayNames.indexOf(displayName));
 			// addition iff selected and not currently present

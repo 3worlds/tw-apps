@@ -51,28 +51,29 @@ import au.edu.anu.twcore.archetype.tw.RequirePropertyQuery;
 public interface Specifications {
 
 	/**
-	 * Get specification of a given node in the configuration graph. This is a
-	 * recursive function, called when searching all sub-archetype files.
+	 * Get specification of a given node in the configuration graph.
+	 * <p>
+	 * This is a recursive function, called when searching all sub-archetype files.
 	 * Ultimately, the caller should ensure that a specification has been found and
 	 * throw an exception if this is not the case.
 	 * <p>
 	 * The method must add an entry for each archetype file it opens.
 	 * 
-	 * @param editNode        {@link VisualNodeEditable} interface of the
+	 * @param editNode        {@link VisualNodeEditor} interface of the
 	 *                        {@link LayoutNode} being edited.
 	 * @param root            The root node of the specification archetype tree.
 	 * @param discoveredFiles Archetype files that have currently been searched.
 	 * @return The specification {@link TreeNode} (often null during recursive
 	 *         searches).
 	 */
-	public SimpleDataTreeNode getSpecsOf(VisualNodeEditable editNode, TreeNode root, Set<String> discoveredFiles);
+	public SimpleDataTreeNode getSpecsOf(VisualNodeEditor editNode, TreeNode root, Set<String> discoveredFiles);
 
 	/**
 	 * Get sub-class specification of a given node in the configuration graph. Null
 	 * is returned if the node has no sub-class specification.
 	 * 
 	 * @param baseSpecs The base specification returned by
-	 *                  {@link #getSpecsOf(VisualNodeEditable,TreeNode,Set)
+	 *                  {@link #getSpecsOf(VisualNodeEditor,TreeNode,Set)
 	 *                  getSpecsOf}
 	 * @param subClass  The java class of the node.
 	 * @return The sub-class specification if one exists.
@@ -83,10 +84,10 @@ public interface Specifications {
 	 * Get a list of the specifications of all potential children of the parent
 	 * node.
 	 * 
-	 * @param editParent {@link VisualNodeEditable} interface of the parent
+	 * @param editParent {@link VisualNodeEditor} interface of the parent
 	 *                   {@link LayoutNode}.
 	 * @param baseSpec   The base specification returned by
-	 *                   {@link #getSpecsOf(VisualNodeEditable,TreeNode,Set)
+	 *                   {@link #getSpecsOf(VisualNodeEditor,TreeNode,Set)
 	 *                   getSpecsOf}
 	 * @param subSpec    The sub-class specification (can be null) returned by
 	 *                   {@link #getSubSpecsOf(SimpleDataTreeNode,Class)
@@ -94,7 +95,7 @@ public interface Specifications {
 	 * @param root       Archetype tree root.
 	 * @return List of possible child specifications.
 	 */
-	public Iterable<SimpleDataTreeNode> getChildSpecsOf(VisualNodeEditable editParent, SimpleDataTreeNode baseSpec,
+	public Iterable<SimpleDataTreeNode> getChildSpecsOf(VisualNodeEditor editParent, SimpleDataTreeNode baseSpec,
 			SimpleDataTreeNode subSpec, TreeNode root);
 
 	/**
@@ -102,7 +103,7 @@ public interface Specifications {
 	 * base and sub-class specifications.
 	 * 
 	 * @param baseSpec The base specification returned by
-	 *                 {@link #getSpecsOf(VisualNodeEditable,TreeNode,Set)
+	 *                 {@link #getSpecsOf(VisualNodeEditor,TreeNode,Set)
 	 *                 getSpecsOf}
 	 * @param subSpec  The sub-class specification returned by
 	 *                 {@link #getSubSpecsOf(SimpleDataTreeNode,Class)
@@ -116,7 +117,7 @@ public interface Specifications {
 	 * specifications.
 	 * 
 	 * @param baseSpec The base specification returned by
-	 *                 {@link #getSpecsOf(VisualNodeEditable,TreeNode,Set)
+	 *                 {@link #getSpecsOf(VisualNodeEditor,TreeNode,Set)
 	 *                 getSpecsOf}
 	 * @param subSpec  The sub-class specification returned by
 	 *                 {@link #getSubSpecsOf(SimpleDataTreeNode,Class)
@@ -182,7 +183,7 @@ public interface Specifications {
 	 * 
 	 * @param propertySpecs List of eligible property specifications.
 	 * @param baseSpec      The base specification returned by
-	 *                      {@link #getSpecsOf(VisualNodeEditable,TreeNode,Set)
+	 *                      {@link #getSpecsOf(VisualNodeEditor,TreeNode,Set)
 	 *                      getSpecsOf}
 	 * @param subSpec       The sub-class specification returned by
 	 *                      {@link #getSubSpecsOf(SimpleDataTreeNode,Class)
@@ -211,7 +212,7 @@ public interface Specifications {
 	 * 
 	 * @param node     The node containing the properties.
 	 * @param baseSpec The base specification returned by
-	 *                 {@link #getSpecsOf(VisualNodeEditable,TreeNode,Set)
+	 *                 {@link #getSpecsOf(VisualNodeEditor,TreeNode,Set)
 	 *                 getSpecsOf}
 	 * @param subSpec  The sub-class specification returned by
 	 *                 {@link #getSubSpecsOf(SimpleDataTreeNode,Class)
@@ -224,7 +225,7 @@ public interface Specifications {
 	 * is not constrained by some other query,
 	 * 
 	 * @param baseSpec The base specification returned by
-	 *                 {@link #getSpecsOf(VisualNodeEditable,TreeNode,Set)
+	 *                 {@link #getSpecsOf(VisualNodeEditor,TreeNode,Set)
 	 *                 getSpecsOf}
 	 * @param subSpec  The sub-class specification returned by
 	 *                 {@link #getSubSpecsOf(SimpleDataTreeNode,Class)
