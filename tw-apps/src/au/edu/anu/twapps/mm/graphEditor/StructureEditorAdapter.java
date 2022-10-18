@@ -117,13 +117,13 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 	/**
 	 * Reference to the 3Worlds {@link Specifications} interface.
 	 */
-	protected Specifications specifications;
+	protected final Specifications specifications;
 
 	/**
 	 * Reference to the {@link VisualNodeEditor} interface with its underlying
 	 * {@VisualNode}. This is the currently selected node for editing.
 	 */
-	protected VisualNodeEditor nodeEditor;
+	protected final VisualNodeEditor nodeEditor;
 	/**
 	 * Reference to any newly constructed node. If this is not null when the editor
 	 * closes (not all operations involve node creation), the user is prompted to
@@ -134,27 +134,27 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 	/**
 	 * The specifications of the node, currently selected for editing.
 	 */
-	protected SimpleDataTreeNode baseSpec;
+	protected final SimpleDataTreeNode baseSpec;
 
 	/* specifications of subclass of this editingNode if it has one */
 	/**
 	 * The specifications of the sub-class of the node, currently selected for
 	 * editing (can be null).
 	 */
-	protected SimpleDataTreeNode subClassSpec;
+	protected final SimpleDataTreeNode subClassSpec;
 
 	/**
 	 * Reference to the graph {@link GraphVisualiser} interface.
 	 */
-	protected GraphVisualiser visualiser;
+	protected final GraphVisualiser visualiser;
 
-	protected MMController controller;
+	protected final MMController controller;
 
 	/**
 	 * 
 	 * @param nodeEditor The selected node for editing {@link VisualNodeEditor}.
-	 * @param visualiser   Interface to the {@link GraphVisualiser}.
-	 * @param controller   The model controller {@link MMController}.
+	 * @param visualiser Interface to the {@link GraphVisualiser}.
+	 * @param controller The model controller {@link MMController}.
 	 */
 	public StructureEditorAdapter(VisualNodeEditor nodeEditor, GraphVisualiser visualiser, MMController controller) {
 		super();
@@ -165,8 +165,8 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 		Set<String> discoveredFile = new HashSet<>();
 		this.baseSpec = specifications.getSpecsOf(nodeEditor, TWA.getRoot(), discoveredFile);
 		if (baseSpec == null)
-			throw new NullPointerException("Specification for '"
-					+ nodeEditor.visualNode().configNode().toShortString() + "' was not found.");
+			throw new NullPointerException(
+					"Specification for '" + nodeEditor.visualNode().configNode().toShortString() + "' was not found.");
 
 		this.subClassSpec = specifications.getSubSpecsOf(baseSpec, nodeEditor.getSubClass());
 		this.visualiser = visualiser;
@@ -750,8 +750,7 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 	public boolean onRenameNode() {
 		String userName = getNewName(
 				nodeEditor.visualNode().configNode() + ":" + nodeEditor.visualNode().configNode().id(),
-				nodeEditor.visualNode().configNode().classId(), nodeEditor.visualNode().configNode().id(),
-				baseSpec);
+				nodeEditor.visualNode().configNode().classId(), nodeEditor.visualNode().configNode().id(), baseSpec);
 		if (userName != null) {
 			renameNode(userName, nodeEditor.visualNode());
 			visualiser.onNodeRenamed(nodeEditor.visualNode());
