@@ -48,7 +48,7 @@ import java.util.logging.Logger;
 import au.edu.anu.omhtk.preferences.PrefImpl;
 import au.edu.anu.omhtk.preferences.Preferences;
 import au.edu.anu.rscs.aot.archetype.Archetypes;
-import au.edu.anu.rscs.aot.collections.tables.StringTable;
+import au.edu.anu.omugi.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.errorMessaging.ErrorMessageManager;
 import au.edu.anu.rscs.aot.util.FileUtilities;
 import au.edu.anu.twapps.dialogs.DialogsFactory;

@@ -31,8 +31,8 @@ package au.edu.anu.twapps.mm.layoutGraph;
 import java.util.HashMap;
 import java.util.Map;
 
-import au.edu.anu.rscs.aot.graph.property.Property;
-import au.edu.anu.rscs.aot.graph.property.PropertyKeys;
+import au.edu.anu.omugi.graph.property.Property;
+import au.edu.anu.omugi.graph.property.PropertyKeys;
 import au.edu.anu.twcore.root.EditableFactory;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.Node;

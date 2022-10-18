@@ -37,7 +37,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import au.edu.anu.rscs.aot.archetype.Archetypes;
-import au.edu.anu.rscs.aot.collections.tables.StringTable;
+import au.edu.anu.omugi.collections.tables.StringTable;
 import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.rscs.aot.util.IntegerRange;
 import au.edu.anu.twapps.dialogs.DialogsFactory;
