@@ -29,10 +29,9 @@
 
 package au.edu.anu.twapps.mm.graphEditor;
 
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
-import java.util.ArrayList;
-import java.util.List;
+import static au.edu.anu.qgraph.queries.CoreQueries.*;
+import static au.edu.anu.qgraph.queries.base.SequenceQuery.*;
+import java.util.*;
 
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
 import au.edu.anu.rscs.aot.util.IntegerRange;

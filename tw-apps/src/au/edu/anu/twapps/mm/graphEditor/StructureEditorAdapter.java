@@ -103,8 +103,8 @@ import fr.ens.biologie.codeGeneration.JavaUtilities;
 import fr.ens.biologie.generic.utils.Duple;
 import fr.ens.biologie.generic.utils.Logging;
 import fr.ens.biologie.generic.utils.Tuple;
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
+import static au.edu.anu.qgraph.queries.CoreQueries.*;
+import static au.edu.anu.qgraph.queries.base.SequenceQuery.*;
 
 /**
  * Adapter class to perform the work of the {@link StructureEditor} interface.

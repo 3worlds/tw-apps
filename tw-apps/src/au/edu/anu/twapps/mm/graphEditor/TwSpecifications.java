@@ -38,7 +38,7 @@ import java.util.Set;
 
 import au.edu.anu.rscs.aot.archetype.Archetypes;
 import au.edu.anu.rscs.aot.collections.tables.StringTable;
-import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.rscs.aot.util.IntegerRange;
 import au.edu.anu.twapps.dialogs.DialogsFactory;
 import au.edu.anu.twapps.mm.layoutGraph.ElementDisplayText;
@@ -61,8 +61,8 @@ import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
 import fr.cnrs.iees.properties.ExtendablePropertyList;
 import fr.ens.biologie.generic.utils.Duple;
 
-import static au.edu.anu.rscs.aot.queries.CoreQueries.*;
-import static au.edu.anu.rscs.aot.queries.base.SequenceQuery.*;
+import static au.edu.anu.qgraph.queries.CoreQueries.*;
+import static au.edu.anu.qgraph.queries.base.SequenceQuery.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 
 /**

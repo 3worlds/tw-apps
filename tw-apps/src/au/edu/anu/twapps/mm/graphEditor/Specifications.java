@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Set;
 
 //import au.edu.anu.rscs.aot.queries.Query;
-import au.edu.anu.rscs.aot.queries.Queryable;
+import au.edu.anu.qgraph.queries.Queryable;
 import au.edu.anu.rscs.aot.util.IntegerRange;
 import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
 import fr.cnrs.iees.graph.TreeNode;
