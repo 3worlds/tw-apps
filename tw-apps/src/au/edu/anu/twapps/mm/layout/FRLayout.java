@@ -40,7 +40,7 @@ import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
 import fr.cnrs.iees.graph.Direction;
 import fr.cnrs.iees.graph.Edge;
 import fr.cnrs.iees.graph.impl.TreeGraph;
-import fr.ens.biologie.generic.utils.Duple;
+import fr.cnrs.iees.omhtk.utils.Duple;
 
 /**
  * @author Ian Davies -13 Apr 2020

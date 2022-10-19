@@ -31,7 +31,7 @@ package au.edu.anu.twapps.mm.layout;
 
 import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
 import fr.cnrs.iees.uit.space.Distance;
-import fr.ens.biologie.generic.utils.Duple;
+import fr.cnrs.iees.omhtk.utils.Duple;
 
 /**
  * @author Ian Davies 30 Mar 2020

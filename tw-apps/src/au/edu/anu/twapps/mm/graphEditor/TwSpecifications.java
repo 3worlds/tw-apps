@@ -46,7 +46,7 @@ import fr.cnrs.iees.graph.impl.SimpleDataTreeNode;
 import fr.cnrs.iees.identity.impl.PairIdentity;
 import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
 import fr.cnrs.iees.properties.ExtendablePropertyList;
-import fr.ens.biologie.generic.utils.Duple;
+import fr.cnrs.iees.omhtk.utils.Duple;
 
 import static au.edu.anu.qgraph.queries.CoreQueries.*;
 import static au.edu.anu.qgraph.queries.base.SequenceQuery.*;

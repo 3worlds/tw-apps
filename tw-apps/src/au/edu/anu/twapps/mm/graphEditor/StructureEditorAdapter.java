@@ -80,8 +80,8 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 
-import fr.ens.biologie.codeGeneration.JavaUtilities;
-import fr.ens.biologie.generic.utils.*;
+import fr.cnrs.iees.omhtk.codeGeneration.JavaUtilities;
+import fr.cnrs.iees.omhtk.utils.*;
 import static au.edu.anu.qgraph.queries.CoreQueries.*;
 import static au.edu.anu.qgraph.queries.base.SequenceQuery.*;
 

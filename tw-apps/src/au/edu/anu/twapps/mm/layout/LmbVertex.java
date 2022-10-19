@@ -28,15 +28,12 @@
   **************************************************************************/
 package au.edu.anu.twapps.mm.layout;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
 import fr.cnrs.iees.uit.space.Distance;
-import fr.ens.biologie.generic.utils.Permute;
-import fr.ens.biologie.generic.utils.Shuffle;
+import fr.cnrs.iees.omhtk.utils.Permute;
+import fr.cnrs.iees.omhtk.utils.Shuffle;
 
 /**
  *  Not yet implemented.

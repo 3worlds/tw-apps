@@ -34,8 +34,7 @@ import java.util.List;
 import au.edu.anu.twapps.mm.layoutGraph.LayoutEdge;
 import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
 import fr.cnrs.iees.graph.impl.SimpleDataTreeNode;
-import fr.ens.biologie.generic.utils.Duple;
-import fr.ens.biologie.generic.utils.Tuple;
+import fr.cnrs.iees.omhtk.utils.*;
 
 /**
  * Interface for the graph structure editor for ModelMaker. All these methods

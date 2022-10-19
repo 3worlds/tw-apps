@@ -63,7 +63,7 @@ import fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels;
 import fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames;
 import fr.cnrs.iees.twcore.generators.ProjectJarGenerator;
 import fr.cnrs.iees.twmodels.LibraryTable;
-import fr.ens.biologie.generic.utils.*;
+import fr.cnrs.iees.omhtk.utils.*;
 
 import static au.edu.anu.qgraph.queries.CoreQueries.*;
 import static au.edu.anu.qgraph.queries.base.SequenceQuery.get;
