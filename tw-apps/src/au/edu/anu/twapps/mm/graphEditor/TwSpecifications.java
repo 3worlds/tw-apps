@@ -29,14 +29,9 @@
 
 package au.edu.anu.twapps.mm.graphEditor;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
-import au.edu.anu.rscs.aot.archetype.Archetypes;
+import au.edu.anu.aot.archetype.Archetypes;
 import au.edu.anu.omugi.collections.tables.StringTable;
 import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.rscs.aot.util.IntegerRange;
@@ -44,17 +39,9 @@ import au.edu.anu.twapps.dialogs.DialogsFactory;
 import au.edu.anu.twapps.mm.layoutGraph.ElementDisplayText;
 import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
 import au.edu.anu.twcore.archetype.TWA;
-import au.edu.anu.twcore.archetype.tw.CheckSubArchetypeQuery;
-import au.edu.anu.twcore.archetype.tw.ChildXorPropertyQuery;
-import au.edu.anu.twcore.archetype.tw.IsInValueSetQuery;
-import au.edu.anu.twcore.archetype.tw.NameStartsWithUpperCaseQuery;
-import au.edu.anu.twcore.archetype.tw.OutEdgeXorPropertyQuery;
-import au.edu.anu.twcore.archetype.tw.PropertyXorQuery;
-import au.edu.anu.twcore.archetype.tw.RequirePropertyQuery;
+import au.edu.anu.twcore.archetype.tw.*;
 import fr.cnrs.iees.OmugiClassLoader;
-import fr.cnrs.iees.graph.DataHolder;
-import fr.cnrs.iees.graph.Tree;
-import fr.cnrs.iees.graph.TreeNode;
+import fr.cnrs.iees.graph.*;
 import fr.cnrs.iees.graph.impl.SimpleDataTreeNode;
 import fr.cnrs.iees.identity.impl.PairIdentity;
 import fr.cnrs.iees.io.parsing.ValidPropertyTypes;

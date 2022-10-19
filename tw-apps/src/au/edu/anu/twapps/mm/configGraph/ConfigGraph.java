@@ -37,16 +37,13 @@ import java.util.concurrent.TimeUnit;
 
 import javax.tools.ToolProvider;
 
-import au.edu.anu.rscs.aot.errorMessaging.ErrorMessageManager;
-import au.edu.anu.rscs.aot.errorMessaging.ErrorMessagable;
-import au.edu.anu.rscs.aot.errorMessaging.impl.SpecificationErrorMsg;
+import au.edu.anu.aot.errorMessaging.*;
+import au.edu.anu.aot.errorMessaging.impl.SpecificationErrorMsg;
 import au.edu.anu.twcore.archetype.TWA;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrorMsg;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrors;
 import au.edu.anu.twcore.graphState.*;
-import fr.cnrs.iees.graph.impl.ALEdge;
-import fr.cnrs.iees.graph.impl.TreeGraph;
-import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
+import fr.cnrs.iees.graph.impl.*;
 import fr.cnrs.iees.twcore.generators.CodeGenerator;
 import fr.cnrs.iees.twcore.generators.ProjectJarGenerator;
 import au.edu.anu.twcore.project.Project;
