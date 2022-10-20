@@ -30,7 +30,7 @@
 package au.edu.anu.twapps.mm.graphEditor;
 
 import au.edu.anu.omugi.collections.tables.StringTable;
-import au.edu.anu.rscs.aot.util.IntegerRange;
+import au.edu.anu.omhtk.util.IntegerRange;
 import au.edu.anu.twapps.mm.layoutGraph.LayoutEdge;
 import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
 import fr.cnrs.iees.graph.impl.TreeGraph;

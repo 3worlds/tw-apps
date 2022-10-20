@@ -32,9 +32,8 @@ package au.edu.anu.twapps.mm.graphEditor;
 import java.util.List;
 import java.util.Set;
 
-//import au.edu.anu.rscs.aot.queries.Query;
 import au.edu.anu.qgraph.queries.Queryable;
-import au.edu.anu.rscs.aot.util.IntegerRange;
+import au.edu.anu.omhtk.util.IntegerRange;
 import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
 import fr.cnrs.iees.graph.TreeNode;
 import fr.cnrs.iees.graph.impl.SimpleDataTreeNode;

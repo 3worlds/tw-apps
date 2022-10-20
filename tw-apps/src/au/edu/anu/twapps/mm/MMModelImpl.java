@@ -41,7 +41,7 @@ import au.edu.anu.omhtk.preferences.*;
 import au.edu.anu.aot.archetype.Archetypes;
 import au.edu.anu.omugi.collections.tables.StringTable;
 import au.edu.anu.aot.errorMessaging.ErrorMessageManager;
-import au.edu.anu.rscs.aot.util.FileUtilities;
+import au.edu.anu.omhtk.util.FileUtilities;
 import au.edu.anu.twapps.dialogs.DialogsFactory;
 import au.edu.anu.twapps.mm.configGraph.ConfigGraph;
 import au.edu.anu.twapps.mm.layoutGraph.*;
