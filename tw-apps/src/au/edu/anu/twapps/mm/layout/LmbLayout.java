@@ -39,9 +39,9 @@ import java.util.Random;
 import au.edu.anu.omhtk.rng.Pcg32;
 import au.edu.anu.twapps.mm.layoutGraph.LayoutEdge;
 import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
-import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.Edge;
-import fr.cnrs.iees.graph.impl.TreeGraph;
+import fr.cnrs.iees.omugi.graph.Direction;
+import fr.cnrs.iees.omugi.graph.Edge;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraph;
 
 /**
  * @author Ian Davies 25 May 2020

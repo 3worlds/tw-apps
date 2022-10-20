@@ -36,9 +36,9 @@ import java.util.List;
 import au.edu.anu.omhtk.preferences.IPreferences;
 import au.edu.anu.omhtk.preferences.Preferences;
 import au.edu.anu.twapps.dialogs.DialogsFactory;
-import fr.cnrs.iees.graph.impl.ALEdge;
-import fr.cnrs.iees.graph.impl.TreeGraph;
-import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
+import fr.cnrs.iees.omugi.graph.impl.ALEdge;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraph;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraphDataNode;
 
 /**
  * Implementation of {@IMRModel} to manage model logic for GUI implementation

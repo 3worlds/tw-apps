@@ -32,12 +32,12 @@ import java.util.*;
 
 import fr.cnrs.iees.omugi.graph.property.*;
 import au.edu.anu.twcore.root.EditableFactory;
-import fr.cnrs.iees.graph.*;
-import fr.cnrs.iees.graph.impl.*;
-import fr.cnrs.iees.properties.*;
-import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
-import fr.cnrs.iees.identity.Identity;
-import fr.cnrs.iees.identity.impl.LocalScope;
+import fr.cnrs.iees.omugi.graph.*;
+import fr.cnrs.iees.omugi.graph.impl.*;
+import fr.cnrs.iees.omugi.properties.*;
+import fr.cnrs.iees.omugi.properties.impl.SharedPropertyListImpl;
+import fr.cnrs.iees.omugi.identity.Identity;
+import fr.cnrs.iees.omugi.identity.impl.LocalScope;
 
 /**
  * Factory to construct nodes and edges for the layout graph. All elements use

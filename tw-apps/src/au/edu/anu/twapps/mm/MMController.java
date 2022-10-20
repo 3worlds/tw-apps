@@ -35,7 +35,7 @@ import au.edu.anu.omhtk.preferences.Preferenceable;
 import au.edu.anu.twapps.mm.layout.LayoutType;
 import au.edu.anu.twapps.mm.layoutGraph.LayoutEdge;
 import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
-import fr.cnrs.iees.graph.impl.TreeGraph;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraph;
 
 /**
  * Interface for the 'controller' component of a (cf: <a href=

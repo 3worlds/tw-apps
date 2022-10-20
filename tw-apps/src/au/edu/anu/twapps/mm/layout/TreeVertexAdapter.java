@@ -37,7 +37,7 @@ import java.util.Random;
 
 import au.edu.anu.twapps.mm.layoutGraph.ElementDisplayText;
 import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
-import fr.cnrs.iees.graph.Edge;
+import fr.cnrs.iees.omugi.graph.Edge;
 
 /**
  * @author Ian Davies - 30 Apr 2020

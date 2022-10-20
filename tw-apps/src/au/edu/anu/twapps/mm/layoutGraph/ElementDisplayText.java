@@ -28,7 +28,7 @@
   **************************************************************************/
 package au.edu.anu.twapps.mm.layoutGraph;
 
-import fr.cnrs.iees.identity.Identity;
+import fr.cnrs.iees.omugi.identity.Identity;
 
 /**
  * Display options for layout graph elements (nodes/edge) labels and ids.

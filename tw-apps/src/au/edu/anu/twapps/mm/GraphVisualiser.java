@@ -32,7 +32,7 @@ package au.edu.anu.twapps.mm;
 import au.edu.anu.twapps.mm.layout.LayoutType;
 import au.edu.anu.twapps.mm.layoutGraph.LayoutEdge;
 import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
-import fr.cnrs.iees.graph.impl.TreeGraph;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraph;
 import au.edu.anu.twcore.root.World;
 
 /**

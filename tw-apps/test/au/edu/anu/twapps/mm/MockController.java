@@ -35,7 +35,7 @@ import java.util.Collection;
 import au.edu.anu.twapps.mm.layout.LayoutType;
 import au.edu.anu.twapps.mm.layoutGraph.LayoutEdge;
 import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
-import fr.cnrs.iees.graph.impl.TreeGraph;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraph;
 
 public class MockController implements MMController{
 	private MMModel model;

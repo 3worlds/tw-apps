@@ -35,9 +35,9 @@ import java.util.Collection;
 
 import au.edu.anu.twapps.mm.undo.MMMemento;
 import au.edu.anu.twapps.mm.undo.Originator;
-import fr.cnrs.iees.graph.impl.ALEdge;
-import fr.cnrs.iees.graph.impl.TreeGraph;
-import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
+import fr.cnrs.iees.omugi.graph.impl.ALEdge;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraph;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.twmodels.LibraryTable;
 import au.edu.anu.twcore.project.Project;
 

@@ -43,7 +43,7 @@ import au.edu.anu.twcore.archetype.TWA;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrorMsg;
 import au.edu.anu.twcore.errorMessaging.ModelBuildErrors;
 import au.edu.anu.twcore.graphState.*;
-import fr.cnrs.iees.graph.impl.*;
+import fr.cnrs.iees.omugi.graph.impl.*;
 import fr.cnrs.iees.twcore.generators.CodeGenerator;
 import fr.cnrs.iees.twcore.generators.ProjectJarGenerator;
 import au.edu.anu.twcore.project.Project;

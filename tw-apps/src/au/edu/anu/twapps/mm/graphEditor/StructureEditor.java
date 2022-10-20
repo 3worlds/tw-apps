@@ -33,7 +33,7 @@ import java.util.List;
 
 import au.edu.anu.twapps.mm.layoutGraph.LayoutEdge;
 import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
-import fr.cnrs.iees.graph.impl.SimpleDataTreeNode;
+import fr.cnrs.iees.omugi.graph.impl.SimpleDataTreeNode;
 import fr.cnrs.iees.omhtk.utils.*;
 
 /**

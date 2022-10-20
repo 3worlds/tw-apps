@@ -40,12 +40,12 @@ import au.edu.anu.twapps.mm.layoutGraph.ElementDisplayText;
 import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
 import au.edu.anu.twcore.archetype.TWA;
 import au.edu.anu.twcore.archetype.tw.*;
-import fr.cnrs.iees.OmugiClassLoader;
-import fr.cnrs.iees.graph.*;
-import fr.cnrs.iees.graph.impl.SimpleDataTreeNode;
-import fr.cnrs.iees.identity.impl.PairIdentity;
-import fr.cnrs.iees.io.parsing.ValidPropertyTypes;
-import fr.cnrs.iees.properties.ExtendablePropertyList;
+import fr.cnrs.iees.omugi.OmugiClassLoader;
+import fr.cnrs.iees.omugi.graph.*;
+import fr.cnrs.iees.omugi.graph.impl.SimpleDataTreeNode;
+import fr.cnrs.iees.omugi.identity.impl.PairIdentity;
+import fr.cnrs.iees.omugi.io.parsing.ValidPropertyTypes;
+import fr.cnrs.iees.omugi.properties.ExtendablePropertyList;
 import fr.cnrs.iees.omhtk.utils.Duple;
 
 import static au.edu.anu.qgraph.queries.CoreQueries.*;

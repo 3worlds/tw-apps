@@ -29,15 +29,15 @@
 
 package au.edu.anu.twapps.mm.layoutGraph;
 
-import fr.cnrs.iees.graph.Direction;
-import fr.cnrs.iees.graph.EdgeFactory;
-import fr.cnrs.iees.graph.Node;
-import fr.cnrs.iees.graph.impl.ALDataEdge;
-import fr.cnrs.iees.graph.impl.ALEdge;
-import fr.cnrs.iees.graph.impl.TreeGraphDataNode;
-import fr.cnrs.iees.identity.Identity;
-import fr.cnrs.iees.properties.SimplePropertyList;
-import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
+import fr.cnrs.iees.omugi.graph.Direction;
+import fr.cnrs.iees.omugi.graph.EdgeFactory;
+import fr.cnrs.iees.omugi.graph.Node;
+import fr.cnrs.iees.omugi.graph.impl.ALDataEdge;
+import fr.cnrs.iees.omugi.graph.impl.ALEdge;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraphDataNode;
+import fr.cnrs.iees.omugi.identity.Identity;
+import fr.cnrs.iees.omugi.properties.SimplePropertyList;
+import fr.cnrs.iees.omugi.properties.impl.SharedPropertyListImpl;
 import fr.cnrs.iees.omhtk.utils.Duple;
 
 /**
