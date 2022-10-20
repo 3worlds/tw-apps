@@ -28,21 +28,13 @@
   **************************************************************************/
 package au.edu.anu.twapps.mm.layoutGraph;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
-import au.edu.anu.omugi.graph.property.Property;
-import au.edu.anu.omugi.graph.property.PropertyKeys;
+import fr.cnrs.iees.omugi.graph.property.*;
 import au.edu.anu.twcore.root.EditableFactory;
-import fr.cnrs.iees.graph.Edge;
-import fr.cnrs.iees.graph.Node;
-import fr.cnrs.iees.graph.impl.ALEdge;
-import fr.cnrs.iees.graph.impl.TreeGraph;
-import fr.cnrs.iees.graph.impl.TreeGraphFactory;
-import fr.cnrs.iees.graph.impl.TreeGraphNode;
-import fr.cnrs.iees.properties.PropertyListFactory;
-import fr.cnrs.iees.properties.ReadOnlyPropertyList;
-import fr.cnrs.iees.properties.SimplePropertyList;
+import fr.cnrs.iees.graph.*;
+import fr.cnrs.iees.graph.impl.*;
+import fr.cnrs.iees.properties.*;
 import fr.cnrs.iees.properties.impl.SharedPropertyListImpl;
 import fr.cnrs.iees.identity.Identity;
 import fr.cnrs.iees.identity.impl.LocalScope;

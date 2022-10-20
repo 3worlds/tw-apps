@@ -39,8 +39,7 @@ import java.util.regex.*;
 import org.apache.commons.text.WordUtils;
 
 import au.edu.anu.aot.archetype.Archetypes;
-import au.edu.anu.omugi.collections.tables.Dimensioner;
-import au.edu.anu.omugi.collections.tables.StringTable;
+import fr.cnrs.iees.omugi.collections.tables.*;
 import au.edu.anu.omhtk.util.*;
 import au.edu.anu.twapps.dialogs.DialogsFactory;
 import au.edu.anu.twapps.mm.GraphVisualiser;

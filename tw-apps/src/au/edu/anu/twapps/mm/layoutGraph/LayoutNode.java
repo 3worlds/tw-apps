@@ -33,7 +33,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import au.edu.anu.omugi.collections.tables.StringTable;
+import fr.cnrs.iees.omugi.collections.tables.StringTable;
 import au.edu.anu.twcore.root.EditableFactory;
 import au.edu.anu.twcore.root.TwConfigFactory;
 import fr.cnrs.iees.graph.Direction;
