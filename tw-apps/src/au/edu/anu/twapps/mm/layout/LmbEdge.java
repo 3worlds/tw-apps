@@ -37,8 +37,8 @@ public class LmbEdge {
 	// private double factor;// set on init
 	private double cx;// ctrl pt
 	private double cy;// ctrl pt
-	private double pcx;// ctrl pt
-	private double pcy;// ctrl pt
+//	private double pcx;// ctrl pt
+//	private double pcy;// ctrl pt
 	private double pa;// p angle, set on init
 	private double qa;// q angle, set on init
 	private double pf;// p rot force

@@ -323,7 +323,7 @@ public class LmbVertex extends FRVertex {
 			double avg = diffAngle(nn) - nn.diffAngle(this) / 2.0;
 			// absolute optimal edge angle
 			double aopti = LmbEdge.pie2(nn.tanAngle(this) + avg);
-			double rot = LmbEdge.pie(aopti - nn.edgeAngle(this));
+//			double rot = LmbEdge.pie(aopti - nn.edgeAngle(this));
 			double len = dist(this, nn);
 			double optipx = nn.getX() + Math.cos(aopti) * len;
 			double optipy = nn.getY() + Math.sin(aopti) * len;
