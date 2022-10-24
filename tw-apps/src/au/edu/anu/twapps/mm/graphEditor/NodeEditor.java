@@ -30,10 +30,15 @@
 package au.edu.anu.twapps.mm.graphEditor;
 
 import fr.cnrs.iees.omugi.collections.tables.StringTable;
+
+import java.util.Collection;
+
 import au.edu.anu.omhtk.util.IntegerRange;
 import au.edu.anu.twapps.mm.layoutGraph.LayoutEdge;
 import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
+import fr.cnrs.iees.omugi.graph.impl.ALEdge;
 import fr.cnrs.iees.omugi.graph.impl.TreeGraph;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.omugi.graph.impl.TreeGraphNode;
 
 /**
@@ -43,14 +48,15 @@ import fr.cnrs.iees.omugi.graph.impl.TreeGraphNode;
  * 
  * @author Ian Davies - 10 Jan. 2019
  */
-public interface VisualNodeEditor {
+public interface NodeEditor {
 
 	/**
 	 * The underlying {@link LayoutNode}. Ideally this should not be exposed!
 	 * 
 	 * @return The {@link LayoutNode} currently selected for editing.
 	 */
-	public LayoutNode visualNode();
+	public LayoutNode layoutNode();
+	// remove
 
 	/**
 	 * The layout graph. Ideally this should not be exposed!
@@ -58,6 +64,11 @@ public interface VisualNodeEditor {
 	 * @return The layout graph.
 	 */
 	public TreeGraph<LayoutNode, LayoutEdge> visualGraph();
+
+	// remove
+	public Collection<LayoutNode> getChildren();
+
+	public boolean isCollapsed();
 
 	/* true if the this node can have more children of this label */
 	/**
@@ -83,6 +94,13 @@ public interface VisualNodeEditor {
 	 * @return List of {@link LayoutEdge} out-edges.
 	 */
 	public Iterable<LayoutEdge> getOutEdges();
+
+	/**
+	 * Get the out edges from the configuration node.
+	 * 
+	 * @return Collection of out edges.
+	 */
+	public Collection<? extends ALEdge> getConfigOutEdges();
 
 	/**
 	 * Ensure that the proposed node name (id) is unique within the scope of the
@@ -128,6 +146,87 @@ public interface VisualNodeEditor {
 	 */
 	public boolean references(StringTable parents);
 
-//	public String extractParentReference(StringTable parents);
+	/**
+	 * @return The label or classId component of the configuration node (i.e the
+	 *         node being edited).
+	 */
+	public String getLabel();
+
+	/**
+	 * @return The name of id component of the configuration node (i.e the node
+	 *         being edited).
+	 */
+	public String getName();
+
+	/**
+	 * @return true if configuration node (i.e the node being edited) label is the
+	 *         3Worlds root; false otherwise.
+	 */
+	public boolean is3Wroot();
+
+	/**
+	 * @param key Key of the property being queried.
+	 * @return true if the node being edited has the property; false otherwise.
+	 */
+	public boolean hasProperty(String key);
+
+	/**
+	 * @return true if the node being edited is in the predefined sub-tree; false
+	 *         otherwise.
+	 */
+	public boolean isPredefined();
+
+	/**
+	 * This table persists after a parent link has been deleted. It provides the
+	 * valid list of possible parents allowed when reassigning the parent after
+	 * editing.
+	 * 
+	 * @return the parent table of the Layout node
+	 */
+	public StringTable getParentTable();
+
+	/**
+	 * @param name    The unique name of this edge
+	 * @param label   The label or classId of this edge
+	 * @param endNode The end node.
+	 * @return the newly created edge.
+	 */
+	public LayoutEdge newEdge(String name, String label, LayoutNode endNode);
+
+	/**
+	 * Create a new layout node
+	 * 
+	 * @param label
+	 * @param promptName
+	 * @return new child of this node.
+	 */
+	public LayoutNode newChild(String label, String promptName);
+
+	/**
+	 * Get the configuration node that is being edited.
+	 * 
+	 * @return The configuration node.
+	 */
+	public TreeGraphDataNode getConfigNode();
+
+	/**
+	 * @param make the given node a child of this node.
+	 */
+	public void connectChild(LayoutNode child);
+
+	/**
+	 * @return true if this node is not a leaf node.
+	 */
+	public boolean hasChildren();
+
+	public boolean hasCollapsedChild();
+
+	/**
+	 * @return true if there is at least on child in the sub-tree of this graph that
+	 *         is collapsed; false otherise.
+	 */
+	public boolean hasUncollapsedChildren();
+	
+	public void deleteParentLink(LayoutNode child);
 
 }

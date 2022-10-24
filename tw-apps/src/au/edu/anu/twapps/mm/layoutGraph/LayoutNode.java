@@ -420,7 +420,7 @@ public class LayoutNode extends TreeGraphDataNode implements SaveableAsText {
 	 * @return true if this node is not collapsed and has children that are
 	 *         collapse, false otherwise.
 	 */
-	public boolean hasCollaspedChild() {
+	public boolean hasCollapsedChild() {
 		if (isCollapsed())
 			return false;
 		for (LayoutNode n : getChildren()) {

@@ -97,10 +97,10 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 	protected final Specifications specifications;
 
 	/**
-	 * Reference to the {@link VisualNodeEditor} interface with its underlying
+	 * Reference to the {@link NodeEditor} interface with its underlying
 	 * {@VisualNode}. This is the currently selected node for editing.
 	 */
-	protected final VisualNodeEditor nodeEditor;
+	protected final NodeEditor nodeEditor;
 	/**
 	 * Reference to any newly constructed node. If this is not null when the editor
 	 * closes (not all operations involve node creation), the user is prompted to
@@ -129,11 +129,11 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 
 	/**
 	 * 
-	 * @param nodeEditor The selected node for editing {@link VisualNodeEditor}.
+	 * @param nodeEditor The selected node for editing {@link NodeEditor}.
 	 * @param visualiser Interface to the {@link GraphVisualiser}.
 	 * @param controller The model controller {@link MMController}.
 	 */
-	public StructureEditorAdapter(VisualNodeEditor nodeEditor, GraphVisualiser visualiser, MMController controller) {
+	public StructureEditorAdapter(NodeEditor nodeEditor, GraphVisualiser visualiser, MMController controller) {
 		super();
 		this.specifications = new TwSpecifications();
 		this.controller = controller;
@@ -143,7 +143,7 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 		this.baseSpec = specifications.getSpecsOf(nodeEditor, TWA.getRoot(), discoveredFile);
 		if (baseSpec == null)
 			throw new NullPointerException(
-					"Specification for '" + nodeEditor.visualNode().configNode().toShortString() + "' was not found.");
+					"Specification for '" + nodeEditor + "' was not found.");
 
 		this.subClassSpec = specifications.getSubSpecsOf(baseSpec, nodeEditor.getSubClass());
 		this.visualiser = visualiser;
@@ -155,7 +155,7 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 	public List<SimpleDataTreeNode> filterChildSpecs(Iterable<SimpleDataTreeNode> childSpecs) {
 		// childXorPropertyQuerySpec
 		List<SimpleDataTreeNode> result = new ArrayList<SimpleDataTreeNode>();
-		List<String[]> tables = specifications.getQueryStringTables(baseSpec, ChildXorPropertyQuery.class);
+		Collection<String[]> tables = specifications.getQueryStringTables(baseSpec, ChildXorPropertyQuery.class);
 		tables.addAll(specifications.getQueryStringTables(subClassSpec, ChildXorPropertyQuery.class));
 		for (SimpleDataTreeNode childSpec : childSpecs) {
 			boolean reserved = false;
@@ -176,20 +176,13 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 			}
 		}
 		result.sort((n1, n2) -> n1.id().compareToIgnoreCase(n2.id()));
-//		Collections.sort(result, new Comparator<Node>() {
-//			@Override
-//			public int compare(Node o1, Node o2) {
-//				return o1.id().compareToIgnoreCase(o2.id());
-//			}
-//		});
 		return result;
 	}
 
-	private boolean allowedChild(String childLabel, List<String[]> tables) {
-		LayoutNode vn = nodeEditor.visualNode();
+	private boolean allowedChild(String childLabel, Collection<String[]> tables) {
 		for (String[] ss : tables) {
 			if (ss[0].equals(childLabel)) {
-				if (vn.configHasProperty(ss[1]))
+				if (nodeEditor.hasProperty(ss[1]))
 					return false;
 			}
 		}
@@ -231,7 +224,6 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 	public List<Tuple<String, LayoutNode, SimpleDataTreeNode>> filterEdgeSpecs(Iterable<SimpleDataTreeNode> edgeSpecs) {
 		List<Tuple<String, LayoutNode, SimpleDataTreeNode>> result = new ArrayList<>();
 		for (SimpleDataTreeNode edgeSpec : edgeSpecs) {
-//			log.info(edgeSpec.toShortString());
 			String toNodeRef = (String) edgeSpec.properties().getPropertyValue(Archetypes.TO_NODE);
 			String edgeLabel = (String) edgeSpec.properties().getPropertyValue(Archetypes.IS_OF_CLASS);
 			if (toNodeRef.endsWith(":"))
@@ -242,7 +234,7 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 			log.info(edgeLabel);
 			List<LayoutNode> endNodes = findNodesReferenced(toNodeRef);
 			for (LayoutNode endNode : endNodes) {
-				if (!nodeEditor.visualNode().id().equals(endNode.id())) // no edges to self
+				if (!nodeEditor.getName().equals(endNode.id())) // no edges to self
 					if (!nodeEditor.hasOutEdgeTo(endNode, edgeLabel))
 						if (satisfiesEdgeMultiplicity(edgeSpec, toNodeLabel, edgeLabel))
 							if (satisfyExclusiveCategoryQuery(edgeSpec, endNode, edgeLabel))
@@ -270,7 +262,7 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 	private boolean satisfiesEdgeMultiplicity(SimpleDataTreeNode edgeSpec, String toNodeLabel, String edgeLabel) {
 		IntegerRange range = specifications.getMultiplicityOf(edgeSpec);
 		@SuppressWarnings("unchecked")
-		List<Node> nodes = (List<Node>) get(nodeEditor.visualNode().configNode().edges(Direction.OUT),
+		List<Node> nodes = (List<Node>) get(nodeEditor.getConfigOutEdges(),
 				selectZeroOrMany(hasTheLabel(edgeLabel)), edgeListStartNodes(),
 				selectZeroOrMany(hasTheLabel(toNodeLabel)));
 		if (nodes.size() >= range.getLast())
@@ -285,7 +277,7 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 	 */
 	@SuppressWarnings("unchecked")
 	private boolean satisfyEndNodeHasPropertyQuery(SimpleDataTreeNode edgeSpec, LayoutNode endNode, String edgeLabel) {
-		List<SimpleDataTreeNode> queries = specifications.getQueries((SimpleDataTreeNode) edgeSpec,
+		Collection<SimpleDataTreeNode> queries = specifications.getQueries((SimpleDataTreeNode) edgeSpec,
 				EndNodeHasPropertyQuery.class);
 		for (SimpleDataTreeNode query : queries) {
 			String key = (String) query.properties().getPropertyValue(TWA.PROP_NAME);
@@ -317,7 +309,7 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 
 	@SuppressWarnings("unchecked")
 	private boolean satisfyOutEdgeXorQuery(SimpleDataTreeNode edgeSpec, LayoutNode endNode, String proposedEdgeLabel) {
-		List<SimpleDataTreeNode> queries = specifications.getQueries((SimpleDataTreeNode) edgeSpec.getParent(),
+		Collection<SimpleDataTreeNode> queries = specifications.getQueries((SimpleDataTreeNode) edgeSpec.getParent(),
 				OutEdgeXorQuery.class);
 		for (SimpleDataTreeNode query : queries) {
 			if (queryReferencesLabel(proposedEdgeLabel, query, TWA.EDGE_LABEL_1, TWA.EDGE_LABEL_2)) {
@@ -327,7 +319,7 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 				qp2.addAll(getEdgeLabelRefs(query.properties(), TWA.EDGE_LABEL_2));
 				Set<String> es1 = new HashSet<>();
 				Set<String> es2 = new HashSet<>();
-				for (Edge e : nodeEditor.visualNode().configNode().edges(Direction.OUT))
+				for (Edge e : nodeEditor.getConfigOutEdges())
 					if (qp1.contains(e.classId()))
 						es1.add(e.classId());
 					else if (qp2.contains(e.classId()))
@@ -394,7 +386,7 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 
 		boolean result = false;
 		for (Duple<String, String> entry : entries) {
-			result = result || OutNodeXorQuery.propose(nodeEditor.visualNode().configNode(),
+			result = result || OutNodeXorQuery.propose(nodeEditor.getConfigNode(),
 					proposedEndNode.configNode(), entry.getFirst(), entry.getSecond());
 		}
 		return result;
@@ -407,7 +399,7 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 		if (specifications.getQueries((SimpleDataTreeNode) edgeSpec.getParent(), ExclusiveCategoryQuery.class)
 				.isEmpty())
 			return true;
-		return ExclusiveCategoryQuery.propose(nodeEditor.visualNode().configNode(), proposedCat.configNode());
+		return ExclusiveCategoryQuery.propose(nodeEditor.getConfigNode(), proposedCat.configNode());
 	}
 
 	public List<LayoutNode> orphanedChildList(Iterable<SimpleDataTreeNode> childSpecs) {
@@ -421,12 +413,6 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 			}
 		}
 		result.sort((n1, n2) -> n1.id().compareToIgnoreCase(n2.id()));
-//		Collections.sort(result, new Comparator<Node>() {
-//			@Override
-//			public int compare(Node o1, Node o2) {
-//				return o1.id().compareToIgnoreCase(o2.id());
-//			}
-//		});
 		return result;
 	}
 
@@ -455,13 +441,10 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 
 	private String getNewName(String title, String label, String defName, SimpleDataTreeNode childBaseSpec) {
 		// default name is label with 1 appended
-//		String post = label.substring(1, label.length());
-//		String pre = label.substring(0, 1);
-//		String promptId = pre.toLowerCase() + post.replaceAll("[aeiou]", "") + "1";
 		String promptId = defName;
 		boolean capitalize = false;
 		if (childBaseSpec != null)
-			capitalize = specifications.nameStartsWithUpperCase(childBaseSpec);
+			capitalize = specifications.ifNameStartsWithUpperCase(childBaseSpec);
 		if (capitalize)
 			promptId = WordUtils.capitalize(promptId);
 		boolean modified = true;
@@ -473,9 +456,6 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 			userName = userName.trim();
 			if (userName.equals(""))
 				return null; // implicit cancel
-			// userName = promptId;
-//			if (capitalize)
-//				userName = WordUtils.capitalize(userName);
 			String newName = nodeEditor.proposeAnId(userName);
 			modified = !newName.equals(userName);
 			promptId = newName;
@@ -522,7 +502,7 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 //			opNames.add((String) op.properties().getPropertyValue(aaHasName));
 
 		// make the node
-		newChild = nodeEditor.visualNode().newChild(childLabel, promptId);
+		newChild = nodeEditor.newChild(childLabel, promptId);
 		newChild.setCollapse(false);
 		newChild.setVisible(true);
 		newChild.setCategory();
@@ -658,8 +638,8 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 
 	@Override
 	public void onNewEdge(Tuple<String, LayoutNode, SimpleDataTreeNode> details, double duration) {
-		if (nodeEditor.visualNode().isCollapsed())
-			visualiser.expandTreeFrom(nodeEditor.visualNode(), duration);
+		if (nodeEditor.isCollapsed())
+			visualiser.expandTreeFrom(nodeEditor.layoutNode(), duration);
 		String id = getNewName(details.getFirst(), details.getFirst(),
 				ConfigurationEdgeLabels.labelValueOf(details.getFirst()).defName(), null);
 		if (id == null)
@@ -675,7 +655,7 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 		String edgeLabel = p.getFirst();
 		LayoutNode target = p.getSecond();
 		SimpleDataTreeNode edgeSpec = p.getThird();
-		LayoutEdge vEdge = nodeEditor.visualNode().newEdge(edgeId, edgeLabel, target);
+		LayoutEdge vEdge = nodeEditor.newEdge(edgeId, edgeLabel, target);
 		if (vEdge.getConfigEdge() instanceof ALDataEdge) {
 			ALDataEdge edge = (ALDataEdge) vEdge.getConfigEdge();
 			ExtendablePropertyList props = (ExtendablePropertyList) edge.properties();
@@ -707,7 +687,7 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 
 	private void deleteNode(LayoutNode vNode, double duration) {
 		// don't leave nodes hidden
-		if (vNode.hasCollaspedChild())
+		if (vNode.hasCollapsedChild())
 			visualiser.expandTreeFrom(vNode, duration);
 		// remove from view while still intact
 		visualiser.removeView(vNode);
@@ -717,7 +697,7 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 
 	@Override
 	public void onDeleteNode(double duration) {
-		deleteNode(nodeEditor.visualNode(), duration);
+		deleteNode(nodeEditor.layoutNode(), duration);
 		controller.onNodeDeleted();
 		GraphStateFactory.setChanged();
 		ConfigGraph.verifyGraph();
@@ -726,11 +706,11 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 	@Override
 	public boolean onRenameNode() {
 		String userName = getNewName(
-				nodeEditor.visualNode().configNode() + ":" + nodeEditor.visualNode().configNode().id(),
-				nodeEditor.visualNode().configNode().classId(), nodeEditor.visualNode().configNode().id(), baseSpec);
+				nodeEditor.toString(),
+				nodeEditor.getLabel(), nodeEditor.getName(), baseSpec);
 		if (userName != null) {
-			renameNode(userName, nodeEditor.visualNode());
-			visualiser.onNodeRenamed(nodeEditor.visualNode());
+			renameNode(userName, nodeEditor.layoutNode());
+			visualiser.onNodeRenamed(nodeEditor.layoutNode());
 			controller.onElementRenamed();
 			return true;
 		}
@@ -893,7 +873,7 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 
 	@Override
 	public void onCollapseTrees(double duration) {
-		for (LayoutNode child : nodeEditor.visualNode().getChildren()) {
+		for (LayoutNode child : nodeEditor.getChildren()) {
 			if (!child.isCollapsed())
 				visualiser.collapseTreeFrom(child, duration);
 		}
@@ -910,7 +890,7 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 
 	@Override
 	public void onExpandTrees(double duration) {
-		for (LayoutNode child : nodeEditor.visualNode().getChildren()) {
+		for (LayoutNode child : nodeEditor.getChildren()) {
 			if (child.isCollapsed())
 				visualiser.expandTreeFrom(child, duration);
 		}
@@ -920,7 +900,7 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 
 	@Override
 	public void onReconnectChild(LayoutNode vnChild) {
-		nodeEditor.visualNode().reconnectChild(vnChild);
+		nodeEditor.connectChild(vnChild);
 		visualiser.onNewParent(vnChild);
 		ConfigGraph.verifyGraph();
 		GraphStateFactory.setChanged();
@@ -1039,7 +1019,7 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 	public void onImportTree(SimpleDataTreeNode childSpec, double duration) {
 		TreeGraph<TreeGraphDataNode, ALEdge> importGraph = getImportGraph(childSpec);
 		if (importGraph != null) {
-			importGraph(importGraph, nodeEditor.visualNode(), duration);
+			importGraph(importGraph, nodeEditor.layoutNode(), duration);
 			controller.doLayout(duration);
 			GraphStateFactory.setChanged();
 			ConfigGraph.verifyGraph();
@@ -1113,7 +1093,7 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 		newVNode.connectParent(vParent);
 		newVNode.setConfigNode(newCNode);
 		Set<String> discoveredFile = new HashSet<>();
-		VisualNodeEditor vne = new VisualNodeEditorAdapter(newVNode, nodeEditor.visualGraph());
+		NodeEditor vne = new NodeEditorAdapter(newVNode, nodeEditor.visualGraph());
 		// this depends on the parent table been present so its circular
 		// This will break eventually when finding the spec without knowing the precise
 		// parent when there can be more than one.
@@ -1163,13 +1143,8 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 
 	@Override
 	public void onDeleteParentLink(LayoutNode vChild) {
-		// messy: onParentChanged never expect edge deletion
-		LayoutNode vParent = nodeEditor.visualNode();
-		TreeGraphNode cChild = vChild.configNode();
-		TreeGraphNode cParent = nodeEditor.visualNode().configNode();
 		visualiser.onRemoveParentLink(vChild);
-		vParent.disconnectFrom(vChild);
-		cParent.disconnectFrom(cChild);
+		nodeEditor.deleteParentLink(vChild);
 		visualiser.getLayoutGraph().onParentChanged();
 		ConfigGraph.onParentChanged();
 		GraphStateFactory.setChanged();
@@ -1183,7 +1158,7 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 		List<Boolean> selected = new ArrayList<>();
 		// DisplayName, Spec, propertyList
 		Map<String, Tuple<String, SimpleDataTreeNode, ExtendablePropertyList>> propertyDetailsMap = new LinkedHashMap<>();
-		TreeGraphDataNode cn = (TreeGraphDataNode) nodeEditor.visualNode().configNode();
+		TreeGraphDataNode cn = (TreeGraphDataNode) nodeEditor.getConfigNode();
 		for (SimpleDataTreeNode p : optionalNodePropertySpecs) {
 			String name = (String) p.properties().getPropertyValue(Archetypes.HAS_NAME);
 			String displayName = cn.toShortString() + "#" + name;
@@ -1214,7 +1189,7 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 		// If cancel is pressed the original list of selected items is returned and
 		// therefore no change should result.
 		List<String> selectedItems = DialogsFactory.getCBSelections(
-				nodeEditor.visualNode().configNode().toShortString(), "Optional properties", displayNames, selected);
+				nodeEditor.toString(), "Optional properties", displayNames, selected);
 		for (String displayName : displayNames) {
 			boolean isSelected = selected.get(displayNames.indexOf(displayName));
 			// addition iff selected and not currently present

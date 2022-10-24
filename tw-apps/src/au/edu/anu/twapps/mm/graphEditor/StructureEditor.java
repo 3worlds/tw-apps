@@ -39,7 +39,7 @@ import fr.cnrs.iees.omhtk.utils.*;
 /**
  * Interface for the graph structure editor for ModelMaker. All these methods
  * are in the context of a single user-selected node. This node, represented by
- * {@link VisualNodeEditor} is assumed available in implementations of this
+ * {@link NodeEditor} is assumed available in implementations of this
  * interface.
  * 
  * @author Ian Davies - 11 Jan. 2019
@@ -173,7 +173,6 @@ public interface StructureEditor {
 	 */
 	public void onExpandTrees(double duration);
 
-	/* connect node as child of this node */
 	/**
 	 * Make the currently selected node the parent of the given child node.
 	 * 

@@ -44,6 +44,7 @@ import fr.cnrs.iees.omugi.graph.TreeNode;
 import fr.cnrs.iees.omugi.graph.impl.ALEdge;
 import fr.cnrs.iees.omugi.graph.impl.ALNode;
 import fr.cnrs.iees.omugi.graph.impl.TreeGraph;
+import fr.cnrs.iees.omugi.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.omugi.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.omugi.identity.Identity;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
@@ -52,22 +53,22 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 /**
  * @author Ian Davies - 10 Jan. 2019
  */
-public class VisualNodeEditorAdapter implements //
-		VisualNodeEditor {
-	private LayoutNode visualNode;
-	private TreeGraph<LayoutNode, LayoutEdge> visualGraph;
+public class NodeEditorAdapter implements //
+		NodeEditor {
+	private final LayoutNode visualNode;
+	private final TreeGraph<LayoutNode, LayoutEdge> visualGraph;
 
 	/**
 	 * @param visualNode  Node for editing.
 	 * @param visualGraph The layout graph.
 	 */
-	public VisualNodeEditorAdapter(LayoutNode visualNode, TreeGraph<LayoutNode, LayoutEdge> visualGraph) {
+	public NodeEditorAdapter(LayoutNode visualNode, TreeGraph<LayoutNode, LayoutEdge> visualGraph) {
 		this.visualNode = visualNode;
 		this.visualGraph = visualGraph;
 	}
 
 	@Override
-	public LayoutNode visualNode() {
+	public LayoutNode layoutNode() {
 		return visualNode;
 	}
 
@@ -158,14 +159,95 @@ public class VisualNodeEditorAdapter implements //
 		return false;
 	}
 
-//	@Override
-//	public String extractParentReference(StringTable parents) {
-//		TreeNode node = visualNode.configNode();
-//		for (int i = 0; i < parents.size(); i++)
-//			if (VisualNode.referencedBy(node, parents.getWithFlatIndex(i)))
-//				return parents.getWithFlatIndex(i);
-//
-//		return null;
-//	}
+	@Override
+	public String getLabel() {
+		return visualNode.configNode().classId();
+	}
+
+	@Override
+	public String getName() {
+		return visualNode.configNode().id();
+	}
+
+	@Override
+	public boolean is3Wroot() {
+		return visualNode.configNode().classId().equals(N_ROOT.label());
+	}
+
+	@Override
+	public String toString() {
+		return visualNode.configNode().toShortString();
+	}
+
+	@Override
+	public boolean hasProperty(String key) {
+		return visualNode.configNode().properties().hasProperty(key);
+	}
+
+	@Override
+	public boolean isPredefined() {
+		return visualNode.isPredefined();
+	}
+
+	@Override
+	public StringTable getParentTable() {
+		return visualNode.parentTable();
+	}
+
+	@Override
+	public Collection<LayoutNode> getChildren() {
+		return visualNode.getChildren();
+	}
+
+	@Override
+	public boolean isCollapsed() {
+		return visualNode.isCollapsed();
+	}
+
+	@Override
+	public Collection<? extends ALEdge> getConfigOutEdges() {
+		return visualNode.configNode().edges(Direction.OUT);
+	}
+
+	@Override
+	public LayoutEdge newEdge(String name, String label, LayoutNode endNode) {
+		return visualNode.newEdge(name, label, endNode);
+	}
+
+	@Override
+	public LayoutNode newChild(String label, String proposedName) {
+		return visualNode.newChild(label, proposedName);
+	}
+
+	@Override
+	public TreeGraphDataNode getConfigNode() {
+		return visualNode.configNode();
+	}
+
+	@Override
+	public void connectChild(LayoutNode child) {
+		visualNode.reconnectChild(child);
+	}
+
+	@Override
+	public boolean hasChildren() {
+		return visualNode.hasChildren();
+	}
+
+	@Override
+	public boolean hasCollapsedChild() {
+		return visualNode.hasCollapsedChild();
+	}
+
+	@Override
+	public boolean hasUncollapsedChildren() {
+		return visualNode.hasUncollapsedChildren();
+	}
+
+	@Override
+	public void deleteParentLink(LayoutNode child) {
+		visualNode.disconnectFrom(child);
+		visualNode.configNode().disconnectFrom(child.configNode());
+	}
 
 }

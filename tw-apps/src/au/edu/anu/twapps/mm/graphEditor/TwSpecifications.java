@@ -60,47 +60,21 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationPropertyNames.*;
 public class TwSpecifications implements //
 		Specifications {
 
-	
-	@SuppressWarnings("unchecked")
 	@Override
-	public SimpleDataTreeNode getSpecsOf(VisualNodeEditor editNode, TreeNode root, Set<String> discoveredFiles) {
-		for (TreeNode childSpec : root.getChildren()) {
-			if (isOfClass((SimpleDataTreeNode) childSpec, editNode.visualNode().configNode().classId())) {
-				StringTable parentsSpecTable = (StringTable) ((SimpleDataTreeNode) childSpec).properties()
-						.getPropertyValue(Archetypes.HAS_PARENT);
-				StringTable parentsTable = editNode.visualNode().parentTable();
-				// Dodgy: the parentTable is unknown during an import;
-				if (parentsTable == null)
-					return (SimpleDataTreeNode) childSpec;
-				else if (parentsTable.equals(parentsSpecTable)) {
-					DataHolder dh = (DataHolder) childSpec;
-					if (dh.properties().hasProperty(Archetypes.HAS_ID)) {
-						String hasId = (String) dh.properties().getPropertyValue(Archetypes.HAS_ID);
-						if (editNode.visualNode().configNode().id().equals(hasId))
-							return (SimpleDataTreeNode) childSpec;
-					} else
-						return (SimpleDataTreeNode) childSpec;
-				}
-			}
-			// search subArchetypes
-			List<SimpleDataTreeNode> saConstraints = (List<SimpleDataTreeNode>) get(childSpec.getChildren(),
-					selectZeroOrMany(hasProperty(Archetypes.CLASS_NAME, CheckSubArchetypeQuery.class.getName())));
-			for (SimpleDataTreeNode constraint : saConstraints) {
-				List<String> pars = getQueryStringTableEntries(constraint);
-				if (pars.get(0).equals(P_SA_SUBCLASS.key())) {
-					String fname = pars.get(pars.size() - 1);
-					// prevent infinite recursion
-					if (!discoveredFiles.contains(fname)) {
-						discoveredFiles.add(fname);
-						Tree<?> tree = (Tree<?>) TWA.getSubArchetype(fname);
-						SimpleDataTreeNode result = getSpecsOf(editNode, tree.root(), discoveredFiles);
-						if (result != null)
-							return result;
-					}
+	public SimpleDataTreeNode getSpecsOf(NodeEditor editNode, TreeNode root, Set<String> discoveredFiles) {
+		for (TreeNode n : root.getChildren()) {
+			SimpleDataTreeNode spec = (SimpleDataTreeNode) n;
+			if (isMatchingSpec(spec, editNode)) {
+				return spec;
+			} else {
+				for (SimpleDataTreeNode constraint : getSubArchetypeQueries(spec)) {
+					spec = findInSubArchetyes(constraint, editNode, discoveredFiles);
+					if (spec != null)
+						return spec;
 				}
 			}
 		}
-		return null; // DO NOT throw exp on null as this is recursive and expected!
+		return null;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -114,97 +88,60 @@ public class TwSpecifications implements //
 				return null;
 			List<SimpleDataTreeNode> specs = (List<SimpleDataTreeNode>) get(subClassTree.root().getChildren(),
 					selectOneOrMany(hasProperty(Archetypes.IS_OF_CLASS, parent)));
-			if (specs.size() == 1)
-				return specs.get(0);
-			else {
-				for (SimpleDataTreeNode spec : specs) {
-					StringTable t = (StringTable) spec.properties().getPropertyValue(Archetypes.HAS_PARENT);
-					if (t.contains(parent + PairIdentity.LABEL_NAME_SEPARATOR)) {
-						return spec;
-					}
+//			if (specs.size() == 1)
+//				return specs.get(0);
+//			else {
+			for (SimpleDataTreeNode spec : specs) {
+				StringTable t = (StringTable) spec.properties().getPropertyValue(Archetypes.HAS_PARENT);
+				if (t.contains(parent + PairIdentity.LABEL_NAME_SEPARATOR)) {
+					return spec;
 				}
+//				}
 			}
 
 		}
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public Iterable<SimpleDataTreeNode> getChildSpecsOf(VisualNodeEditor editNode, SimpleDataTreeNode parentSpec,
-			SimpleDataTreeNode parentSubSpec, TreeNode root) {
-		List<SimpleDataTreeNode> children = (List<SimpleDataTreeNode>) get(root.getChildren(),
-				selectZeroOrMany(hasProperty(Archetypes.HAS_PARENT)));
-		// could have a query here for finding a parent in a parent Stringtable
-		List<SimpleDataTreeNode> result = new ArrayList<>();
-		for (SimpleDataTreeNode n : children)
-			if (editNode.references((StringTable) n.properties().getPropertyValue(Archetypes.HAS_PARENT)))
-				result.add(n);
-
-		// addChildrenTo(result, parentLabel, children);
-		if (parentSubSpec != null) {
-			// look for children in the subclass tree root
-			children = (List<SimpleDataTreeNode>) get(parentSubSpec.getParent().getChildren(),
-					selectZeroOrMany(hasProperty(Archetypes.HAS_PARENT)));
-			// addChildrenTo(result, parentLabel, children);
-			for (SimpleDataTreeNode an : children)
-				if (editNode.references((StringTable) an.properties().getPropertyValue(Archetypes.HAS_PARENT)))
-					result.add(an);
-
-		}
-
+	public List<SimpleDataTreeNode> getChildSpecsOf(NodeEditor editNode, SimpleDataTreeNode spec,
+			SimpleDataTreeNode subSpec) {
+		List<SimpleDataTreeNode> result = selectMatchingChildrenOf(editNode, spec.getParent());
+		if (subSpec != null)
+			result.addAll(selectMatchingChildrenOf(editNode, subSpec.getParent()));
 		return result;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public Iterable<SimpleDataTreeNode> getPropertySpecsOf(SimpleDataTreeNode spec, SimpleDataTreeNode subSpec) {
-		List<SimpleDataTreeNode> results = (List<SimpleDataTreeNode>) get(spec.getChildren(),
-				selectZeroOrMany(hasTheLabel(Archetypes.HAS_PROPERTY)));
+	public List<SimpleDataTreeNode> getPropertySpecsOf(SimpleDataTreeNode spec, SimpleDataTreeNode subSpec) {
+		List<SimpleDataTreeNode> results = getPropertySpecs(spec);
 		if (subSpec != null) {
-			List<SimpleDataTreeNode> subList = (List<SimpleDataTreeNode>) get(subSpec.getChildren(),
-					selectZeroOrMany(hasTheLabel(Archetypes.HAS_PROPERTY)));
-			results.addAll(subList);
+			results.addAll(getPropertySpecs(subSpec));
 		}
 		return results;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public Iterable<SimpleDataTreeNode> getEdgeSpecsOf(SimpleDataTreeNode baseSpec, SimpleDataTreeNode subSpec) {
-		List<SimpleDataTreeNode> result = (List<SimpleDataTreeNode>) get(baseSpec.getChildren(),
-				selectZeroOrMany(hasTheLabel(Archetypes.HAS_EDGE)));
+	public List<SimpleDataTreeNode> getEdgeSpecsOf(SimpleDataTreeNode baseSpec, SimpleDataTreeNode subSpec) {
+		List<SimpleDataTreeNode> result = getEdgeSpecs(baseSpec);
 		if (subSpec != null)
-			result.addAll((List<SimpleDataTreeNode>) get(subSpec.getChildren(),
-					selectZeroOrMany(hasTheLabel(Archetypes.HAS_EDGE))));
+			result.addAll(getEdgeSpecs(subSpec));
 		return result;
 	}
 
 	@Override
-	public boolean nameStartsWithUpperCase(SimpleDataTreeNode spec) {
+	public boolean ifNameStartsWithUpperCase(SimpleDataTreeNode spec) {
 		return getConstraint(spec, NameStartsWithUpperCaseQuery.class.getName()) != null;
 	}
 
-	@SuppressWarnings({ "unchecked" })
 	@Override
 	public List<Class<? extends TreeNode>> getSubClassesOf(SimpleDataTreeNode spec) {
-		List<Class<? extends TreeNode>> result = new ArrayList<>();
-		SimpleDataTreeNode propertySpec = (SimpleDataTreeNode) get(spec.getChildren(),
-				selectZeroOrOne(hasProperty(Archetypes.HAS_NAME, TWA.SUBCLASS)));
+		SimpleDataTreeNode propertySpec = getSubClassPropertySpec(spec);
 		if (propertySpec != null) {
-			SimpleDataTreeNode constraint = (SimpleDataTreeNode) get(propertySpec.getChildren(),
-					selectOne(hasProperty(Archetypes.CLASS_NAME, IsInValueSetQuery.class.getName())));
-			StringTable classes = (StringTable) constraint.properties().getPropertyValue(TWA.VALUES);
-			for (int i = 0; i < classes.size(); i++) {
-				try {
-					result.add((Class<? extends TreeNode>) Class.forName(classes.getWithFlatIndex(i), true,
-							OmugiClassLoader.getAppClassLoader()));
-				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		return result;
+			StringTable classes = getClassTable(propertySpec);
+			return listValidClasses(classes);
+		} else
+			return new ArrayList<Class<? extends TreeNode>>();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -227,14 +164,6 @@ public class TwSpecifications implements //
 		return result;
 	}
 
-	private boolean entriesContains(String key, List<String[]> entries) {
-		for (String[] ss : entries)
-			for (String s : ss)
-				if (s.equals(key))
-					return true;
-		return false;
-	}
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean filterPropertyStringTableOptions(Iterable<SimpleDataTreeNode> propertySpecs,
@@ -245,7 +174,6 @@ public class TwSpecifications implements //
 			entries.addAll(getQueryStringTables(baseSpec, qclass));
 			entries.addAll(getQueryStringTables(subSpec, qclass));
 		}
-		// TODO: this is a mess! to be cleaned up
 		if (!entries.isEmpty()) {
 			List<String> selectedKeys = DialogsFactory.getRadioButtonChoices(childId, "PropertyChoices", "", entries);
 			if (selectedKeys == null)
@@ -275,6 +203,14 @@ public class TwSpecifications implements //
 	}
 
 	// -----------------------end of implementation methods-----------------------
+
+	private boolean entriesContains(String key, List<String[]> entries) {
+		for (String[] ss : entries)
+			for (String s : ss)
+				if (s.equals(key))
+					return true;
+		return false;
+	}
 
 	private static String getSelectedEntry(String key, List<String> selectedKeys, List<String[]> entries) {
 		if (selectedKeys == null)
@@ -380,8 +316,8 @@ public class TwSpecifications implements //
 				if (obj instanceof Enum<?>) {
 					Class<? extends Enum<?>> e = (Class<? extends Enum<?>>) obj.getClass();
 					String[] names = ValidPropertyTypes.namesOf(e);
-					int choice = DialogsFactory.getListChoice(names, vnode.getDisplayText(ElementDisplayText.RoleName), key,
-							obj.getClass().getSimpleName());
+					int choice = DialogsFactory.getListChoice(names, vnode.getDisplayText(ElementDisplayText.RoleName),
+							key, obj.getClass().getSimpleName());
 					if (choice >= 0) {
 						Enum<?> value = ValidPropertyTypes.valueOf(names[choice], e);
 						vnode.configNode().properties().setProperty(key, value);
@@ -471,4 +407,109 @@ public class TwSpecifications implements //
 
 		return result;
 	}
+
+	private boolean parentTablesMatch(SimpleDataTreeNode spec, NodeEditor editNode) {
+		StringTable parentsSpecTable = (StringTable) spec.properties().getPropertyValue(Archetypes.HAS_PARENT);
+		StringTable parentsTable = editNode.getParentTable();
+		return (parentsTable.equals(parentsSpecTable));
+	}
+
+	private boolean idsMatch(SimpleDataTreeNode spec, NodeEditor editNode) {
+		String hasId = (String) spec.properties().getPropertyValue(Archetypes.HAS_ID);
+		if (editNode.getName().equals(hasId))
+			return true;
+		return false;
+	}
+
+	private boolean isMatchingSpec(SimpleDataTreeNode spec, NodeEditor editNode) {
+		// 1. is of the specified class
+		if (isOfClass(spec, editNode.getLabel())) {
+			// 2. If root label it has no parent to check
+			if (editNode.is3Wroot())
+				return true;
+			// 3. if parent tables match
+			if (parentTablesMatch(spec, editNode)) {
+				// 4. if it has an id then they must also match
+				if (spec.properties().hasProperty(Archetypes.HAS_ID)) {
+					if (idsMatch(spec, editNode))
+						return true;
+					else
+						return false;
+				} else
+					return true;
+			}
+		}
+		return false;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<SimpleDataTreeNode> getSubArchetypeQueries(SimpleDataTreeNode spec) {
+		return (List<SimpleDataTreeNode>) get(spec.getChildren(),
+				selectZeroOrMany(hasProperty(Archetypes.CLASS_NAME, CheckSubArchetypeQuery.class.getName())));
+	}
+
+	private SimpleDataTreeNode findInSubArchetyes(SimpleDataTreeNode constraint, NodeEditor editNode,
+			Set<String> discoveredFiles) {
+		List<String> pars = getQueryStringTableEntries(constraint);
+		if (pars.get(0).equals(P_SA_SUBCLASS.key())) {
+			String fname = pars.get(pars.size() - 1);
+			// prevent infinite recursion
+			if (!discoveredFiles.contains(fname)) {
+				discoveredFiles.add(fname);
+				Tree<?> tree = (Tree<?>) TWA.getSubArchetype(fname);
+				return getSpecsOf(editNode, tree.root(), discoveredFiles);
+			}
+		}
+		return null;
+	}
+
+	private List<SimpleDataTreeNode> selectMatchingChildrenOf(NodeEditor editNode, TreeNode root) {
+		List<SimpleDataTreeNode> result = new ArrayList<>();
+		@SuppressWarnings("unchecked")
+		List<SimpleDataTreeNode> children = (List<SimpleDataTreeNode>) get(root.getChildren(),
+				selectZeroOrMany(hasProperty(Archetypes.HAS_PARENT)));
+		for (SimpleDataTreeNode n : children)
+			if (editNode.references((StringTable) n.properties().getPropertyValue(Archetypes.HAS_PARENT)))
+				result.add(n);
+		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<SimpleDataTreeNode> getPropertySpecs(SimpleDataTreeNode spec) {
+		return (List<SimpleDataTreeNode>) get(spec.getChildren(),
+				selectZeroOrMany(hasTheLabel(Archetypes.HAS_PROPERTY)));
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<SimpleDataTreeNode> getEdgeSpecs(SimpleDataTreeNode spec) {
+		return (List<SimpleDataTreeNode>) get(spec.getChildren(), selectZeroOrMany(hasTheLabel(Archetypes.HAS_EDGE)));
+	}
+
+	@SuppressWarnings("unused")
+	private SimpleDataTreeNode getSubClassPropertySpec(SimpleDataTreeNode spec) {
+		return (SimpleDataTreeNode) get(spec.getChildren(),
+				selectZeroOrOne(hasProperty(Archetypes.HAS_NAME, TWA.SUBCLASS)));
+	}
+
+	private StringTable getClassTable(SimpleDataTreeNode propertySpec) {
+		SimpleDataTreeNode constraint = (SimpleDataTreeNode) get(propertySpec.getChildren(),
+				selectOne(hasProperty(Archetypes.CLASS_NAME, IsInValueSetQuery.class.getName())));
+		return (StringTable) constraint.properties().getPropertyValue(TWA.VALUES);
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<Class<? extends TreeNode>> listValidClasses(StringTable classes) {
+		List<Class<? extends TreeNode>> result = new ArrayList();
+		for (int i = 0; i < classes.size(); i++) {
+			try {
+				result.add((Class<? extends TreeNode>) Class.forName(classes.getWithFlatIndex(i), true,
+						OmugiClassLoader.getAppClassLoader()));
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
+
+	};
+
 }
