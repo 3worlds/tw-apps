@@ -103,7 +103,7 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 	protected final NodeEditor nodeEditor;
 	/**
 	 * Reference to any newly constructed node. If this is not null when the editor
-	 * closes (not all operations involve node creation), the user is prompted to
+	 * closes (not all operations involve node creation) and the user is prompted to
 	 * place the node somewhere in the view.
 	 */
 	protected LayoutNode newChild;
@@ -142,8 +142,7 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 		Set<String> discoveredFile = new HashSet<>();
 		this.baseSpec = specifications.getSpecsOf(nodeEditor, TWA.getRoot(), discoveredFile);
 		if (baseSpec == null)
-			throw new NullPointerException(
-					"Specification for '" + nodeEditor + "' was not found.");
+			throw new NullPointerException("Specification for '" + nodeEditor + "' was not found.");
 
 		this.subClassSpec = specifications.getSubSpecsOf(baseSpec, nodeEditor.getSubClass());
 		this.visualiser = visualiser;
@@ -153,17 +152,14 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 
 	@Override
 	public List<SimpleDataTreeNode> filterChildSpecs(Iterable<SimpleDataTreeNode> childSpecs) {
-		// childXorPropertyQuerySpec
 		List<SimpleDataTreeNode> result = new ArrayList<SimpleDataTreeNode>();
 		Collection<String[]> tables = specifications.getQueryStringTables(baseSpec, ChildXorPropertyQuery.class);
 		tables.addAll(specifications.getQueryStringTables(subClassSpec, ChildXorPropertyQuery.class));
 		for (SimpleDataTreeNode childSpec : childSpecs) {
-			boolean reserved = false;
-			if (childSpec.properties().hasProperty(Archetypes.HAS_ID)) {
-				reserved = ConfigurationReservedNodeId
-						.isPredefined((String) childSpec.properties().getPropertyValue(Archetypes.HAS_ID));
-			}
-			if (!reserved) {
+			boolean isPredef = false;
+			if (childSpec.properties().hasProperty(Archetypes.HAS_ID))
+				isPredef = isPredefined(childSpec);
+			if (!isPredef) {
 				String childLabel = (String) childSpec.properties().getPropertyValue(Archetypes.IS_OF_CLASS);
 				IntegerRange range = specifications.getMultiplicityOf(childSpec);
 				if (nodeEditor.moreChildrenAllowed(range, childLabel)) {
@@ -179,60 +175,15 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 		return result;
 	}
 
-	private boolean allowedChild(String childLabel, Collection<String[]> tables) {
-		for (String[] ss : tables) {
-			if (ss[0].equals(childLabel)) {
-				if (nodeEditor.hasProperty(ss[1]))
-					return false;
-			}
-		}
-		return true;
-	};
-
-	private List<LayoutNode> findNodesReferenced(String ref) {
-		if (ref.endsWith(":"))
-			ref = ref.substring(0, ref.length() - 1);
-		String[] labels = ref.split(":/");
-		int end = labels.length - 1;
-		List<LayoutNode> result = new ArrayList<>();
-		TreeGraph<LayoutNode, LayoutEdge> vg = visualiser.getLayoutGraph();
-		for (LayoutNode vn : vg.nodes()) {
-			if (vn.configNode().classId().equals(labels[end])) {
-				if (end == 0)
-					result.add(vn);
-				else {
-					LayoutNode parent = vn.getParent();
-					if (hasParent(parent, labels, end - 1))
-						result.add(vn);
-				}
-			}
-		}
-		return result;
-	}
-
-	private static boolean hasParent(LayoutNode parent, String[] labels, int index) {
-		if (parent == null)
-			return false;
-		if (index < 0)
-			return false;
-		if (index == 0 && parent.configNode().classId().equals(labels[index]))
-			return true;
-		return hasParent(parent.getParent(), labels, index - 1);
-	}
-
 	@Override
 	public List<Tuple<String, LayoutNode, SimpleDataTreeNode>> filterEdgeSpecs(Iterable<SimpleDataTreeNode> edgeSpecs) {
 		List<Tuple<String, LayoutNode, SimpleDataTreeNode>> result = new ArrayList<>();
 		for (SimpleDataTreeNode edgeSpec : edgeSpecs) {
 			String toNodeRef = (String) edgeSpec.properties().getPropertyValue(Archetypes.TO_NODE);
 			String edgeLabel = (String) edgeSpec.properties().getPropertyValue(Archetypes.IS_OF_CLASS);
-			if (toNodeRef.endsWith(":"))
-				toNodeRef = toNodeRef.substring(0, toNodeRef.length() - 1);
-			String[] labels = toNodeRef.split(":/");
-			String toNodeLabel = labels[labels.length - 1];
-
+			String toNodeLabel = getEndNodeLabel(toNodeRef);
 			log.info(edgeLabel);
-			List<LayoutNode> endNodes = findNodesReferenced(toNodeRef);
+			List<LayoutNode> endNodes = findNodesReferencedBy(toNodeRef);
 			for (LayoutNode endNode : endNodes) {
 				if (!nodeEditor.getName().equals(endNode.id())) // no edges to self
 					if (!nodeEditor.hasOutEdgeTo(endNode, edgeLabel))
@@ -240,171 +191,23 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 							if (satisfyExclusiveCategoryQuery(edgeSpec, endNode, edgeLabel))
 								if (satisfyOutNodeXorQuery(edgeSpec, endNode, edgeLabel))
 									if (satisfyOutEdgeXorQuery(edgeSpec, endNode, edgeLabel))
-//										if (satisfyOutEdgeNXorQuery(edgeSpec, endNode, edgeLabel))
 										if (satisfyEndNodeHasPropertyQuery(edgeSpec, endNode, edgeLabel))
 											if (satisfyCheckConstantTrackingQuery(edgeSpec, endNode, edgeLabel))
 												result.add(new Tuple<String, LayoutNode, SimpleDataTreeNode>(edgeLabel,
 														endNode, edgeSpec));
 			}
 		}
-		Collections.sort(result, new Comparator<Tuple<String, LayoutNode, SimpleDataTreeNode>>() {
-			@Override
-			public int compare(Tuple<String, LayoutNode, SimpleDataTreeNode> o1,
-					Tuple<String, LayoutNode, SimpleDataTreeNode> o2) {
-				String s1 = o1.getFirst() + o1.getSecond();
-				String s2 = o2.getFirst() + o2.getSecond();
-				return s1.compareToIgnoreCase(s2);
-			}
+		result.sort((n1, n2) -> {
+			String s1 = n1.getFirst() + n1.getSecond();
+			String s2 = n2.getFirst() + n2.getSecond();
+			return s1.compareToIgnoreCase(s2);
 		});
 		return result;
 	}
 
-	private boolean satisfiesEdgeMultiplicity(SimpleDataTreeNode edgeSpec, String toNodeLabel, String edgeLabel) {
-		IntegerRange range = specifications.getMultiplicityOf(edgeSpec);
-		@SuppressWarnings("unchecked")
-		List<Node> nodes = (List<Node>) get(nodeEditor.getConfigOutEdges(),
-				selectZeroOrMany(hasTheLabel(edgeLabel)), edgeListStartNodes(),
-				selectZeroOrMany(hasTheLabel(toNodeLabel)));
-		if (nodes.size() >= range.getLast())
-			return false;
-		else
-			return true;
-	}
-
-	/*-	mustSatisfyQuery leafTableSpec
-			className = String("au.edu.anu.twcore.archetype.tw.EndNodeHasPropertyQuery")
-			propname = String("dataElementType")
-	 */
-	@SuppressWarnings("unchecked")
-	private boolean satisfyEndNodeHasPropertyQuery(SimpleDataTreeNode edgeSpec, LayoutNode endNode, String edgeLabel) {
-		Collection<SimpleDataTreeNode> queries = specifications.getQueries((SimpleDataTreeNode) edgeSpec,
-				EndNodeHasPropertyQuery.class);
-		for (SimpleDataTreeNode query : queries) {
-			String key = (String) query.properties().getPropertyValue(TWA.PROP_NAME);
-			if (!endNode.configHasProperty(key))
-				return false;
-		}
-		return true;
-	}
-
-	/**
-	 * @param edgeSpec  specifications of the proposed edge
-	 * @param endNode   proposed end node
-	 * @param edgeLabel the edge classId
-	 * @return true if condition is satisfied including if condition is unable to be
-	 *         determined because config is incomplete.
-	 */
-	private boolean satisfyCheckConstantTrackingQuery(SimpleDataTreeNode edgeSpec, LayoutNode vnEndNode,
-			String edgeLabel) {
-		// if not a track field or table then don't care
-		if (!(edgeLabel.equals(E_TRACKFIELD.label()) || edgeLabel.equals(E_TRACKTABLE.label())))
-			return true;
-		TreeNode endNode = vnEndNode.configNode();
-		String endNodeLabel = endNode.classId();
-		// not my problem - probably can't happen
-		if (!(endNodeLabel.equals(N_FIELD.label()) || endNodeLabel.equals(N_TABLE.label())))
-			return true;
-		return CheckConstantTrackingQuery.propose(endNode);
-	}
-
-	@SuppressWarnings("unchecked")
-	private boolean satisfyOutEdgeXorQuery(SimpleDataTreeNode edgeSpec, LayoutNode endNode, String proposedEdgeLabel) {
-		Collection<SimpleDataTreeNode> queries = specifications.getQueries((SimpleDataTreeNode) edgeSpec.getParent(),
-				OutEdgeXorQuery.class);
-		for (SimpleDataTreeNode query : queries) {
-			if (queryReferencesLabel(proposedEdgeLabel, query, TWA.EDGE_LABEL_1, TWA.EDGE_LABEL_2)) {
-				Set<String> qp1 = new HashSet<>();
-				Set<String> qp2 = new HashSet<>();
-				qp1.addAll(getEdgeLabelRefs(query.properties(), TWA.EDGE_LABEL_1));
-				qp2.addAll(getEdgeLabelRefs(query.properties(), TWA.EDGE_LABEL_2));
-				Set<String> es1 = new HashSet<>();
-				Set<String> es2 = new HashSet<>();
-				for (Edge e : nodeEditor.getConfigOutEdges())
-					if (qp1.contains(e.classId()))
-						es1.add(e.classId());
-					else if (qp2.contains(e.classId()))
-						es2.add(e.classId());
-				/*- 4 cases:
-				 * 1) es2>0 and es2>0 (error cond. nothing allowed)
-				 * 2) es1==0& es2==0 (both empty - any allowed)
-				 * 3) es1>0 & es2==0 ( only edge of es1 type allowed)
-				 * 4) es1==0 & es2>0 (only edge of es2 type allowed);
-				 *
-				 */
-				if (!es1.isEmpty() && !es2.isEmpty()) // 1 - error only possible from handmade config
-					return false;
-				else if (es1.isEmpty() && es2.isEmpty()) // 2
-					return true;
-				else if (!es1.isEmpty() && qp1.contains(proposedEdgeLabel)) // 3
-					return true;
-				else if (!es2.isEmpty() && qp2.contains(proposedEdgeLabel)) // 4
-					return true;
-				else
-					return false;
-			}
-		}
-		return true;
-	}
-
-	private boolean queryReferencesLabel(String entry, SimpleDataTreeNode query, String key1, String key2) {
-		Set<String> refs = new HashSet<>();
-		refs.addAll(getEdgeLabelRefs(query.properties(), key1));
-		refs.addAll(getEdgeLabelRefs(query.properties(), key2));
-		return refs.contains(entry);
-	}
-
-	private Collection<? extends String> getEdgeLabelRefs(SimplePropertyList properties, String key) {
-		List<String> result = new ArrayList<>();
-		Class<?> c = properties.getPropertyClass(key);
-		if (c.equals(String.class)) {
-			result.add((String) properties.getPropertyValue(key));
-		} else {
-			StringTable st = (StringTable) properties.getPropertyValue(key);
-			for (int i = 0; i < st.size(); i++)
-				result.add(st.getWithFlatIndex(i));
-		}
-		return result;
-	}
-
-	@SuppressWarnings("unchecked")
-	private boolean satisfyOutNodeXorQuery(SimpleDataTreeNode edgeSpec, LayoutNode proposedEndNode,
-			String proposedEdgeLabel) {
-		log.info(edgeSpec.toString());
-		List<SimpleDataTreeNode> queries = specifications.getQueries((SimpleDataTreeNode) edgeSpec.getParent(),
-				OutNodeXorQuery.class);
-
-		// query not required
-		if (queries.isEmpty())
-			return true;
-
-		// May find more than one of these queries
-		List<Duple<String, String>> entries = specifications.getNodeLabelDuples(queries);
-
-		// Uncommitted: therefore we can have either of the entries
-		if (!nodeEditor.hasOutEdges())
-			return true;
-
-		boolean result = false;
-		for (Duple<String, String> entry : entries) {
-			result = result || OutNodeXorQuery.propose(nodeEditor.getConfigNode(),
-					proposedEndNode.configNode(), entry.getFirst(), entry.getSecond());
-		}
-		return result;
-
-	}
-
-	@SuppressWarnings("unchecked")
-	private boolean satisfyExclusiveCategoryQuery(SimpleDataTreeNode edgeSpec, LayoutNode proposedCat,
-			String edgeLabel) {
-		if (specifications.getQueries((SimpleDataTreeNode) edgeSpec.getParent(), ExclusiveCategoryQuery.class)
-				.isEmpty())
-			return true;
-		return ExclusiveCategoryQuery.propose(nodeEditor.getConfigNode(), proposedCat.configNode());
-	}
-
-	public List<LayoutNode> orphanedChildList(Iterable<SimpleDataTreeNode> childSpecs) {
+	public List<LayoutNode> getOrphanedChildren(Iterable<SimpleDataTreeNode> childSpecs) {
 		List<LayoutNode> result = new ArrayList<>();
-		for (LayoutNode root : nodeEditor.visualGraph().roots()) {
+		for (LayoutNode root : nodeEditor.getAllRoots()) {
 			String rootLabel = root.configNode().classId();
 			for (SimpleDataTreeNode childSpec : childSpecs) {
 				String specLabel = (String) childSpec.properties().getPropertyValue(Archetypes.IS_OF_CLASS);
@@ -416,224 +219,36 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 		return result;
 	}
 
-	protected boolean haveSpecification() {
-		return baseSpec != null;
-	}
-
-	private String promptForNewNode(String label, String promptName, boolean capitalize) {
-		String strPattern = DialogsFactory.REGX_ALPHA_NUMERIC_SPACE;
-		if (capitalize)
-			strPattern = DialogsFactory.REGX_ALPHA_CAP_NUMERIC;
-		return DialogsFactory.getText("'" + label + "' element name.", "", "Name:", promptName, strPattern);
-	}
-
-	private Class<? extends TreeNode> promptForClass(List<Class<? extends TreeNode>> subClasses,
-			String rootClassSimpleName) {
-		String[] list = new String[subClasses.size()];
-		for (int i = 0; i < subClasses.size(); i++)
-			list[i] = subClasses.get(i).getSimpleName();
-		int result = DialogsFactory.getListChoice(list, "Sub-classes", rootClassSimpleName, "select:");
-		if (result != -1)
-			return subClasses.get(result);
-		else
-			return null;
-	}
-
-	private String getNewName(String title, String label, String defName, SimpleDataTreeNode childBaseSpec) {
-		// default name is label with 1 appended
-		String promptId = defName;
-		boolean capitalize = false;
-		if (childBaseSpec != null)
-			capitalize = specifications.ifNameStartsWithUpperCase(childBaseSpec);
-		if (capitalize)
-			promptId = WordUtils.capitalize(promptId);
-		boolean modified = true;
-		promptId = nodeEditor.proposeAnId(promptId);
-		while (modified) {
-			String userName = promptForNewNode(title, promptId, capitalize);
-			if (userName == null)
-				return null;// cancel
-			userName = userName.trim();
-			if (userName.equals(""))
-				return null; // implicit cancel
-			String newName = nodeEditor.proposeAnId(userName);
-			modified = !newName.equals(userName);
-			promptId = newName;
-		}
-		return promptId;
-	}
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public void onNewChild(String childLabel, String childId, SimpleDataTreeNode childBaseSpec) {
-		String promptId = childId;
-		if (promptId == null)
-			promptId = getNewName(childLabel, childLabel, ConfigurationNodeLabels.labelValueOf(childLabel).defName(),
-					childBaseSpec);
-		if (promptId == null)
+		String newId = getNewId(childLabel, childId, childBaseSpec);
+		if (newId == null)
+			// operation cancelled by user
 			return;
-		String childClassName = (String) childBaseSpec.properties().getPropertyValue(Archetypes.IS_OF_CLASS);
-		Class<? extends TreeNode> subClass = null;
-		List<Class<? extends TreeNode>> subClasses = specifications.getSubClassesOf(childBaseSpec);
-		if (subClasses.size() > 1) {
-			subClass = promptForClass(subClasses, childClassName);
-			if (subClass == null)
-				return;// cancel
-		} else if (subClasses.size() == 1) {
-			subClass = subClasses.get(0);
-		}
-		SimpleDataTreeNode childSubSpec = specifications.getSubSpecsOf(childBaseSpec, subClass);
-		// unfiltered propertySpecs
+		Duple<String, Class<? extends TreeNode>> subClassInfo = getSubClassInfo(childBaseSpec);
+		if (subClassInfo == null)
+			// operation cancelled by user
+			return;
+		SimpleDataTreeNode childSubSpec = specifications.getSubSpecsOf(childBaseSpec, subClassInfo.getSecond());
 
-		List<SimpleDataTreeNode> propertySpecs = (List<SimpleDataTreeNode>) specifications
-				.getPropertySpecsOf(childBaseSpec, childSubSpec);
+		// get the unfiltered propertySpecs
+		List<SimpleDataTreeNode> propertySpecs = specifications.getPropertySpecsOf(childBaseSpec, childSubSpec);
 		if (!specifications.filterPropertyStringTableOptions(propertySpecs, childBaseSpec, childSubSpec,
-				childClassName + PairIdentity.LABEL_NAME_SEPARATOR + promptId, ChildXorPropertyQuery.class,
+				subClassInfo.getFirst() + PairIdentity.LABEL_NAME_SEPARATOR + newId, ChildXorPropertyQuery.class,
 				PropertyXorQuery.class))
-			return;// cancel
+			// operation cancelled by user
+			return;
 
-		// filter out optional properties
-//		List<String> opNames = new ArrayList<>();
-		List<SimpleDataTreeNode> ops = specifications.getOptionalProperties(childBaseSpec, childSubSpec);
-		for (SimpleDataTreeNode op : ops)
-			if (propertySpecs.contains(op))
-				propertySpecs.remove(op);
+		propertySpecs = removeOptionalProperties(propertySpecs, childBaseSpec, childSubSpec);
 
-//			opNames.add((String) op.properties().getPropertyValue(aaHasName));
+		newChild = createChild(childLabel, newId, childBaseSpec);
 
-		// make the node
-		newChild = nodeEditor.newChild(childLabel, promptId);
-		newChild.setCollapse(false);
-		newChild.setVisible(true);
-		newChild.setCategory();
-//		VisualNodeEditable vne = new VisualNodeEditor(newChild, editableNode.getGraph());
-		StringTable parents = (StringTable) childBaseSpec.properties().getPropertyValue(Archetypes.HAS_PARENT);
-		newChild.setParentRef(parents);
-		for (SimpleDataTreeNode propertySpec : propertySpecs) {
-			String key = (String) propertySpec.properties().getPropertyValue(Archetypes.HAS_NAME);
-//			System.out.println(key);
-			if (key.equals(TWA.SUBCLASS)) {
-				log.info("Add property: " + subClass.getName());
-				newChild.addProperty(TWA.SUBCLASS, subClass.getName());
-			} else {
-				String type = (String) propertySpec.properties().getPropertyValue(Archetypes.TYPE);
-				Object defValue = ValidPropertyTypes.getDefaultValue(type);
-
-				if (defValue instanceof Enum<?>) {
-					Class<? extends Enum<?>> e = (Class<? extends Enum<?>>) defValue.getClass();
-
-					SimpleDataTreeNode constraint = (SimpleDataTreeNode) get(propertySpec.getChildren(),
-							selectZeroOrOne(hasProperty(Archetypes.CLASS_NAME, IsInValueSetQuery.class.getName())));
-					if (constraint != null) {
-						StringTable classes = (StringTable) constraint.properties().getPropertyValue(TWA.VALUES);
-						if (classes.size() > 1) {
-							String[] names = ValidPropertyTypes.namesOf(e);
-							int choice = DialogsFactory.getListChoice(names,
-									newChild.getDisplayText(ElementDisplayText.RoleName), key,
-									e.getClass().getSimpleName());
-							defValue = ValidPropertyTypes.valueOf(names[choice], e);
-						} else if (classes.size() == 1) {
-							defValue = ValidPropertyTypes.valueOf(classes.getWithFlatIndex(0), e);
-						}
-					}
-				}
-				log.info("Add property: " + key);
-				newChild.addProperty(key, defValue);
-			}
-		}
+		setDefaultPropertyValues(propertySpecs, subClassInfo);
 
 		specifications.filterRequiredPropertyQuery(newChild, childBaseSpec, childSubSpec);
 
-		processPropertiesMatchDefinition(newChild, childBaseSpec, childSubSpec);
-
-		if (newChild.configNode().classId().equals(N_SPACE.label()))
-			setDefaultSpaceDims(newChild.configNode());
-
-		if (newChild.configNode().classId().equals(N_FUNCTION.label())) {
-			TwFunctionTypes ft = (TwFunctionTypes) newChild.configGetPropertyValue(P_FUNCTIONTYPE.key());
-			if (!ft.returnStatement().isBlank()) {
-				StringTable defValue = new StringTable(new Dimensioner(1));
-				defValue.setByInt("\t" + ft.returnStatement() + ";", 0);
-				newChild.addProperty(P_FUNCTIONSNIPPET.key(), defValue);
-			}
-		}
 		controller.onNewNode(newChild);
-	}
-
-	protected void setDefaultSpaceDims(TreeGraphDataNode spaceNode) {
-		SpaceType st = (SpaceType) spaceNode.properties().getPropertyValue(P_SPACETYPE.key());
-		int nDims = st.dimensions();
-		// borderType BorderTypeList
-		Dimensioner bd = new Dimensioner(nDims * 2);
-		Dimensioner[] d1 = new Dimensioner[1];
-		d1[0] = bd;
-		BorderListType defBlt = BorderListType.defaultValue();
-		BorderListType blt = new BorderListType(d1);
-		for (int i = 0; i < blt.size(); i++)
-			if (i % 2 == 0)
-				blt.setWithFlatIndex(defBlt.getWithFlatIndex(0), i);
-			else
-				blt.setWithFlatIndex(defBlt.getWithFlatIndex(1), i);
-		spaceNode.properties().setProperty(P_SPACE_BORDERTYPE.key(), blt);
-
-		// observationWindow Box. ok so not really a box since what is a 1d box?
-		Point[] points = new Point[2]; // upper/lower or lower/upper bounds
-		double[] lowerBounds = new double[nDims];
-		double[] upperBounds = new double[nDims];
-		Arrays.fill(lowerBounds, 0.0);
-		Arrays.fill(upperBounds, 0.0);// Leave it to queries to indicate a +ve range is needed.
-		// Point p1 = Point.newPoint(lowerBounds);
-		for (int i = 0; i < 2; i++) {
-			points[0] = Point.newPoint(lowerBounds);
-			points[1] = Point.newPoint(upperBounds);
-		}
-		if (spaceNode.properties().hasProperty(P_SPACE_OBSWINDOW.key()))
-			spaceNode.properties().setProperty(P_SPACE_OBSWINDOW.key(), Box.boundingBox(points[0], points[1]));
-	}
-
-	protected void processPropertiesMatchDefinition(LayoutNode newChild, SimpleDataTreeNode childBaseSpec,
-			SimpleDataTreeNode childSubSpec) {
-//		@SuppressWarnings("unchecked")
-//		List<SimpleDataTreeNode> queries = specifications.getQueries(childBaseSpec,
-//				PropertiesMatchDefinitionQuery.class);
-//		if (queries.isEmpty())
-//			return;
-//		SimpleDataTreeNode query = queries.get(0);
-//
-//		StringTable values = (StringTable) query.properties().getPropertyValue("values");
-//		String dataCategory = values.getWithFlatIndex(0);
-//
-//		Duple<Boolean, Collection<TreeGraphDataNode>> defData = PropertiesMatchDefinitionQuery
-//				.getDataDefs(newChild.getConfigNode(), dataCategory);
-//		if (defData == null)
-//			return;
-//
-//		Collection<TreeGraphDataNode> defs = defData.getSecond();
-//		Boolean useAutoVar = defData.getFirst();
-//		if (defs == null) {
-//			return;
-//		}
-//
-//		ExtendablePropertyList newProps = (ExtendablePropertyList) newChild.getConfigNode().properties();
-//		if (useAutoVar) {
-//			newProps.addProperty("age", 0);
-//			newProps.addProperty("birthDate", 0);
-//			// newProps.addProperty("name","Skippy");
-//		}
-//		for (TreeGraphDataNode def : defs) {
-//			if (def.classId().equals(N_FIELD.label()))
-//				newProps.addProperty(def.id(), ((FieldNode) def).newInstance());
-//			else {
-//				@SuppressWarnings("unchecked")
-//				List<Node> dims = (List<Node>) get(def.edges(Direction.OUT), edgeListEndNodes(),
-//						selectZeroOrMany(hasTheLabel(N_DIMENSIONER.label())));
-//				if (!dims.isEmpty())
-//					newProps.addProperty(def.id(), ((TableNode) def).templateInstance());
-//				else
-//					Dialogs.errorAlert("Node construction error", newChild.getDisplayText(ElementDisplayText.RoleName),
-//							"Cannot add '" + def.classId() + ":" + def.id() + "' because it has no dimensions");
-//			}
-//		}
 	}
 
 	@Override
@@ -643,56 +258,11 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 		String id = getNewName(details.getFirst(), details.getFirst(),
 				ConfigurationEdgeLabels.labelValueOf(details.getFirst()).defName(), null);
 		if (id == null)
+			// operation cancelled by user.
 			return;
 		connectTo(id, details, duration);
-
 		ConfigGraph.verifyGraph();
 		GraphStateFactory.setChanged();
-	}
-
-	@SuppressWarnings("unchecked")
-	private void connectTo(String edgeId, Tuple<String, LayoutNode, SimpleDataTreeNode> p, double duration) {
-		String edgeLabel = p.getFirst();
-		LayoutNode target = p.getSecond();
-		SimpleDataTreeNode edgeSpec = p.getThird();
-		LayoutEdge vEdge = nodeEditor.newEdge(edgeId, edgeLabel, target);
-		if (vEdge.getConfigEdge() instanceof ALDataEdge) {
-			ALDataEdge edge = (ALDataEdge) vEdge.getConfigEdge();
-			ExtendablePropertyList props = (ExtendablePropertyList) edge.properties();
-			List<SimpleDataTreeNode> propertySpecs = (List<SimpleDataTreeNode>) specifications
-					.getPropertySpecsOf(edgeSpec, null);
-			if (!specifications.filterPropertyStringTableOptions(propertySpecs, edgeSpec, null,
-					edgeLabel + PairIdentity.LABEL_NAME_SEPARATOR + edgeId, PropertyXorQuery.class))
-				return;// cancel
-
-			// filter out optional properties
-//			List<String> opNames = new ArrayList<>();
-			List<SimpleDataTreeNode> ops = specifications.getOptionalProperties(edgeSpec, null);
-			for (SimpleDataTreeNode op : ops)
-				if (propertySpecs.contains(op))
-					propertySpecs.remove(op);
-
-			for (SimpleDataTreeNode propertySpec : propertySpecs) {
-				String key = (String) propertySpec.properties().getPropertyValue(Archetypes.HAS_NAME);
-				String type = (String) propertySpec.properties().getPropertyValue(Archetypes.TYPE);
-				Object defValue = ValidPropertyTypes.getDefaultValue(type);
-				log.info("Add property: " + key);
-				props.addProperty(key, defValue);
-			}
-			controller.onNewEdge(vEdge);
-		}
-		visualiser.onNewEdge(vEdge, duration);
-
-	}
-
-	private void deleteNode(LayoutNode vNode, double duration) {
-		// don't leave nodes hidden
-		if (vNode.hasCollapsedChild())
-			visualiser.expandTreeFrom(vNode, duration);
-		// remove from view while still intact
-		visualiser.removeView(vNode);
-		// this and its config from graphs and disconnect
-		vNode.remove();
 	}
 
 	@Override
@@ -705,15 +275,14 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 
 	@Override
 	public boolean onRenameNode() {
-		String userName = getNewName(
-				nodeEditor.toString(),
-				nodeEditor.getLabel(), nodeEditor.getName(), baseSpec);
+		String userName = getNewName(nodeEditor.toString(), nodeEditor.getLabel(), nodeEditor.getName(), baseSpec);
 		if (userName != null) {
 			renameNode(userName, nodeEditor.layoutNode());
 			visualiser.onNodeRenamed(nodeEditor.layoutNode());
 			controller.onElementRenamed();
 			return true;
 		}
+		// operation cancelled by user.
 		return false;
 	}
 
@@ -731,144 +300,11 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 		return false;
 	}
 
-	private void renameEdge(String uniqueId, LayoutEdge vEdge) {
-		// NB: graphs must be saved and reloaded after this op because Map<> of node
-		// edges will have old KEYS
-		ALEdge cEdge = vEdge.getConfigEdge();
-		cEdge.rename(cEdge.id(), uniqueId);
-		vEdge.rename(vEdge.id(), uniqueId);
-	}
-
-	private void renameNode(String uniqueId, LayoutNode vNode) {
-		TreeGraphDataNode cNode = vNode.configNode();
-		if (cNode.classId().equals(N_SYSTEM.label())) {
-			File javaDir = Project.makeFile(Project.LOCAL_JAVA_CODE, vNode.id());
-			if (javaDir.exists()) {
-				File[] deps = javaDir.listFiles(new FilenameFilter() {
-					@Override
-					public boolean accept(File dir, String name) {
-						return ((name.contains(".java") && !name.contains(vNode.getParent().id())));
-					}
-				});
-
-				for (File f : deps) {
-					File newFilef = new File(new File(f.getParent()).getParent() + File.separator + uniqueId
-							+ File.separator + f.getName());
-					// update package name! What about deps in other packages
-					FileUtilities.copyFileReplace(f, newFilef);
-					try {
-						JavaUtilities.updatePackgeEntry(newFilef, vNode.id(), uniqueId);
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-				try {
-					// delete the old tree
-					FileUtilities.deleteFileTree(javaDir);
-					if (UserProjectLink.haveUserProject()) {
-						// delete old tree in user project
-						File remoteDir = new File(UserProjectLink.srcRoot().getAbsolutePath() + File.separator
-								+ Project.CODE + File.separator + vNode.id());
-						if (remoteDir.exists())
-							FileUtilities.deleteFileTree(remoteDir);
-					}
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
-
-		if (cNode.classId().equals(N_RECORD.label()) || cNode.classId().equals(N_TABLE.label())
-				|| cNode.classId().equals(N_FIELD.label())) {
-			snippetCodeRefactor(cNode.classId(), cNode.id(), uniqueId);
-		}
-
-		// NB: graphs must be saved and reloaded after this op because Map<> of nodes
-		// will have old KEYS
-		cNode.rename(cNode.id(), uniqueId);
-		vNode.rename(vNode.id(), uniqueId);
-	}
-
-	private static String findReplace(String regex, String from, String to, String text) {
-		// pattern matching words as defined by the regex
-		Pattern pattern = Pattern.compile(regex);
-		Map<String, String> replacements = new HashMap<>();
-		replacements.put(from, to);
-		StringBuilder sb = new StringBuilder();
-		Matcher matcher = pattern.matcher(text);
-		int lastEnd = 0;
-		while (matcher.find()) {
-			int startIndex = matcher.start();
-			if (startIndex > lastEnd) {
-				// add missing chars
-				sb.append(text.substring(lastEnd, startIndex));
-			}
-			// replace text, if necessary
-			String group = matcher.group();
-			String result = replacements.get(group);
-			sb.append(result == null ? group : result);
-			lastEnd = matcher.end();
-		}
-		sb.append(text.substring(lastEnd));
-		return sb.toString();
-	}
-
-	private static void snippetCodeRefactor(String label, String from, String to) {
-		List<StringTable> snippets = new ArrayList<>();
-		List<String> functionNames = new ArrayList<>();
-		for (Node n : ConfigGraph.getGraph().nodes()) {
-			if (n.classId().equals(N_FUNCTION.label()) || n.classId().equals(N_INITFUNCTION.label())) {
-				TreeGraphDataNode f = (TreeGraphDataNode) n;
-				snippets.add((StringTable) f.properties().getPropertyValue(P_FUNCTIONSNIPPET.key()));
-				functionNames.add(n.toShortString());
-			}
-		}
-
-		for (StringTable t : snippets) {
-			String fname = functionNames.get(snippets.indexOf(t));
-			String text = "";
-			boolean candidate = false;
-			for (int i = 0; i < t.size(); i++) {
-				String l = t.getByInt(i);
-				text += l + "\n";
-				if (l.contains(from))
-					candidate = true;
-			}
-			if (candidate) {
-				text = findReplace(DialogsFactory.REGX_ALPHA_NUMERIC, from, to, text);
-				String[] lines = text.split("\\n");
-				if (lines.length < t.size()) {
-					for (int j = lines.length; j < t.size(); j++)
-						if (!t.getByInt(j).trim().isBlank())
-//							log.info("'"+fname+"': Table line not updated [" + (j + 1) + "] '" + t.getByInt(j) + "'");
-							System.out.println("'" + fname + "': Table line not updated [" + (j + 1) + "] '"
-									+ t.getByInt(j) + "'");
-				} else if (lines.length > t.size()) {
-					for (int j = t.size(); j < lines.length; j++) {
-						if (!lines[j].trim().isBlank())
-//							log.info("'" + fname + "': Replacement line missed [" + (j + 1) + "] '" + lines[j] + "'");
-							System.out.println(
-									"'" + fname + "': Replacement line missed [" + (j + 1) + "] '" + lines[j] + "'");
-					}
-				}
-				for (int i = 0; i < t.size(); i++) {
-					if (i < lines.length) {
-						t.setByInt(lines[i], i);
-					}
-				}
-			}
-		}
-
-	}
-
 	@Override
 	public void onCollapseTree(LayoutNode childRoot, double duration) {
 		visualiser.collapseTreeFrom(childRoot, duration);
 		controller.onTreeCollapse();
 		GraphStateFactory.setChanged();
-
 	}
 
 	@Override
@@ -1188,8 +624,8 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 		List<Tuple<String, SimpleDataTreeNode, ExtendablePropertyList>> deletions = new ArrayList<>();
 		// If cancel is pressed the original list of selected items is returned and
 		// therefore no change should result.
-		List<String> selectedItems = DialogsFactory.getCBSelections(
-				nodeEditor.toString(), "Optional properties", displayNames, selected);
+		List<String> selectedItems = DialogsFactory.getCBSelections(nodeEditor.toString(), "Optional properties",
+				displayNames, selected);
 		for (String displayName : displayNames) {
 			boolean isSelected = selected.get(displayNames.indexOf(displayName));
 			// addition iff selected and not currently present
@@ -1238,4 +674,585 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 		else
 			return false;
 	}
+
+	private boolean isPredefined(SimpleDataTreeNode specs) {
+		return ConfigurationReservedNodeId
+				.isPredefined((String) specs.properties().getPropertyValue(Archetypes.HAS_ID));
+	}
+
+	private boolean allowedChild(String childLabel, Collection<String[]> tables) {
+		for (String[] ss : tables) {
+			if (ss[0].equals(childLabel)) {
+				if (nodeEditor.hasProperty(ss[1]))
+					return false;
+			}
+		}
+		return true;
+	};
+
+	private List<LayoutNode> findNodesReferencedBy(String ref) {
+		if (ref.endsWith(":"))
+			ref = ref.substring(0, ref.length() - 1);
+		String[] labels = ref.split(":/");
+		int end = labels.length - 1;
+		List<LayoutNode> result = new ArrayList<>();
+		TreeGraph<LayoutNode, LayoutEdge> vg = visualiser.getLayoutGraph();
+		for (LayoutNode vn : vg.nodes()) {
+			if (vn.configNode().classId().equals(labels[end])) {
+				if (end == 0)
+					result.add(vn);
+				else {
+					LayoutNode parent = vn.getParent();
+					if (hasParent(parent, labels, end - 1))
+						result.add(vn);
+				}
+			}
+		}
+		return result;
+	}
+
+	private static boolean hasParent(LayoutNode parent, String[] labels, int index) {
+		if (parent == null)
+			return false;
+		if (index < 0)
+			return false;
+		if (index == 0 && parent.configNode().classId().equals(labels[index]))
+			return true;
+		return hasParent(parent.getParent(), labels, index - 1);
+	}
+
+	private boolean satisfiesEdgeMultiplicity(SimpleDataTreeNode edgeSpec, String toNodeLabel, String edgeLabel) {
+		IntegerRange range = specifications.getMultiplicityOf(edgeSpec);
+		@SuppressWarnings("unchecked")
+		List<Node> nodes = (List<Node>) get(nodeEditor.getConfigOutEdges(), selectZeroOrMany(hasTheLabel(edgeLabel)),
+				edgeListStartNodes(), selectZeroOrMany(hasTheLabel(toNodeLabel)));
+		if (nodes.size() >= range.getLast())
+			return false;
+		else
+			return true;
+	}
+
+	private String getEndNodeLabel(String toNodeRef) {
+		if (toNodeRef.endsWith(":"))
+			toNodeRef = toNodeRef.substring(0, toNodeRef.length() - 1);
+		String[] labels = toNodeRef.split(":/");
+		return labels[labels.length - 1];
+	}
+
+	/*-	mustSatisfyQuery leafTableSpec
+	className = String("au.edu.anu.twcore.archetype.tw.EndNodeHasPropertyQuery")
+	propname = String("dataElementType")
+	*/
+	@SuppressWarnings("unchecked")
+	private boolean satisfyEndNodeHasPropertyQuery(SimpleDataTreeNode edgeSpec, LayoutNode endNode, String edgeLabel) {
+		Collection<SimpleDataTreeNode> queries = specifications.getQueries((SimpleDataTreeNode) edgeSpec,
+				EndNodeHasPropertyQuery.class);
+		for (SimpleDataTreeNode query : queries) {
+			String key = (String) query.properties().getPropertyValue(TWA.PROP_NAME);
+			if (!endNode.configHasProperty(key))
+				return false;
+		}
+		return true;
+	}
+
+	/**
+	 * @param edgeSpec  specifications of the proposed edge
+	 * @param endNode   proposed end node
+	 * @param edgeLabel the edge classId
+	 * @return true if condition is satisfied including if condition is unable to be
+	 *         determined because config is incomplete.
+	 */
+	private boolean satisfyCheckConstantTrackingQuery(SimpleDataTreeNode edgeSpec, LayoutNode vnEndNode,
+			String edgeLabel) {
+// if not a track field or table then don't care
+		if (!(edgeLabel.equals(E_TRACKFIELD.label()) || edgeLabel.equals(E_TRACKTABLE.label())))
+			return true;
+		TreeNode endNode = vnEndNode.configNode();
+		String endNodeLabel = endNode.classId();
+// not my problem - probably can't happen
+		if (!(endNodeLabel.equals(N_FIELD.label()) || endNodeLabel.equals(N_TABLE.label())))
+			return true;
+		return CheckConstantTrackingQuery.propose(endNode);
+	}
+
+	@SuppressWarnings("unchecked")
+	private boolean satisfyOutEdgeXorQuery(SimpleDataTreeNode edgeSpec, LayoutNode endNode, String proposedEdgeLabel) {
+		Collection<SimpleDataTreeNode> queries = specifications.getQueries((SimpleDataTreeNode) edgeSpec.getParent(),
+				OutEdgeXorQuery.class);
+		for (SimpleDataTreeNode query : queries) {
+			if (queryReferencesLabel(proposedEdgeLabel, query, TWA.EDGE_LABEL_1, TWA.EDGE_LABEL_2)) {
+				Set<String> qp1 = new HashSet<>();
+				Set<String> qp2 = new HashSet<>();
+				qp1.addAll(getEdgeLabelRefs(query.properties(), TWA.EDGE_LABEL_1));
+				qp2.addAll(getEdgeLabelRefs(query.properties(), TWA.EDGE_LABEL_2));
+				Set<String> es1 = new HashSet<>();
+				Set<String> es2 = new HashSet<>();
+				for (Edge e : nodeEditor.getConfigOutEdges())
+					if (qp1.contains(e.classId()))
+						es1.add(e.classId());
+					else if (qp2.contains(e.classId()))
+						es2.add(e.classId());
+				/*- 4 cases:
+				 * 1) es2>0 and es2>0 (error cond. nothing allowed)
+				 * 2) es1==0& es2==0 (both empty - any allowed)
+				 * 3) es1>0 & es2==0 ( only edge of es1 type allowed)
+				 * 4) es1==0 & es2>0 (only edge of es2 type allowed);
+				 *
+				 */
+				if (!es1.isEmpty() && !es2.isEmpty()) // 1 - error only possible from handmade config
+					return false;
+				else if (es1.isEmpty() && es2.isEmpty()) // 2
+					return true;
+				else if (!es1.isEmpty() && qp1.contains(proposedEdgeLabel)) // 3
+					return true;
+				else if (!es2.isEmpty() && qp2.contains(proposedEdgeLabel)) // 4
+					return true;
+				else
+					return false;
+			}
+		}
+		return true;
+	}
+
+	private boolean queryReferencesLabel(String entry, SimpleDataTreeNode query, String key1, String key2) {
+		Set<String> refs = new HashSet<>();
+		refs.addAll(getEdgeLabelRefs(query.properties(), key1));
+		refs.addAll(getEdgeLabelRefs(query.properties(), key2));
+		return refs.contains(entry);
+	}
+
+	private Collection<? extends String> getEdgeLabelRefs(SimplePropertyList properties, String key) {
+		List<String> result = new ArrayList<>();
+		Class<?> c = properties.getPropertyClass(key);
+		if (c.equals(String.class)) {
+			result.add((String) properties.getPropertyValue(key));
+		} else {
+			StringTable st = (StringTable) properties.getPropertyValue(key);
+			for (int i = 0; i < st.size(); i++)
+				result.add(st.getWithFlatIndex(i));
+		}
+		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	private boolean satisfyOutNodeXorQuery(SimpleDataTreeNode edgeSpec, LayoutNode proposedEndNode,
+			String proposedEdgeLabel) {
+		log.info(edgeSpec.toString());
+		List<SimpleDataTreeNode> queries = specifications.getQueries((SimpleDataTreeNode) edgeSpec.getParent(),
+				OutNodeXorQuery.class);
+
+// query not required
+		if (queries.isEmpty())
+			return true;
+
+// May find more than one of these queries
+		List<Duple<String, String>> entries = specifications.getNodeLabelDuples(queries);
+
+// Uncommitted: therefore we can have either of the entries
+		if (!nodeEditor.hasOutEdges())
+			return true;
+
+		boolean result = false;
+		for (Duple<String, String> entry : entries) {
+			result = result || OutNodeXorQuery.propose(nodeEditor.getConfigNode(), proposedEndNode.configNode(),
+					entry.getFirst(), entry.getSecond());
+		}
+		return result;
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private boolean satisfyExclusiveCategoryQuery(SimpleDataTreeNode edgeSpec, LayoutNode proposedCat,
+			String edgeLabel) {
+		if (specifications.getQueries((SimpleDataTreeNode) edgeSpec.getParent(), ExclusiveCategoryQuery.class)
+				.isEmpty())
+			return true;
+		return ExclusiveCategoryQuery.propose(nodeEditor.getConfigNode(), proposedCat.configNode());
+	}
+
+	private String promptForNewNode(String label, String promptName, boolean capitalize) {
+		String strPattern = DialogsFactory.REGX_ALPHA_NUMERIC_SPACE;
+		if (capitalize)
+			strPattern = DialogsFactory.REGX_ALPHA_CAP_NUMERIC;
+		return DialogsFactory.getText("'" + label + "' element name.", "", "Name:", promptName, strPattern);
+	}
+
+	private Class<? extends TreeNode> promptForClass(List<Class<? extends TreeNode>> subClasses,
+			String rootClassSimpleName) {
+		String[] list = new String[subClasses.size()];
+		for (int i = 0; i < subClasses.size(); i++)
+			list[i] = subClasses.get(i).getSimpleName();
+		int result = DialogsFactory.getListChoice(list, "Sub-classes", rootClassSimpleName, "select:");
+		if (result != -1)
+			return subClasses.get(result);
+		else
+			return null;
+	}
+
+	private String getNewName(String title, String label, String defName, SimpleDataTreeNode childBaseSpec) {
+		// default name is label with 1 appended
+		String promptId = defName;
+		boolean capitalize = false;
+		if (childBaseSpec != null)
+			capitalize = specifications.ifNameStartsWithUpperCase(childBaseSpec);
+		if (capitalize)
+			promptId = WordUtils.capitalize(promptId);
+		boolean modified = true;
+		promptId = nodeEditor.proposeAnId(promptId);
+		while (modified) {
+			String userName = promptForNewNode(title, promptId, capitalize);
+			if (userName == null)
+				return null;// cancel
+			userName = userName.trim();
+			if (userName.equals(""))
+				return null; // implicit cancel
+			String newName = nodeEditor.proposeAnId(userName);
+			modified = !newName.equals(userName);
+			promptId = newName;
+		}
+		return promptId;
+	}
+
+	private String getNewId(String childLabel, String childId, SimpleDataTreeNode baseSpec) {
+		String newId = childId;
+		if (newId == null)
+			newId = getNewName(childLabel, childLabel, ConfigurationNodeLabels.labelValueOf(childLabel).defName(),
+					baseSpec);
+		return newId;
+	}
+
+	private Duple<String, Class<? extends TreeNode>> getSubClassInfo(SimpleDataTreeNode spec) {
+		String className = (String) spec.properties().getPropertyValue(Archetypes.IS_OF_CLASS);
+		Class<? extends TreeNode> klass = null;
+		List<Class<? extends TreeNode>> klasses = specifications.getSubClassesOf(spec);
+		if (klasses.size() > 1) {
+			klass = promptForClass(klasses, className);
+			if (klass == null)
+				return null;
+		} else if (klasses.size() == 1) {
+			klass = klasses.get(0);
+		}
+		return new Duple<String, Class<? extends TreeNode>>(className, klass);
+	}
+
+	private List<SimpleDataTreeNode> removeOptionalProperties(List<SimpleDataTreeNode> propertySpecs,
+			SimpleDataTreeNode baseSpec, SimpleDataTreeNode subSpec) {
+		List<SimpleDataTreeNode> ops = specifications.getOptionalProperties(baseSpec, subSpec);
+		for (SimpleDataTreeNode op : ops)
+			if (propertySpecs.contains(op))
+				propertySpecs.remove(op);
+		return propertySpecs;
+
+	}
+
+	private void setDefaultPropertyValues(List<SimpleDataTreeNode> propertySpecs,
+			Duple<String, Class<? extends TreeNode>> subClassInfo) {
+		for (SimpleDataTreeNode propertySpec : propertySpecs) {
+			String key = (String) propertySpec.properties().getPropertyValue(Archetypes.HAS_NAME);
+			if (key.equals(TWA.SUBCLASS)) {
+				log.info("Add property: " + subClassInfo.getSecond().getName());
+				newChild.addProperty(TWA.SUBCLASS, subClassInfo.getSecond().getName());
+			} else {
+				String type = (String) propertySpec.properties().getPropertyValue(Archetypes.TYPE);
+				Object defValue = ValidPropertyTypes.getDefaultValue(type);
+
+				if (defValue instanceof Enum<?>) {
+					Class<? extends Enum<?>> e = (Class<? extends Enum<?>>) defValue.getClass();
+
+					SimpleDataTreeNode constraint = (SimpleDataTreeNode) get(propertySpec.getChildren(),
+							selectZeroOrOne(hasProperty(Archetypes.CLASS_NAME, IsInValueSetQuery.class.getName())));
+					if (constraint != null) {
+						StringTable classes = (StringTable) constraint.properties().getPropertyValue(TWA.VALUES);
+						if (classes.size() > 1) {
+							String[] names = ValidPropertyTypes.namesOf(e);
+							int choice = DialogsFactory.getListChoice(names,
+									newChild.getDisplayText(ElementDisplayText.RoleName), key,
+									e.getClass().getSimpleName());
+							defValue = ValidPropertyTypes.valueOf(names[choice], e);
+						} else if (classes.size() == 1) {
+							defValue = ValidPropertyTypes.valueOf(classes.getWithFlatIndex(0), e);
+						}
+					}
+				}
+				log.info("Add property: " + key);
+				newChild.addProperty(key, defValue);
+			}
+		}
+		if (newChild.configNode().classId().equals(N_SPACE.label()))
+			setDefaultSpaceDims(newChild.configNode());
+		if (newChild.configNode().classId().equals(N_FUNCTION.label())) {
+			TwFunctionTypes ft = (TwFunctionTypes) newChild.configGetPropertyValue(P_FUNCTIONTYPE.key());
+			if (!ft.returnStatement().isBlank()) {
+				StringTable defValue = new StringTable(new Dimensioner(1));
+				defValue.setByInt("\t" + ft.returnStatement() + ";", 0);
+				newChild.addProperty(P_FUNCTIONSNIPPET.key(), defValue);
+			}
+		}
+
+	}
+
+	private LayoutNode createChild(String childLabel, String newId, SimpleDataTreeNode childBaseSpec) {
+		LayoutNode nc = nodeEditor.newChild(childLabel, newId);
+		nc.setCollapse(false);
+		nc.setVisible(true);
+		nc.setCategory();
+		StringTable parents = (StringTable) childBaseSpec.properties().getPropertyValue(Archetypes.HAS_PARENT);
+		nc.setParentRef(parents);
+		return nc;
+	}
+
+	private void setDefaultSpaceDims(TreeGraphDataNode spaceNode) {
+		SpaceType st = (SpaceType) spaceNode.properties().getPropertyValue(P_SPACETYPE.key());
+		int nDims = st.dimensions();
+		// borderType BorderTypeList
+		Dimensioner bd = new Dimensioner(nDims * 2);
+		Dimensioner[] d1 = new Dimensioner[1];
+		d1[0] = bd;
+		BorderListType defBlt = BorderListType.defaultValue();
+		BorderListType blt = new BorderListType(d1);
+		for (int i = 0; i < blt.size(); i++)
+			if (i % 2 == 0)
+				blt.setWithFlatIndex(defBlt.getWithFlatIndex(0), i);
+			else
+				blt.setWithFlatIndex(defBlt.getWithFlatIndex(1), i);
+		spaceNode.properties().setProperty(P_SPACE_BORDERTYPE.key(), blt);
+
+		// observationWindow Box. ok so not really a box since what is a 1d box?
+		Point[] points = new Point[2]; // upper/lower or lower/upper bounds
+		double[] lowerBounds = new double[nDims];
+		double[] upperBounds = new double[nDims];
+		Arrays.fill(lowerBounds, 0.0);
+		Arrays.fill(upperBounds, 0.0);// Leave it to queries to indicate a +ve range is needed.
+		// Point p1 = Point.newPoint(lowerBounds);
+		for (int i = 0; i < 2; i++) {
+			points[0] = Point.newPoint(lowerBounds);
+			points[1] = Point.newPoint(upperBounds);
+		}
+		if (spaceNode.properties().hasProperty(P_SPACE_OBSWINDOW.key()))
+			spaceNode.properties().setProperty(P_SPACE_OBSWINDOW.key(), Box.boundingBox(points[0], points[1]));
+	}
+
+	@SuppressWarnings("unchecked")
+	private void connectTo(String edgeId, Tuple<String, LayoutNode, SimpleDataTreeNode> p, double duration) {
+		String edgeLabel = p.getFirst();
+		LayoutNode target = p.getSecond();
+		SimpleDataTreeNode edgeSpec = p.getThird();
+		LayoutEdge vEdge = nodeEditor.newEdge(edgeId, edgeLabel, target);
+		if (vEdge.getConfigEdge() instanceof ALDataEdge) {
+			ALDataEdge edge = (ALDataEdge) vEdge.getConfigEdge();
+			ExtendablePropertyList props = (ExtendablePropertyList) edge.properties();
+			List<SimpleDataTreeNode> propertySpecs = (List<SimpleDataTreeNode>) specifications
+					.getPropertySpecsOf(edgeSpec, null);
+			if (!specifications.filterPropertyStringTableOptions(propertySpecs, edgeSpec, null,
+					edgeLabel + PairIdentity.LABEL_NAME_SEPARATOR + edgeId, PropertyXorQuery.class))
+				return;// cancel
+
+			// filter out optional properties
+//			List<String> opNames = new ArrayList<>();
+			List<SimpleDataTreeNode> ops = specifications.getOptionalProperties(edgeSpec, null);
+			for (SimpleDataTreeNode op : ops)
+				if (propertySpecs.contains(op))
+					propertySpecs.remove(op);
+
+			for (SimpleDataTreeNode propertySpec : propertySpecs) {
+				String key = (String) propertySpec.properties().getPropertyValue(Archetypes.HAS_NAME);
+				String type = (String) propertySpec.properties().getPropertyValue(Archetypes.TYPE);
+				Object defValue = ValidPropertyTypes.getDefaultValue(type);
+				log.info("Add property: " + key);
+				props.addProperty(key, defValue);
+			}
+			controller.onNewEdge(vEdge);
+		}
+		visualiser.onNewEdge(vEdge, duration);
+
+	}
+
+	private void deleteNode(LayoutNode vNode, double duration) {
+		// don't leave nodes hidden
+		if (vNode.hasCollapsedChild())
+			visualiser.expandTreeFrom(vNode, duration);
+		// remove from view while still intact
+		visualiser.removeView(vNode);
+		// this and its config from graphs and disconnect
+		vNode.remove();
+	}
+	private void renameEdge(String uniqueId, LayoutEdge vEdge) {
+		// NB: graphs must be saved and reloaded after this op because Map<> of node
+		// edges will have old KEYS
+		ALEdge cEdge = vEdge.getConfigEdge();
+		cEdge.rename(cEdge.id(), uniqueId);
+		vEdge.rename(vEdge.id(), uniqueId);
+	}
+
+	private void renameNode(String uniqueId, LayoutNode vNode) {
+		TreeGraphDataNode cNode = vNode.configNode();
+		if (cNode.classId().equals(N_SYSTEM.label())) {
+			File javaDir = Project.makeFile(Project.LOCAL_JAVA_CODE, vNode.id());
+			if (javaDir.exists()) {
+				File[] deps = javaDir.listFiles(new FilenameFilter() {
+					@Override
+					public boolean accept(File dir, String name) {
+						return ((name.contains(".java") && !name.contains(vNode.getParent().id())));
+					}
+				});
+
+				for (File f : deps) {
+					File newFilef = new File(new File(f.getParent()).getParent() + File.separator + uniqueId
+							+ File.separator + f.getName());
+					// update package name! What about deps in other packages
+					FileUtilities.copyFileReplace(f, newFilef);
+					try {
+						JavaUtilities.updatePackgeEntry(newFilef, vNode.id(), uniqueId);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				try {
+					// delete the old tree
+					FileUtilities.deleteFileTree(javaDir);
+					if (UserProjectLink.haveUserProject()) {
+						// delete old tree in user project
+						File remoteDir = new File(UserProjectLink.srcRoot().getAbsolutePath() + File.separator
+								+ Project.CODE + File.separator + vNode.id());
+						if (remoteDir.exists())
+							FileUtilities.deleteFileTree(remoteDir);
+					}
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+
+		if (cNode.classId().equals(N_RECORD.label()) || cNode.classId().equals(N_TABLE.label())
+				|| cNode.classId().equals(N_FIELD.label())) {
+			snippetCodeRefactor(cNode.classId(), cNode.id(), uniqueId);
+		}
+
+		// NB: graphs must be saved and reloaded after this op because Map<> of nodes
+		// will have old KEYS
+		cNode.rename(cNode.id(), uniqueId);
+		vNode.rename(vNode.id(), uniqueId);
+	}
+
+	private static String findReplace(String regex, String from, String to, String text) {
+		// pattern matching words as defined by the regex
+		Pattern pattern = Pattern.compile(regex);
+		Map<String, String> replacements = new HashMap<>();
+		replacements.put(from, to);
+		StringBuilder sb = new StringBuilder();
+		Matcher matcher = pattern.matcher(text);
+		int lastEnd = 0;
+		while (matcher.find()) {
+			int startIndex = matcher.start();
+			if (startIndex > lastEnd) {
+				// add missing chars
+				sb.append(text.substring(lastEnd, startIndex));
+			}
+			// replace text, if necessary
+			String group = matcher.group();
+			String result = replacements.get(group);
+			sb.append(result == null ? group : result);
+			lastEnd = matcher.end();
+		}
+		sb.append(text.substring(lastEnd));
+		return sb.toString();
+	}
+
+	private static void snippetCodeRefactor(String label, String from, String to) {
+		List<StringTable> snippets = new ArrayList<>();
+		List<String> functionNames = new ArrayList<>();
+		for (Node n : ConfigGraph.getGraph().nodes()) {
+			if (n.classId().equals(N_FUNCTION.label()) || n.classId().equals(N_INITFUNCTION.label())) {
+				TreeGraphDataNode f = (TreeGraphDataNode) n;
+				snippets.add((StringTable) f.properties().getPropertyValue(P_FUNCTIONSNIPPET.key()));
+				functionNames.add(n.toShortString());
+			}
+		}
+
+		for (StringTable t : snippets) {
+			String fname = functionNames.get(snippets.indexOf(t));
+			String text = "";
+			boolean candidate = false;
+			for (int i = 0; i < t.size(); i++) {
+				String l = t.getByInt(i);
+				text += l + "\n";
+				if (l.contains(from))
+					candidate = true;
+			}
+			if (candidate) {
+				text = findReplace(DialogsFactory.REGX_ALPHA_NUMERIC, from, to, text);
+				String[] lines = text.split("\\n");
+				if (lines.length < t.size()) {
+					for (int j = lines.length; j < t.size(); j++)
+						if (!t.getByInt(j).trim().isBlank())
+//							log.info("'"+fname+"': Table line not updated [" + (j + 1) + "] '" + t.getByInt(j) + "'");
+							System.out.println("'" + fname + "': Table line not updated [" + (j + 1) + "] '"
+									+ t.getByInt(j) + "'");
+				} else if (lines.length > t.size()) {
+					for (int j = t.size(); j < lines.length; j++) {
+						if (!lines[j].trim().isBlank())
+//							log.info("'" + fname + "': Replacement line missed [" + (j + 1) + "] '" + lines[j] + "'");
+							System.out.println(
+									"'" + fname + "': Replacement line missed [" + (j + 1) + "] '" + lines[j] + "'");
+					}
+				}
+				for (int i = 0; i < t.size(); i++) {
+					if (i < lines.length) {
+						t.setByInt(lines[i], i);
+					}
+				}
+			}
+		}
+
+	}
+
+	
+
+//	protected void processPropertiesMatchDefinition(LayoutNode newChild, SimpleDataTreeNode childBaseSpec,
+//	SimpleDataTreeNode childSubSpec) {
+//@SuppressWarnings("unchecked")
+//List<SimpleDataTreeNode> queries = specifications.getQueries(childBaseSpec,
+//		PropertiesMatchDefinitionQuery.class);
+//if (queries.isEmpty())
+//	return;
+//SimpleDataTreeNode query = queries.get(0);
+//
+//StringTable values = (StringTable) query.properties().getPropertyValue("values");
+//String dataCategory = values.getWithFlatIndex(0);
+//
+//Duple<Boolean, Collection<TreeGraphDataNode>> defData = PropertiesMatchDefinitionQuery
+//		.getDataDefs(newChild.getConfigNode(), dataCategory);
+//if (defData == null)
+//	return;
+//
+//Collection<TreeGraphDataNode> defs = defData.getSecond();
+//Boolean useAutoVar = defData.getFirst();
+//if (defs == null) {
+//	return;
+//}
+//
+//ExtendablePropertyList newProps = (ExtendablePropertyList) newChild.getConfigNode().properties();
+//if (useAutoVar) {
+//	newProps.addProperty("age", 0);
+//	newProps.addProperty("birthDate", 0);
+//	// newProps.addProperty("name","Skippy");
+//}
+//for (TreeGraphDataNode def : defs) {
+//	if (def.classId().equals(N_FIELD.label()))
+//		newProps.addProperty(def.id(), ((FieldNode) def).newInstance());
+//	else {
+//		@SuppressWarnings("unchecked")
+//		List<Node> dims = (List<Node>) get(def.edges(Direction.OUT), edgeListEndNodes(),
+//				selectZeroOrMany(hasTheLabel(N_DIMENSIONER.label())));
+//		if (!dims.isEmpty())
+//			newProps.addProperty(def.id(), ((TableNode) def).templateInstance());
+//		else
+//			Dialogs.errorAlert("Node construction error", newChild.getDisplayText(ElementDisplayText.RoleName),
+//					"Cannot add '" + def.classId() + ":" + def.id() + "' because it has no dimensions");
+//	}
+//}
+//}
+
 }

@@ -64,13 +64,19 @@ public interface NodeEditor {
 	 * @return The layout graph.
 	 */
 	public TreeGraph<LayoutNode, LayoutEdge> visualGraph();
+// remove 
 
-	// remove
+	/**
+	 * @return All Layout nodes that are children of this node.
+	 */
 	public Collection<LayoutNode> getChildren();
 
+	/**
+	 * @return true if <em>any</em> sub-trees of this node are collapsed; false otherwise.
+	 */
 	public boolean isCollapsed();
 
-	/* true if the this node can have more children of this label */
+	
 	/**
 	 * Query to ask if more children of the given node label are allowed within the
 	 * given {@link IntegerRange}.
@@ -226,7 +232,9 @@ public interface NodeEditor {
 	 *         is collapsed; false otherise.
 	 */
 	public boolean hasUncollapsedChildren();
-	
+
 	public void deleteParentLink(LayoutNode child);
+	
+	public Collection<LayoutNode> getAllRoots();
 
 }

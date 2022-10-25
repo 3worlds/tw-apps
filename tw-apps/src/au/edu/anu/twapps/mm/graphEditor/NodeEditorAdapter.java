@@ -250,4 +250,9 @@ public class NodeEditorAdapter implements //
 		visualNode.configNode().disconnectFrom(child.configNode());
 	}
 
+	@Override
+	public Collection<LayoutNode> getAllRoots() {
+		return visualGraph.roots();
+	}
+
 }

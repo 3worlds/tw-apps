@@ -81,7 +81,7 @@ public interface StructureEditor {
 	 *                   edited.
 	 * @return List of valid child {@link LayoutNode}s.
 	 */
-	public List<LayoutNode> orphanedChildList(Iterable<SimpleDataTreeNode> childSpecs);
+	public List<LayoutNode> getOrphanedChildren(Iterable<SimpleDataTreeNode> childSpecs);
 
 	/**
 	 * Actions required to construct a new child node.
@@ -212,14 +212,14 @@ public interface StructureEditor {
 	void onDeleteParentLink(LayoutNode child);
 
 	/**
-	 * Actions require to add/remove optional properties.
+	 * Actions require to add/remove optional properties from a node or edge.
 	 * 
 	 * @param propertySpecs             List of optional property specifications for
 	 *                                  the currently selected node.
 	 * @param optionalEdgePropertySpecs List of optional property specifications for
 	 *                                  all out-edges of the currently selected
 	 *                                  node.
-	 * @return true is options have changed, false otherwise.
+	 * @return true if options have changed; false otherwise.
 	 */
 	boolean onOptionalProperties(List<SimpleDataTreeNode> propertySpecs,
 			List<Duple<LayoutEdge, SimpleDataTreeNode>> optionalEdgePropertySpecs);
