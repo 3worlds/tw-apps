@@ -298,6 +298,7 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 			return true;
 		}
 		return false;
+		// cancelled by user
 	}
 
 	@Override
@@ -342,36 +343,12 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 		GraphStateFactory.setChanged();
 	}
 
-	private void deleteTree(LayoutNode root, double duration) {
-		// avoid concurrent modification
-		List<LayoutNode> list = new LinkedList<>();
-		for (LayoutNode child : root.getChildren())
-			list.add(child);
-
-		for (LayoutNode child : list)
-			deleteTree(child, duration);
-		deleteNode(root, duration);
-	}
-
 	@Override
 	public void onDeleteTree(LayoutNode root, double duration) {
 		deleteTree(root, duration);
 		controller.onNodeDeleted();
 		GraphStateFactory.setChanged();
 		ConfigGraph.verifyGraph();
-	}
-
-	private void deleteEdge(LayoutEdge vEdge) {
-		ALEdge cEdge = vEdge.getConfigEdge();
-		// Remove visual elements before disconnecting
-		visualiser.removeView(vEdge);
-		// Remove ids before disconnecting;
-		EditableFactory vf = (EditableFactory) vEdge.factory();
-		EditableFactory cf = (EditableFactory) cEdge.factory();
-		vf.expungeEdge(vEdge);
-		cf.expungeEdge(cEdge);
-		vEdge.disconnect();
-		cEdge.disconnect();
 	}
 
 	@Override
@@ -399,58 +376,6 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 		}
 	}
 
-	private void exportTree(File file, TreeGraphDataNode root) {
-		TwConfigFactory factory = new TwConfigFactory();
-		TreeGraph<TreeGraphDataNode, ALEdge> exportGraph = new TreeGraph<TreeGraphDataNode, ALEdge>(factory);
-		List<ALEdge> configOutEdges = new ArrayList<>();
-
-		cloneTree(factory, null, root, exportGraph, configOutEdges);
-
-		// Look for outedges within the sub-tree
-		for (ALEdge configEdge : configOutEdges) {
-			TreeGraphDataNode cloneStartNode = getNode(exportGraph, configEdge.startNode());
-			TreeGraphDataNode cloneEndNode = getNode(exportGraph, configEdge.endNode());
-			if (cloneEndNode != null && cloneStartNode != null) {
-				ALEdge cloneEdge = (ALEdge) factory.makeEdge(factory.edgeClass(configEdge.classId()), cloneStartNode,
-						cloneEndNode, configEdge.id());
-				cloneEdgeProperties(configEdge, cloneEdge);
-			}
-		}
-
-		new OmugiGraphExporter(file).exportGraph(exportGraph);
-	}
-
-	private static void cloneTree(TwConfigFactory factory, TreeGraphDataNode cloneParent, TreeGraphDataNode configNode,
-			TreeGraph<TreeGraphDataNode, ALEdge> graph, List<ALEdge> outEdges) {
-
-		// make the node
-		TreeGraphDataNode cloneNode = (TreeGraphDataNode) factory.makeNode(factory.nodeClass(configNode.classId()),
-				configNode.id());
-
-		// store any out edges to check later if they are within the export sub-tree
-		for (ALEdge edge : configNode.edges(Direction.OUT))
-			outEdges.add(edge);
-
-		// clone node properties
-		cloneNodeProperties(configNode, cloneNode);
-
-		// clone tree structure
-		cloneNode.connectParent(cloneParent);
-
-		// follow tree
-		for (TreeNode configChild : configNode.getChildren())
-			cloneTree(factory, cloneNode, (TreeGraphDataNode) configChild, graph, outEdges);
-
-	}
-
-	private TreeGraphDataNode getNode(TreeGraph<TreeGraphDataNode, ALEdge> exportGraph, ALNode configNode) {
-		for (TreeGraphDataNode cloneNode : exportGraph.nodes()) {
-			if (cloneNode.id().equals(configNode.id()))
-				return (TreeGraphDataNode) cloneNode;
-		}
-		return null;
-	}
-
 	@Override
 	public void onImportTree(SimpleDataTreeNode childSpec, double duration) {
 		TreeGraph<TreeGraphDataNode, ALEdge> importGraph = getImportGraph(childSpec);
@@ -460,121 +385,6 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 			GraphStateFactory.setChanged();
 			ConfigGraph.verifyGraph();
 		}
-	}
-
-	private void importGraph(TreeGraph<TreeGraphDataNode, ALEdge> configSubGraph, LayoutNode vParent, double duration) {
-		// Only trees are exported not graph lists. Therefore, it is proper to do this
-		// by recursion
-
-		// Store edge info for later processing
-		Map<ALEdge, LayoutNode> outEdgeMap = new HashMap<>();
-		Map<ALEdge, LayoutNode> inEdgeMap = new HashMap<>();
-
-		TreeGraphDataNode cParent = vParent.configNode();
-		TwConfigFactory cFactory = (TwConfigFactory) cParent.factory();
-		LayoutGraphFactory vFactory = (LayoutGraphFactory) vParent.factory();
-		TreeGraphDataNode importNode = configSubGraph.root();
-		// follow tree
-		importTree(importNode, cParent, vParent, cFactory, vFactory, outEdgeMap, inEdgeMap);
-		// clone any edges found
-		outEdgeMap.entrySet().forEach(entry -> {
-			// get start/end nodes
-			ALEdge importEdge = entry.getKey();
-			LayoutNode vStart = entry.getValue();
-			LayoutNode vEnd = inEdgeMap.get(importEdge);
-			TreeGraphDataNode cStart = vStart.configNode();
-			TreeGraphDataNode cEnd = vEnd.configNode();
-			// make edges
-			ALEdge newCEdge = (ALEdge) cFactory.makeEdge(cFactory.edgeClass(importEdge.classId()), cStart, cEnd,
-					importEdge.id());
-			LayoutEdge newVEdge = vFactory.makeEdge(vStart, vEnd, newCEdge.id());
-			newVEdge.setConfigEdge(newCEdge);
-			newVEdge.setVisible(true);
-			cloneEdgeProperties(importEdge, newCEdge);
-			visualiser.onNewEdge(newVEdge, duration);
-		});
-
-	}
-
-	private static void cloneEdgeProperties(ALEdge from, ALEdge to) {
-		if (from instanceof ALDataEdge) {
-			// Add edge properties
-			ALDataEdge fromDataEdge = (ALDataEdge) from;
-			ALDataEdge toDataEdge = (ALDataEdge) to;
-			SimplePropertyListImpl fromProps = (SimplePropertyListImpl) fromDataEdge.properties();
-			ExtendablePropertyList toProps = (ExtendablePropertyList) toDataEdge.properties();
-			for (String key : fromProps.getKeysAsArray())
-				toProps.addProperty(key, fromProps.getPropertyValue(key));
-		}
-
-	}
-
-	private static void cloneNodeProperties(TreeGraphDataNode from, TreeGraphDataNode to) {
-		// clone node properties
-		ExtendablePropertyList fromProps = (ExtendablePropertyList) from.properties();
-		ExtendablePropertyList toProps = (ExtendablePropertyList) to.properties();
-		for (String key : fromProps.getKeysAsArray())
-			toProps.addProperty(key, fromProps.getPropertyValue(key));
-
-	}
-
-	private void importTree(TreeGraphDataNode importNode, TreeGraphDataNode cParent, LayoutNode vParent,
-			TwConfigFactory cFactory, LayoutGraphFactory vFactory, Map<ALEdge, LayoutNode> outEdgeMap,
-			Map<ALEdge, LayoutNode> inEdgeMap) {
-		// NB: ids will change depending on scope.
-		TreeGraphDataNode newCNode = (TreeGraphDataNode) cFactory.makeNode(cFactory.nodeClass(importNode.classId()),
-				importNode.id());
-		LayoutNode newVNode = vFactory.makeNode(newCNode.id());
-		newCNode.connectParent(cParent);
-		newVNode.connectParent(vParent);
-		newVNode.setConfigNode(newCNode);
-		Set<String> discoveredFile = new HashSet<>();
-		NodeEditor vne = new NodeEditorAdapter(newVNode, nodeEditor.visualGraph());
-		// this depends on the parent table been present so its circular
-		// This will break eventually when finding the spec without knowing the precise
-		// parent when there can be more than one.
-		// StringTable parentTable = controller.findParentTable(newVNode);
-
-		SimpleDataTreeNode specs = specifications.getSpecsOf(vne, TWA.getRoot(), discoveredFile);
-		StringTable parents = (StringTable) specs.properties().getPropertyValue(Archetypes.HAS_PARENT);
-		newVNode.setParentRef(parents);
-		newVNode.setCategory();
-		newVNode.setVisible(true);
-		newVNode.setCollapse(false);
-		newVNode.setPosition(Math.random() * 0.5, Math.random() * 0.5);
-		// Collect outEdges and pair with visual node.
-		// Can't depend on ids! Match the imported edge with the newly created visual
-		// node at time of creation.
-		for (ALEdge outEdge : importNode.edges(Direction.OUT))
-			outEdgeMap.put(outEdge, newVNode);
-		for (ALEdge inEdge : importNode.edges(Direction.IN))
-			inEdgeMap.put(inEdge, newVNode);
-
-		// clone node properties
-		cloneNodeProperties(importNode, newCNode);
-
-		// update visual display
-		visualiser.onNewNode(newVNode);
-
-		for (TreeNode importChild : importNode.getChildren())
-			importTree((TreeGraphDataNode) importChild, newCNode, newVNode, cFactory, vFactory, outEdgeMap, inEdgeMap);
-	}
-
-	@SuppressWarnings("unchecked")
-	private TreeGraph<TreeGraphDataNode, ALEdge> getImportGraph(SimpleDataTreeNode childSpec) {
-		File importFile = DialogsFactory.getExternalProjectFile();
-		if (importFile == null)
-			return null;
-		TreeGraph<TreeGraphDataNode, ALEdge> importGraph = (TreeGraph<TreeGraphDataNode, ALEdge>) FileImporter
-				.loadGraphFromFile(importFile);
-		// check the root node class is the same as that in the spec
-		String label = (String) childSpec.properties().getPropertyValue(Archetypes.IS_OF_CLASS);
-		if (!label.equals(importGraph.root().classId())) {
-			DialogsFactory.errorAlert("Import error", "Incompatible file", "Tree with root '" + label
-					+ "' requested but root of this file is '" + importGraph.root().classId() + "'.");
-			return null;
-		}
-		return importGraph;
 	}
 
 	@Override
@@ -592,88 +402,25 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 			List<Duple<LayoutEdge, SimpleDataTreeNode>> optionalEdgePropertySpecs) {
 		List<String> displayNames = new ArrayList<>();
 		List<Boolean> selected = new ArrayList<>();
-		// DisplayName, Spec, propertyList
 		Map<String, Tuple<String, SimpleDataTreeNode, ExtendablePropertyList>> propertyDetailsMap = new LinkedHashMap<>();
-		TreeGraphDataNode cn = (TreeGraphDataNode) nodeEditor.getConfigNode();
-		for (SimpleDataTreeNode p : optionalNodePropertySpecs) {
-			String name = (String) p.properties().getPropertyValue(Archetypes.HAS_NAME);
-			String displayName = cn.toShortString() + "#" + name;
-			displayNames.add(displayName);
-			propertyDetailsMap.put(displayName, new Tuple<String, SimpleDataTreeNode, ExtendablePropertyList>(name, p,
-					(ExtendablePropertyList) cn.properties()));
-			if (cn.properties().hasProperty(name))
-				selected.add(true);
-			else
-				selected.add(false);
-		}
-		for (Duple<LayoutEdge, SimpleDataTreeNode> ep : optionalEdgePropertySpecs) {
-			ALDataEdge edge = (ALDataEdge) ep.getFirst().getConfigEdge();
-			SimpleDataTreeNode ps = ep.getSecond();
-			String name = (String) ps.properties().getPropertyValue(Archetypes.HAS_NAME);
-			String displayName = edge.toShortString() + "#" + name;
-			displayNames.add(displayName);
-			propertyDetailsMap.put(displayName, new Tuple<String, SimpleDataTreeNode, ExtendablePropertyList>(name, ps,
-					(ExtendablePropertyList) edge.properties()));
-			if (edge.properties().hasProperty(name))
-				selected.add(true);
-			else
-				selected.add(false);
 
-		}
+		getCurrentChoices(optionalNodePropertySpecs, optionalEdgePropertySpecs, displayNames, selected,
+				propertyDetailsMap);
+
 		List<Tuple<String, SimpleDataTreeNode, ExtendablePropertyList>> additions = new ArrayList<>();
 		List<Tuple<String, SimpleDataTreeNode, ExtendablePropertyList>> deletions = new ArrayList<>();
-		// If cancel is pressed the original list of selected items is returned and
-		// therefore no change should result.
-		List<String> selectedItems = DialogsFactory.getCBSelections(nodeEditor.toString(), "Optional properties",
-				displayNames, selected);
-		for (String displayName : displayNames) {
-			boolean isSelected = selected.get(displayNames.indexOf(displayName));
-			// addition iff selected and not currently present
-			if (!isSelected && selectedItems.contains(displayName))
-				additions.add(propertyDetailsMap.get(displayName));
-			// deletion iff not selected and present
-			else if (isSelected && !selectedItems.contains(displayName))
-				deletions.add(propertyDetailsMap.get(displayName));
-		}
 
-		// Deletions
-		for (Tuple<String, SimpleDataTreeNode, ExtendablePropertyList> details : deletions) {
-			String key = details.getFirst();
-			ExtendablePropertyList p = details.getThird();
-			p.removeProperty(key);
-		}
-		// Additions
-		for (Tuple<String, SimpleDataTreeNode, ExtendablePropertyList> details : additions) {
-			String key = details.getFirst();
-			SimpleDataTreeNode spec = details.getSecond();
-			ExtendablePropertyList p = details.getThird();
-			Object defValue;
+		promptForChanges(displayNames, selected, propertyDetailsMap, additions, deletions);
 
-			if (key.equals(P_SPACE_OBSWINDOW.key())) {
-				SpaceType st = (SpaceType) cn.properties().getPropertyValue(P_SPACETYPE.key());
-				int nDims = st.dimensions();
-				Point[] points = new Point[2]; // upper/lower or lower/upper bounds
-				double[] lowerBounds = new double[nDims];
-				double[] upperBounds = new double[nDims];
-				Arrays.fill(lowerBounds, 0.0);
-				Arrays.fill(upperBounds, 0.0);// Leave it to queries to indicate a +ve range is needed.
-				for (int i = 0; i < 2; i++) {
-					points[0] = Point.newPoint(lowerBounds);
-					points[1] = Point.newPoint(upperBounds);
-				}
-				defValue = Box.boundingBox(points[0], points[1]);
-			} else {
-				String type = (String) spec.properties().getPropertyValue(Archetypes.TYPE);
-				defValue = ValidPropertyTypes.getDefaultValue(type);
-			}
-			p.addProperty(key, defValue);
-		}
+		updateChanges(additions, deletions);
 
 		if (!deletions.isEmpty() || !additions.isEmpty())
 			return true;
 		else
 			return false;
 	}
+
+	// ------------------ Helpers -----------------------------
 
 	private boolean isPredefined(SimpleDataTreeNode specs) {
 		return ConfigurationReservedNodeId
@@ -1076,6 +823,7 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 		// this and its config from graphs and disconnect
 		vNode.remove();
 	}
+
 	private void renameEdge(String uniqueId, LayoutEdge vEdge) {
 		// NB: graphs must be saved and reloaded after this op because Map<> of node
 		// edges will have old KEYS
@@ -1208,7 +956,286 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 
 	}
 
-	
+	private void deleteTree(LayoutNode root, double duration) {
+		// avoid concurrent modification
+		List<LayoutNode> list = new LinkedList<>();
+		for (LayoutNode child : root.getChildren())
+			list.add(child);
+
+		for (LayoutNode child : list)
+			deleteTree(child, duration);
+		deleteNode(root, duration);
+	}
+
+	private void deleteEdge(LayoutEdge vEdge) {
+		ALEdge cEdge = vEdge.getConfigEdge();
+		// Remove visual elements before disconnecting
+		visualiser.removeView(vEdge);
+		// Remove ids before disconnecting;
+		EditableFactory vf = (EditableFactory) vEdge.factory();
+		EditableFactory cf = (EditableFactory) cEdge.factory();
+		vf.expungeEdge(vEdge);
+		cf.expungeEdge(cEdge);
+		vEdge.disconnect();
+		cEdge.disconnect();
+	}
+
+	private void exportTree(File file, TreeGraphDataNode root) {
+		TwConfigFactory factory = new TwConfigFactory();
+		TreeGraph<TreeGraphDataNode, ALEdge> exportGraph = new TreeGraph<TreeGraphDataNode, ALEdge>(factory);
+		List<ALEdge> configOutEdges = new ArrayList<>();
+
+		cloneTree(factory, null, root, exportGraph, configOutEdges);
+
+		// Look for outedges within the sub-tree
+		for (ALEdge configEdge : configOutEdges) {
+			TreeGraphDataNode cloneStartNode = getNode(exportGraph, configEdge.startNode());
+			TreeGraphDataNode cloneEndNode = getNode(exportGraph, configEdge.endNode());
+			if (cloneEndNode != null && cloneStartNode != null) {
+				ALEdge cloneEdge = (ALEdge) factory.makeEdge(factory.edgeClass(configEdge.classId()), cloneStartNode,
+						cloneEndNode, configEdge.id());
+				cloneEdgeProperties(configEdge, cloneEdge);
+			}
+		}
+
+		new OmugiGraphExporter(file).exportGraph(exportGraph);
+	}
+
+	private static void cloneTree(TwConfigFactory factory, TreeGraphDataNode cloneParent, TreeGraphDataNode configNode,
+			TreeGraph<TreeGraphDataNode, ALEdge> graph, List<ALEdge> outEdges) {
+
+		// make the node
+		TreeGraphDataNode cloneNode = (TreeGraphDataNode) factory.makeNode(factory.nodeClass(configNode.classId()),
+				configNode.id());
+
+		// store any out edges to check later if they are within the export sub-tree
+		for (ALEdge edge : configNode.edges(Direction.OUT))
+			outEdges.add(edge);
+
+		// clone node properties
+		cloneNodeProperties(configNode, cloneNode);
+
+		// clone tree structure
+		cloneNode.connectParent(cloneParent);
+
+		// follow tree
+		for (TreeNode configChild : configNode.getChildren())
+			cloneTree(factory, cloneNode, (TreeGraphDataNode) configChild, graph, outEdges);
+
+	}
+
+	private TreeGraphDataNode getNode(TreeGraph<TreeGraphDataNode, ALEdge> exportGraph, ALNode configNode) {
+		for (TreeGraphDataNode cloneNode : exportGraph.nodes()) {
+			if (cloneNode.id().equals(configNode.id()))
+				return (TreeGraphDataNode) cloneNode;
+		}
+		return null;
+	}
+
+	private void importGraph(TreeGraph<TreeGraphDataNode, ALEdge> configSubGraph, LayoutNode vParent, double duration) {
+		// Only trees are exported not graph lists. Therefore, it is proper to do this
+		// by recursion
+
+		// Store edge info for later processing
+		Map<ALEdge, LayoutNode> outEdgeMap = new HashMap<>();
+		Map<ALEdge, LayoutNode> inEdgeMap = new HashMap<>();
+
+		TreeGraphDataNode cParent = vParent.configNode();
+		TwConfigFactory cFactory = (TwConfigFactory) cParent.factory();
+		LayoutGraphFactory vFactory = (LayoutGraphFactory) vParent.factory();
+		TreeGraphDataNode importNode = configSubGraph.root();
+		// follow tree
+		importTree(importNode, cParent, vParent, cFactory, vFactory, outEdgeMap, inEdgeMap);
+		// clone any edges found
+		outEdgeMap.entrySet().forEach(entry -> {
+			// get start/end nodes
+			ALEdge importEdge = entry.getKey();
+			LayoutNode vStart = entry.getValue();
+			LayoutNode vEnd = inEdgeMap.get(importEdge);
+			TreeGraphDataNode cStart = vStart.configNode();
+			TreeGraphDataNode cEnd = vEnd.configNode();
+			// make edges
+			ALEdge newCEdge = (ALEdge) cFactory.makeEdge(cFactory.edgeClass(importEdge.classId()), cStart, cEnd,
+					importEdge.id());
+			LayoutEdge newVEdge = vFactory.makeEdge(vStart, vEnd, newCEdge.id());
+			newVEdge.setConfigEdge(newCEdge);
+			newVEdge.setVisible(true);
+			cloneEdgeProperties(importEdge, newCEdge);
+			visualiser.onNewEdge(newVEdge, duration);
+		});
+
+	}
+
+	private static void cloneEdgeProperties(ALEdge from, ALEdge to) {
+		if (from instanceof ALDataEdge) {
+			// Add edge properties
+			ALDataEdge fromDataEdge = (ALDataEdge) from;
+			ALDataEdge toDataEdge = (ALDataEdge) to;
+			SimplePropertyListImpl fromProps = (SimplePropertyListImpl) fromDataEdge.properties();
+			ExtendablePropertyList toProps = (ExtendablePropertyList) toDataEdge.properties();
+			for (String key : fromProps.getKeysAsArray())
+				toProps.addProperty(key, fromProps.getPropertyValue(key));
+		}
+
+	}
+
+	private static void cloneNodeProperties(TreeGraphDataNode from, TreeGraphDataNode to) {
+		// clone node properties
+		ExtendablePropertyList fromProps = (ExtendablePropertyList) from.properties();
+		ExtendablePropertyList toProps = (ExtendablePropertyList) to.properties();
+		for (String key : fromProps.getKeysAsArray())
+			toProps.addProperty(key, fromProps.getPropertyValue(key));
+
+	}
+
+	private void importTree(TreeGraphDataNode importNode, TreeGraphDataNode cParent, LayoutNode vParent,
+			TwConfigFactory cFactory, LayoutGraphFactory vFactory, Map<ALEdge, LayoutNode> outEdgeMap,
+			Map<ALEdge, LayoutNode> inEdgeMap) {
+		// NB: ids will change depending on scope.
+		TreeGraphDataNode newCNode = (TreeGraphDataNode) cFactory.makeNode(cFactory.nodeClass(importNode.classId()),
+				importNode.id());
+		LayoutNode newVNode = vFactory.makeNode(newCNode.id());
+		newCNode.connectParent(cParent);
+		newVNode.connectParent(vParent);
+		newVNode.setConfigNode(newCNode);
+		Set<String> discoveredFile = new HashSet<>();
+		NodeEditor vne = new NodeEditorAdapter(newVNode, nodeEditor.visualGraph());
+		// this depends on the parent table been present so its circular
+		// This will break eventually when finding the spec without knowing the precise
+		// parent when there can be more than one.
+		// StringTable parentTable = controller.findParentTable(newVNode);
+
+		SimpleDataTreeNode specs = specifications.getSpecsOf(vne, TWA.getRoot(), discoveredFile);
+		StringTable parents = (StringTable) specs.properties().getPropertyValue(Archetypes.HAS_PARENT);
+		newVNode.setParentRef(parents);
+		newVNode.setCategory();
+		newVNode.setVisible(true);
+		newVNode.setCollapse(false);
+		newVNode.setPosition(Math.random() * 0.5, Math.random() * 0.5);
+		// Collect outEdges and pair with visual node.
+		// Can't depend on ids! Match the imported edge with the newly created visual
+		// node at time of creation.
+		for (ALEdge outEdge : importNode.edges(Direction.OUT))
+			outEdgeMap.put(outEdge, newVNode);
+		for (ALEdge inEdge : importNode.edges(Direction.IN))
+			inEdgeMap.put(inEdge, newVNode);
+
+		// clone node properties
+		cloneNodeProperties(importNode, newCNode);
+
+		// update visual display
+		visualiser.onNewNode(newVNode);
+
+		for (TreeNode importChild : importNode.getChildren())
+			importTree((TreeGraphDataNode) importChild, newCNode, newVNode, cFactory, vFactory, outEdgeMap, inEdgeMap);
+	}
+
+	@SuppressWarnings("unchecked")
+	private TreeGraph<TreeGraphDataNode, ALEdge> getImportGraph(SimpleDataTreeNode childSpec) {
+		File importFile = DialogsFactory.getExternalProjectFile();
+		if (importFile == null)
+			return null;
+		TreeGraph<TreeGraphDataNode, ALEdge> importGraph = (TreeGraph<TreeGraphDataNode, ALEdge>) FileImporter
+				.loadGraphFromFile(importFile);
+		// check the root node class is the same as that in the spec
+		String label = (String) childSpec.properties().getPropertyValue(Archetypes.IS_OF_CLASS);
+		if (!label.equals(importGraph.root().classId())) {
+			DialogsFactory.errorAlert("Import error", "Incompatible file", "Tree with root '" + label
+					+ "' requested but root of this file is '" + importGraph.root().classId() + "'.");
+			return null;
+		}
+		return importGraph;
+	}
+
+	private void getCurrentChoices(List<SimpleDataTreeNode> nodePropertySpecs,
+			List<Duple<LayoutEdge, SimpleDataTreeNode>> edgePropertySpecs, List<String> displayNames,
+			List<Boolean> selected,
+			Map<String, Tuple<String, SimpleDataTreeNode, ExtendablePropertyList>> propertyDetailsMap) {
+		// DisplayName, Spec, propertyList
+		// collect optional node properties
+		TreeGraphDataNode cn = (TreeGraphDataNode) nodeEditor.getConfigNode();
+		for (SimpleDataTreeNode p : nodePropertySpecs) {
+			String name = (String) p.properties().getPropertyValue(Archetypes.HAS_NAME);
+			String displayName = cn.toShortString() + "#" + name;
+			displayNames.add(displayName);
+			propertyDetailsMap.put(displayName, new Tuple<String, SimpleDataTreeNode, ExtendablePropertyList>(name, p,
+					(ExtendablePropertyList) cn.properties()));
+			if (cn.properties().hasProperty(name))
+				selected.add(true);
+			else
+				selected.add(false);
+		}
+		// collect option outedge properties
+		for (Duple<LayoutEdge, SimpleDataTreeNode> ep : edgePropertySpecs) {
+			ALDataEdge edge = (ALDataEdge) ep.getFirst().getConfigEdge();
+			SimpleDataTreeNode ps = ep.getSecond();
+			String name = (String) ps.properties().getPropertyValue(Archetypes.HAS_NAME);
+			String displayName = edge.toShortString() + "#" + name;
+			displayNames.add(displayName);
+			propertyDetailsMap.put(displayName, new Tuple<String, SimpleDataTreeNode, ExtendablePropertyList>(name, ps,
+					(ExtendablePropertyList) edge.properties()));
+			if (edge.properties().hasProperty(name))
+				selected.add(true);
+			else
+				selected.add(false);
+
+		}
+	}
+
+	private void promptForChanges(List<String> displayNames, List<Boolean> selected,
+			Map<String, Tuple<String, SimpleDataTreeNode, ExtendablePropertyList>> propertyDetailsMap,
+			List<Tuple<String, SimpleDataTreeNode, ExtendablePropertyList>> additions,
+			List<Tuple<String, SimpleDataTreeNode, ExtendablePropertyList>> deletions) {
+		// If cancel is pressed the original list of selected items is returned and
+		// therefore no change should result.
+		List<String> selectedItems = DialogsFactory.getCBSelections(nodeEditor.toString(), "Optional properties",
+				displayNames, selected);
+		for (String displayName : displayNames) {
+			boolean isSelected = selected.get(displayNames.indexOf(displayName));
+			// addition iff selected and not currently present
+			if (!isSelected && selectedItems.contains(displayName))
+				additions.add(propertyDetailsMap.get(displayName));
+			// deletion iff not selected and present
+			else if (isSelected && !selectedItems.contains(displayName))
+				deletions.add(propertyDetailsMap.get(displayName));
+		}
+	}
+
+	private void updateChanges(List<Tuple<String, SimpleDataTreeNode, ExtendablePropertyList>> additions,
+			List<Tuple<String, SimpleDataTreeNode, ExtendablePropertyList>> deletions) {
+		// Deletions
+		for (Tuple<String, SimpleDataTreeNode, ExtendablePropertyList> details : deletions) {
+			String key = details.getFirst();
+			ExtendablePropertyList p = details.getThird();
+			p.removeProperty(key);
+		}
+		// Additions
+		for (Tuple<String, SimpleDataTreeNode, ExtendablePropertyList> details : additions) {
+			String key = details.getFirst();
+			SimpleDataTreeNode spec = details.getSecond();
+			ExtendablePropertyList p = details.getThird();
+			Object defValue;
+
+			if (key.equals(P_SPACE_OBSWINDOW.key())) {
+				SpaceType st = (SpaceType) nodeEditor.getConfigNode().properties().getPropertyValue(P_SPACETYPE.key());
+				int nDims = st.dimensions();
+				Point[] points = new Point[2]; // upper/lower or lower/upper bounds
+				double[] lowerBounds = new double[nDims];
+				double[] upperBounds = new double[nDims];
+				Arrays.fill(lowerBounds, 0.0);
+				Arrays.fill(upperBounds, 0.0);// Leave it to queries to indicate a +ve range is needed.
+				for (int i = 0; i < 2; i++) {
+					points[0] = Point.newPoint(lowerBounds);
+					points[1] = Point.newPoint(upperBounds);
+				}
+				defValue = Box.boundingBox(points[0], points[1]);
+			} else {
+				String type = (String) spec.properties().getPropertyValue(Archetypes.TYPE);
+				defValue = ValidPropertyTypes.getDefaultValue(type);
+			}
+			p.addProperty(key, defValue);
+		}
+	}
 
 //	protected void processPropertiesMatchDefinition(LayoutNode newChild, SimpleDataTreeNode childBaseSpec,
 //	SimpleDataTreeNode childSubSpec) {
