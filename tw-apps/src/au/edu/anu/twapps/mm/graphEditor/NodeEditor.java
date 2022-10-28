@@ -37,7 +37,6 @@ import au.edu.anu.omhtk.util.IntegerRange;
 import au.edu.anu.twapps.mm.layoutGraph.LayoutEdge;
 import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
 import fr.cnrs.iees.omugi.graph.impl.ALEdge;
-import fr.cnrs.iees.omugi.graph.impl.TreeGraph;
 import fr.cnrs.iees.omugi.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.omugi.graph.impl.TreeGraphNode;
 
@@ -57,14 +56,6 @@ public interface NodeEditor {
 	 */
 	public LayoutNode layoutNode();
 	// remove
-
-	/**
-	 * The layout graph. Ideally this should not be exposed!
-	 * 
-	 * @return The layout graph.
-	 */
-	public TreeGraph<LayoutNode, LayoutEdge> visualGraph();
-// remove 
 
 	/**
 	 * @return All Layout nodes that are children of this node.
@@ -235,6 +226,6 @@ public interface NodeEditor {
 
 	public void deleteParentLink(LayoutNode child);
 	
-	public Collection<LayoutNode> getAllRoots();
+//	public Collection<LayoutNode> getAllRoots();
 
 }

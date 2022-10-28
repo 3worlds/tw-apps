@@ -43,7 +43,6 @@ import fr.cnrs.iees.omugi.graph.Direction;
 import fr.cnrs.iees.omugi.graph.TreeNode;
 import fr.cnrs.iees.omugi.graph.impl.ALEdge;
 import fr.cnrs.iees.omugi.graph.impl.ALNode;
-import fr.cnrs.iees.omugi.graph.impl.TreeGraph;
 import fr.cnrs.iees.omugi.graph.impl.TreeGraphDataNode;
 import fr.cnrs.iees.omugi.graph.impl.TreeGraphNode;
 import fr.cnrs.iees.omugi.identity.Identity;
@@ -56,15 +55,15 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 public class NodeEditorAdapter implements //
 		NodeEditor {
 	private final LayoutNode visualNode;
-	private final TreeGraph<LayoutNode, LayoutEdge> visualGraph;
+//	private final TreeGraph<LayoutNode, LayoutEdge> visualGraph;
 
 	/**
 	 * @param visualNode  Node for editing.
 	 * @param visualGraph The layout graph.
 	 */
-	public NodeEditorAdapter(LayoutNode visualNode, TreeGraph<LayoutNode, LayoutEdge> visualGraph) {
+	public NodeEditorAdapter(LayoutNode visualNode) {
 		this.visualNode = visualNode;
-		this.visualGraph = visualGraph;
+//		this.visualGraph = visualGraph;
 	}
 
 	@Override
@@ -72,10 +71,10 @@ public class NodeEditorAdapter implements //
 		return visualNode;
 	}
 
-	@Override
-	public TreeGraph<LayoutNode, LayoutEdge> visualGraph() {
-		return visualGraph;
-	}
+//	@Override
+//	public TreeGraph<LayoutNode, LayoutEdge> visualGraph() {
+//		return visualGraph;
+//	}
 
 	@Override
 	public boolean moreChildrenAllowed(IntegerRange range, String childLabel) {
@@ -248,11 +247,6 @@ public class NodeEditorAdapter implements //
 	public void deleteParentLink(LayoutNode child) {
 		visualNode.disconnectFrom(child);
 		visualNode.configNode().disconnectFrom(child.configNode());
-	}
-
-	@Override
-	public Collection<LayoutNode> getAllRoots() {
-		return visualGraph.roots();
 	}
 
 }

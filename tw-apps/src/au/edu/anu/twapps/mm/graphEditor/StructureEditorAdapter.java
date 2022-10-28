@@ -207,7 +207,7 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 
 	public List<LayoutNode> getOrphanedChildren(Iterable<SimpleDataTreeNode> childSpecs) {
 		List<LayoutNode> result = new ArrayList<>();
-		for (LayoutNode root : nodeEditor.getAllRoots()) {
+		for (LayoutNode root : visualiser.getLayoutGraph().roots()) {
 			String rootLabel = root.configNode().classId();
 			for (SimpleDataTreeNode childSpec : childSpecs) {
 				String specLabel = (String) childSpec.properties().getPropertyValue(Archetypes.IS_OF_CLASS);
@@ -704,6 +704,7 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 				Object defValue = ValidPropertyTypes.getDefaultValue(type);
 
 				if (defValue instanceof Enum<?>) {
+					@SuppressWarnings("unchecked")
 					Class<? extends Enum<?>> e = (Class<? extends Enum<?>>) defValue.getClass();
 
 					SimpleDataTreeNode constraint = (SimpleDataTreeNode) get(propertySpec.getChildren(),
@@ -1099,7 +1100,8 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 		newVNode.connectParent(vParent);
 		newVNode.setConfigNode(newCNode);
 		Set<String> discoveredFile = new HashSet<>();
-		NodeEditor vne = new NodeEditorAdapter(newVNode, nodeEditor.visualGraph());
+		
+		NodeEditor vne = new NodeEditorAdapter(newVNode);
 		// this depends on the parent table been present so its circular
 		// This will break eventually when finding the spec without knowing the precise
 		// parent when there can be more than one.
