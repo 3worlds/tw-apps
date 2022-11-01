@@ -33,8 +33,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import au.edu.anu.omhtk.preferences.IPreferences;
-import au.edu.anu.omhtk.preferences.Preferences;
+import au.edu.anu.omhtk.preferences.*;
 import au.edu.anu.twapps.dialogs.DialogsFactory;
 import fr.cnrs.iees.omugi.graph.impl.ALEdge;
 import fr.cnrs.iees.omugi.graph.impl.TreeGraph;
@@ -93,7 +92,7 @@ public class MRModelImpl implements MRModel {
 
 	@Override
 	public void getPreferences() {
-		IPreferences prefs = Preferences.getImplementation();
+		ArrayPreferences prefs = PreferenceService.getImplementation();
 		currentIdx = prefs.getInt(ISCurrentFileIndex, -1);
 		int n = prefs.getInt(ISFileCount, 0);
 		ISFiles = new ArrayList<>();
@@ -105,7 +104,7 @@ public class MRModelImpl implements MRModel {
 
 	@Override
 	public void putPreferences() {
-		IPreferences prefs = Preferences.getImplementation();
+		ArrayPreferences prefs = PreferenceService.getImplementation();
 		prefs.putInt(ISCurrentFileIndex, currentIdx);
 		prefs.putInt(ISFileCount, ISFiles.size());
 		for (int i = 0; i < ISFiles.size(); i++)

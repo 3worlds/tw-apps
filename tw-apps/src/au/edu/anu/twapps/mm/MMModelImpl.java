@@ -144,7 +144,7 @@ public class MMModelImpl implements MMModel {
 			doSave();
 		}
 		// Store current preferences so they can be restored with this state.
-		Preferences.getImplementation().flush();
+		PreferenceService.getImplementation().flush();
 		controller.putPreferences();
 
 		Caretaker.addState(
@@ -838,7 +838,7 @@ public class MMModelImpl implements MMModel {
 
 		doSave();
 
-		Preferences.setImplementation(new PrefImpl(Project.makeProjectPreferencesFile()));
+		PreferenceService.setImplementation(new PrefImpl(Project.makeProjectPreferencesFile()));
 
 		// force a rebuild of the property editors
 		controller.onRootNameChange();

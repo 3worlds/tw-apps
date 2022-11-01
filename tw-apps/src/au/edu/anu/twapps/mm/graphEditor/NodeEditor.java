@@ -63,11 +63,11 @@ public interface NodeEditor {
 	public Collection<LayoutNode> getChildren();
 
 	/**
-	 * @return true if <em>any</em> sub-trees of this node are collapsed; false otherwise.
+	 * @return true if <em>any</em> sub-trees of this node are collapsed; false
+	 *         otherwise.
 	 */
 	public boolean isCollapsed();
 
-	
 	/**
 	 * Query to ask if more children of the given node label are allowed within the
 	 * given {@link IntegerRange}.
@@ -193,8 +193,12 @@ public interface NodeEditor {
 	/**
 	 * Create a new layout node
 	 * 
-	 * @param label
-	 * @param promptName
+	 * @param label      The first part of the node
+	 *                   {@link fr.cnrs.iees.omugi.identity.impl.PairIdentity pair
+	 *                   identity}.
+	 * @param promptName The proposed second part of the node
+	 *                   {@link fr.cnrs.iees.omugi.identity.impl.PairIdentity pair
+	 *                   identity}.
 	 * @return new child of this node.
 	 */
 	public LayoutNode newChild(String label, String promptName);
@@ -207,15 +211,20 @@ public interface NodeEditor {
 	public TreeGraphDataNode getConfigNode();
 
 	/**
-	 * @param make the given node a child of this node.
+	 * @param child The node to be connected as a child this node.
 	 */
 	public void connectChild(LayoutNode child);
 
 	/**
-	 * @return true if this node is not a leaf node.
+	 * @return {@code true} if this node is not a leaf node; {@code false}
+	 *         otherwise.
 	 */
 	public boolean hasChildren();
 
+	/**
+	 * @return {@code true} if any sub-tree of this node contains a collapsed
+	 *         (hidden) node; {@code false} otherwise.
+	 */
 	public boolean hasCollapsedChild();
 
 	/**
@@ -224,8 +233,11 @@ public interface NodeEditor {
 	 */
 	public boolean hasUncollapsedChildren();
 
+	/**
+	 * @param child The child to be orphaned from this node.
+	 */
 	public void deleteParentLink(LayoutNode child);
-	
+
 //	public Collection<LayoutNode> getAllRoots();
 
 }

@@ -1,10 +1,9 @@
-au.edu.anu.twapps
 au.edu.anu.twapps.dialogs
 au.edu.anu.twapps.mm
 au.edu.anu.twapps.mm.configGraph
 au.edu.anu.twapps.mm.graphEditor
 au.edu.anu.twapps.mm.layout
+au.edu.anu.twapps.mm.layoutGraph
 au.edu.anu.twapps.mm.undo
 au.edu.anu.twapps.mm.userProjectFactory
-au.edu.anu.twapps.mm.visualGraph
 au.edu.anu.twapps.mr

@@ -74,7 +74,7 @@ public class FRLayout implements ILayout {
 		vertices = new ArrayList<>();
 		edges = new ArrayList<>();
 		isolated = new ArrayList<>();
-		/* make vertices of all visible nodes */
+		/* make vertices of visible nodes only */
 		for (LayoutNode v : graph.nodes()) {
 			if (!v.isCollapsed() && v.isVisible()) {
 				vertices.add(new FRVertex(v));
@@ -82,14 +82,6 @@ public class FRLayout implements ILayout {
 		}
 		/* sort for predictability */
 		vertices.sort((v1,v2)->v1.id().compareTo(v2.id()));
-//		vertices.sort(new Comparator<FRVertex>() {
-//
-//			@Override
-//			public int compare(FRVertex o1, FRVertex o2) {
-//				return o1.id().compareTo(o2.id());
-//			}
-//
-//		});
 
 		/* collect all visible edges */
 		for (FRVertex v : vertices) {
@@ -128,7 +120,6 @@ public class FRLayout implements ILayout {
 					isolated.add(v);
 
 			for (FRVertex v : isolated) {
-//				System.out.println("ISOLATED: " + v.toString());
 				vertices.remove(v);
 			}
 		}

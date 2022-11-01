@@ -35,16 +35,12 @@ import java.util.*;
 
 import fr.cnrs.iees.omugi.collections.tables.StringTable;
 import au.edu.anu.omhtk.util.IntegerRange;
-import au.edu.anu.twapps.mm.layoutGraph.LayoutEdge;
-import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
+import au.edu.anu.twapps.mm.layoutGraph.*;
 import au.edu.anu.twcore.archetype.TWA;
 import fr.cnrs.iees.omugi.OmugiClassLoader;
 import fr.cnrs.iees.omugi.graph.Direction;
 import fr.cnrs.iees.omugi.graph.TreeNode;
-import fr.cnrs.iees.omugi.graph.impl.ALEdge;
-import fr.cnrs.iees.omugi.graph.impl.ALNode;
-import fr.cnrs.iees.omugi.graph.impl.TreeGraphDataNode;
-import fr.cnrs.iees.omugi.graph.impl.TreeGraphNode;
+import fr.cnrs.iees.omugi.graph.impl.*;
 import fr.cnrs.iees.omugi.identity.Identity;
 import static fr.cnrs.iees.twcore.constants.ConfigurationNodeLabels.*;
 import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
@@ -55,15 +51,12 @@ import static fr.cnrs.iees.twcore.constants.ConfigurationEdgeLabels.*;
 public class NodeEditorAdapter implements //
 		NodeEditor {
 	private final LayoutNode visualNode;
-//	private final TreeGraph<LayoutNode, LayoutEdge> visualGraph;
 
 	/**
-	 * @param visualNode  Node for editing.
-	 * @param visualGraph The layout graph.
+	 * @param visualNode  The node which is the focus of the editing operation.
 	 */
 	public NodeEditorAdapter(LayoutNode visualNode) {
 		this.visualNode = visualNode;
-//		this.visualGraph = visualGraph;
 	}
 
 	@Override

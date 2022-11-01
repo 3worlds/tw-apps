@@ -32,10 +32,9 @@ package au.edu.anu.twapps.mr;
 import java.io.File;
 import java.util.List;
 
-import fr.cnrs.iees.omugi.graph.impl.ALEdge;
-import fr.cnrs.iees.omugi.graph.impl.TreeGraph;
-import fr.cnrs.iees.omugi.graph.impl.TreeGraphDataNode;
-import au.edu.anu.omhtk.preferences.Preferences;
+import fr.cnrs.iees.omugi.graph.impl.*;
+
+import au.edu.anu.omhtk.preferences.*;
 
 //ModelRunner methods called by the Controller
 //The controller HAS one of these
@@ -110,12 +109,12 @@ public interface MRModel {
 	public TreeGraph<TreeGraphDataNode, ALEdge> getGraph();
 
 	/**
-	 * Set the ModelRunner controls from the {@link Preferences} system.
+	 * Set the ModelRunner controls from the {@link PreferenceService} system.
 	 */
 	public void getPreferences();
 
 	/**
-	 * Save the ModelRunner controls to the {@link Preferences} system.
+	 * Save the ModelRunner controls to the {@link PreferenceService} system.
 	 */
 	public void putPreferences();
 }
