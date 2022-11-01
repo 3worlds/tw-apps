@@ -141,7 +141,7 @@ public class ConfigGraph {
 	}
 
 	private static void dispatchUnsavedProjectError() {
-		if (!ErrorMessageManager.haveErrors() && GraphStateFactory.changed())
+		if (!ErrorMessageManager.haveErrors() && GraphStateService.getImplementation().changed())
 			ErrorMessageManager.dispatch(new ModelBuildErrorMsg(ModelBuildErrors.DEPLOY_PROJECT_UNSAVED));
 	}
 

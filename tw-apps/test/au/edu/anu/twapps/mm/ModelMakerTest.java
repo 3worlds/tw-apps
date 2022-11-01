@@ -41,7 +41,7 @@ class ModelMakerTest {
 	public void init() {
 		DialogService.setImplementation(new MockDialogs());
 		c = new MockController();
-		GraphStateFactory.setImplementation(null);
+		GraphStateService.setImplementation(null);
 	}
 
 //	@Test

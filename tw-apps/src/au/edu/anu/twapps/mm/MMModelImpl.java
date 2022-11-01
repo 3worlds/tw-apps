@@ -537,7 +537,7 @@ public class MMModelImpl implements MMModel {
 		new OmugiGraphExporter(Project.makeConfigurationFile()).exportGraph(ConfigGraph.getGraph());
 		new OmugiGraphExporter(Project.makeLayoutFile()).exportGraph(layoutGraph);
 
-		GraphStateFactory.clear();
+		GraphStateService.getImplementation().clear();
 
 		ConfigGraph.verifyGraph();
 	}
@@ -793,7 +793,7 @@ public class MMModelImpl implements MMModel {
 				return true;
 			}
 		}
-		if (!GraphStateFactory.changed())
+		if (!GraphStateService.getImplementation().changed())
 			return true;
 
 		switch (DialogService.getImplementation().yesNoCancel("Project has changed",

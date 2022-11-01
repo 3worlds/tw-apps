@@ -262,14 +262,14 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 			return;
 		connectTo(id, details, duration);
 		ConfigGraph.verifyGraph();
-		GraphStateFactory.setChanged();
+		GraphStateService.getImplementation().setChanged();
 	}
 
 	@Override
 	public void onDeleteNode(double duration) {
 		deleteNode(nodeEditor.layoutNode(), duration);
 		controller.onNodeDeleted();
-		GraphStateFactory.setChanged();
+		GraphStateService.getImplementation().setChanged();
 		ConfigGraph.verifyGraph();
 	}
 
@@ -305,7 +305,7 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 	public void onCollapseTree(LayoutNode childRoot, double duration) {
 		visualiser.collapseTreeFrom(childRoot, duration);
 		controller.onTreeCollapse();
-		GraphStateFactory.setChanged();
+		GraphStateService.getImplementation().setChanged();
 	}
 
 	@Override
@@ -315,14 +315,14 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 				visualiser.collapseTreeFrom(child, duration);
 		}
 		controller.onTreeCollapse();
-		GraphStateFactory.setChanged();
+		GraphStateService.getImplementation().setChanged();
 	}
 
 	@Override
 	public void onExpandTree(LayoutNode childRoot, double duration) {
 		visualiser.expandTreeFrom(childRoot, duration);
 		controller.onTreeExpand();
-		GraphStateFactory.setChanged();
+		GraphStateService.getImplementation().setChanged();
 	}
 
 	@Override
@@ -332,7 +332,7 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 				visualiser.expandTreeFrom(child, duration);
 		}
 		controller.onTreeExpand();
-		GraphStateFactory.setChanged();
+		GraphStateService.getImplementation().setChanged();
 	}
 
 	@Override
@@ -340,14 +340,14 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 		nodeEditor.connectChild(vnChild);
 		visualiser.onNewParent(vnChild);
 		ConfigGraph.verifyGraph();
-		GraphStateFactory.setChanged();
+		GraphStateService.getImplementation().setChanged();
 	}
 
 	@Override
 	public void onDeleteTree(LayoutNode root, double duration) {
 		deleteTree(root, duration);
 		controller.onNodeDeleted();
-		GraphStateFactory.setChanged();
+		GraphStateService.getImplementation().setChanged();
 		ConfigGraph.verifyGraph();
 	}
 
@@ -359,7 +359,7 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 		deleteEdge(edge);
 		if (mayHaveProperties)
 			controller.onEdgeDeleted();
-		GraphStateFactory.setChanged();
+		GraphStateService.getImplementation().setChanged();
 		ConfigGraph.verifyGraph();
 	}
 
@@ -383,7 +383,7 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 		if (importGraph != null) {
 			importGraph(importGraph, nodeEditor.layoutNode(), duration);
 			controller.doLayout(duration);
-			GraphStateFactory.setChanged();
+			GraphStateService.getImplementation().setChanged();
 			ConfigGraph.verifyGraph();
 		}
 	}
@@ -394,7 +394,7 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 		nodeEditor.deleteParentLink(vChild);
 		visualiser.getLayoutGraph().onParentChanged();
 		ConfigGraph.onParentChanged();
-		GraphStateFactory.setChanged();
+		GraphStateService.getImplementation().setChanged();
 		ConfigGraph.verifyGraph();
 	}
 
