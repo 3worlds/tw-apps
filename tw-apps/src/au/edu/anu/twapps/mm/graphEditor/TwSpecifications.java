@@ -485,7 +485,6 @@ public class TwSpecifications implements //
 		return (List<SimpleDataTreeNode>) get(spec.getChildren(), selectZeroOrMany(hasTheLabel(Archetypes.HAS_EDGE)));
 	}
 
-	@SuppressWarnings("unused")
 	private SimpleDataTreeNode getSubClassPropertySpec(SimpleDataTreeNode spec) {
 		return (SimpleDataTreeNode) get(spec.getChildren(),
 				selectZeroOrOne(hasProperty(Archetypes.HAS_NAME, TWA.SUBCLASS)));
@@ -499,7 +498,7 @@ public class TwSpecifications implements //
 
 	@SuppressWarnings("unchecked")
 	private List<Class<? extends TreeNode>> listValidClasses(StringTable classes) {
-		List<Class<? extends TreeNode>> result = new ArrayList();
+		List<Class<? extends TreeNode>> result = new ArrayList<>();
 		for (int i = 0; i < classes.size(); i++) {
 			try {
 				result.add((Class<? extends TreeNode>) Class.forName(classes.getWithFlatIndex(i), true,

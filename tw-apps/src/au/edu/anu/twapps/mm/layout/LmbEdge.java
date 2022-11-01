@@ -41,8 +41,8 @@ public class LmbEdge {
 //	private double pcy;// ctrl pt
 	private double pa;// p angle, set on init
 	private double qa;// q angle, set on init
-	private double pf;// p rot force
-	private double qf;// q rot force
+//	private double pf;// p rot force
+//	private double qf;// q rot force
 	private LmbVertex p;
 	private LmbVertex q;
 
@@ -171,10 +171,10 @@ public class LmbEdge {
 	 * @param f Not yet implemented.
 	 */
 	public void addForce(LmbVertex n, double f) {
-		if (n == p)
-			pf += f;
-		else
-			qf += f;
+//		if (n == p)
+//			pf += f;
+//		else
+//			qf += f;
 	}
 
 	/**

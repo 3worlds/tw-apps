@@ -28,9 +28,6 @@
   **************************************************************************/
 package au.edu.anu.twapps.dialogs;
 
-import java.io.File;
-import java.util.List;
-
 /**
  * Singleton container for dialog box implementation.
  *
