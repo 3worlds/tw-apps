@@ -42,7 +42,7 @@ import au.edu.anu.aot.archetype.Archetypes;
 import fr.cnrs.iees.omugi.collections.tables.StringTable;
 import au.edu.anu.aot.errorMessaging.ErrorMessageManager;
 import au.edu.anu.omhtk.util.FileUtilities;
-import au.edu.anu.twapps.dialogs.DialogsFactory;
+import au.edu.anu.twapps.dialogs.DialogService;
 import au.edu.anu.twapps.mm.configGraph.ConfigGraph;
 import au.edu.anu.twapps.mm.layoutGraph.*;
 import au.edu.anu.twapps.mm.undo.Caretaker;
@@ -288,13 +288,13 @@ public class MMModelImpl implements MMModel {
 		File cFile = Project.makeConfigurationFile();
 		File vFile = Project.makeLayoutFile();
 		if (!cFile.exists()) {
-			DialogsFactory.errorAlert("File not found", cFile.getName(), "");
+			DialogService.getImplementation().errorAlert("File not found", cFile.getName(), "");
 			Project.close();
 			controller.setDefaultTitle();
 			return;
 		}
 		if (!vFile.exists()) {
-			DialogsFactory.errorAlert("File not found", vFile.getName(), "");
+			DialogService.getImplementation().errorAlert("File not found", vFile.getName(), "");
 			Project.close();
 			controller.setDefaultTitle();
 			return;
@@ -306,7 +306,7 @@ public class MMModelImpl implements MMModel {
 				.loadGraphFromFile(vFile);
 
 		if (importVisual.nNodes() != newGraph.nNodes()) {
-			DialogsFactory.errorAlert("File error", file.getName(), "Files '" + cFile.getName() + "' and '" + vFile.getName()
+			DialogService.getImplementation().errorAlert("File error", file.getName(), "Files '" + cFile.getName() + "' and '" + vFile.getName()
 					+ "' do not match. Possibly due to a parsing error in '" + cFile.getName() + "'.");
 			Project.close();
 			return;
@@ -397,7 +397,7 @@ public class MMModelImpl implements MMModel {
 		if (!canClose())
 			return;
 
-		File file = DialogsFactory.getExternalProjectFile();
+		File file = DialogService.getImplementation().getExternalProjectFile();
 		if (file == null)
 			return;
 
@@ -406,7 +406,7 @@ public class MMModelImpl implements MMModel {
 				.loadGraphFromFile(file);
 
 		if (importGraph.roots().size() > 1) {
-			DialogsFactory.errorAlert("Import error", "Tree has more than one root.",
+			DialogService.getImplementation().errorAlert("Import error", "Tree has more than one root.",
 					"Graphs with multiple roots cannot be imported");
 			return;
 		}
@@ -414,7 +414,7 @@ public class MMModelImpl implements MMModel {
 		TreeGraphDataNode twRoot = findTwRoot(importGraph);
 
 		if (twRoot == null) {
-			DialogsFactory.errorAlert("Import error", file.getName(),
+			DialogService.getImplementation().errorAlert("Import error", file.getName(),
 					"This file does not have a root node called '" + N_ROOT.label() + "'");
 			return;
 		}
@@ -460,7 +460,7 @@ public class MMModelImpl implements MMModel {
 		 */
 		List<File> depFiles = getDependentJavaFiles(importGraph.root());
 		for (File outfile : depFiles) {
-			File infile = DialogsFactory.getOpenFile(new File(System.getProperty("user.home")), "Import " + outfile.getName(),
+			File infile = DialogService.getImplementation().getOpenFile(new File(System.getProperty("user.home")), "Import " + outfile.getName(),
 					new String("Java files,*.java"));
 			if (infile != null)
 				FileUtilities.copyFileReplace(infile, outfile);
@@ -796,7 +796,7 @@ public class MMModelImpl implements MMModel {
 		if (!GraphStateFactory.changed())
 			return true;
 
-		switch (DialogsFactory.yesNoCancel("Project has changed",
+		switch (DialogService.getImplementation().yesNoCancel("Project has changed",
 				"Save '" + Project.getProjectUserName() + "' before closing?", "")) {
 		case yes:
 			doSave();
@@ -815,7 +815,7 @@ public class MMModelImpl implements MMModel {
 			String header = "Cannot save projects linked to an IDE under a new name.";
 			String content = "Disconnect '" + Project.getDisplayName() + "' from '"
 					+ UserProjectLink.projectRoot().getName() + "' before saving under a new name.";
-			DialogsFactory.errorAlert(title, header, content);
+			DialogService.getImplementation().errorAlert(title, header, content);
 			return;
 		}
 		TreeGraphDataNode cRoot = findTwRoot(ConfigGraph.getGraph());
@@ -849,7 +849,7 @@ public class MMModelImpl implements MMModel {
 		boolean modified = true;
 		String result = scope.newId(false, proposedId).id();
 		while (modified) {
-			String userName = DialogsFactory.getText(title, header, content, result, DialogsFactory.REGX_ALPHA_CAP_NUMERIC);
+			String userName = DialogService.getImplementation().getText(title, header, content, result, DialogService.REGX_ALPHA_CAP_NUMERIC);
 			if (userName == null)
 				return null;
 

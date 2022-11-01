@@ -35,7 +35,7 @@ import au.edu.anu.aot.archetype.Archetypes;
 import fr.cnrs.iees.omugi.collections.tables.StringTable;
 import au.edu.anu.qgraph.queries.*;
 import au.edu.anu.omhtk.util.IntegerRange;
-import au.edu.anu.twapps.dialogs.DialogsFactory;
+import au.edu.anu.twapps.dialogs.DialogService;
 import au.edu.anu.twapps.mm.layoutGraph.ElementDisplayText;
 import au.edu.anu.twapps.mm.layoutGraph.LayoutNode;
 import au.edu.anu.twcore.archetype.TWA;
@@ -175,7 +175,7 @@ public class TwSpecifications implements //
 			entries.addAll(getQueryStringTables(subSpec, qclass));
 		}
 		if (!entries.isEmpty()) {
-			List<String> selectedKeys = DialogsFactory.getRadioButtonChoices(childId, "PropertyChoices", "", entries);
+			List<String> selectedKeys = DialogService.getImplementation().getRadioButtonChoices(childId, "PropertyChoices", "", entries);
 			if (selectedKeys == null)
 				return false;
 			Iterator<SimpleDataTreeNode> iter = propertySpecs.iterator();
@@ -316,7 +316,7 @@ public class TwSpecifications implements //
 				if (obj instanceof Enum<?>) {
 					Class<? extends Enum<?>> e = (Class<? extends Enum<?>>) obj.getClass();
 					String[] names = ValidPropertyTypes.namesOf(e);
-					int choice = DialogsFactory.getListChoice(names, vnode.getDisplayText(ElementDisplayText.RoleName),
+					int choice = DialogService.getImplementation().getListChoice(names, vnode.getDisplayText(ElementDisplayText.RoleName),
 							key, obj.getClass().getSimpleName());
 					if (choice >= 0) {
 						Enum<?> value = ValidPropertyTypes.valueOf(names[choice], e);

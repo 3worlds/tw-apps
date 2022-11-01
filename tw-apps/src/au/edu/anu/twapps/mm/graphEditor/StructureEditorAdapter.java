@@ -41,7 +41,7 @@ import org.apache.commons.text.WordUtils;
 import au.edu.anu.aot.archetype.Archetypes;
 import fr.cnrs.iees.omugi.collections.tables.*;
 import au.edu.anu.omhtk.util.*;
-import au.edu.anu.twapps.dialogs.DialogsFactory;
+import au.edu.anu.twapps.dialogs.DialogService;
 import au.edu.anu.twapps.mm.GraphVisualiser;
 import au.edu.anu.twapps.mm.MMController;
 import au.edu.anu.twapps.mm.configGraph.ConfigGraph;
@@ -366,11 +366,12 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 	@Override
 	public void onExportTree(LayoutNode root) {
 		String filePrompt = root.getDisplayText(ElementDisplayText.RoleName).replace(":", "_") + ".utg";
-		File file = DialogsFactory.exportFile("", Project.USER_ROOT, filePrompt);
+		File file = DialogService.getImplementation().exportFile("", Project.USER_ROOT, filePrompt);
 		if (file == null)
 			return;
 		if (file.getAbsolutePath().contains(".3w/"))
-			DialogsFactory.infoAlert("Export", "Cannot export to a project directory", file.getAbsolutePath());
+			DialogService.getImplementation().infoAlert("Export", "Cannot export to a project directory",
+					file.getAbsolutePath());
 		else {
 			exportTree(file, root.configNode());
 		}
@@ -618,10 +619,11 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 	}
 
 	private String promptForNewNode(String label, String promptName, boolean capitalize) {
-		String strPattern = DialogsFactory.REGX_ALPHA_NUMERIC_SPACE;
+		String strPattern = DialogService.REGX_ALPHA_NUMERIC_SPACE;
 		if (capitalize)
-			strPattern = DialogsFactory.REGX_ALPHA_CAP_NUMERIC;
-		return DialogsFactory.getText("'" + label + "' element name.", "", "Name:", promptName, strPattern);
+			strPattern = DialogService.REGX_ALPHA_CAP_NUMERIC;
+		return DialogService.getImplementation().getText("'" + label + "' element name.", "", "Name:", promptName,
+				strPattern);
 	}
 
 	private Class<? extends TreeNode> promptForClass(List<Class<? extends TreeNode>> subClasses,
@@ -629,7 +631,8 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 		String[] list = new String[subClasses.size()];
 		for (int i = 0; i < subClasses.size(); i++)
 			list[i] = subClasses.get(i).getSimpleName();
-		int result = DialogsFactory.getListChoice(list, "Sub-classes", rootClassSimpleName, "select:");
+		int result = DialogService.getImplementation().getListChoice(list, "Sub-classes", rootClassSimpleName,
+				"select:");
 		if (result != -1)
 			return subClasses.get(result);
 		else
@@ -713,7 +716,7 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 						StringTable classes = (StringTable) constraint.properties().getPropertyValue(TWA.VALUES);
 						if (classes.size() > 1) {
 							String[] names = ValidPropertyTypes.namesOf(e);
-							int choice = DialogsFactory.getListChoice(names,
+							int choice = DialogService.getImplementation().getListChoice(names,
 									newChild.getDisplayText(ElementDisplayText.RoleName), key,
 									e.getClass().getSimpleName());
 							defValue = ValidPropertyTypes.valueOf(names[choice], e);
@@ -931,7 +934,7 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 					candidate = true;
 			}
 			if (candidate) {
-				text = findReplace(DialogsFactory.REGX_ALPHA_NUMERIC, from, to, text);
+				text = findReplace(DialogService.REGX_ALPHA_NUMERIC, from, to, text);
 				String[] lines = text.split("\\n");
 				if (lines.length < t.size()) {
 					for (int j = lines.length; j < t.size(); j++)
@@ -1100,7 +1103,7 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 		newVNode.connectParent(vParent);
 		newVNode.setConfigNode(newCNode);
 		Set<String> discoveredFile = new HashSet<>();
-		
+
 		NodeEditor vne = new NodeEditorAdapter(newVNode);
 		// this depends on the parent table been present so its circular
 		// This will break eventually when finding the spec without knowing the precise
@@ -1134,7 +1137,7 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 
 	@SuppressWarnings("unchecked")
 	private TreeGraph<TreeGraphDataNode, ALEdge> getImportGraph(SimpleDataTreeNode childSpec) {
-		File importFile = DialogsFactory.getExternalProjectFile();
+		File importFile = DialogService.getImplementation().getExternalProjectFile();
 		if (importFile == null)
 			return null;
 		TreeGraph<TreeGraphDataNode, ALEdge> importGraph = (TreeGraph<TreeGraphDataNode, ALEdge>) FileImporter
@@ -1142,7 +1145,7 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 		// check the root node class is the same as that in the spec
 		String label = (String) childSpec.properties().getPropertyValue(Archetypes.IS_OF_CLASS);
 		if (!label.equals(importGraph.root().classId())) {
-			DialogsFactory.errorAlert("Import error", "Incompatible file", "Tree with root '" + label
+			DialogService.getImplementation().errorAlert("Import error", "Incompatible file", "Tree with root '" + label
 					+ "' requested but root of this file is '" + importGraph.root().classId() + "'.");
 			return null;
 		}
@@ -1190,8 +1193,8 @@ public abstract class StructureEditorAdapter implements StructureEditor {
 			List<Tuple<String, SimpleDataTreeNode, ExtendablePropertyList>> deletions) {
 		// If cancel is pressed the original list of selected items is returned and
 		// therefore no change should result.
-		List<String> selectedItems = DialogsFactory.getCBSelections(nodeEditor.toString(), "Optional properties",
-				displayNames, selected);
+		List<String> selectedItems = DialogService.getImplementation().getCBSelections(nodeEditor.toString(),
+				"Optional properties", displayNames, selected);
 		for (String displayName : displayNames) {
 			boolean isSelected = selected.get(displayNames.indexOf(displayName));
 			// addition iff selected and not currently present

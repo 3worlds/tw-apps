@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import au.edu.anu.omhtk.preferences.*;
-import au.edu.anu.twapps.dialogs.DialogsFactory;
+import au.edu.anu.twapps.dialogs.DialogService;
 import fr.cnrs.iees.omugi.graph.impl.ALEdge;
 import fr.cnrs.iees.omugi.graph.impl.TreeGraph;
 import fr.cnrs.iees.omugi.graph.impl.TreeGraphDataNode;
@@ -61,7 +61,7 @@ public class MRModelImpl implements MRModel {
 	@Override
 	public void doISGenerate() {
 		// output of this is a saved *.isf file
-		DialogsFactory.infoAlert("Info", "Not implemented", "Show dlg to generated bootstrap driver values and populations");
+		DialogService.getImplementation().infoAlert("Info", "Not implemented", "Show dlg to generated bootstrap driver values and populations");
 
 	}
 
@@ -69,20 +69,20 @@ public class MRModelImpl implements MRModel {
 	public void doISReload() {
 		// doISClear();
 		if (currentIdx >= 0)
-			DialogsFactory.infoAlert("Info", "Not implemented",
+			DialogService.getImplementation().infoAlert("Info", "Not implemented",
 					"Load drivers and populations from " + ISFiles.get(currentIdx).getName());
 	}
 
 	@Override
 	public void doISClear() {
-		DialogsFactory.infoAlert("Info", "Not implemented", "Clear all drivers and populations");
+		DialogService.getImplementation().infoAlert("Info", "Not implemented", "Clear all drivers and populations");
 		// TODO set all data and populations to appropriate zero values
 
 	}
 
 	@Override
 	public void doISSaveAs(File file) {
-		DialogsFactory.infoAlert("Info", "Not implemented", "Save current drivers and populations to " + file);
+		DialogService.getImplementation().infoAlert("Info", "Not implemented", "Save current drivers and populations to " + file);
 
 	}
 

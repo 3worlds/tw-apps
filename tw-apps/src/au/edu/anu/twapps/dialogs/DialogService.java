@@ -26,33 +26,68 @@
  *  along with TW-APPS.                                                   *
  *  If not, see <https://www.gnu.org/licenses/gpl.html>                   *
   **************************************************************************/
+package au.edu.anu.twapps.dialogs;
 
-package au.edu.anu.twapps.mm;
+import java.io.File;
+import java.util.List;
 
-import org.junit.jupiter.api.*;
+/**
+ * A factory to instantiate dialogs for the assigned implementation.
+ * </p>
+ * This class should provide a method for every method defined in
+ * {@link Dialogs} interface. It cannot extend {@link Dialogs} because all
+ * methods here are static factory methods.
+ *
+ * @author Ian Davies - 12 Dec. 2018
+ * 
+ */
+public final class DialogService {
+	private static Dialogs impl;
 
-import au.edu.anu.twapps.dialogs.DialogService;
-import au.edu.anu.twcore.graphState.*;
+	/**
+	 * Private constructor to prevent instantiation.
+	 */
+	private DialogService() {
+	};
 
-class ModelMakerTest {
-	MockController c;
-	//https://junit.org/junit5/docs/current/user-guide/
-	@BeforeAll
-	public void init() {
-		DialogService.setImplementation(new MockDialogs());
-		c = new MockController();
-		GraphStateFactory.setImplementation(null);
+	/**
+	 * Sets the current implementation of the dialogs to be used. This must be done
+	 * before any other use of the DialogService.
+	 * 
+	 * @param impl The implementation of {@link Dialogs}.
+	 */
+	public static void setImplementation(Dialogs impl) {
+		DialogService.impl = impl;
 	}
 
-//	@Test
-//	public void test() {
-//		c.handleNewProject();
-//		assertTrue(Project.makeConfigurationFile().exists());
-//		// TODO write visual graph assertTrue(Project.makeLayoutFile().exists());
-//		File pf = Project.getProjectFile();
-//		Project.close();
-//		// awaiting AotGraphImporter
-//		c.handleOpenProject(pf);
-//	}
+	/**
+	 * @return The current Dialogs implementation.
+	 */
+	public static Dialogs getImplementation() {
+		return impl;
+	}
+
+	/**
+	 * regex for all chars of a floating point number
+	 */
+	public static final String REGX_REAL = "[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?";
+	/**
+	 * regex string for any alphabetic character.
+	 */
+	public static final String REGX_ALPHA = "([a-zA-Z]*)?";
+	/**
+	 * regex string for alpha-numeric characters.
+	 */
+	public static final String REGX_ALPHA_NUMERIC = "([a-zA-Z0-9]*)?";
+	/**
+	 * regex string for alpha-numeric chars or blank space. This may need to change!
+	 * It is used to allow the user to return an empty string but this is bad
+	 * practice. The user should choose cancel!
+	 */
+	public static final String REGX_ALPHA_NUMERIC_SPACE = "([a-zA-Z][a-zA-Z0-9 ]*)?";
+	/**
+	 * regex for Alpha-numeric string starting with uppercase.
+	 */
+	public static final String REGX_ALPHA_CAP_NUMERIC = "([A-Z][a-zA-Z0-9]*)?";
 
 }
