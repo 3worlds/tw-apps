@@ -32,11 +32,7 @@ import java.io.File;
 import java.util.List;
 
 /**
- * A factory to instantiate dialogs for the assigned implementation.
- * </p>
- * This class should provide a method for every method defined in
- * {@link Dialogs} interface. It cannot extend {@link Dialogs} because all
- * methods here are static factory methods.
+ * Singleton container for dialog box implementation.
  *
  * @author Ian Davies - 12 Dec. 2018
  * 
