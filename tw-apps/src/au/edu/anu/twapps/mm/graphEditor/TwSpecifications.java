@@ -80,27 +80,36 @@ public class TwSpecifications implements //
 	@SuppressWarnings("unchecked")
 	@Override
 	public SimpleDataTreeNode getSubSpecsOf(SimpleDataTreeNode baseSpecs, Class<? extends TreeNode> subClass) {
-		// multiple stopping conditions have many entries of IsOfClass
-		if (subClass != null) {
-			String parent = (String) baseSpecs.properties().getPropertyValue(Archetypes.IS_OF_CLASS);
-			Tree<?> subClassTree = getSubArchetype(baseSpecs, subClass);
-			if (subClassTree == null)
-				return null;
-			List<SimpleDataTreeNode> specs = (List<SimpleDataTreeNode>) get(subClassTree.root().getChildren(),
-					selectOneOrMany(hasProperty(Archetypes.IS_OF_CLASS, parent)));
+		// if no class there will not be a specification
+		if (subClass == null)
+			return null;
+		String baseSpecLabel = (String) baseSpecs.properties().getPropertyValue(Archetypes.IS_OF_CLASS);
+		Tree<?> subClassTree = getSubArchetype(baseSpecs, subClass);
+		// if no spec?? then what??
+		if (subClassTree == null)
+			return null;
+		// There should only be one entry. If more we get a crash and should investigate this state?
+		return (SimpleDataTreeNode) get(subClassTree.root().getChildren(),
+				selectZeroOrOne(hasProperty(Archetypes.IS_OF_CLASS, baseSpecLabel)));
+
+//			List<SimpleDataTreeNode> specs = (List<SimpleDataTreeNode>) get(subClassTree.root().getChildren(),
+//					selectOneOrMany(hasProperty(Archetypes.IS_OF_CLASS, baseSpecLabel)));
 //			if (specs.size() == 1)
 //				return specs.get(0);
 //			else {
-			for (SimpleDataTreeNode spec : specs) {
-				StringTable t = (StringTable) spec.properties().getPropertyValue(Archetypes.HAS_PARENT);
-				if (t.contains(parent + PairIdentity.LABEL_NAME_SEPARATOR)) {
-					return spec;
-				}
+//				throw new IllegalStateException(
+//						"TODO?: This circumstance has not been addressed. "+
+//				"Can we have a sub-archetype containing more than one spec of the same class?? );
+//			for (SimpleDataTreeNode spec : specs) {
+//				StringTable t = (StringTable) spec.properties().getPropertyValue(Archetypes.HAS_PARENT);
+//				if (t.contains(baseSpecLabel + PairIdentity.LABEL_NAME_SEPARATOR)) {
+//					return spec;
 //				}
-			}
-
-		}
-		return null;
+//				}
+//			}
+//
+//		}
+//		return null;
 	}
 
 	@Override
@@ -175,7 +184,8 @@ public class TwSpecifications implements //
 			entries.addAll(getQueryStringTables(subSpec, qclass));
 		}
 		if (!entries.isEmpty()) {
-			List<String> selectedKeys = DialogService.getImplementation().getRadioButtonChoices(childId, "PropertyChoices", "", entries);
+			List<String> selectedKeys = DialogService.getImplementation().getRadioButtonChoices(childId,
+					"PropertyChoices", "", entries);
 			if (selectedKeys == null)
 				return false;
 			Iterator<SimpleDataTreeNode> iter = propertySpecs.iterator();
@@ -316,8 +326,8 @@ public class TwSpecifications implements //
 				if (obj instanceof Enum<?>) {
 					Class<? extends Enum<?>> e = (Class<? extends Enum<?>>) obj.getClass();
 					String[] names = ValidPropertyTypes.namesOf(e);
-					int choice = DialogService.getImplementation().getListChoice(names, vnode.getDisplayText(ElementDisplayText.RoleName),
-							key, obj.getClass().getSimpleName());
+					int choice = DialogService.getImplementation().getListChoice(names,
+							vnode.getDisplayText(ElementDisplayText.RoleName), key, obj.getClass().getSimpleName());
 					if (choice >= 0) {
 						Enum<?> value = ValidPropertyTypes.valueOf(names[choice], e);
 						vnode.configNode().properties().setProperty(key, value);
