@@ -31,7 +31,7 @@
 
 	<dependencies>
 		<dependency org="fr.cnrs.iees.omhtk" name="generics" rev="[0.5.1,)"/>
-		<dependency org="fr.cnrs.iees.omugi" name="omugi" rev="[0.6.1,)"/>
+		<dependency org="fr.cnrs.iees.omugi" name="omugi" rev="[0.7.0,)"/>
 		<dependency org="au.edu.anu.qgraph" name="qgraph" rev="[0.3.0,)"/>
 		<dependency org="au.edu.anu.aot" name="aot" rev="[0.2.1,)"/>
 		<dependency org="fr.cnrs.iees.tw-core" name="tw-core" rev="[0.6.5,)"/>
